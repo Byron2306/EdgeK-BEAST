@@ -1,0 +1,186 @@
+{
+  "beast_object_type": "beast_phase6_7_platform_exit_receipt",
+  "schema": "beast.ide.phase6.platform-exit.v1",
+  "created_at": "2026-10-10T06:00:37.712Z",
+  "platform": "linux",
+  "arch": "x64",
+  "target": "local",
+  "node": "v22.23.3",
+  "desktop": "/home/byron/GitHub/EdgeK-BEAST/desktop-ide",
+  "mode": {
+    "live": false,
+    "package": false
+  },
+  "status": "fail",
+  "validated": false,
+  "summary": {
+    "checks": 24,
+    "passed": 19,
+    "failed": 2,
+    "environment_gated": 3
+  },
+  "checks": [
+    {
+      "name": "platform_matches",
+      "passed": true,
+      "observed": "linux",
+      "expected": "linux"
+    },
+    {
+      "name": "supported_platform",
+      "passed": true,
+      "observed": "linux"
+    },
+    {
+      "name": "supported_target",
+      "passed": true,
+      "target": "local"
+    },
+    {
+      "name": "file:package.json",
+      "passed": true,
+      "path": "/home/byron/GitHub/EdgeK-BEAST/desktop-ide/package.json"
+    },
+    {
+      "name": "file:main.js",
+      "passed": true,
+      "path": "/home/byron/GitHub/EdgeK-BEAST/desktop-ide/main.js"
+    },
+    {
+      "name": "file:preload.js",
+      "passed": true,
+      "path": "/home/byron/GitHub/EdgeK-BEAST/desktop-ide/preload.js"
+    },
+    {
+      "name": "file:main/ipc-registry.js",
+      "passed": true,
+      "path": "/home/byron/GitHub/EdgeK-BEAST/desktop-ide/main/ipc-registry.js"
+    },
+    {
+      "name": "file:main/workspace-file-host.js",
+      "passed": true,
+      "path": "/home/byron/GitHub/EdgeK-BEAST/desktop-ide/main/workspace-file-host.js"
+    },
+    {
+      "name": "file:main/workspace-state-host.js",
+      "passed": true,
+      "path": "/home/byron/GitHub/EdgeK-BEAST/desktop-ide/main/workspace-state-host.js"
+    },
+    {
+      "name": "file:renderer/index.html",
+      "passed": true,
+      "path": "/home/byron/GitHub/EdgeK-BEAST/desktop-ide/renderer/index.html"
+    },
+    {
+      "name": "file:renderer/js/beast-release-app.js",
+      "passed": true,
+      "path": "/home/byron/GitHub/EdgeK-BEAST/desktop-ide/renderer/js/beast-release-app.js"
+    },
+    {
+      "name": "file:scripts/smoke-desktop-ide.js",
+      "passed": true,
+      "path": "/home/byron/GitHub/EdgeK-BEAST/desktop-ide/scripts/smoke-desktop-ide.js"
+    },
+    {
+      "name": "file:scripts/verify-execution-target-parity.js",
+      "passed": true,
+      "path": "/home/byron/GitHub/EdgeK-BEAST/desktop-ide/scripts/verify-execution-target-parity.js"
+    },
+    {
+      "name": "beast-desktop-ide",
+      "passed": true,
+      "version": "0.1.2"
+    },
+    {
+      "name": "electron_dependency_declared",
+      "passed": true
+    },
+    {
+      "name": "monaco_dependency_declared",
+      "passed": true
+    },
+    {
+      "name": "javascript_syntax",
+      "passed": true,
+      "checked": 161,
+      "failures": []
+    },
+    {
+      "name": "desktop_renderer_smoke",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "command": "/opt/node-v22.23.3-linux-x64/bin/node /home/byron/GitHub/EdgeK-BEAST/desktop-ide/scripts/smoke-desktop-ide.js",
+        "returncode": 0,
+        "signal": null,
+        "duration_ms": 80,
+        "stdout_tail": "{\n  \"ok\": true,\n  \"checks\": 24,\n  \"desktopVersion\": \"0.1.2-enterprise-control-plane\",\n  \"renderer\": \"renderer/js\"\n}\n",
+        "stderr_tail": "",
+        "error": null
+      }
+    },
+    {
+      "name": "parity_foundation",
+      "passed": false,
+      "detail": {
+        "ok": false,
+        "command": "/opt/node-v22.23.3-linux-x64/bin/node /home/byron/GitHub/EdgeK-BEAST/desktop-ide/scripts/verify-parity-foundation-static.js",
+        "returncode": 1,
+        "signal": null,
+        "duration_ms": 1612,
+        "stdout_tail": "{\n  \"ok\": false,\n  \"checks\": 93,\n  \"passed\": 91,\n  \"failed\": [\n    \"persistent shell regions are keyboard and pointer resizable\",\n    \"major middle-workbench panels are persistently resizable\"\n  ],\n  \"mode\": {\n    \"lsp\": \"skipped\",\n    \"dap\": \"skipped\",\n    \"kernel\": \"skipped\"\n  },\n  \"discovery\": {\n    \"summary\": {\n      \"available\": 14,\n      \"total\": 19,\n      \"coverage\": 74\n    },\n    \"extensionHost\": \"desktop-runtime-ready\"\n  },\n  \"handshakes\": {\n    \"typescript\": \"skipped\",\n    \"python\": \"skipped\",\n    \"pylsp\": \"skipped\",\n    \"bash\": \"skipped\",\n    \"go\": \"skipped\",\n    \"rust\": \"skipped\",\n    \"clangd\": \"skipped\",\n    \"debugpy\": \"skipped\",\n    \"delve\": \"skipped\",\n    \"lldb\": \"skipped\",\n    \"dapLaunch\": \"skipped\",\n    \"dapRestart\": \"skipped\",\n    \"notebookKernel\": \"skipped\"\n  },\n  \"workbenches\": {\n    \"git\": {\n      \"ok\": true,\n      \"error\": \"\"\n    },\n    \"extensionSandbox\": {\n      \"ok\": true,\n      \"error\": \"\"\n    },\n    \"aiProposal\": {\n      \"ok\": true,\n      \"error\": \"\"\n    }\n  }\n}\n",
+        "stderr_tail": "",
+        "error": null
+      }
+    },
+    {
+      "name": "execution_target_contract",
+      "passed": false,
+      "detail": {
+        "ok": false,
+        "command": "/opt/node-v22.23.3-linux-x64/bin/node /home/byron/GitHub/EdgeK-BEAST/desktop-ide/scripts/verify-execution-target-parity.js",
+        "returncode": 1,
+        "signal": null,
+        "duration_ms": 1934,
+        "stdout_tail": "{\n  \"ok\": false,\n  \"checks\": 33,\n  \"passed\": 29,\n  \"skipped\": 3,\n  \"failed\": [\n    {\n      \"name\": \"remote target mutation and verify loop runs through SSH/container targets with governed final apply\",\n      \"status\": \"failed\",\n      \"detail\": \"{\\\"sshProbe\\\":true,\\\"sshWrite\\\":true,\\\"sshVerify\\\":true,\\\"sshConflict\\\":true,\\\"sshReconnect\\\":true,\\\"attached\\\":true,\\\"containerWrite\\\":true,\\\"containerVerify\\\":true,\\\"applyOk\\\":false,\\\"applyPayload\\\":{},\\\"taskCounts\\\":{\\\"tests\\\":0,\\\"tasks\\\":2,\\\"flakyTests\\\":0},\\\"targetSessions\\\":[{\\\"kind\\\":\\\"ssh\\\",\\\"status\\\":\\\"connected\\\",\\\"health\\\":\\\"healthy\\\"},{\\\"kind\\\":\\\"container\\\",\\\"status\\\":\\\"active\\\",\\\"health\\\":\\\"healthy\\\"}]}\"\n    }\n  ]\n}\n",
+        "stderr_tail": "",
+        "error": null
+      }
+    },
+    {
+      "name": "builder_target_declared",
+      "passed": true,
+      "platform": "linux",
+      "build_keys": [
+        "appId",
+        "productName",
+        "icon",
+        "directories",
+        "files",
+        "extraResources",
+        "asarUnpack",
+        "linux"
+      ]
+    },
+    {
+      "name": "live_electron_launch",
+      "passed": null,
+      "status": "environment_gated",
+      "reason": "rerun with --live on an interactive or CI desktop host"
+    },
+    {
+      "name": "platform_package_directory",
+      "passed": null,
+      "status": "environment_gated",
+      "reason": "rerun with --package on the native platform"
+    },
+    {
+      "name": "operator_journey_attestation",
+      "passed": null,
+      "status": "environment_gated",
+      "reason": "supply --journey <receipt.json>"
+    }
+  ],
+  "journey": null,
+  "receipt_digest": "sha256:26c3ff75914bea89f217daaa876e40481edf70d6a7eaae8522f72618e4f9d433"
+}

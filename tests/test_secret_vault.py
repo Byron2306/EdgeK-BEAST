@@ -51,3 +51,15 @@ def test_secret_vault_splits_ovhcloud_compound_line(tmp_path):
     env_names = {entry["env_name"] for entry in result["entries"]}
 
     assert env_names == {"OVHCLOUD_APP_KEY", "OVHCLOUD_APP_SECRET", "OVHCLOUD_CONSUMER_KEY"}
+
+
+def test_secret_vault_upserts_a_single_value_without_returning_it(tmp_path):
+    vault = SecretVault(str(tmp_path / ".beast" / "provider_secrets.env"))
+
+    result = vault.set_secret("OPENAI_API_KEY", "sk-test-single-secret")
+
+    assert result["mode"] == "0o600"
+    assert result["entry"]["env_name"] == "OPENAI_API_KEY"
+    assert "value" not in result["entry"]
+    assert "sk-test-single-secret" not in str(result)
+    assert vault.status()["providers"]["openai"] == 1

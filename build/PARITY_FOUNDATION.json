@@ -1,9 +1,24 @@
 {
   "ok": false,
   "checks": 93,
-  "passed": 92,
+  "passed": 77,
   "failed": [
-    "persistent shell regions are keyboard and pointer resizable"
+    "native notebook documents preserve cells, outputs, and trust-aware MIME runtime summaries",
+    "Pair Programmer context and run details expand like chat controls",
+    "AI pair programmer parity acceptance is complete",
+    "Local Ollama coding fallback is selectable when registry is unavailable",
+    "remote editor saves detect server-side changes before overwrite",
+    "VS Code task definitions are explicit and workspace-bounded",
+    "streamed tasks expose background lifecycle and clickable problems",
+    "integrated terminal has persistent local shell lifecycle",
+    "source control workbench exposes diff, commit, branch, breadcrumbs, and keyboard flow",
+    "source control exposes hunks, conflicts, history, remotes, rebase, and cherry-pick",
+    "core editor parity acceptance is complete",
+    "multi-root workspaces persist, address files safely, and reach LSP",
+    "Explorer/workspace target parity is complete",
+    "Git source control parity is complete",
+    "per-folder Git, tasks, settings, and test contracts are native",
+    "Testing discovery and execution share the selected execution target"
   ],
   "mode": {
     "lsp": "live",
@@ -12,9 +27,9 @@
   },
   "discovery": {
     "summary": {
-      "available": 19,
+      "available": 16,
       "total": 19,
-      "coverage": 100
+      "coverage": 84
     },
     "extensionHost": "desktop-runtime-ready"
   },
@@ -24,8 +39,8 @@
     "pylsp": "passed",
     "bash": "passed",
     "go": "passed",
-    "rust": "passed",
-    "clangd": "passed",
+    "rust": "skipped",
+    "clangd": "skipped",
     "debugpy": "skipped",
     "delve": "skipped",
     "lldb": "skipped",

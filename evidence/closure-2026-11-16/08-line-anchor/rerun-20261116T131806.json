@@ -1,0 +1,487 @@
+{
+ "stamp": "20261116T131806",
+ "cap_usd": 0.05,
+ "tasks": [
+  "exc-h1",
+  "far-1",
+  "fresh-diff-6852",
+  "fresh-refguard-6bb5"
+ ],
+ "before": {
+  "exc-h1": {
+   "accepted": false,
+   "source": "07-final-gauntlet chain",
+   "note": "TGI tests_still_failing; GLM, DeepSeek and Kimi all hit edit old_text is not unique in target"
+  },
+  "far-1": {
+   "accepted": false,
+   "source": "07-final-gauntlet full",
+   "note": "TGI and GLM tests_still_failing; DeepSeek and Kimi hit old_text not unique. Chain run had solved it (DeepSeek); stochastic."
+  },
+  "fresh-diff-6852": {
+   "accepted": false,
+   "source": "07-final-gauntlet full",
+   "note": "GLM old_text not unique; others tests_still_failing. Chain run had solved it (DeepSeek)."
+  },
+  "fresh-refguard-6bb5": {
+   "accepted": false,
+   "source": "01-rename-tool chain (seed 20261116)",
+   "note": "All four chain members failed; dominant mode was ambiguous exact-replace anchors."
+  }
+ },
+ "rows": [
+  {
+   "task": "exc-h1",
+   "family": "fix-unhandled-exception",
+   "tool": "exact_edits",
+   "wall_s": 34.0,
+   "spend_usd": 0.0,
+   "accepted": true,
+   "accepted_by": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 698,
+     "tokens_completion": 35,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 733,
+     "ttft_ms": 32787.4,
+     "latency_ms": 33763.1,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_b880518484987643b9fa5e69",
+     "governor_receipt": "gov_7cfcb08c24daa4fdeddb56c8",
+     "teardown": {}
+    }
+   ],
+   "action": {
+    "edits": [
+     {
+      "path": "ports/core.py",
+      "old_text": "return int(text)",
+      "new_text": "return int(text) if text.isdigit() else 0"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 1
+    }
+   ]
+  },
+  {
+   "task": "far-1",
+   "family": "far",
+   "tool": "exact_edits",
+   "wall_s": 8.35,
+   "spend_usd": 0.000582,
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 3,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tests_still_failing",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 702,
+     "tokens_completion": 64,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 704,
+     "ttft_ms": 274.9,
+     "latency_ms": 1937.8,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_deb5bb916606f4ed47b8d21b",
+     "governor_receipt": "gov_c4026dfc33993324db915f42",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "placement": "cloud",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "hidden_check_failed",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 1019,
+     "tokens_completion": 47,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 2001,
+     "ttft_ms": 1699.9,
+     "latency_ms": 2000.7,
+     "spend_usd": 0.000176,
+     "error": "",
+     "receipt_id": "gov_3ebd2d3039c6993f8994b123",
+     "governor_receipt": "gov_ef1f2633408fa8e6a3fbfe12",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+     "placement": "cloud",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 1142,
+     "tokens_completion": 53,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 1995,
+     "ttft_ms": 1669.1,
+     "latency_ms": 2082.4,
+     "spend_usd": 0.000406,
+     "error": "",
+     "receipt_id": "gov_13475fb20a5b4a6f963300bf",
+     "governor_receipt": "gov_d979fe68a62fa7466352da52",
+     "teardown": {}
+    }
+   ],
+   "action": {
+    "edits": [
+     {
+      "path": "slugs/core.py",
+      "old_text": "def slugify(text):\n    raise NotImplementedError('slugify')",
+      "new_text": "def slugify(text):\n    return '-'.join(text.lower().split())"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 1
+    },
+    {
+     "passed": false,
+     "visible_passed": true,
+     "hidden_passed": false,
+     "reason": "hidden_check_failed",
+     "files_changed": 1
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 1
+    }
+   ]
+  },
+  {
+   "task": "fresh-diff-6852",
+   "family": "fresh-lattice-diff",
+   "tool": "exact_edits",
+   "wall_s": 7.07,
+   "spend_usd": 0.000206,
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 2,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tests_still_failing",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 802,
+     "tokens_completion": 67,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 701,
+     "ttft_ms": 300.2,
+     "latency_ms": 2662.5,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_7305767638ae6f54af7e70d9",
+     "governor_receipt": "gov_d2ea3cf1c1a32a5685f82fe8",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "placement": "cloud",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 1122,
+     "tokens_completion": 75,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 1973,
+     "ttft_ms": 2005.8,
+     "latency_ms": 2481.3,
+     "spend_usd": 0.000206,
+     "error": "",
+     "receipt_id": "gov_92e6152032a2c7d2c2f2145b",
+     "governor_receipt": "gov_efe0ffe4430fc219c00201ee",
+     "teardown": {}
+    }
+   ],
+   "action": {
+    "edits": [
+     {
+      "path": "ledger6852/totals.py",
+      "old_text": "LEDGER_CAP_6852 = 24",
+      "new_text": "LEDGER_CAP_6852 = 48"
+     },
+     {
+      "path": "ledger6852/totals.py",
+      "old_text": "def net(gross, fee):\n    return gross + fee",
+      "new_text": "def net(gross, fee):\n    return gross - fee"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 1
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 1
+    }
+   ]
+  },
+  {
+   "task": "fresh-refguard-6bb5",
+   "family": "fresh-lattice2",
+   "tool": "code.rename_symbol",
+   "wall_s": 35.42,
+   "spend_usd": 0.00024,
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 2,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tests_still_failing",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 1007,
+     "tokens_completion": 67,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 701,
+     "ttft_ms": 29300.1,
+     "latency_ms": 31044.4,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_ee2c3db6a4cdbd4d5d3cad01",
+     "governor_receipt": "gov_16af36b677532758ec910c52",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "placement": "cloud",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 1327,
+     "tokens_completion": 82,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 1966,
+     "ttft_ms": 1914.3,
+     "latency_ms": 2530.6,
+     "spend_usd": 0.00024,
+     "error": "",
+     "receipt_id": "gov_bfdcbe8acd60ad43a94f5875",
+     "governor_receipt": "gov_38938f54b94d674aa3e7b52d",
+     "teardown": {}
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "calc_latency_mean",
+      "file": "metrics6bb5/core.py",
+      "new_name": "compute_latency_mean"
+     }
+    ],
+    "edits": [
+     {
+      "path": "metrics6bb5/core.py",
+      "old_text": "    return sum(items) / len(items)",
+      "new_text": "    if not items:\n        return None\n    return sum(items) / len(items)"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 4
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 4
+    }
+   ]
+  }
+ ],
+ "spend_usd": 0.001028,
+ "calls": 8,
+ "governor": {
+  "valid": true,
+  "count": 16,
+  "errors": []
+ },
+ "after": {
+  "exc-h1": {
+   "accepted": true,
+   "accepted_by": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+   "model_calls": 1,
+   "spend_usd": 0.0,
+   "reason": "verified",
+   "verdicts": [
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 1
+    }
+   ]
+  },
+  "far-1": {
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+   "model_calls": 3,
+   "spend_usd": 0.000582,
+   "reason": "verified",
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 1
+    },
+    {
+     "passed": false,
+     "visible_passed": true,
+     "hidden_passed": false,
+     "reason": "hidden_check_failed",
+     "files_changed": 1
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 1
+    }
+   ]
+  },
+  "fresh-diff-6852": {
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+   "model_calls": 2,
+   "spend_usd": 0.000206,
+   "reason": "verified",
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 1
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 1
+    }
+   ]
+  },
+  "fresh-refguard-6bb5": {
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+   "model_calls": 2,
+   "spend_usd": 0.00024,
+   "reason": "verified",
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 4
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 4
+    }
+   ]
+  }
+ }
+}

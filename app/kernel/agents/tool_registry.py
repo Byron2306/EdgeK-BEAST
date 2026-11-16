@@ -54,6 +54,24 @@ class AgentToolRegistry:
         if missing:
             raise ToolRegistryError(f"missing required tool arguments: {', '.join(missing)}")
         properties = schema.get("properties") if isinstance(schema.get("properties"), dict) else {}
+        types = {
+            "string": lambda value: isinstance(value, str),
+            "array": lambda value: isinstance(value, list),
+            "object": lambda value: isinstance(value, dict),
+            "integer": lambda value: isinstance(value, int) and not isinstance(value, bool),
+            "number": lambda value: isinstance(value, (int, float)) and not isinstance(value, bool),
+            "boolean": lambda value: isinstance(value, bool),
+            "null": lambda value: value is None,
+        }
+        for name, value in arguments.items():
+            field = properties.get(name) or {}
+            expected = field.get("type")
+            if isinstance(expected, str) and expected in types and not types[expected](value):
+                raise ToolRegistryError(f"tool argument {name} must have type {expected}")
+            if expected == "array":
+                item_type = (field.get("items") or {}).get("type")
+                if item_type in types and any(not types[item_type](item) for item in value):
+                    raise ToolRegistryError(f"tool argument {name} items must have type {item_type}")
         if schema.get("additionalProperties") is False:
             unknown = sorted(set(arguments) - set(properties))
             if unknown:

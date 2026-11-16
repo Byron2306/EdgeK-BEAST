@@ -100,14 +100,14 @@ model_list:
   tpm: 120000
 - model_name: nvidia-nim
   litellm_params:
-    model: openai/meta/llama-3.1-70b-instruct
+    model: openai/nvidia/nemotron-3.5-lightning-30b-a3b
     api_key: os.environ/NVIDIA_API_KEY
     api_base: https://integrate.api.nvidia.com/v1
   rpm: 60
   tpm: 120000
-- model_name: qwen2.5-coder:1.5b
+- model_name: qwen3:4b
   litellm_params:
-    model: ollama/qwen2.5-coder:1.5b
+    model: ollama/qwen3:4b
     api_base: http://127.0.0.1:11434
   rpm: 30
   tpm: 24000

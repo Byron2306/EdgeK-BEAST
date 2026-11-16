@@ -17,6 +17,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
+from app.kernel.data_processing.cascade_output_compressor import compress_cascade_output
 from app.kernel.storage.evidence_envelope import EvidenceEnvelopeFactory
 
 
@@ -89,11 +90,20 @@ class QualityCascade:
         executed = [check.name for check in checks]
         failed = [check for check in checks if check.status == "failed"]
         warnings = [check for check in checks if check.status == "warning"]
+        requested_steps = list(route_card.get("preferred_order", []))
+        post_check_steps = {"failure_category", "recommendations", "chronicle"}
+        executed_names = {check.name for check in checks}
+        unsupported_steps = [step for step in requested_steps
+                             if step not in executed_names and step not in post_check_steps]
+        verification_accepted = (
+            bool(checks) and not unsupported_steps
+            and all(check.status == "passed" for check in checks)
+        )
         evidence_records = [
             self._check_evidence(check, provider, envelope, route_card)
             for check in checks
         ]
-        return {
+        report = {
             "beast_object_type": "quality_cascade_report",
             "version": "1.0",
             "task_id": envelope.get("task_id"),
@@ -101,7 +111,18 @@ class QualityCascade:
             "route_id": route_card.get("route_id"),
             "provider": provider,
             "local_only": True,
-            "status": "failed" if failed else "warning" if warnings else "passed",
+            "status": (
+                "failed" if (failed or unsupported_steps or not checks) else
+                "warning" if (warnings or any(check.status == "skipped" for check in checks)) else
+                "passed"
+            ),
+            "verification_accepted": verification_accepted,
+            "verification_reason": (
+                "no_executable_checks" if not checks else
+                "unsupported_steps" if unsupported_steps else
+                "checks_not_all_passed" if not verification_accepted else
+                "all_executed_checks_passed"
+            ),
             "checks": [check.to_dict() for check in checks],
             "route_execution": {
                 "source": "route_card.preferred_order",
@@ -125,6 +146,15 @@ class QualityCascade:
                 "skipped": len([check for check in checks if check.status == "skipped"]),
             },
         }
+        # Compute Governor spine: this trusted, server-side run attests its own report so the governor can
+        # admit a cloud call on it (client-claimed cascade results are never accepted).
+        try:
+            from app.kernel.governance.governor_spine import attest_quality_cascade
+
+            report["attestation"] = {"digest": attest_quality_cascade(report), "source": "QualityCascade.run"}
+        except OSError as exc:
+            report["attestation"] = {"digest": "", "error": type(exc).__name__}
+        return report
 
     def run_steps(self, steps: List[str], provider: str, workspace: Path) -> List[CascadeCheck]:
         check_map = {
@@ -283,7 +313,9 @@ class QualityCascade:
             text = self.tail_text(path)
             hits = self.log_hits(text, provider)
             if hits:
-                snippets.append({"file": log_name, "hits": hits[:5]})
+                compact = compress_cascade_output("\n".join(hits), kind="log")
+                snippets.append({"file": log_name, "hits": hits[:5], "compact": compact["content"][:4000],
+                                 "compression_backend": compact["backend"]})
 
         if not snippets:
             return CascadeCheck(
@@ -372,8 +404,8 @@ class QualityCascade:
         return CascadeCheck("pytest_collect", status, summary, {**result, "collected": collected})
 
     def check_pytest(self, workspace: Path, pytest_args: List[str], timeout_seconds: int = 120) -> CascadeCheck:
-        if not (workspace / "tests").exists():
-            return CascadeCheck("pytest", "skipped", "No tests directory found", {})
+        # A root-level test_calculator.py is a valid focused pytest target.
+        # The pytest runner itself must establish whether tests exist.
         args = [str(item) for item in pytest_args if str(item).strip()]
         result = self._run_command([sys.executable, "-m", "pytest", *args], workspace, timeout_seconds)
         if result["status"] == "skipped":
@@ -691,6 +723,17 @@ class QualityCascade:
                 stderr=subprocess.PIPE,
                 timeout=max(1, int(timeout_seconds)),
                 check=False,
+                env=(
+                    {
+                        **os.environ,
+                        "PYTHONPATH": str(workspace.resolve()),
+                        "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+                    }
+                    if len(command) >= 3
+                    and command[0] == sys.executable
+                    and command[1:3] == ["-m", "pytest"]
+                    else None
+                ),
             )
         except subprocess.TimeoutExpired as exc:
             return {
@@ -701,12 +744,30 @@ class QualityCascade:
                 "stderr": (exc.stderr or "")[-4000:] if isinstance(exc.stderr, str) else "",
                 "returncode": 124,
             }
+        kind = "lint" if any(tool in " ".join(command) for tool in ("ruff", "flake8", "eslint", "py_compile")) else "test"
+        raw_output = (completed.stdout or "") + "\n" + (completed.stderr or "")
+        compact = compress_cascade_output(raw_output, kind=kind)
+        compression_meta = {k: v for k, v in compact.items() if k != "content"}
+        from app.context.compression_tiers import default_router, tiers_enabled
+
+        if tiers_enabled():  # BEAST_COMPRESSION_TIERS=1: governed + measured tier (default-off)
+            try:
+                tiered = default_router().compress("rtk", raw_output, kind=kind)
+                if tiered["fidelity"]["passed"]:
+                    compact = {**compact, "content": tiered["content"]}
+                compression_meta["context_tier"] = {key: tiered[key] for key in
+                                                    ("tier", "backend", "real_tool", "fidelity", "metrics", "governor")}
+            except PermissionError as exc:
+                compression_meta["context_tier"] = {"tier": "rtk", "refused": str(exc)}
         return {
             "status": "completed",
             "command": command,
             "returncode": completed.returncode,
             "stdout": completed.stdout[-8000:],
             "stderr": completed.stderr[-8000:],
+            # RTK-compressed view for model/log consumers; raw tails above stay exact for parsers.
+            "output_compact": compact["content"][-12000:],
+            "output_compression": compression_meta,
         }
 
     def _pytest_collected_count(self, text: str) -> int:

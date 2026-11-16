@@ -196,7 +196,7 @@
 
   function restart() { stop(); start(); }
   function setTier(next='medium') { tier=next==='low'?'low':'medium';document.body.dataset.performanceTier=tier;if(running)restart(); }
-  function setWorkload(next='idle') { const normalized=next==='interactive'?'interactive':'idle';if(workload===normalized)return;workload=normalized;document.body.dataset.beastWorkload=workload;if(running)restart(); }
+  function setWorkload(next='idle') { const normalized=next==='interactive'?'interactive':'idle';if(workload===normalized)return;workload=normalized;document.body.dataset.beastWorkload=workload;document.dispatchEvent(new CustomEvent('beast:visual-workload',{detail:{workload}}));if(running)restart(); }
   function setAtmosphere(next='matrix-grid') { atmosphereMode=['matrix-grid','matrix','grid','quiet'].includes(next)?next:'matrix-grid';document.body.dataset.beastAtmosphere=atmosphereMode;if(running&&atmosphereMode!=='quiet')restart();else if(atmosphereMode==='quiet'){bg?.clear?.();front?.clear?.();} }
   function setMotion(next='full') { motion=next==='reduced'?'reduced':'full';document.documentElement.dataset.motion=motion;motion==='reduced'?stop():start(); }
 

@@ -223,10 +223,32 @@ class MemoryHull:
             "```\n"
         )
 
+    def rebuild_index(self) -> Dict[str, Any]:
+        """Re-derive the signed index from the sidecars on disk (used by the governed defrag daemon)."""
+        records = []
+        for section in VAULT_SECTIONS:
+            for sidecar_path in sorted(self._section_path(section).glob("*.residue.json")):
+                try:
+                    payload = json.loads(sidecar_path.read_text(encoding="utf-8")).get("payload")
+                except (OSError, json.JSONDecodeError):
+                    continue
+                if not isinstance(payload, dict) or payload.get("section") != section or not payload.get("residue_id"):
+                    continue
+                verification = self.verify_sidecar(sidecar_path)
+                records.append(self._index_record(payload, self._markdown_path_for_sidecar(sidecar_path),
+                                                  sidecar_path, verification))
+        return self._write_index(records)
+
     def _upsert_index(self, payload: Dict[str, Any], markdown_path: Path, sidecar_path: Path, verification: Dict[str, Any]) -> None:
         index = self._read_index()
         records = [record for record in index.get("records", []) if record.get("residue_id") != payload["residue_id"]]
-        records.append(
+        records.append(self._index_record(payload, markdown_path, sidecar_path, verification))
+        self._write_index(records)
+
+    @staticmethod
+    def _index_record(payload: Dict[str, Any], markdown_path: Path, sidecar_path: Path,
+                      verification: Dict[str, Any]) -> Dict[str, Any]:
+        return (
             {
                 "residue_id": payload["residue_id"],
                 "section": payload["section"],
@@ -241,6 +263,8 @@ class MemoryHull:
                 "payload_sha256": verification.get("seal", {}).get("payload_sha256"),
             }
         )
+
+    def _write_index(self, records: List[Dict[str, Any]]) -> Dict[str, Any]:
         index_payload = {
             "beast_object_type": "memory_hull_index",
             "version": HULL_VERSION,
@@ -252,6 +276,7 @@ class MemoryHull:
         index_payload["index_sha256"] = "sha256:" + hashlib.sha256(canonical_bytes(index_payload)).hexdigest()
         index_payload["residue_seal"] = self.seal.sign(index_payload, purpose="memory_hull_index")
         self._atomic_write_text(self._index_path(), json.dumps(index_payload, indent=2, sort_keys=True) + "\n")
+        return index_payload
 
     def _read_index(self) -> Dict[str, Any]:
         path = self._index_path()

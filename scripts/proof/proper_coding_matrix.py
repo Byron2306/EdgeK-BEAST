@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 """Run the real IDE fixture matrix through Crystal IR, not the legacy planner."""
 from __future__ import annotations
+try:  # closure-2026-11-16: governed egress shim
+    from app.kernel.compute import governed_egress as _egress
+except ModuleNotFoundError:  # run as a script: repo root not on sys.path yet
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _sys.path.insert(0, str(_Path(__file__).resolve().parents[2]))
+    from app.kernel.compute import governed_egress as _egress
 
 import argparse
 import ast
@@ -126,7 +134,7 @@ def ollama(prompt: str, timeout: float) -> tuple[dict, dict]:
     request = urllib.request.Request(endpoint, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"}, method="POST")
     started = time.perf_counter()
     try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
+        with _egress.urlopen("proper_coding_matrix", request, timeout=timeout) as response:
             body = json.loads(response.read().decode())
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode(errors="replace")

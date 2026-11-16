@@ -1,0 +1,100 @@
+{
+ "spend_usd": 0.001028,
+ "calls": 8,
+ "cap_usd": 0.05,
+ "accepted": 4,
+ "after": {
+  "exc-h1": {
+   "accepted": true,
+   "accepted_by": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+   "model_calls": 1,
+   "spend_usd": 0.0,
+   "reason": "verified",
+   "verdicts": [
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 1
+    }
+   ]
+  },
+  "far-1": {
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+   "model_calls": 3,
+   "spend_usd": 0.000582,
+   "reason": "verified",
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 1
+    },
+    {
+     "passed": false,
+     "visible_passed": true,
+     "hidden_passed": false,
+     "reason": "hidden_check_failed",
+     "files_changed": 1
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 1
+    }
+   ]
+  },
+  "fresh-diff-6852": {
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+   "model_calls": 2,
+   "spend_usd": 0.000206,
+   "reason": "verified",
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 1
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 1
+    }
+   ]
+  },
+  "fresh-refguard-6bb5": {
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+   "model_calls": 2,
+   "spend_usd": 0.00024,
+   "reason": "verified",
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 4
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 4
+    }
+   ]
+  }
+ }
+}

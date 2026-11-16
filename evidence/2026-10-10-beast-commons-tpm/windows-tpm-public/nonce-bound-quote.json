@@ -1,0 +1,55 @@
+{
+  "schema": "beast.windows.nonce-bound-quote.v1",
+  "collected_at": "2026-10-10T07:22:42.342201+00:00",
+  "claim_boundary": "Windows TBS quote with temporary NULL-hierarchy key; EK-to-AK activation, event-log reconciliation and independent ARDA appraisal remain unproven",
+  "binding": {
+    "challenge": {
+      "challenge_id": "tpm-challenge:1b297075e1250e7bf541bfff6470050d",
+      "node_id": "beast-windows-host",
+      "nonce": "1683e09534664864c3e56cdfb424fe1b21dac1e069e872c02bf6ff0b8c526ce1",
+      "audience": "beast-commons-node-attestation",
+      "pcr_bank": "sha256",
+      "pcrs": [
+        0,
+        2,
+        4,
+        7,
+        10,
+        14
+      ],
+      "issued_at": 1791616958.5962782,
+      "expires_at": 1791617858.5962782,
+      "state": "issued"
+    },
+    "commons_subjects": [
+      {
+        "node_id": "commons-node-a",
+        "workload_digest": "sha256:22649cba9115ed73f3a70831194f1d6d964721149d5a5d6b707f1c3233f4df19",
+        "node_public_key": "083qu8WRf3jMfIJ7HamI3O239FoC33cTrAl5cONE0VI="
+      },
+      {
+        "node_id": "commons-node-b",
+        "workload_digest": "sha256:22649cba9115ed73f3a70831194f1d6d964721149d5a5d6b707f1c3233f4df19",
+        "node_public_key": "MTEA42aj8SLk9GnH8pQKhevGi62afKKg9h/dpXXkiLQ="
+      },
+      {
+        "node_id": "commons-node-c",
+        "workload_digest": "sha256:22649cba9115ed73f3a70831194f1d6d964721149d5a5d6b707f1c3233f4df19",
+        "node_public_key": "2qcoX8vel7VcAUsKdrA3cUF3j20J8z/y/k31usSr86Q="
+      }
+    ]
+  },
+  "qualifying_data_hex": "b7a8db982ec6e6cc5a343fdb6bf309bce930974575041abc70b1ffad17206d63",
+  "quote_b64": "/1RDR4AYACIAC7AkrWTiW2dJYbGXw1euWOEQQ1V6BtJAwaTXFDS9jZiFACC3qNuYLsbmzFo0P9tr8wm86TCXRXUEGrxwsf+tFyBtYwAAAAACJ83vbfpmtNYsg3kB7dv7Sc49JfoAAAABAAsDlUQAACB30cgZBRwTzQL6Z6sMBMFSwP+qy4Tyl1IAENS1mzqPAA==",
+  "signature_b64": "TwBn5ee9iot4QUot5m2dI+xnITC5u3Uogz4XYLPLTyyZNdvA2iu9yQnKtign90A0lCINV9/ijMhW6EeWfVMV3gFBv13D0wyGgBakm8oUy5IbLGWeFQT3WyptG5S/e0xyr0BKJbYDkSCw1XINtH80KBEGWGfKdL8v5AOCyWfRdnC6LwRiRzErcIWMF3k8GnNrID0UtG7wGyjlgRS9uSol/pLWY+vLy23p0vJjgS9Ub8mmni1hxbhcSTtg8HlI4XHkMfXo1o24zBJBPk+vBmN3MIhHyRFh4Qs1TgyfgZb30k8c9NHZj6P+/ER/sKXAOYNuxhVM7hrxi2txKd4Nqhmozw==",
+  "signature_algorithm": "RSASSA-SHA256",
+  "public_area_b64": "AAEACwAFAHIAAAAQABQACwgAAAAAAAEAmbors1jI2HjhhqjA/XewQQ9LhHFMe3jx5A+GeH29SRQe/KnozRYbeXfDF8dOl1mwgxXzqPMemGNWui6KbzNKMFKpGfbVjji7jTeriIDIn49OVdLxZ3FVno6S5DACM078NtFfWkfJ3uJmGOWzbLQMfpnv70uQ98ho9ffUYqOlfW1HSVvBMhTYhSITTF30bMy3oUL87a3BxAB6i4cNZv9Sf1JDZuphA5DNUvJLWpG3eXT35YjjFYaoj7KP3oPk0LJAL1YzqQiZLWXScwjq18CWzTcI/1niB7v+IaaDjU5O578flCF6x0f4HYFRQb/JNycQlNz10EZfWICB2JOTNxagSw==",
+  "public_name_b64": "AAuIuusRTvVjngy2/D6vsauiF0JzCanmljuXbAUuLiAblg==",
+  "qualified_name_b64": "AAuwJK1k4ltnSWGxl8NXrljhEENVegbSQMGk1xQ0vY2YhQ==",
+  "pcr_read_b64": "AAAAQQAAAAEACwOVRAAAAAAGACChaG2oCn1d8NIfyY9xMyQe1rHDfs2HC8kB8OOpF4Pv/QAgQN05s4zc/ebjNgYIDfROkFTjIsgzZPTBxvkAKmY9E64AIPe0R36mUwWitHkW5rWIUbSkIx8aweVnVpJziaQ/xz2UACCiPT70CH7kPuAjARcXJdp8BSmeq6Mx5ZdURsdajwvy9QAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIL/eUTpUoObpgmeUI62jFBn5hW99U05C2YX4WZFQBVFv",
+  "tss_commit": "52cb9f432318e8e95cdfeaf98b824ece89370744",
+  "private_key_exported": false,
+  "persistent_key_created": false,
+  "ak_ek_binding_verified": false,
+  "eligible_for_commons": false
+}

@@ -1,0 +1,25 @@
+/* BEAST studio repair R1: constrained alignment, keep Phase 9.1.5 neon/steel visual identity. */
+#beastPageOutlet, #beastPageOutlet *, .beast-workspace-page .cortex-layout { box-sizing: border-box; }
+#beastPageOutlet { min-width:0; width:100%; overflow-x:hidden; }
+#beastPageOutlet .beast-page { min-width:0; max-width:100%; }
+#beastPageOutlet .beast-page > *, #beastPageOutlet .beast-card,
+#beastPageOutlet .beast-page-head { min-width:0; max-width:100%; }
+#beastPageOutlet .beast-card {
+  border-color:rgba(157,174,168,.40);
+  outline:1px solid rgba(95,255,92,.12);
+  outline-offset:-3px;
+}
+#beastPageOutlet .beast-card h2, #beastPageOutlet .beast-card h3 {
+  overflow-wrap:anywhere; letter-spacing:.035em; line-height:1.23;
+}
+#beastPageOutlet :is(p,li,td,th,label,pre,code) { overflow-wrap:anywhere; }
+#beastPageOutlet pre { max-width:100%; overflow-x:auto; overflow-wrap:normal; }
+#beastPageOutlet :is(input,textarea,select,button) { min-width:0; max-width:100%; }
+#beastPageOutlet :is(button,input,select,textarea):focus-visible {
+  outline:2px solid #9dfb72; outline-offset:2px;
+}
+#beastPageOutlet .beast-page-actions { min-width:0; flex-wrap:wrap; gap:8px; }
+@media(max-width:900px) {
+ #beastPageOutlet .beast-page-head { padding-right:14px; }
+ #beastPageOutlet .beast-page-actions { justify-content:flex-start; }
+}

@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 """Produce an honest local Ollama native-context Forge KV evidence receipt."""
 from __future__ import annotations
+try:  # closure-2026-11-16: governed egress shim
+    from app.kernel.compute import governed_egress as _egress
+except ModuleNotFoundError:  # run as a script: repo root not on sys.path yet
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
+    from app.kernel.compute import governed_egress as _egress
 
 import argparse
 import hashlib
@@ -66,7 +74,7 @@ def main() -> int:
                               "model": args.model, "available_models": sorted(models)}))
             return 2
         # Warm model loading and template initialization before either measured lane.
-        warmup = client.post(
+        warmup = _egress.post(client, "forge_kv_local_proof", 
             f"{base_url}/api/generate",
             json={"model": args.model, "prompt": "warm Forge KV proof", "stream": False,
                   "keep_alive": "5m", "options": {**options, "num_predict": 1}},
@@ -75,7 +83,7 @@ def main() -> int:
         baseline_trials = []
         for _ in range(max(1, args.trials)):
             baseline_started = time.perf_counter()
-            baseline_response = client.post(
+            baseline_response = _egress.post(client, "forge_kv_local_proof", 
                 f"{base_url}/api/generate",
                 json={"model": args.model, "prompt": full_prompt, "stream": False,
                       "keep_alive": "5m", "options": {**options, "num_predict": args.max_tokens}},

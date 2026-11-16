@@ -61,7 +61,7 @@
     patch({
       open: Boolean(payload.open),
       expanded: Boolean(payload.expanded),
-      mode: ['ask','edit','agent'].includes(payload.mode) ? payload.mode : 'agent',
+      mode: ['ask','edit','agent','review'].includes(payload.mode) ? payload.mode : 'agent',
       sessionId: String(payload.sessionId || ''),
       messages: storedMessages.map(message => normalizedRestoredMessage(message, Boolean(payload.sourcePlanReady), String(payload.sourcePlanId || ''))),
       trace: Array.isArray(payload.trace) ? payload.trace.slice(-80) : [],

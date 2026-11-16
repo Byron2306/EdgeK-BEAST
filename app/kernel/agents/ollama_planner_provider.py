@@ -1,6 +1,7 @@
 """Live Ollama planner adapter for the canonical BEAST AgentRun loop."""
 
 from __future__ import annotations
+from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 
 import asyncio
 import json
@@ -10,6 +11,10 @@ import urllib.error
 import urllib.request
 from typing import Any
 
+from app.kernel.agents.file_review import (
+    NATIVE_REVIEW_FORMAT, REVIEW_OUTPUT_TOKENS, REVIEW_RESULT_HEADER, ReviewPacketError,
+    parse_native_review_result, review_paths, review_timeout_seconds,
+)
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType
 from app.kernel.agents.planner_provider import PlannerDecisionError, parse_planner_decision
 from app.kernel.commons.route_damping import RouteFlapDampener
@@ -23,6 +28,8 @@ from app.kernel.sensorium.workspace_invalidation import WorkspaceInvalidationBus
 
 class OllamaPlannerProvider:
     """Use Ollama as a bounded next-action planner."""
+
+    supports_native_file_review = True
 
     def __init__(
         self,
@@ -176,12 +183,21 @@ class OllamaPlannerProvider:
 
     async def next_decision(self, prompt: str, *, run: dict[str, Any], turn: int) -> PlannerDecision:
         self.last_partial_text = ""
+        file_review = prompt.startswith(REVIEW_RESULT_HEADER + "\n") and bool(review_paths(run))
+        if file_review:
+            self.last_usage = {}
+            self.last_route = {"provider": "ollama", "engine": "ollama", "route_kind": "direct_file_review", "reason": "review_evidence"}
         if self.route_dampener is not None and self.route_dampener.suppressed(self.route_id):
             self.last_route = {"provider": "ollama", "engine": self.engine or "ollama", "route_kind": "dampened", "reason": "persistent_bad_route_memory"}
             self.last_usage = {"route": self._route_event("timeout"), "timeout_seconds": self._request_timeout(prompt, run=run, turn=turn)}
             raise PlannerDecisionError("Ollama route dampened after repeated slow or failed planner turns")
         await self._preflight()
         self._prepare_sensorium(run)
+        if file_review:
+            try:
+                return await self._next_file_review(prompt, run=run, turn=turn)
+            finally:
+                self._finish_sensorium()
         reused = self._try_crystal_reuse(prompt, run=run, turn=turn)
         if reused is not None:
             self.last_route = {"provider": "ollama", "engine": "crystal_reuse", "route_kind": "crystal_reuse", "reason": "verified_replay"}
@@ -224,10 +240,13 @@ class OllamaPlannerProvider:
             payload = {
                 "model": self.model,
                 "prompt": request_prompt,
+                **({"think": False} if self.model.lower().startswith("qwen3") else {}),
                 # Stream deltas into the durable run ledger. The final
                 # decision is still parsed and validated as one typed packet;
                 # streaming only improves visibility and cancellation.
-                "stream": True,
+                "stream": False,
+                "think": False,
+                "format": "json",
                 "options": {
                     "temperature": self.temperature,
                     "seed": self.seed + int(turn),
@@ -235,8 +254,8 @@ class OllamaPlannerProvider:
                     # code-generation window.  Oversizing this on a local CPU
                     # makes an IDE appear hung before it can issue its first
                     # tool call.
-                    "num_ctx": self._num_ctx(),
-                    "num_predict": self._num_predict(),
+                    "num_ctx": self._decision_num_ctx(run),
+                    "num_predict": min(2048, self._decision_num_predict(run) * (2 if attempt and last_error else 1)),
                     "num_thread": self._num_thread(),
                     "num_batch": self._num_batch(),
                 },
@@ -255,6 +274,10 @@ class OllamaPlannerProvider:
                     "eval_duration_ns": body.get("eval_duration"),
                     "latency_ms": round(float(body.get("total_duration") or 0) / 1_000_000.0, 3) if body.get("total_duration") is not None else None,
                     "timeout_seconds": request_timeout,
+                    "done_reason": str(body.get("done_reason") or ""),
+                    "response_chars": len(str(body.get("response") or "")),
+                    "num_predict": payload["options"]["num_predict"],
+                    "attempt": attempt + 1,
                 }
                 raw = str(body.get("response") or "")
                 mode = str(run.get("mode") or "").strip().lower()
@@ -301,12 +324,53 @@ class OllamaPlannerProvider:
                     event = "schema" if isinstance(exc, (ValueError, PlannerDecisionError, json.JSONDecodeError)) else "timeout" if "timeout" in lowered or "timed out" in lowered else "incorrect"
                     self.last_usage["route"] = self._route_event(event)
                 repair_hint = (
-                    "\n\nYOUR PREVIOUS DECISION WAS INVALID. Correct only the JSON contract. "
+                    "\n\nYOUR PREVIOUS DECISION WAS INVALID. Return ONE SHORT valid JSON decision "
+                    "with no explanatory prose or extra fields. "
                     f"ERROR: {last_error}"
                 )
                 await asyncio.sleep(min(1.0 * (attempt + 1), 3.0))
         self._finish_sensorium()
         raise PlannerDecisionError(f"Ollama failed to produce a valid planner decision: {last_error}")
+
+    async def _next_file_review(self, prompt: str, *, run: dict[str, Any], turn: int) -> PlannerDecision:
+        """Send the full review packet without planner cache, fallback, or streamed action JSON."""
+        output = REVIEW_OUTPUT_TOKENS
+        prompt_room = len(prompt.encode("utf-8")) + 128
+        context = max(4096, prompt_room + output)
+        self.last_usage = {}
+        self._apply_pressure_budget(reuse_mode="cold", num_ctx=context, num_predict=output)
+        if self._pressure_decision:
+            context = min(context, self._num_ctx())
+            output = min(output, self._num_predict(), context - prompt_room)
+            if output < 192:
+                raise PlannerDecisionError("Host pressure reduced the context below the attached review evidence budget")
+        self._govern_request(prompt, run=run, turn=turn, max_tokens=output)
+        # Leave headroom for admission/preflight and parsing inside the controller deadline.
+        timeout = review_timeout_seconds(run) - 5
+        self.last_usage.update({
+            "prompt_chars": len(prompt), "num_ctx": context, "num_predict": output,
+            "timeout_seconds": timeout,
+        })
+        payload = {
+            "model": self.model, "prompt": prompt, "stream": False, "think": False,
+            "format": NATIVE_REVIEW_FORMAT,
+            "options": {
+                "temperature": self.temperature, "seed": self.seed + int(turn),
+                "num_ctx": context, "num_predict": output,
+                "num_thread": self._num_thread(), "num_batch": self._num_batch(),
+            },
+            "keep_alive": os.environ.get("BEAST_OLLAMA_KEEP_ALIVE", "5m"),
+        }
+        body = await asyncio.to_thread(self._request_json, "/api/generate", payload, timeout)
+        self.last_usage.update({
+            "prompt_eval_count": body.get("prompt_eval_count"), "eval_count": body.get("eval_count"),
+            "done_reason": str(body.get("done_reason") or ""),
+        })
+        if body.get("error"):
+            raise OSError("Ollama returned a review generation error.")
+        if body.get("done_reason") == "length":
+            raise ReviewPacketError("Ollama reached its output limit before delivering a complete review packet.")
+        return parse_native_review_result(str(body.get("response") or ""))
 
     @staticmethod
     def _planner_state(run: dict[str, Any]) -> dict[str, Any]:
@@ -326,6 +390,8 @@ class OllamaPlannerProvider:
     def _request_timeout(cls, prompt: str, *, run: dict[str, Any], turn: int) -> float:
         del prompt, turn
         base = max(5.0, float(os.environ.get("BEAST_OLLAMA_PLANNER_TIMEOUT", "30")))
+        if cls._mutation_packet_required(run):
+            return max(10.0, min(180.0, float(os.environ.get("BEAST_OLLAMA_MUTATION_DECISION_TIMEOUT", "90"))))
         if cls._is_repair_turn(run):
             return max(6.0, min(base, float(os.environ.get("BEAST_OLLAMA_REPAIR_TIMEOUT", "12"))))
         planner = cls._planner_state(run)
@@ -348,7 +414,7 @@ class OllamaPlannerProvider:
         )
         aggregate: dict[str, Any] = {}
         response_parts: list[str] = []
-        with urllib.request.urlopen(request, timeout=timeout) as response:
+        with _egress.urlopen("ollama_planner_provider", request, timeout=timeout) as response:
             for raw_line in response:
                 line = raw_line.decode("utf-8", errors="replace").strip()
                 if not line:
@@ -395,7 +461,7 @@ class OllamaPlannerProvider:
         self.last_usage = usage
         self._runtime_before = None
 
-    def _govern_request(self, prompt: str, *, run: dict[str, Any], turn: int) -> None:
+    def _govern_request(self, prompt: str, *, run: dict[str, Any], turn: int, max_tokens: int | None = None) -> None:
         """Attach the real compute-governor decision to every planner call."""
         if self.compute_governor is None:
             return
@@ -403,7 +469,7 @@ class OllamaPlannerProvider:
         ir = EdgeKIR(
             messages=[{"role": "user", "content": prompt}],
             model=self.model,
-            max_tokens=self._num_predict(),
+            max_tokens=max_tokens if max_tokens is not None else self._num_predict(),
             temperature=self.temperature,
             tools=[],
             metadata={"task_class": "agent_planner", "turn": int(turn), "run_id": str(run.get("run_id") or "")},
@@ -423,14 +489,15 @@ class OllamaPlannerProvider:
         }
         self.last_usage["compute_governor"] = self._governance_usage
 
-    def _apply_pressure_budget(self, *, reuse_mode: str = "cold") -> None:
+    def _apply_pressure_budget(
+        self, *, reuse_mode: str = "cold", num_ctx: int | None = None, num_predict: int | None = None,
+    ) -> None:
         self._pressure_decision = None
         if self.pressure_controller is None:
             return
-        requested_predict = int(os.environ.get("BEAST_OLLAMA_NUM_PREDICT", "96"))
         decision = self.pressure_controller.decide(
-            num_ctx=int(os.environ.get("BEAST_OLLAMA_NUM_CTX", "768")),
-            num_predict=requested_predict,
+            num_ctx=num_ctx if num_ctx is not None else int(os.environ.get("BEAST_OLLAMA_NUM_CTX", "768")),
+            num_predict=num_predict if num_predict is not None else int(os.environ.get("BEAST_OLLAMA_NUM_PREDICT", "96")),
             min_predict=64,
             reuse_mode=reuse_mode,
         )
@@ -444,6 +511,48 @@ class OllamaPlannerProvider:
 
     def _num_predict(self) -> int:
         return int(self._pressure_decision.num_predict if self._pressure_decision else os.environ.get("BEAST_OLLAMA_NUM_PREDICT", "96"))
+
+    @classmethod
+    def _mutation_packet_required(cls, run: dict[str, Any]) -> bool:
+        planner = cls._planner_state(run)
+        observations = planner.get("observations") if isinstance(planner.get("observations"), list) else []
+        tool_ids = [
+            str(item.get("tool_id") or "")
+            for item in observations
+            if isinstance(item, dict) and str(item.get("status") or "") == "completed"
+        ]
+        bound = "worktree.bind" in tool_ids
+        inspected = "workspace.read_range" in tool_ids
+        mutated = any(tool in {"worktree.replace_exact", "worktree.write_file"} for tool in tool_ids)
+        return bound and inspected and not mutated
+
+    @classmethod
+    def _post_mutation_turn(cls, run: dict[str, Any]) -> bool:
+        """Keep follow-up tool and completion packets large enough after a real edit."""
+        planner = cls._planner_state(run)
+        observations = planner.get("observations") if isinstance(planner.get("observations"), list) else []
+        return any(
+            isinstance(item, dict)
+            and str(item.get("status") or "") == "completed"
+            and str(item.get("tool_id") or "") in {"worktree.replace_exact", "worktree.write_file"}
+            for item in observations
+        )
+
+    def _decision_num_predict(self, run: dict[str, Any]) -> int:
+        base = self._num_predict()
+        if self._post_mutation_turn(run):
+            return max(base, int(os.environ.get("BEAST_OLLAMA_POST_MUTATION_NUM_PREDICT", "768")))
+        if self._mutation_packet_required(run) or self._is_repair_turn(run):
+            return max(base, int(os.environ.get("BEAST_OLLAMA_MUTATION_NUM_PREDICT", "512")))
+        return base
+
+    def _decision_num_ctx(self, run: dict[str, Any]) -> int:
+        base = self._num_ctx()
+        if self._post_mutation_turn(run):
+            return max(base, int(os.environ.get("BEAST_OLLAMA_POST_MUTATION_NUM_CTX", "3072")))
+        if self._mutation_packet_required(run) or self._is_repair_turn(run):
+            return max(base, int(os.environ.get("BEAST_OLLAMA_MUTATION_NUM_CTX", "2048")))
+        return base
 
     def _request_options(self) -> dict[str, int]:
         if self._pressure_decision is not None:
@@ -745,7 +854,7 @@ class OllamaPlannerProvider:
             method="POST" if payload is not None else "GET",
         )
         try:
-            with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
+            with _egress.urlopen("ollama_planner_provider", request, timeout=timeout_seconds) as response:
                 content_type = str(response.headers.get("Content-Type") or "").lower()
                 body = response.read().decode("utf-8", errors="replace")
                 status = int(getattr(response, "status", 200) or 200)
@@ -790,10 +899,12 @@ class OllamaPlannerProvider:
         url = f"{self.llama_cpp_base_url}{path}"
         request = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers={"Content-Type": "application/json"}, method="POST")
         try:
-            with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
+            with _egress.urlopen("ollama_planner_provider", request, timeout=timeout_seconds) as response:
                 parsed = json.loads(response.read().decode("utf-8", errors="replace"))
         except (OSError, urllib.error.URLError, json.JSONDecodeError) as exc:
             raise PlannerDecisionError(f"llama.cpp planner route failed at {url}: {exc}") from exc
         if not isinstance(parsed, dict):
             raise PlannerDecisionError("llama.cpp planner response must be an object")
         return parsed
+
+# BEAST_R321_MUTATION_INFERENCE: bounded native Ollama mutation decision budgets and observable results.

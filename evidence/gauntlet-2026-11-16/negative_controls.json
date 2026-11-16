@@ -1,0 +1,37 @@
+[
+  {
+    "accepted": false,
+    "control": "tampered_payload",
+    "credit_units": 0.0,
+    "postcondition": null,
+    "refused": "PermissionError: capsule payload digest mismatch: tampered capsule refused",
+    "replay_ran": false
+  },
+  {
+    "accepted": false,
+    "control": "unsealed_memfd",
+    "credit_units": 0.0,
+    "postcondition": null,
+    "refused": "PermissionError: capsule is not sealed (seals=[])",
+    "replay_ran": false
+  },
+  {
+    "accepted": false,
+    "control": "wrong_postcondition",
+    "credit_units": 0.0,
+    "postcondition": {
+      "checks": {
+        "returncode": true,
+        "target_sha256_after": false,
+        "tests_run": true
+      },
+      "passed": false,
+      "returncode": 0,
+      "target_sha256": "sha256:f538f060abe20d3e769ea89bbf5af7d88bb70858cac040441e806a3561f43162",
+      "tests_run": 2,
+      "verify_ms": 48.068
+    },
+    "refused": "postcondition_failed:target_sha256_after",
+    "replay_ran": true
+  }
+]

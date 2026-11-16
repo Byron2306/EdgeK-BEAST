@@ -1,0 +1,144 @@
+{
+  "approved_by": "Byron",
+  "cold": {
+    "model_turns": 1.0,
+    "models": [
+      "nvidia/nemotron-3.5-lightning-30b-a3b"
+    ],
+    "tokens_total": 801.0,
+    "wall_ms": 3798.85
+  },
+  "crystal_id": "coding-crystal:4720e3bdaa55dd552f88cdad",
+  "family": "fix-failing-config-constant",
+  "governor_chain": {
+    "count": 7,
+    "errors": [],
+    "valid": true
+  },
+  "memfd": {
+    "capsule": {
+      "bytes_total": 3699,
+      "header_bytes": 444,
+      "manifest_digest": "sha256:59521100b9059472062e16c8365212fe57a7852ca00c94357a407da965d3c68b",
+      "payload_bytes": 3255,
+      "payload_sha256": "sha256:9409f38e7e3963b970ad50c13c860a9e9dd16acfb53d81710efa5fc056e33e08",
+      "payload_sha256_child": "sha256:9409f38e7e3963b970ad50c13c860a9e9dd16acfb53d81710efa5fc056e33e08",
+      "seals_readback_child": [
+        "F_SEAL_SEAL",
+        "F_SEAL_SHRINK",
+        "F_SEAL_GROW",
+        "F_SEAL_WRITE"
+      ],
+      "seals_readback_parent": [
+        "F_SEAL_SEAL",
+        "F_SEAL_SHRINK",
+        "F_SEAL_GROW",
+        "F_SEAL_WRITE"
+      ],
+      "seals_value": 15,
+      "write_after_seal": {
+        "errno": 1,
+        "error": "EPERM",
+        "refused": true
+      }
+    },
+    "computation_saved": {
+      "cold_models": [
+        "nvidia/nemotron-3.5-lightning-30b-a3b"
+      ],
+      "model_calls_avoided": 1,
+      "tokens_avoided": 801,
+      "tokens_completion_avoided": 460,
+      "tokens_prompt_avoided": 341,
+      "wall_ms_saved": 3660.342
+    },
+    "pgec_eq6": {
+      "c_avoided": 1.938489,
+      "c_lookup_plus_verify": 0.501385,
+      "c_maintenance": 0.05,
+      "c_risk": 0.0,
+      "credit": 1.387103,
+      "formula": "PGEC v1.0 eq.(6): V_K = C_avoided - (C_lookup + C_verify + C_risk + C_maintenance)",
+      "tokens_counted": true,
+      "v_k": 1.387103,
+      "weights": {
+        "model_turn": 1.0,
+        "observed_ktokens": 0.5,
+        "tool_call": 0.1,
+        "wall_second": 0.01
+      }
+    },
+    "shadow_credit": {
+      "financial_value": null,
+      "mode": "shadow_ledger_only",
+      "redeemable": false,
+      "settlement": "none",
+      "transferable": false,
+      "unit": "non_financial_commons_credit",
+      "units": 1.387103
+    }
+  },
+  "negative_controls": [
+    {
+      "accepted": false,
+      "control": "tampered_payload",
+      "refused": "PermissionError: capsule payload digest mismatch: tampered capsule refused"
+    },
+    {
+      "accepted": false,
+      "control": "unsealed_memfd",
+      "refused": "PermissionError: capsule is not sealed (seals=[])"
+    },
+    {
+      "accepted": false,
+      "control": "wrong_postcondition",
+      "refused": "postcondition_failed:target_sha256_after"
+    }
+  ],
+  "receipt_digests": {
+    "cold_episode.json": "sha256:90160bd1dfb1ca90939b093f41258a6f36050afb9295ff85c0831cbd50e527cb",
+    "crystal_promotion.json": "sha256:534847310f8ed5a5b7e78a3712c566333b5e17f11fca594c331386031612c56d",
+    "memfd_receipt.json": "sha256:c3f463a56303bdfa9629cb9c77e467ff42fd8da0e2c1e7b8852a7328fe5bb1c2",
+    "model_calls.json": "sha256:89c0274528b63a0f6ac2b997c4ce0ff23abf400d945d7fcdaa74419ebd4736c7",
+    "negative_controls.json": "sha256:119ddc030d6d534395bf89c6f43346a6abc158e68c3ef632eec26489b8de311b",
+    "warm_episodes.json": "sha256:147bc8ea046e8fea92f90d9f374b8272bdb050f1432b7e7d4551030eb1367cc3"
+  },
+  "warm": [
+    {
+      "model_calls": 0,
+      "passed": true,
+      "route": "crystal_replay",
+      "similarity": 1.0,
+      "task": "warm-ingest",
+      "tokens_total": 0,
+      "wall_ms": 188.429
+    },
+    {
+      "model_calls": 0,
+      "passed": true,
+      "route": "crystal_replay",
+      "similarity": 1.0,
+      "task": "warm-notify",
+      "tokens_total": 0,
+      "wall_ms": 193.612
+    },
+    {
+      "model_calls": 2,
+      "passed": true,
+      "route": "local_specialist_adapter",
+      "similarity": 0.88,
+      "task": "near-miss-pricing",
+      "tokens_total": 2508,
+      "wall_ms": 132186.357
+    },
+    {
+      "model_calls": 1,
+      "passed": false,
+      "route": "provider_fallback",
+      "similarity": 0.38,
+      "task": "far-parser",
+      "tokens_total": 2393,
+      "wall_ms": 13569.246
+    }
+  ]
+}

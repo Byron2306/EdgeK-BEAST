@@ -1,0 +1,924 @@
+{
+  "crystal": {
+    "artifact_digest": "sha256:bb909ab5874e9a4cd46d92a81563f5aef0bc1e22e5d1de1585ab8279da278c9a",
+    "beast_object_type": "typed_compute_crystal_ir",
+    "capability_lease": "capability-template:file-build:v1",
+    "contains_executable_code": false,
+    "edges": [
+      [
+        "step:0",
+        "step:1",
+        "REQUIRES"
+      ],
+      [
+        "step:1",
+        "step:2",
+        "REQUIRES"
+      ],
+      [
+        "step:2",
+        "step:3",
+        "REQUIRES"
+      ],
+      [
+        "step:0",
+        "step:1",
+        "SEQUENCE"
+      ],
+      [
+        "step:1",
+        "step:2",
+        "SEQUENCE"
+      ],
+      [
+        "step:2",
+        "step:3",
+        "SEQUENCE"
+      ]
+    ],
+    "evidence": [
+      "sha256:192ed15346b12a83e9bb66afc436a70f479fc8d3c4326c6b4a7b39488c18ac65",
+      "sha256:a9bf320b971060874b6704eaf7c91531b57520989467f822878d83d624aa5761",
+      "sha256:bb20e0cad52204604e10037fb7fdb23b9e2b30f1a1f7491c952ee9586915a0d3",
+      "sha256:79fc9a388d9b30054d6febe884d170af4d2115eb24a2d2aad30a39e9ac005b4f",
+      "sha256:db91415221891299a580604c2d2ea2a0cffd93bd8f7e9d79a7347cba07e97500"
+    ],
+    "identity": "crystal:sensorium-file-build:v1",
+    "maximum_authority": "bounded_execute",
+    "negative_conditions": [
+      "outcome_status:refused",
+      "branch:request_operator_approval",
+      "effect_result:build.render_artifact:refused",
+      "effect_result:artifact.verify_build:refused"
+    ],
+    "nodes": [
+      {
+        "authority": "context_only",
+        "descriptor_constraints": [
+          "descriptor_type:workspace"
+        ],
+        "descriptor_requirements": [
+          "workspace"
+        ],
+        "evidence_template_hash": "sha256:4f0505d49e63431644c87511fe29c838048e30cd3d4878448df2cd6bece81b60",
+        "handler_key": "sensorium.file_source",
+        "input_schema": {
+          "workspace": "workspace_descriptor"
+        },
+        "node_id": "step:0",
+        "opcode": "file.inspect_source",
+        "opcode_version": 1,
+        "output_schema": {
+          "source_state": "object"
+        },
+        "parameter_bindings": {
+          "workspace_identity": "{{workspace_identity}}"
+        },
+        "phase": "observation",
+        "refusal_key": "fail_closed",
+        "resource_limits": {
+          "cpu_time_ms": 100.0,
+          "wall_time_ms": 500.0
+        },
+        "rollback_key": "",
+        "verifier_key": "verifier.file_source_bounded"
+      },
+      {
+        "authority": "proposal_only",
+        "descriptor_constraints": [
+          "descriptor_type:workspace"
+        ],
+        "descriptor_requirements": [
+          "workspace"
+        ],
+        "evidence_template_hash": "sha256:9fdfb59a0c7bdeb493fa9d67c366c1eb327bb5c9149cb28e4ac961dcaca50c00",
+        "handler_key": "planner.build_repair_branch",
+        "input_schema": {
+          "source_state": "object"
+        },
+        "node_id": "step:1",
+        "opcode": "build.select_branch",
+        "opcode_version": 1,
+        "output_schema": {
+          "selected_branch": "string"
+        },
+        "parameter_bindings": {
+          "workspace_identity": "{{workspace_identity}}"
+        },
+        "phase": "decision",
+        "refusal_key": "fail_closed",
+        "resource_limits": {
+          "cpu_time_ms": 50.0,
+          "wall_time_ms": 500.0
+        },
+        "rollback_key": "",
+        "verifier_key": "verifier.build_branch_allowlisted"
+      },
+      {
+        "authority": "bounded_execute",
+        "descriptor_constraints": [
+          "descriptor_type:workspace"
+        ],
+        "descriptor_requirements": [
+          "workspace"
+        ],
+        "evidence_template_hash": "sha256:5c2eb2de3c962b55d1447b69155f7a77a4c5ba6e90f3b08c3973e98d7a765fb3",
+        "handler_key": "builder.render_canonical_artifact",
+        "input_schema": {
+          "source_state": "object"
+        },
+        "node_id": "step:2",
+        "opcode": "build.render_artifact",
+        "opcode_version": 1,
+        "output_schema": {
+          "artifact_state": "object"
+        },
+        "parameter_bindings": {
+          "workspace_identity": "{{workspace_identity}}"
+        },
+        "phase": "actuation",
+        "refusal_key": "refuse.on_invalid_source_or_workspace",
+        "resource_limits": {
+          "cpu_time_ms": 200.0,
+          "wall_time_ms": 1000.0
+        },
+        "rollback_key": "rollback.restore_generated_artifact",
+        "verifier_key": "verifier.artifact_write_bounded"
+      },
+      {
+        "authority": "verify_only",
+        "descriptor_constraints": [
+          "descriptor_type:workspace"
+        ],
+        "descriptor_requirements": [
+          "workspace"
+        ],
+        "evidence_template_hash": "sha256:54fd07385e46a821676dcadaf19eb43eb660b7846e8cfaa09530786c23767fd1",
+        "handler_key": "verifier.canonical_build_artifact",
+        "input_schema": {
+          "artifact_state": "object"
+        },
+        "node_id": "step:3",
+        "opcode": "artifact.verify_build",
+        "opcode_version": 1,
+        "output_schema": {
+          "verified": "boolean"
+        },
+        "parameter_bindings": {
+          "workspace_identity": "{{workspace_identity}}"
+        },
+        "phase": "verification",
+        "refusal_key": "fail_closed",
+        "resource_limits": {
+          "cpu_time_ms": 100.0,
+          "wall_time_ms": 500.0
+        },
+        "rollback_key": "",
+        "verifier_key": "verifier.canonical_build_receipt"
+      }
+    ],
+    "opcode_catalog_digest": "sha256:2ad4c2b56c9acd96b98178a83eb87f5c3d1f00bd30cf86c90ef70a64cf14e2ff",
+    "parameters": {
+      "workspace_identity": {
+        "observed_count": 3,
+        "type": "workspace_identity"
+      }
+    },
+    "postconditions": [
+      "artifact.verify_build:success",
+      "outcome:verified_success"
+    ],
+    "preconditions": [
+      "source_state",
+      "branch_state",
+      "artifact:generated==invalid",
+      "artifact_state"
+    ],
+    "resource_envelope": {},
+    "source_family_hash": "sha256:29b5cebe348d12ccc6e7bb166f21bb68f730d6181e818ecb7b0d7e97adde84b4",
+    "task_family": [
+      "deterministic_file_build_repair"
+    ],
+    "version": "1.0"
+  },
+  "promotion_record": {
+    "appraisal_ref": "arda:production:fbaa6d491fb2834c4d3be4c9a93b09e055a446b27cf460beae7dc90049016c0e",
+    "approval_receipt": "approval:reviewed-file-build-production:v1",
+    "approver": "local-operator",
+    "artifact_digest": "sha256:bb909ab5874e9a4cd46d92a81563f5aef0bc1e22e5d1de1585ab8279da278c9a",
+    "crystal_id": "crystal:sensorium-file-build:v1",
+    "expires_at": 1786712453.8050752,
+    "opcode_catalog_digest": "sha256:2ad4c2b56c9acd96b98178a83eb87f5c3d1f00bd30cf86c90ef70a64cf14e2ff",
+    "policy_generation": "policy:production-file-build:v1",
+    "promoted_at": 1784120453.8050752,
+    "record_digest": "sha256:3ff82c1c08143c295595b4ac80a20d9de60b42ead1284cf83f321485630b340b",
+    "replay_evidence_root": "sha256:7912c22600141c80a9c6936a85747a7d5b4ebec1b8021de8c28396dedb32e897",
+    "replay_variant_count": 4,
+    "source_family_hash": "sha256:29b5cebe348d12ccc6e7bb166f21bb68f730d6181e818ecb7b0d7e97adde84b4",
+    "status": "promoted",
+    "transition_reason": "structured_replay_and_operator_approval"
+  },
+  "reachability": {
+    "active_attempts": 0,
+    "beast_object_type": "compute_plane_reachability",
+    "bypass_counters": {},
+    "call_counters": {
+      "promotion.complete": 1,
+      "replay.submit": 1
+    },
+    "components": {
+      "capability_ledger": "OneUseCapabilityLedger",
+      "capsule_admission": "method",
+      "crystal_compiler": "TypedCrystalCompiler",
+      "episode_generalizer": "CrystalGeneralizer",
+      "evidence_graph": "ControlEvidenceGraph",
+      "evidence_job_supervisor": "EvidenceJobSupervisor",
+      "forge_scheduler": "DistributedForgeScheduler",
+      "forge_supervisor": "ForgeSupervisor",
+      "governor": "ComputeGovernor",
+      "inference_interceptor": "InferenceComputeInterceptor",
+      "isolation_verifier": "function",
+      "mission_isolation_runner_type": "type",
+      "physical_interpreter": "TypedCrystalInterpreter",
+      "physical_registry": "PhysicalCrystalPromotionRegistry",
+      "promoted_artifacts": "dict",
+      "promotion_gate": "ScientificPromotionGate",
+      "replay_laboratory": "CrystalReplayLaboratory",
+      "sensorium": "SensoriumRuntime",
+      "streaming_interceptor": "StreamingComputeInterceptor"
+    },
+    "last_receipt_ids": {
+      "promotion": "sha256:dbcc2814b147c17ac4f9cc83e5e0cb10db34d3b593bf905aed089f67e51b1b3a",
+      "replay": "sha256:7912c22600141c80a9c6936a85747a7d5b4ebec1b8021de8c28396dedb32e897"
+    },
+    "mode": "shadow",
+    "module_dispositions": {
+      "all_present_modules_classified": false,
+      "beast_object_type": "compute_module_dispositions",
+      "missing_classified_modules": [],
+      "offline_library": [
+        "agent_scheduler",
+        "causal_inference",
+        "container",
+        "crystal_bus",
+        "crystal_distillation",
+        "crystal_hypergraph",
+        "enterprise",
+        "equivalence_engine",
+        "factory",
+        "governed_crystal_executor",
+        "inference_engine_fabric",
+        "interference_buckets",
+        "local_compute_cascade",
+        "memory_policy",
+        "port_conflict_crystal",
+        "port_conflict_fixture",
+        "resource_executor",
+        "sealed_capsule"
+      ],
+      "online_enforcement": [
+        "action_ir",
+        "action_resolver",
+        "adaptive_dispatcher",
+        "adaptive_inference",
+        "ast_compressor",
+        "compression_pipeline",
+        "compute_forge",
+        "compute_ir",
+        "compute_ledger",
+        "compute_plane",
+        "crystal_credit_quarantine",
+        "crystal_forks",
+        "crystal_generalizer",
+        "crystal_replay_lab",
+        "crystal_reuse_gateway",
+        "crystal_runtime_boundary",
+        "crystal_staleness_policy",
+        "crystal_tool_boundary",
+        "distributed_forge_scheduler",
+        "forge_isolation",
+        "forge_supervisor",
+        "heldout_replay",
+        "inference_interceptor",
+        "kv_cache_transport",
+        "kv_engine_adapter",
+        "local_capabilities",
+        "local_execution_gateway",
+        "local_prefix_kv_store",
+        "local_route_optimizer",
+        "local_semantic_cache",
+        "mission_crystal_lattice",
+        "perceive",
+        "physical_crystal_lifecycle",
+        "proof_local_admission_bridge",
+        "proof_local_compute",
+        "runtime_crystallizer",
+        "socket_inventory",
+        "streaming_interceptor",
+        "typed_crystal_interpreter",
+        "typed_crystal_ir"
+      ],
+      "retired": {
+        "crystal_integrations": "duplicate compatibility registry removed; use local_capabilities"
+      },
+      "supervised_evidence": [
+        "ablation_harness",
+        "benchmark",
+        "cloud_disabled_replay_benchmark",
+        "crystal_autopromotion_daemon",
+        "crystal_evidence_bridge",
+        "crystal_integration_acceptance",
+        "crystal_materializer",
+        "crystal_promotion_evidence_sources",
+        "crystallized_compute_proof",
+        "definitive_crystal_lane_proof",
+        "displacement",
+        "earth_shattering_proof_gauntlet",
+        "evidence_job_supervisor",
+        "final_boss_crystallization_gauntlet",
+        "full_spectrum_crystallization_gauntlet",
+        "hard_coding_crystallization_gauntlet",
+        "hardware_adapter_validation",
+        "integration_acceptance",
+        "integration_harness",
+        "kv_restore_harness",
+        "nim_live_probe",
+        "provider_tournament_gauntlet",
+        "public_benchmark_grading_daemon",
+        "scientific_uplift_experiment",
+        "sensorium_port_crystal_experiment",
+        "unified_evidence_packet"
+      ],
+      "unclassified": [
+        "file_build_transform",
+        "milestone11_uplift",
+        "sensorium_file_build_crystal_experiment"
+      ],
+      "version": "1.0"
+    },
+    "offline_only_modules": [
+      "ablation_harness",
+      "agent_scheduler",
+      "benchmark",
+      "causal_inference",
+      "cloud_disabled_replay_benchmark",
+      "container",
+      "crystal_autopromotion_daemon",
+      "crystal_bus",
+      "crystal_distillation",
+      "crystal_evidence_bridge",
+      "crystal_hypergraph",
+      "crystal_integration_acceptance",
+      "crystal_materializer",
+      "crystal_promotion_evidence_sources",
+      "crystallized_compute_proof",
+      "definitive_crystal_lane_proof",
+      "displacement",
+      "earth_shattering_proof_gauntlet",
+      "enterprise",
+      "equivalence_engine",
+      "evidence_job_supervisor",
+      "factory",
+      "final_boss_crystallization_gauntlet",
+      "full_spectrum_crystallization_gauntlet",
+      "governed_crystal_executor",
+      "hard_coding_crystallization_gauntlet",
+      "hardware_adapter_validation",
+      "inference_engine_fabric",
+      "integration_acceptance",
+      "integration_harness",
+      "interference_buckets",
+      "kv_restore_harness",
+      "local_compute_cascade",
+      "memory_policy",
+      "nim_live_probe",
+      "port_conflict_crystal",
+      "port_conflict_fixture",
+      "provider_tournament_gauntlet",
+      "public_benchmark_grading_daemon",
+      "resource_executor",
+      "scientific_uplift_experiment",
+      "sealed_capsule",
+      "sensorium_port_crystal_experiment",
+      "unified_evidence_packet"
+    ],
+    "promoted_crystals": [
+      "crystal:sensorium-file-build:v1"
+    ],
+    "read_only": true,
+    "version": "1.0"
+  },
+  "replay": {
+    "candidate_id": "crystal:sensorium-file-build:v1",
+    "crystal_digest": "sha256:bb909ab5874e9a4cd46d92a81563f5aef0bc1e22e5d1de1585ab8279da278c9a",
+    "evidence_root": "sha256:7912c22600141c80a9c6936a85747a7d5b4ebec1b8021de8c28396dedb32e897",
+    "negative_variants": 1,
+    "positive_variants": 3,
+    "promotion_eligible": true,
+    "reason": "structured_heldout_replay_passed",
+    "variant_receipts": [
+      {
+        "boundary_updates": [],
+        "evidence_digest": "sha256:cb9dbc23350cf8a944854cff0e458b0927e2a8fdc1e105d05443975ea553f95d",
+        "expected_checks": {
+          "branch": true
+        },
+        "final_state_fingerprint": "sha256:cc23f07170b85650546b303696569071158f3b4efaab279df36f4540c0c908e4",
+        "initial_state_fingerprint": "sha256:4543b671af93c68466abec211ca11f09101b864c10a80fc89bd2acf7be6da4e9",
+        "isolation": {
+          "cgroup_capsule_established": false,
+          "cgroup_delegated_writable": false,
+          "cgroup_v2_available": true,
+          "filesystem": "private_temporary_directory",
+          "network_namespace": "not_used",
+          "process_namespace": "not_established",
+          "state": "deep_copy",
+          "workspace_destroyed_after_replay": true
+        },
+        "negative": false,
+        "node_receipts": [
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.097139,
+            "effect": {
+              "bytes": 34,
+              "eligible": true,
+              "parsed": {
+                "name": "delta",
+                "values": [
+                  34,
+                  55
+                ]
+              },
+              "reason": "canonical_source_schema",
+              "source_sha256": "sha256:9fbf45c9289d205cec65d2a1ecbb0598447ca2c43b3842e76b7829b5bdc3d553"
+            },
+            "evidence_digest": "sha256:b3805c0fefc4745a4da7bf7cc91629d7ef38b2628673ae099362864c45029d33",
+            "handler_key": "sensorium.file_source",
+            "node_id": "step:0",
+            "opcode": "file.inspect_source",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "bounded_read": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.098681
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.004935,
+            "effect": {
+              "branch": "render_canonical_artifact",
+              "safe_refusal": false
+            },
+            "evidence_digest": "sha256:f26e8a0d41e8b99bf19572d3573bdfd9bd267c0a294653b763bff4304ae09b33",
+            "handler_key": "planner.build_repair_branch",
+            "node_id": "step:1",
+            "opcode": "build.select_branch",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "branch_allowed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.004785
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.107637,
+            "effect": {
+              "artifact_sha256": "sha256:ed99b9f0a28e21b9b77c5963080691b0f3cf337c87df981a52a5d20d7ffa4294",
+              "bounded": true,
+              "bytes": 126,
+              "refused": false,
+              "written": true
+            },
+            "evidence_digest": "sha256:0d448fd213ed5112e6125ba88de0228cddc3b1c1ab5adbe1a31c2d05f787d531",
+            "handler_key": "builder.render_canonical_artifact",
+            "node_id": "step:2",
+            "opcode": "build.render_artifact",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "bounded_write_or_refusal": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.107514
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.04454,
+            "effect": {
+              "artifact_sha256": "sha256:ed99b9f0a28e21b9b77c5963080691b0f3cf337c87df981a52a5d20d7ffa4294",
+              "bytes_match": true,
+              "safe_refusal": false,
+              "tests_passed": true,
+              "verified": true
+            },
+            "evidence_digest": "sha256:20338e0a839b58c8e20f07bf7d0c7f5fef2084f51a72a75700c55ff6a93ea85b",
+            "handler_key": "verifier.canonical_build_artifact",
+            "node_id": "step:3",
+            "opcode": "artifact.verify_build",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "objective_verifier_completed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.044502
+          }
+        ],
+        "resource_usage": {
+          "cpu_time_ms": 0.254251,
+          "wall_time_ms": 0.255482
+        },
+        "rollback_successful": true,
+        "safe_refusal": false,
+        "status": "verified",
+        "unrelated_state_unchanged": true,
+        "variant_id": "production_delta",
+        "verified": true
+      },
+      {
+        "boundary_updates": [],
+        "evidence_digest": "sha256:868074323f432d9bc34585f2cf9623a99646d3862dded09cc1218bf28b58b3f6",
+        "expected_checks": {
+          "branch": true
+        },
+        "final_state_fingerprint": "sha256:d66b4d075f167761871e0da65691f4fc57132d45ac9da01678aac318628ca449",
+        "initial_state_fingerprint": "sha256:7dfb29f7b26397337f72861e068815f3c5ce04b9a39e5e08b738dc984bdade13",
+        "isolation": {
+          "cgroup_capsule_established": false,
+          "cgroup_delegated_writable": false,
+          "cgroup_v2_available": true,
+          "filesystem": "private_temporary_directory",
+          "network_namespace": "not_used",
+          "process_namespace": "not_established",
+          "state": "deep_copy",
+          "workspace_destroyed_after_replay": true
+        },
+        "negative": false,
+        "node_receipts": [
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.067039,
+            "effect": {
+              "bytes": 39,
+              "eligible": true,
+              "parsed": {
+                "name": "epsilon",
+                "values": [
+                  -1,
+                  -2,
+                  -3
+                ]
+              },
+              "reason": "canonical_source_schema",
+              "source_sha256": "sha256:b741bc0c19fd3e9e2d677f53751e51f1c002dac1502121215f3e3f884d3b1c0d"
+            },
+            "evidence_digest": "sha256:768af4b34f38ce3fc175db91ea0217c9931fd9f5b802294de5a1e8e6484f3458",
+            "handler_key": "sensorium.file_source",
+            "node_id": "step:0",
+            "opcode": "file.inspect_source",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "bounded_read": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.067159
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.00337,
+            "effect": {
+              "branch": "render_canonical_artifact",
+              "safe_refusal": false
+            },
+            "evidence_digest": "sha256:fa0bf2edff89986a7bcb44f91a8cf82e93407b4c7aeb9a09b988a5fe915849c2",
+            "handler_key": "planner.build_repair_branch",
+            "node_id": "step:1",
+            "opcode": "build.select_branch",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "branch_allowed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.003373
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.089277,
+            "effect": {
+              "artifact_sha256": "sha256:5bcb54a7dd179a8cc506fc051765da22674ea35f5a406afa1a04da0acc74c943",
+              "bounded": true,
+              "bytes": 128,
+              "refused": false,
+              "written": true
+            },
+            "evidence_digest": "sha256:1c088d91efa355f61a1b2ecf50fd5c70292e1bd13455d3927f23484c2633f36c",
+            "handler_key": "builder.render_canonical_artifact",
+            "node_id": "step:2",
+            "opcode": "build.render_artifact",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "bounded_write_or_refusal": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.089176
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.039893,
+            "effect": {
+              "artifact_sha256": "sha256:5bcb54a7dd179a8cc506fc051765da22674ea35f5a406afa1a04da0acc74c943",
+              "bytes_match": true,
+              "safe_refusal": false,
+              "tests_passed": true,
+              "verified": true
+            },
+            "evidence_digest": "sha256:2ce123c82671ca8eb68b1ee6db05ccf2afb5cd1bef3285b0471f3ba5721c2f25",
+            "handler_key": "verifier.canonical_build_artifact",
+            "node_id": "step:3",
+            "opcode": "artifact.verify_build",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "objective_verifier_completed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.039894
+          }
+        ],
+        "resource_usage": {
+          "cpu_time_ms": 0.199579,
+          "wall_time_ms": 0.199602
+        },
+        "rollback_successful": true,
+        "safe_refusal": false,
+        "status": "verified",
+        "unrelated_state_unchanged": true,
+        "variant_id": "production_epsilon",
+        "verified": true
+      },
+      {
+        "boundary_updates": [],
+        "evidence_digest": "sha256:f50a2697905d18cf25856d43dc5af5cb8679384db6b327d421eef99b76bbdd6f",
+        "expected_checks": {
+          "branch": true
+        },
+        "final_state_fingerprint": "sha256:4308d5e9d4ebafe74af49bb39f12480d413d2ebe27a6562c262bcca3de064949",
+        "initial_state_fingerprint": "sha256:bad735e416cfb10c5ef27a38246515d9e4808d74a8698ba72ec939de96164de8",
+        "isolation": {
+          "cgroup_capsule_established": false,
+          "cgroup_delegated_writable": false,
+          "cgroup_v2_available": true,
+          "filesystem": "private_temporary_directory",
+          "network_namespace": "not_used",
+          "process_namespace": "not_established",
+          "state": "deep_copy",
+          "workspace_destroyed_after_replay": true
+        },
+        "negative": false,
+        "node_receipts": [
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.059158,
+            "effect": {
+              "bytes": 32,
+              "eligible": true,
+              "parsed": {
+                "name": "zeta",
+                "values": [
+                  0,
+                  89
+                ]
+              },
+              "reason": "canonical_source_schema",
+              "source_sha256": "sha256:5d918cbd360613f520f1823799592759b5c3e392e4cd70ef547606f59c0aa5ad"
+            },
+            "evidence_digest": "sha256:6274a349157d698aef421f39be38abdafab12cb3479bfa8e103ba7dbe3eec7bd",
+            "handler_key": "sensorium.file_source",
+            "node_id": "step:0",
+            "opcode": "file.inspect_source",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "bounded_read": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.059369
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.002541,
+            "effect": {
+              "branch": "render_canonical_artifact",
+              "safe_refusal": false
+            },
+            "evidence_digest": "sha256:1610b68ee3a1753051b073fabccb5fb731f51f4cbc2d2a47c677cbde7c8725e1",
+            "handler_key": "planner.build_repair_branch",
+            "node_id": "step:1",
+            "opcode": "build.select_branch",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "branch_allowed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.002508
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.081812,
+            "effect": {
+              "artifact_sha256": "sha256:524eddcef31bbcd56adc3bf20281888ece23207bfbee6e1085fe5e1daf29ec74",
+              "bounded": true,
+              "bytes": 125,
+              "refused": false,
+              "written": true
+            },
+            "evidence_digest": "sha256:d4cff2f77b786f8b62f7a956e9b6fd0c82bb726f3fa0a27c85e97f7997c32213",
+            "handler_key": "builder.render_canonical_artifact",
+            "node_id": "step:2",
+            "opcode": "build.render_artifact",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "bounded_write_or_refusal": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.081688
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.038693,
+            "effect": {
+              "artifact_sha256": "sha256:524eddcef31bbcd56adc3bf20281888ece23207bfbee6e1085fe5e1daf29ec74",
+              "bytes_match": true,
+              "safe_refusal": false,
+              "tests_passed": true,
+              "verified": true
+            },
+            "evidence_digest": "sha256:393ab33b68501465992801ef4c7791d72dca4235cf69de8e33166f699655ba2d",
+            "handler_key": "verifier.canonical_build_artifact",
+            "node_id": "step:3",
+            "opcode": "artifact.verify_build",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "objective_verifier_completed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.038698
+          }
+        ],
+        "resource_usage": {
+          "cpu_time_ms": 0.182204,
+          "wall_time_ms": 0.182263
+        },
+        "rollback_successful": true,
+        "safe_refusal": false,
+        "status": "verified",
+        "unrelated_state_unchanged": true,
+        "variant_id": "production_zeta",
+        "verified": true
+      },
+      {
+        "boundary_updates": [
+          "SAFE_REFUSAL_UNDER:invalid_source_schema"
+        ],
+        "evidence_digest": "sha256:9867c6ca519f317a2cb2657b6046139d2f957e90a7b69e08795bdc778b6a332a",
+        "expected_checks": {
+          "branch": true
+        },
+        "final_state_fingerprint": "sha256:79f9d3f9a9cf6aa665637c653e4e7e41a2005504d5b3199763db8cca9499f6d8",
+        "initial_state_fingerprint": "sha256:79f9d3f9a9cf6aa665637c653e4e7e41a2005504d5b3199763db8cca9499f6d8",
+        "isolation": {
+          "cgroup_capsule_established": false,
+          "cgroup_delegated_writable": false,
+          "cgroup_v2_available": true,
+          "filesystem": "private_temporary_directory",
+          "network_namespace": "not_used",
+          "process_namespace": "not_established",
+          "state": "deep_copy",
+          "workspace_destroyed_after_replay": true
+        },
+        "negative": true,
+        "node_receipts": [
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.067141,
+            "effect": {
+              "bytes": 8,
+              "eligible": false,
+              "reason": "source_unreadable_or_invalid_json",
+              "source_sha256": "sha256:0c21a879c732a67910d80988df4919d794f6a070aab610ef865032a28046b021"
+            },
+            "evidence_digest": "sha256:9704fb7a695fd224f324cd31e4242e9771f35495063536172bd04ee04d1c6df6",
+            "handler_key": "sensorium.file_source",
+            "node_id": "step:0",
+            "opcode": "file.inspect_source",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "bounded_read": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.067331
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.002578,
+            "effect": {
+              "branch": "request_operator_approval",
+              "safe_refusal": true
+            },
+            "evidence_digest": "sha256:5e40a43a661c6a61b146323e889334e87451678770ef257ef23b5f7e2f5b0489",
+            "handler_key": "planner.build_repair_branch",
+            "node_id": "step:1",
+            "opcode": "build.select_branch",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "branch_allowed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.002607
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.002721,
+            "effect": {
+              "bounded": true,
+              "refused": true,
+              "written": false
+            },
+            "evidence_digest": "sha256:38209925ffd9fb50e2cc0160575c31319316fb2d3b86d6a273ef413a9523d14d",
+            "handler_key": "builder.render_canonical_artifact",
+            "node_id": "step:2",
+            "opcode": "build.render_artifact",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "bounded_write_or_refusal": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.002726
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.001768,
+            "effect": {
+              "bytes_match": true,
+              "safe_refusal": true,
+              "tests_passed": true,
+              "verified": false
+            },
+            "evidence_digest": "sha256:1b70a12c87a9ddba18408f87902d023696ae8b74408e3441d0235323d5745b0e",
+            "handler_key": "verifier.canonical_build_artifact",
+            "node_id": "step:3",
+            "opcode": "artifact.verify_build",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "objective_verifier_completed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.001769
+          }
+        ],
+        "resource_usage": {
+          "cpu_time_ms": 0.074208,
+          "wall_time_ms": 0.074433
+        },
+        "rollback_successful": true,
+        "safe_refusal": true,
+        "status": "verified",
+        "unrelated_state_unchanged": true,
+        "variant_id": "production_malformed",
+        "verified": true
+      }
+    ],
+    "verified_variants": 4
+  }
+}

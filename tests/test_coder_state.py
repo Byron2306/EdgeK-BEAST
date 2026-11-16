@@ -1,0 +1,189 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+
+from app.cli.coder_client import RuntimeEvent
+from app.cli.coder_state import (
+    CoderSettings,
+    ConversationStore,
+    SlashCommand,
+    parse_slash_command,
+    project_runtime_event,
+)
+
+
+def test_settings_reject_non_directory_workspace_without_persisting(tmp_path: Path):
+    missing = tmp_path / "missing"
+
+    with pytest.raises(ValueError, match="existing directory"):
+        CoderSettings(workspace=missing, provider="ollama", model="granite")
+
+    assert not (missing / ".beast").exists()
+
+
+def test_settings_and_conversation_round_trip_atomically(tmp_path: Path):
+    store = ConversationStore(tmp_path)
+    settings = CoderSettings(
+        workspace=tmp_path,
+        provider="ollama",
+        model="granite-code:8b",
+        session_id="agent-1",
+        last_run_id="run-2",
+    )
+
+    store.save_settings(settings)
+    store.append("user", "create demo.py")
+    store.append(
+        "assistant",
+        "done",
+        metadata={"run_id": "run-2", "receipt_ids": ["obs-1"]},
+    )
+
+    loaded = store.load_settings()
+    messages = store.messages()
+    assert loaded == settings
+    assert messages == [
+        {"role": "user", "content": "create demo.py", "metadata": {}},
+        {
+            "role": "assistant",
+            "content": "done",
+            "metadata": {"run_id": "run-2", "receipt_ids": ["obs-1"]},
+        },
+    ]
+    assert not list(store.state_dir.glob("*.tmp"))
+    assert json.loads(store.settings_path.read_text())["provider"] == "ollama"
+
+
+def test_clear_removes_conversation_but_preserves_runtime_selection(tmp_path: Path):
+    store = ConversationStore(tmp_path)
+    settings = CoderSettings(tmp_path, "ollama", "granite-code:8b", "agent-1", "run-2")
+    store.save_settings(settings)
+    store.append("user", "hello")
+
+    store.clear()
+
+    assert store.messages() == []
+    assert store.load_settings() == settings
+
+
+@pytest.mark.parametrize(
+    ("text", "want"),
+    [
+        ("/help", SlashCommand("help", "")),
+        ("/model granite-code:8b", SlashCommand("model", "granite-code:8b")),
+        ("/provider ollama", SlashCommand("provider", "ollama")),
+        ("/skills", SlashCommand("skills", "")),
+        ("/mcp", SlashCommand("mcp", "")),
+        ("/tools", SlashCommand("tools", "")),
+        ("/workspace /tmp/demo", SlashCommand("workspace", "/tmp/demo")),
+        ("/status", SlashCommand("status", "")),
+        ("/clear", SlashCommand("clear", "")),
+        ("/exit", SlashCommand("exit", "")),
+    ],
+)
+def test_parse_slash_command_supports_required_interface(text: str, want: SlashCommand):
+    assert parse_slash_command(text) == want
+
+
+def test_parse_slash_command_rejects_unknown_command():
+    with pytest.raises(ValueError, match="unknown command"):
+        parse_slash_command("/swarm")
+
+
+def test_project_model_delta_as_stream_token():
+    projected = project_runtime_event(
+        RuntimeEvent(
+            "agent.model.delta",
+            {"sequence": 3, "payload": {"text": "hello"}},
+            "3",
+        )
+    )
+
+    assert projected.kind == "token"
+    assert projected.text == "hello"
+    assert projected.sequence == 3
+
+
+def test_project_completed_tool_only_as_executed_with_real_observation_receipt():
+    projected = project_runtime_event(
+        RuntimeEvent(
+            "agent.tool.completed",
+            {
+                "sequence": 8,
+                "payload": {
+                    "observation": {
+                        "observation_id": "obs-8",
+                        "tool_id": "worktree.write_file",
+                        "status": "completed",
+                        "result": {"path": "demo.py", "bytes": 12},
+                        "evidence_digest": "abc123",
+                    }
+                },
+            },
+            "8",
+        )
+    )
+
+    assert projected.kind == "tool_result"
+    assert projected.tool_id == "worktree.write_file"
+    assert projected.executed is True
+    assert projected.success is True
+    assert projected.receipt == {
+        "observation_id": "obs-8",
+        "evidence_digest": "abc123",
+    }
+    assert projected.details == {"path": "demo.py", "bytes": 12}
+
+
+def test_project_tool_completion_without_receipt_as_unverified_not_success():
+    projected = project_runtime_event(
+        RuntimeEvent(
+            "agent.tool.completed",
+            {
+                "sequence": 9,
+                "payload": {
+                    "observation": {
+                        "tool_id": "worktree.write_file",
+                        "status": "completed",
+                        "result": {"path": "demo.py"},
+                    }
+                },
+            },
+            "9",
+        )
+    )
+
+    assert projected.executed is False
+    assert projected.success is False
+    assert projected.status == "unverified"
+    assert "missing" in projected.text.lower()
+
+
+def test_project_failed_tool_preserves_actual_error_and_receipt():
+    projected = project_runtime_event(
+        RuntimeEvent(
+            "agent.tool.failed",
+            {
+                "sequence": 10,
+                "payload": {
+                    "observation": {
+                        "observation_id": "obs-10",
+                        "tool_id": "worktree.verify",
+                        "status": "failed",
+                        "result": {"returncode": 1},
+                        "error": "pytest failed",
+                        "evidence_digest": "def456",
+                    }
+                },
+            },
+            "10",
+        )
+    )
+
+    assert projected.executed is True
+    assert projected.success is False
+    assert projected.status == "failed"
+    assert projected.text == "pytest failed"

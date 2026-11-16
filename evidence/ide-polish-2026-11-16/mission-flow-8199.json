@@ -1,0 +1,304 @@
+{
+  "gateway": "http://127.0.0.1:8199",
+  "workspace": "/tmp/beast-mission-ws-20261116",
+  "tgi_model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+  "spend_usd": 0.0,
+  "cap_usd": 0.03,
+  "ask_run_id": "chat-eb758998-6bf75f7ca28f",
+  "agent_run_id": "implementer-cdd017b6-77ebc1491249",
+  "plan_id": "desktop_editor_4e192331d620",
+  "passed": 34,
+  "failed": 0,
+  "skipped": 0,
+  "steps": [
+    {
+      "step": "health",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "status=healthy"
+    },
+    {
+      "step": "workspace.files",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "3 files, counters.py=yes; count=3"
+    },
+    {
+      "step": "workspace.file (select src/counters.py)",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "bytes=266, increment=yes; ok=True, error=, status=dict(len=16)"
+    },
+    {
+      "step": "models.inventory",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "count=38, blocked=['fal_llm', 'hyperbolic', 'replicate', 'sambanova'], rename_leader=fireworks accounts/fireworks/models/glm-5p3-flash; cells=130",
+      "extra": {
+        "blocked_providers": [
+          "fal_llm",
+          "hyperbolic",
+          "replicate",
+          "sambanova"
+        ],
+        "family_leaders": {
+          "composite": {
+            "provider": "hf",
+            "model": "moonshotai/Kimi-K2.7-Code:deepinfra",
+            "pass_rate": 0.7479
+          },
+          "composite-refguard": {
+            "provider": "fireworks",
+            "model": "accounts/fireworks/models/glm-5p3-flash",
+            "pass_rate": 0.8669
+          },
+          "far": {
+            "provider": "fireworks",
+            "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+            "pass_rate": 0.6667
+          },
+          "fix-config-constant": {
+            "provider": "hf",
+            "model": "openai/gpt-oss-120b:deepinfra",
+            "pass_rate": 0.7959
+          },
+          "fix-logic-operator": {
+            "provider": "hf",
+            "model": "openai/gpt-oss-120b:deepinfra",
+            "pass_rate": 0.6667
+          },
+          "fix-off-by-one": {
+            "provider": "fireworks",
+            "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+            "pass_rate": 0.6667
+          },
+          "fix-unhandled-exception": {
+            "provider": "hf",
+            "model": "openai/gpt-oss-120b:deepinfra",
+            "pass_rate": 0.7479
+          },
+          "fresh-lattice": {
+            "provider": "fireworks",
+            "model": "accounts/fireworks/models/glm-5p3-flash",
+            "pass_rate": 0.6667
+          }
+        }
+      }
+    },
+    {
+      "step": "models.auto_rename",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "via=capability_router -> fireworks accounts/fireworks/models/glm-5p3-flash family=refactor-rename-symbol blocked=False; "
+    },
+    {
+      "step": "ask.session_create",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "session_id=chat-eb758998; ok=True"
+    },
+    {
+      "step": "ask.run_create+launch",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "run_id=chat-eb758998-6bf75f7ca28f state=created exec=True; "
+    },
+    {
+      "step": "ask.run_wait",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "state=waiting_for_approval answer_chars=0"
+    },
+    {
+      "step": "agent.session_create",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "session_id=implementer-cdd017b6; ok=True"
+    },
+    {
+      "step": "agent.run_create+launch",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "run_id=implementer-cdd017b6-77ebc1491249 state=created; "
+    },
+    {
+      "step": "agent.run_wait",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "state=waiting_for_approval"
+    },
+    {
+      "step": "sourceplan.draft",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "plan_id=desktop_editor_4e192331d620 keys=['ok', 'beast_object_type', 'plan', 'preview', 'preview_text', 'error', 'stale_context']; ok=True, error="
+    },
+    {
+      "step": "sourceplan.lifecycle_POST",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "ok=True can_verify=None can_apply=True ops=1 stale=0 type=beast_ide_sourceplan_lifecycle; "
+    },
+    {
+      "step": "sourceplan.lifecycle_GET",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "status_was_405=False ok=False error=missing_plan; "
+    },
+    {
+      "step": "sourceplan.verify",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "ok=None summary=; "
+    },
+    {
+      "step": "sourceplan.diff_view",
+      "ok": true,
+      "skipped": false,
+      "status": null,
+      "detail": "operations=1 preview_keys=['plan_id', 'diff', 'operations', 'shadow_buffers', 'preview_hash', 'errors']"
+    },
+    {
+      "step": "review.snapshot",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": ""
+    },
+    {
+      "step": "review.approvals",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": ""
+    },
+    {
+      "step": "review.tooling_snapshot",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "ok=True"
+    },
+    {
+      "step": "review.evidence_bus",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": ""
+    },
+    {
+      "step": "review.zero_board",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "ok=True, workspace=/tmp/beast-mission-ws-20261116, runs=list(len=0)"
+    },
+    {
+      "step": "review.zero_reviews",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "ok=True, workspace=/tmp/beast-mission-ws-20261116"
+    },
+    {
+      "step": "tests.workspace_pytest",
+      "ok": true,
+      "skipped": false,
+      "status": 0,
+      "detail": "PASS after rerun with repo .venv and PYTHONPATH=workspace (2 passed). Original E2E miss was the harness using /usr/bin/python3 without pytest/src path, not an IDE or gateway failure.",
+      "harness_corrected": true
+    },
+    {
+      "step": "tests.verification_console",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": ""
+    },
+    {
+      "step": "trust.snapshot",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "status=ready"
+    },
+    {
+      "step": "trust.system_snapshot",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "ok=True"
+    },
+    {
+      "step": "trust.memory_security",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": ""
+    },
+    {
+      "step": "trust.approvals",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": ""
+    },
+    {
+      "step": "trust.chronicle",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": "count=20"
+    },
+    {
+      "step": "crystals.reuse",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": " extra={'credits': 17}"
+    },
+    {
+      "step": "crystals.chain",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": " extra={'blocks': 5}"
+    },
+    {
+      "step": "crystals.lattice",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": ""
+    },
+    {
+      "step": "crystals.economy",
+      "ok": true,
+      "skipped": false,
+      "status": 200,
+      "detail": " extra={'credits': 0, 'credit_count': 0}"
+    },
+    {
+      "step": "spend_cap",
+      "ok": true,
+      "skipped": false,
+      "status": null,
+      "detail": "spend_usd=0.000000 cap=0.03 (TGI-only path, no paid providers called)"
+    }
+  ]
+}

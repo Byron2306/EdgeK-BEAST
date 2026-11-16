@@ -1,0 +1,1133 @@
+{
+  "family": {
+    "cold": {
+      "accepted_by": null,
+      "candidates": [
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:1e0b690bad92323d87963482",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-unhandled-exception"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:2b089f9fd334db975992def8",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-logic-operator"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-config-constant"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:a0b362d365da0274266f6ba5",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "toolchain-regenerate"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:f3f8ad2739d13e5733d13336",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-off-by-one"
+        },
+        {
+          "children": [
+            "family-crystal:f3f8ad2739d13e5733d13336",
+            "family-crystal:5298d8b45bf3e16b7e2fa9df"
+          ],
+          "composite": true,
+          "crystal_id": "family-crystal:a7b5eaea0ee8fae87e9a5923",
+          "expected_failures": 2,
+          "features": {
+            "failure_count": false,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.3,
+          "task_family": "composite:fix-off-by-one+fix-config-constant"
+        }
+      ],
+      "false_accept": false,
+      "family": "refactor-rename-symbol",
+      "independent": null,
+      "model_calls": 3,
+      "observed_failures": 1,
+      "passed": false,
+      "phase": "cold",
+      "role": "cold",
+      "route": {
+        "band": "insufficient",
+        "beast_object_type": "beast_route_decision",
+        "crystal_id": "family-crystal:1e0b690bad92323d87963482",
+        "demotion_signal": "",
+        "digest": "sha256:23ff94245ccedbdd78cdc805c6c3f26aca01dc687fcb6f11e99e47c8934fbec2",
+        "envelope_digest": "sha256:49ab6aeae4e121e33538b3bc6cbcef3e1edd18fa8e0b9d42bf1b65f5682b19e1",
+        "execution_granted": false,
+        "fingerprint_compatible": true,
+        "proposal_only": true,
+        "reasons": [
+          "similarity<0.80: provider fallback"
+        ],
+        "route": "provider_fallback",
+        "similarity": 0.45,
+        "specialist_ref": "",
+        "verifier": "action_ir_full_verification",
+        "version": "d9.1"
+      },
+      "task": "ren-cold",
+      "tiers": [
+        {
+          "calls": [
+            {
+              "billable": true,
+              "failed": false,
+              "finish_reason": "stop",
+              "governor": "gov_1e77e40f120e3265c96060e9",
+              "latency_ms": 1238.849,
+              "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+              "provider": "nim:nemotron",
+              "reasoning_budget_exhausted": false,
+              "reasoning_in_content": false,
+              "response_sha256": "sha256:ced60c773872e68bec518a0a519407fef8c78fd215b0d99a29601e679ce37ae9",
+              "status": 200,
+              "tokens_completion": 38,
+              "tokens_prompt": 752,
+              "tokens_reasoning": 0,
+              "tokens_total": 790
+            },
+            {
+              "billable": true,
+              "failed": false,
+              "finish_reason": "stop",
+              "governor": "gov_7db916dd5c4e2dee3377b44c",
+              "latency_ms": 1691.2,
+              "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+              "provider": "nim:nemotron",
+              "reasoning_budget_exhausted": false,
+              "reasoning_in_content": false,
+              "response_sha256": "sha256:091901b09130e93e433bd1c323d7a0bb9cce8a9dffe26d0d0fd82924b6e819c0",
+              "status": 200,
+              "tokens_completion": 115,
+              "tokens_prompt": 1150,
+              "tokens_reasoning": 0,
+              "tokens_total": 1265
+            }
+          ],
+          "edits": null,
+          "last_check": {
+            "applied": false,
+            "passed": false,
+            "reason": "edit_not_applicable:edits limited to existing regular .py files"
+          },
+          "latency_ms": 2930.049,
+          "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "passed": false,
+          "provider": "nemotron",
+          "tier": "provider:nemotron",
+          "tokens_total": 2055,
+          "worktree": ""
+        },
+        {
+          "calls": [
+            {
+              "billable": "unknown",
+              "failed": true,
+              "governor": "gov_269826cb12593dcb317bf3dc",
+              "latency_ms": 75467.633,
+              "model": "deepseek-ai/deepseek-v4.1-flash",
+              "provider": "nim:deepseek",
+              "status": "ReadTimeout",
+              "tokens_total": 0
+            }
+          ],
+          "edits": null,
+          "last_check": {
+            "applied": false,
+            "passed": false,
+            "reason": "no_parseable_edit"
+          },
+          "latency_ms": 75467.633,
+          "model": "deepseek-ai/deepseek-v4.1-flash",
+          "passed": false,
+          "provider": "deepseek",
+          "tier": "provider:deepseek",
+          "tokens_total": 0,
+          "worktree": ""
+        }
+      ],
+      "tokens_total": 2055,
+      "wall_ms": 79053.343
+    },
+    "distilled": null,
+    "family": "refactor-rename-symbol",
+    "reason": "cold_unsolved"
+  },
+  "governor_chain": {
+    "count": 12,
+    "errors": [],
+    "valid": true
+  },
+  "memfd": null,
+  "model_calls": [
+    {
+      "at": 1794807038.0077133,
+      "billable": true,
+      "failed": false,
+      "finish_reason": "stop",
+      "latency_ms": 1238.849,
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "phase": "cold",
+      "provider": "nim:nemotron",
+      "reasoning_budget_exhausted": false,
+      "reasoning_in_content": false,
+      "response_sha256": "sha256:ced60c773872e68bec518a0a519407fef8c78fd215b0d99a29601e679ce37ae9",
+      "response_text": "{\"edits\": [{\"path\": \"ledger/core.py\", \"old_text\": \"def calc_total(items):\", \"new_text\": \"def compute_total(items):\"}]}",
+      "status": 200,
+      "task": "ren-cold",
+      "tokens_completion": 38,
+      "tokens_prompt": 752,
+      "tokens_reasoning": 0,
+      "tokens_total": 790
+    },
+    {
+      "at": 1794807039.7471232,
+      "billable": true,
+      "failed": false,
+      "finish_reason": "stop",
+      "latency_ms": 1691.2,
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "phase": "cold",
+      "provider": "nim:nemotron",
+      "reasoning_budget_exhausted": false,
+      "reasoning_in_content": false,
+      "response_sha256": "sha256:091901b09130e93e433bd1c323d7a0bb9cce8a9dffe26d0d0fd82924b6e819c0",
+      "response_text": "{\"edits\": [{\"path\": \"ledger/core.py\", \"old_text\": \"def calc_total(items):\", \"new_text\": \"def compute_total(items):\"}, {\"path\": \"ledger/report.py\", \"old_text\": \"from ledger.core import calc_total, format_money\", \"new_text\": \"from ledger.core import compute_total, format_money\"}, {\"path\": \"ledger/api.py\", \"old_text\": \"return core.calc_total(items)\", \"new_text\": \"return core.compute_total(items)\"}]}",
+      "status": 200,
+      "task": "ren-cold",
+      "tokens_completion": 115,
+      "tokens_prompt": 1150,
+      "tokens_reasoning": 0,
+      "tokens_total": 1265
+    },
+    {
+      "at": 1794807115.270541,
+      "billable": "unknown",
+      "failed": true,
+      "latency_ms": 75467.633,
+      "model": "deepseek-ai/deepseek-v4.1-flash",
+      "phase": "cold",
+      "provider": "nim:deepseek",
+      "status": "ReadTimeout",
+      "task": "ren-cold",
+      "tokens_total": 0
+    },
+    {
+      "at": 1794807116.7935004,
+      "billable": true,
+      "failed": false,
+      "finish_reason": "stop",
+      "latency_ms": 1053.386,
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "phase": "warm",
+      "provider": "nim:nemotron",
+      "reasoning_budget_exhausted": false,
+      "reasoning_in_content": false,
+      "response_sha256": "sha256:3dea403777fca8ac3fa5d4d9a3191fa0be9f0ef25b95537f2d07bffd7741b7ed",
+      "response_text": "{\"edits\": [{\"path\": \"mailer/core.py\", \"old_text\": \"def send_mail(items):\", \"new_text\": \"def send_email(items):\"}]}",
+      "status": 200,
+      "task": "ren-w1",
+      "tokens_completion": 38,
+      "tokens_prompt": 747,
+      "tokens_reasoning": 0,
+      "tokens_total": 785
+    },
+    {
+      "at": 1794807118.2206423,
+      "billable": true,
+      "failed": false,
+      "finish_reason": "stop",
+      "latency_ms": 1355.551,
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "phase": "warm",
+      "provider": "nim:nemotron",
+      "reasoning_budget_exhausted": false,
+      "reasoning_in_content": false,
+      "response_sha256": "sha256:662a4989027c2d9d0b2585e17ca1dfa52d90b5ba642d69f5ebbb3292793a1d73",
+      "response_text": "{\"edits\": [{\"path\": \"mailer/core.py\", \"old_text\": \"def send_mail(items):\", \"new_text\": \"def send_email(items):\", \"path\": \"mailer/report.py\", \"old_text\": \"from mailer.core import send_mail, format_money\", \"new_text\": \"from mailer.core import send_email, format_money\"}]}",
+      "status": 200,
+      "task": "ren-w1",
+      "tokens_completion": 82,
+      "tokens_prompt": 1147,
+      "tokens_reasoning": 0,
+      "tokens_total": 1229
+    },
+    {
+      "at": 1794807193.8055048,
+      "billable": "unknown",
+      "failed": true,
+      "latency_ms": 75472.646,
+      "model": "deepseek-ai/deepseek-v4.1-flash",
+      "phase": "warm",
+      "provider": "nim:deepseek",
+      "status": "ReadTimeout",
+      "task": "ren-w1",
+      "tokens_total": 0
+    },
+    {
+      "at": 1794807195.28801,
+      "billable": true,
+      "failed": false,
+      "finish_reason": "stop",
+      "latency_ms": 1016.58,
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "phase": "warm",
+      "provider": "nim:nemotron",
+      "reasoning_budget_exhausted": false,
+      "reasoning_in_content": false,
+      "response_sha256": "sha256:22eb6e452435b90d391db6860f035027836a5c16fc862c4fc66af0f003dcd10d",
+      "response_text": "{\"edits\": [{\"path\": \"exporter/core.py\", \"old_text\": \"def dump_json(items):\", \"new_text\": \"def write_json(items):\"}]}",
+      "status": 200,
+      "task": "ren-w2",
+      "tokens_completion": 38,
+      "tokens_prompt": 746,
+      "tokens_reasoning": 0,
+      "tokens_total": 784
+    },
+    {
+      "at": 1794807196.6685758,
+      "billable": true,
+      "failed": false,
+      "finish_reason": "stop",
+      "latency_ms": 1324.176,
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "phase": "warm",
+      "provider": "nim:nemotron",
+      "reasoning_budget_exhausted": false,
+      "reasoning_in_content": false,
+      "response_sha256": "sha256:eb4642760d6b8c5978d87f12554f4aa8939bce51a28f7cca66537fa9d419308e",
+      "response_text": "{\"edits\": [{\"path\": \"exporter/core.py\", \"old_text\": \"def dump_json(items):\", \"new_text\": \"def write_json(items):\"}, {\"path\": \"exporter/core.py\", \"old_text\": \"def format_money(value):\", \"new_text\": \"def format_money(value):\"}, {\"path\": \"exporter/core.py\", \"old_text\": \"return sum(items)\", \"new_text\": \"return sum(items)\"}]}",
+      "status": 200,
+      "task": "ren-w2",
+      "tokens_completion": 99,
+      "tokens_prompt": 1139,
+      "tokens_reasoning": 0,
+      "tokens_total": 1238
+    },
+    {
+      "at": 1794807196.7779834,
+      "billable": false,
+      "failed": true,
+      "latency_ms": 0.0,
+      "model": "deepseek-ai/deepseek-v4.1-flash",
+      "phase": "warm",
+      "provider": "nim:deepseek",
+      "status": "circuit_open",
+      "task": "ren-w2",
+      "tokens_total": 0
+    },
+    {
+      "at": 1794807198.8583834,
+      "billable": true,
+      "failed": false,
+      "finish_reason": "stop",
+      "latency_ms": 1494.726,
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "phase": "warm",
+      "provider": "nim:nemotron",
+      "reasoning_budget_exhausted": false,
+      "reasoning_in_content": false,
+      "response_sha256": "sha256:db9c9f429f6d46e52eeab8b8319aec58317edc51024956941af9f29be9d66a07",
+      "response_text": "{\"edits\": [{\"path\": \"totals/core.py\", \"old_text\": \"def calc_total(items):\", \"new_text\": \"def compute_total(items):\"}, {\"path\": \"totals/core.py\", \"old_text\": \"def sum_total(items):\", \"new_text\": \"def compute_total(items):\"}, {\"path\": \"totals/report.py\", \"old_text\": \"from totals.core import calc_total, format_money\", \"new_text\": \"from totals.core import compute_total, format_money\"}, {\"path\": \"totals/report.py\", \"old_text\": \"    return format_money(calc_total(items))\", \"new_text\": \"    return format_money(compute_total(items))\"}]}",
+      "status": 200,
+      "task": "ren-near",
+      "tokens_completion": 153,
+      "tokens_prompt": 759,
+      "tokens_reasoning": 0,
+      "tokens_total": 912
+    },
+    {
+      "at": 1794807200.0847275,
+      "billable": true,
+      "failed": false,
+      "finish_reason": "stop",
+      "latency_ms": 1168.491,
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "phase": "warm",
+      "provider": "nim:nemotron",
+      "reasoning_budget_exhausted": false,
+      "reasoning_in_content": false,
+      "response_sha256": "sha256:e870484a66bf4faf7c4038d3469d3f9ea3e597ca9141e767be80fe8f09d3d6a9",
+      "response_text": "{\"edits\": [{\"path\": \"totals/core.py\", \"old_text\": \"def sum_total(items):\", \"new_text\": \"def compute_total(items):\"}]}",
+      "status": 200,
+      "task": "ren-near",
+      "tokens_completion": 38,
+      "tokens_prompt": 1341,
+      "tokens_reasoning": 0,
+      "tokens_total": 1379
+    },
+    {
+      "at": 1794807200.191869,
+      "billable": false,
+      "failed": true,
+      "latency_ms": 0.0,
+      "model": "deepseek-ai/deepseek-v4.1-flash",
+      "phase": "warm",
+      "provider": "nim:deepseek",
+      "status": "circuit_open",
+      "task": "ren-near",
+      "tokens_total": 0
+    }
+  ],
+  "negative_controls": [
+    {
+      "accepted": false,
+      "control": "tampered_payload",
+      "credit_units": 0.0,
+      "crystal_id": "family-crystal:a0b362d365da0274266f6ba5",
+      "refused": "PermissionError: capsule payload digest mismatch: tampered capsule refused",
+      "replay_ran": false,
+      "task": "tool-w2"
+    },
+    {
+      "accepted": false,
+      "control": "unsealed_memfd",
+      "credit_units": 0.0,
+      "crystal_id": "family-crystal:a0b362d365da0274266f6ba5",
+      "refused": "PermissionError: capsule is not sealed (seals=[])",
+      "replay_ran": false,
+      "task": "tool-w2"
+    },
+    {
+      "accepted": false,
+      "control": "wrong_postcondition",
+      "credit_units": 0.0,
+      "crystal_id": "family-crystal:a0b362d365da0274266f6ba5",
+      "refused": "postcondition_failed:files_sha256_after",
+      "replay_ran": true,
+      "task": "tool-w2"
+    }
+  ],
+  "started_at": 1794807036.216864,
+  "warm": [
+    {
+      "accepted_by": null,
+      "candidates": [
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:1e0b690bad92323d87963482",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-unhandled-exception"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:2b089f9fd334db975992def8",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-logic-operator"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-config-constant"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:a0b362d365da0274266f6ba5",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "toolchain-regenerate"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:f3f8ad2739d13e5733d13336",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-off-by-one"
+        },
+        {
+          "children": [
+            "family-crystal:f3f8ad2739d13e5733d13336",
+            "family-crystal:5298d8b45bf3e16b7e2fa9df"
+          ],
+          "composite": true,
+          "crystal_id": "family-crystal:a7b5eaea0ee8fae87e9a5923",
+          "expected_failures": 2,
+          "features": {
+            "failure_count": false,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.3,
+          "task_family": "composite:fix-off-by-one+fix-config-constant"
+        }
+      ],
+      "false_accept": false,
+      "family": "refactor-rename-symbol",
+      "independent": null,
+      "model_calls": 3,
+      "observed_failures": 1,
+      "passed": false,
+      "phase": "warm",
+      "role": "warm",
+      "route": {
+        "band": "insufficient",
+        "beast_object_type": "beast_route_decision",
+        "crystal_id": "family-crystal:1e0b690bad92323d87963482",
+        "demotion_signal": "",
+        "digest": "sha256:23ff94245ccedbdd78cdc805c6c3f26aca01dc687fcb6f11e99e47c8934fbec2",
+        "envelope_digest": "sha256:49ab6aeae4e121e33538b3bc6cbcef3e1edd18fa8e0b9d42bf1b65f5682b19e1",
+        "execution_granted": false,
+        "fingerprint_compatible": true,
+        "proposal_only": true,
+        "reasons": [
+          "similarity<0.80: provider fallback"
+        ],
+        "route": "provider_fallback",
+        "similarity": 0.45,
+        "specialist_ref": "",
+        "verifier": "action_ir_full_verification",
+        "version": "d9.1"
+      },
+      "task": "ren-w1",
+      "tiers": [
+        {
+          "calls": [
+            {
+              "billable": true,
+              "failed": false,
+              "finish_reason": "stop",
+              "governor": "gov_63c520fd6abd1701e0fd4342",
+              "latency_ms": 1053.386,
+              "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+              "provider": "nim:nemotron",
+              "reasoning_budget_exhausted": false,
+              "reasoning_in_content": false,
+              "response_sha256": "sha256:3dea403777fca8ac3fa5d4d9a3191fa0be9f0ef25b95537f2d07bffd7741b7ed",
+              "status": 200,
+              "tokens_completion": 38,
+              "tokens_prompt": 747,
+              "tokens_reasoning": 0,
+              "tokens_total": 785
+            },
+            {
+              "billable": true,
+              "failed": false,
+              "finish_reason": "stop",
+              "governor": "gov_ab589fefd6a8b0e59cfd59d4",
+              "latency_ms": 1355.551,
+              "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+              "provider": "nim:nemotron",
+              "reasoning_budget_exhausted": false,
+              "reasoning_in_content": false,
+              "response_sha256": "sha256:662a4989027c2d9d0b2585e17ca1dfa52d90b5ba642d69f5ebbb3292793a1d73",
+              "status": 200,
+              "tokens_completion": 82,
+              "tokens_prompt": 1147,
+              "tokens_reasoning": 0,
+              "tokens_total": 1229
+            }
+          ],
+          "edits": null,
+          "last_check": {
+            "applied": true,
+            "changed": [
+              "mailer/report.py"
+            ],
+            "output_tail": "Traceback (most recent call last):\n  File \"/usr/lib/python3.13/unittest/loader.py\", line 137, in loadTestsFromName\n    module = __import__(module_name)\n  File \"/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/ren-w1-warm/nemotron-wt/test_mailer_contract.py\", line 2, in <module>\n    from mailer.core import send_email\nImportError: cannot import name 'send_email' from 'mailer.core' (/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/ren-w1-warm/nemotron-wt/mailer/core.py)\n\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nFAILED (errors=1)",
+            "passed": false,
+            "reason": "tests_still_failing",
+            "returncode": 1,
+            "tests_run": 1,
+            "verify_ms": 56.476
+          },
+          "latency_ms": 2408.937,
+          "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "passed": false,
+          "provider": "nemotron",
+          "tier": "provider:nemotron",
+          "tokens_total": 2014,
+          "worktree": ""
+        },
+        {
+          "calls": [
+            {
+              "billable": "unknown",
+              "failed": true,
+              "governor": "gov_43a66b7b10a1a71191ff0268",
+              "latency_ms": 75472.646,
+              "model": "deepseek-ai/deepseek-v4.1-flash",
+              "provider": "nim:deepseek",
+              "status": "ReadTimeout",
+              "tokens_total": 0
+            }
+          ],
+          "edits": null,
+          "last_check": {
+            "applied": false,
+            "passed": false,
+            "reason": "no_parseable_edit"
+          },
+          "latency_ms": 75472.646,
+          "model": "deepseek-ai/deepseek-v4.1-flash",
+          "passed": false,
+          "provider": "deepseek",
+          "tier": "provider:deepseek",
+          "tokens_total": 0,
+          "worktree": ""
+        }
+      ],
+      "tokens_total": 2014,
+      "wall_ms": 78535.357
+    },
+    {
+      "accepted_by": null,
+      "candidates": [
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:1e0b690bad92323d87963482",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-unhandled-exception"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:2b089f9fd334db975992def8",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-logic-operator"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-config-constant"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:a0b362d365da0274266f6ba5",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "toolchain-regenerate"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:f3f8ad2739d13e5733d13336",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-off-by-one"
+        },
+        {
+          "children": [
+            "family-crystal:f3f8ad2739d13e5733d13336",
+            "family-crystal:5298d8b45bf3e16b7e2fa9df"
+          ],
+          "composite": true,
+          "crystal_id": "family-crystal:a7b5eaea0ee8fae87e9a5923",
+          "expected_failures": 2,
+          "features": {
+            "failure_count": false,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.3,
+          "task_family": "composite:fix-off-by-one+fix-config-constant"
+        }
+      ],
+      "false_accept": false,
+      "family": "refactor-rename-symbol",
+      "independent": null,
+      "model_calls": 2,
+      "observed_failures": 1,
+      "passed": false,
+      "phase": "warm",
+      "role": "warm",
+      "route": {
+        "band": "insufficient",
+        "beast_object_type": "beast_route_decision",
+        "crystal_id": "family-crystal:1e0b690bad92323d87963482",
+        "demotion_signal": "",
+        "digest": "sha256:23ff94245ccedbdd78cdc805c6c3f26aca01dc687fcb6f11e99e47c8934fbec2",
+        "envelope_digest": "sha256:49ab6aeae4e121e33538b3bc6cbcef3e1edd18fa8e0b9d42bf1b65f5682b19e1",
+        "execution_granted": false,
+        "fingerprint_compatible": true,
+        "proposal_only": true,
+        "reasons": [
+          "similarity<0.80: provider fallback"
+        ],
+        "route": "provider_fallback",
+        "similarity": 0.45,
+        "specialist_ref": "",
+        "verifier": "action_ir_full_verification",
+        "version": "d9.1"
+      },
+      "task": "ren-w2",
+      "tiers": [
+        {
+          "calls": [
+            {
+              "billable": true,
+              "failed": false,
+              "finish_reason": "stop",
+              "governor": "gov_796dded5ea019369fc5ce7b3",
+              "latency_ms": 1016.58,
+              "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+              "provider": "nim:nemotron",
+              "reasoning_budget_exhausted": false,
+              "reasoning_in_content": false,
+              "response_sha256": "sha256:22eb6e452435b90d391db6860f035027836a5c16fc862c4fc66af0f003dcd10d",
+              "status": 200,
+              "tokens_completion": 38,
+              "tokens_prompt": 746,
+              "tokens_reasoning": 0,
+              "tokens_total": 784
+            },
+            {
+              "billable": true,
+              "failed": false,
+              "finish_reason": "stop",
+              "governor": "gov_93f12ceb2b18c464ffaf3198",
+              "latency_ms": 1324.176,
+              "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+              "provider": "nim:nemotron",
+              "reasoning_budget_exhausted": false,
+              "reasoning_in_content": false,
+              "response_sha256": "sha256:eb4642760d6b8c5978d87f12554f4aa8939bce51a28f7cca66537fa9d419308e",
+              "status": 200,
+              "tokens_completion": 99,
+              "tokens_prompt": 1139,
+              "tokens_reasoning": 0,
+              "tokens_total": 1238
+            }
+          ],
+          "edits": null,
+          "last_check": {
+            "applied": true,
+            "changed": [
+              "exporter/core.py"
+            ],
+            "output_tail": "lets/2026-11-16-large/work/ren-w2-warm/nemotron-wt/test_exporter_contract.py\", line 3, in <module>\n    from exporter.report import summary\n  File \"/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/ren-w2-warm/nemotron-wt/exporter/report.py\", line 1, in <module>\n    from exporter.core import dump_json, format_money\nImportError: cannot import name 'dump_json' from 'exporter.core' (/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/ren-w2-warm/nemotron-wt/exporter/core.py)\n\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nFAILED (errors=1)",
+            "passed": false,
+            "reason": "tests_still_failing",
+            "returncode": 1,
+            "tests_run": 1,
+            "verify_ms": 52.577
+          },
+          "latency_ms": 2340.756,
+          "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "passed": false,
+          "provider": "nemotron",
+          "tier": "provider:nemotron",
+          "tokens_total": 2022,
+          "worktree": ""
+        },
+        {
+          "calls": [
+            {
+              "billable": false,
+              "failed": true,
+              "governor": "gov_1497855c277020d704c9c838",
+              "latency_ms": 0.0,
+              "model": "deepseek-ai/deepseek-v4.1-flash",
+              "provider": "nim:deepseek",
+              "status": "circuit_open",
+              "tokens_total": 0
+            }
+          ],
+          "edits": null,
+          "last_check": {
+            "applied": false,
+            "passed": false,
+            "reason": "no_parseable_edit"
+          },
+          "latency_ms": 0.0,
+          "model": "deepseek-ai/deepseek-v4.1-flash",
+          "passed": false,
+          "provider": "deepseek",
+          "tier": "provider:deepseek",
+          "tokens_total": 0,
+          "worktree": ""
+        }
+      ],
+      "tokens_total": 2022,
+      "wall_ms": 2971.863
+    },
+    {
+      "accepted_by": null,
+      "candidates": [
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:1e0b690bad92323d87963482",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-unhandled-exception"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:2b089f9fd334db975992def8",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-logic-operator"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-config-constant"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:a0b362d365da0274266f6ba5",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "toolchain-regenerate"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:f3f8ad2739d13e5733d13336",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-off-by-one"
+        },
+        {
+          "children": [
+            "family-crystal:f3f8ad2739d13e5733d13336",
+            "family-crystal:5298d8b45bf3e16b7e2fa9df"
+          ],
+          "composite": true,
+          "crystal_id": "family-crystal:a7b5eaea0ee8fae87e9a5923",
+          "expected_failures": 2,
+          "features": {
+            "failure_count": false,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.3,
+          "task_family": "composite:fix-off-by-one+fix-config-constant"
+        }
+      ],
+      "false_accept": false,
+      "family": "refactor-rename-symbol",
+      "independent": null,
+      "model_calls": 2,
+      "observed_failures": 1,
+      "passed": false,
+      "phase": "warm",
+      "role": "near",
+      "route": {
+        "band": "insufficient",
+        "beast_object_type": "beast_route_decision",
+        "crystal_id": "family-crystal:1e0b690bad92323d87963482",
+        "demotion_signal": "",
+        "digest": "sha256:23ff94245ccedbdd78cdc805c6c3f26aca01dc687fcb6f11e99e47c8934fbec2",
+        "envelope_digest": "sha256:49ab6aeae4e121e33538b3bc6cbcef3e1edd18fa8e0b9d42bf1b65f5682b19e1",
+        "execution_granted": false,
+        "fingerprint_compatible": true,
+        "proposal_only": true,
+        "reasons": [
+          "similarity<0.80: provider fallback"
+        ],
+        "route": "provider_fallback",
+        "similarity": 0.45,
+        "specialist_ref": "",
+        "verifier": "action_ir_full_verification",
+        "version": "d9.1"
+      },
+      "task": "ren-near",
+      "tiers": [
+        {
+          "calls": [
+            {
+              "billable": true,
+              "failed": false,
+              "finish_reason": "stop",
+              "governor": "gov_152e60c502c51f9f6107adcb",
+              "latency_ms": 1494.726,
+              "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+              "provider": "nim:nemotron",
+              "reasoning_budget_exhausted": false,
+              "reasoning_in_content": false,
+              "response_sha256": "sha256:db9c9f429f6d46e52eeab8b8319aec58317edc51024956941af9f29be9d66a07",
+              "status": 200,
+              "tokens_completion": 153,
+              "tokens_prompt": 759,
+              "tokens_reasoning": 0,
+              "tokens_total": 912
+            },
+            {
+              "billable": true,
+              "failed": false,
+              "finish_reason": "stop",
+              "governor": "gov_188a756b09df266685ef01b6",
+              "latency_ms": 1168.491,
+              "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+              "provider": "nim:nemotron",
+              "reasoning_budget_exhausted": false,
+              "reasoning_in_content": false,
+              "response_sha256": "sha256:e870484a66bf4faf7c4038d3469d3f9ea3e597ca9141e767be80fe8f09d3d6a9",
+              "status": 200,
+              "tokens_completion": 38,
+              "tokens_prompt": 1341,
+              "tokens_reasoning": 0,
+              "tokens_total": 1379
+            }
+          ],
+          "edits": null,
+          "last_check": {
+            "applied": true,
+            "changed": [
+              "totals/core.py"
+            ],
+            "output_tail": ".F\n======================================================================\nFAIL: test_renamed_symbol (test_totals_contract.Contract.test_renamed_symbol)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/ren-near-warm/nemotron-wt/test_totals_contract.py\", line 9, in test_renamed_symbol\n    self.assertEqual(compute_total([1, 2]), 3)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 6 != 3\n\n----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nFAILED (failures=1)",
+            "passed": false,
+            "reason": "tests_still_failing",
+            "returncode": 1,
+            "tests_run": 2,
+            "verify_ms": 53.807
+          },
+          "latency_ms": 2663.217,
+          "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "passed": false,
+          "provider": "nemotron",
+          "tier": "provider:nemotron",
+          "tokens_total": 2291,
+          "worktree": ""
+        },
+        {
+          "calls": [
+            {
+              "billable": false,
+              "failed": true,
+              "governor": "gov_c0d347a4c6cc088dc1bb823e",
+              "latency_ms": 0.0,
+              "model": "deepseek-ai/deepseek-v4.1-flash",
+              "provider": "nim:deepseek",
+              "status": "circuit_open",
+              "tokens_total": 0
+            }
+          ],
+          "edits": null,
+          "last_check": {
+            "applied": false,
+            "passed": false,
+            "reason": "no_parseable_edit"
+          },
+          "latency_ms": 0.0,
+          "model": "deepseek-ai/deepseek-v4.1-flash",
+          "passed": false,
+          "provider": "deepseek",
+          "tier": "provider:deepseek",
+          "tokens_total": 0,
+          "worktree": ""
+        }
+      ],
+      "tokens_total": 2291,
+      "wall_ms": 3413.747
+    }
+  ],
+  "why": "main run: Nemotron renamed the definition but not the call sites (2 attempts, repair turn carried only 'tests_still_failing'); DeepSeek/gpt-oss tiers were circuit-open. Follow-up feeds the post-edit test output into the repair turn."
+}

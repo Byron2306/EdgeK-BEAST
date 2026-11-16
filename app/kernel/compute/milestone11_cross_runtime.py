@@ -1,5 +1,6 @@
 """Identical sealed uplift protocol across Ollama and independent llama.cpp."""
 from __future__ import annotations
+from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 
 import hashlib
 import inspect
@@ -29,7 +30,7 @@ class LlamaCppServerAdapter:
         body = json.dumps({"model": self.model, "messages":[{"role":"user","content":prompt}],
             "stream":False,"temperature":0,"seed":seed,"max_tokens":96}).encode()
         request = urllib.request.Request(self.endpoint+"/v1/chat/completions",data=body,headers={"Content-Type":"application/json"})
-        with urllib.request.urlopen(request,timeout=120) as response: result=json.loads(response.read())
+        with _egress.urlopen("milestone11_cross_runtime", request,timeout=120) as response: result=json.loads(response.read())
         usage=result.get("usage") or {}; text=result["choices"][0]["message"]["content"]
         return str(text),int(usage.get("prompt_tokens") or 0),int(usage.get("completion_tokens") or 0)
 

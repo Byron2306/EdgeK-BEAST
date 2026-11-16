@@ -38,6 +38,7 @@ def _config(tmp_path, *, placeholder=False):
                 "upstream": "127.0.0.1:18101",
                 "port": 18101,
                 "trust_domain": "operator",
+                "socket_guardian": True,
             },
         }
     }), encoding="utf-8")

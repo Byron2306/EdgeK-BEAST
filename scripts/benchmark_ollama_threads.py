@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 """Sweep Ollama request-level CPU settings and report measured throughput."""
 from __future__ import annotations
+try:  # closure-2026-11-16: governed egress shim
+    from app.kernel.compute import governed_egress as _egress
+except ModuleNotFoundError:  # run as a script: repo root not on sys.path yet
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
+    from app.kernel.compute import governed_egress as _egress
 import argparse, json, time, urllib.request
 
 
@@ -17,7 +25,7 @@ def main() -> int:
         started = time.perf_counter()
         try:
             request = urllib.request.Request(args.base_url.rstrip("/") + "/api/generate", data=json.dumps(body).encode(), headers={"Content-Type": "application/json"}, method="POST")
-            with urllib.request.urlopen(request, timeout=120) as response:
+            with _egress.urlopen("benchmark_ollama_threads", request, timeout=120) as response:
                 result = json.loads(response.read().decode())
             prompt_ns = int(result.get("prompt_eval_duration") or 1)
             eval_ns = int(result.get("eval_duration") or 1)

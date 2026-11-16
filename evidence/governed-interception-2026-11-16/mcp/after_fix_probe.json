@@ -1,0 +1,56 @@
+{
+ "initialize": {
+  "protocolVersion": "2025-11-25",
+  "serverInfo": {
+   "name": "edgek-beast",
+   "title": "EdgeK BEAST",
+   "version": "1.0.1",
+   "websiteUrl": null,
+   "icons": null
+  }
+ },
+ "tools_count": 36,
+ "tools": [
+  "beast_prepare_task",
+  "beast_run_quality_cascade",
+  "beast_run_maintenance_cascade",
+  "beast_prepare_handoff",
+  "beast_sourceplan_prepare",
+  "beast_sourceplan_preview_hunks",
+  "beast_sourceplan_apply_selected",
+  "beast_sourceplan_rollback_latest",
+  "beast_provider_fitness",
+  "beast_provider_economist_select",
+  "beast_tool_laziness_record",
+  "beast_tool_laziness_recommend",
+  "beast_otel_export",
+  "beast_plugin_manifest_validate",
+  "beast_plugin_marketplace_install",
+  "beast_capability_exchange",
+  "beast_meta_tool_commons",
+  "beast_compute_shadow",
+  "beast_check_policy",
+  "beast_build_route_card",
+  "beast_publish_chronicle",
+  "beast_attach_network_chronicle",
+  "beast_github_pr_ingest",
+  "beast_github_pr_publish_chronicle",
+  "beast_get_workspace_graph",
+  "beast_build_context_packet",
+  "beast_score_forge",
+  "beast_plan_workflow",
+  "beast_validate_canon",
+  "beast_check_promotion",
+  "beast_session_handshake",
+  "beast_openclaw_plan",
+  "beast_openclaw_execute",
+  "beast_mcp_status",
+  "beast_mcp_tool_catalog",
+  "beast_public_benchmark_grading_daemon"
+ ],
+ "call": {
+  "tool": "beast_mcp_status",
+  "isError": false,
+  "text_head": "{\n  \"beast_object_type\": \"mcp_server_status\",\n  \"version\": \"1.0\",\n  \"workspace_root\": \"/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST\",\n  \"tools_registered\": 69,\n  \"tool_categories\": [\n    \"audit\",\n    \"context\",\n    \"execution\",\n    \"extension\",\n    \"governance\",\n    \"observability\",\n    \"planning\",\n    \"sourceplan\",\n    \"task\"\n  ],\n  \"broker\": {\n    \"registered_servers\": 0,\n    \"audit_events\": 0,\n    \"execution_events\": 0,\n    \"schema_pins\": 0,\n    \"pending_approvals\": 0,\n    \"decisions\": {},\n    \"server_classes\": {},\n    \"executions\": {\n      \"executed\": 0,\n      \"blocked\": 0\n    },\n    \"audit_db\": \"/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/data/mcp_broker.db\"\n  },\n  \"ollama\": {\n    \"installed\": true,\n    \"server_ready\": true,\n    \"base_url"
+ }
+}

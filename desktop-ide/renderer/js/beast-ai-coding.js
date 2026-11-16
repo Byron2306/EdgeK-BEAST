@@ -26,7 +26,7 @@
 
   for (const factoryName of requiredFactories) Object.assign(runtime.api, registry[factoryName](runtime));
 
-  const publicMethods = ['restore', 'persist', 'setOpen', 'setExpanded', 'setMode', 'setPrompt', 'syncModel', 'toggleContext', 'addActiveFile', 'suggestContext', 'acceptSuggestedContext', 'resolveRequestedContext', 'captureSelection', 'removeSelection', 'send', 'runInWorktree', 'retryLastRequest', 'recoverInvalidPacket', 'continueWithAddedContext', 'cancel', 'clear', 'openSourcePlan', 'verifyRequestedChecks', 'noteSourcePlanApply'];
+  const publicMethods = ['restore', 'persist', 'setOpen', 'setExpanded', 'setMode', 'setPrompt', 'syncModel', 'toggleContext', 'addActiveFile', 'suggestContext', 'acceptSuggestedContext', 'resolveRequestedContext', 'captureSelection', 'removeSelection', 'send', 'runInWorktree', 'retryLastRequest', 'recoverInvalidPacket', 'continueWithAddedContext', 'cancel', 'clear', 'holdApprovalWatchdog', 'resumeApprovalWatchdog', 'openSourcePlan', 'verifyRequestedChecks', 'noteSourcePlanApply'];
   window.BeastAICoding = Object.fromEntries(publicMethods.map(name => [name, (...args) => runtime.api[name](...args)]));
   window.BeastAICodingModuleManifest = Object.freeze(requiredFactories.map(name => name.replace(/^create/, '')));
   document.addEventListener('beast:agent-sourceplan-applied', event => runtime.api.noteSourcePlanApply(event));

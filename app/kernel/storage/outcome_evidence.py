@@ -469,5 +469,8 @@ class NegativeCapabilityStore:
 
 @lru_cache(maxsize=1)
 def default_outcome_store() -> NegativeCapabilityStore:
+    override = os.environ.get("BEAST_CRYSTAL_COMPUTE_EVIDENCE", "").strip()  # tests/sandboxes: keep out of the live store
+    if override:
+        return NegativeCapabilityStore(Path(override).expanduser())
     root = Path(__file__).resolve().parents[2]
     return NegativeCapabilityStore(root / ".beast" / "crystal_compute_evidence.json")

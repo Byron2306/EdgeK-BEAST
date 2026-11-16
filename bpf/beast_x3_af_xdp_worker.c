@@ -26,6 +26,14 @@
 #include <xdp/xsk.h>
 
 #define BATCH_SIZE 64U
+#define MAX_REUSE_PINS 8
+
+/* --reuse-pin MAP=PATH binds an object map to an existing pinned map (e.g. ARDA's read-only policy maps)
+ * before load; libbpf refuses the reuse unless type/key/value/max_entries/flags match exactly. */
+struct reuse_pin {
+    const char *map_name;
+    const char *pin_path;
+};
 
 struct worker_config {
     const char *interface;
@@ -37,6 +45,12 @@ struct worker_config {
     bool zero_copy;
     bool generic_xdp;
     bool echo;
+    const char *program_name;
+    const char *pin_dir;          /* optional: pin only the named --pin-map maps here */
+    const char *pin_maps[4];
+    unsigned int pin_map_count;
+    struct reuse_pin reuse[MAX_REUSE_PINS];
+    unsigned int reuse_count;
 };
 
 struct worker_state {
@@ -83,7 +97,8 @@ static int is_power_of_two(unsigned int value) {
 static void usage(const char *program) {
     fprintf(stderr,
         "Usage: %s --interface IFACE --object FILE [--queue N] [--duration SEC] "
-        "[--frame-size BYTES] [--frame-count N] [--zero-copy] [--generic-xdp] [--echo]\n", program);
+        "[--frame-size BYTES] [--frame-count N] [--zero-copy] [--generic-xdp] [--echo] "
+        "[--program NAME] [--reuse-pin MAP=PATH]... [--pin-dir DIR --pin-map MAP]...\n", program);
 }
 
 static int parse_args(int argc, char **argv, struct worker_config *config) {
@@ -97,12 +112,16 @@ static int parse_args(int argc, char **argv, struct worker_config *config) {
         {"zero-copy", no_argument, NULL, 'z'},
         {"generic-xdp", no_argument, NULL, 'g'},
         {"echo", no_argument, NULL, 'e'},
+        {"program", required_argument, NULL, 'p'},
+        {"reuse-pin", required_argument, NULL, 'r'},
+        {"pin-dir", required_argument, NULL, 'P'},
+        {"pin-map", required_argument, NULL, 'm'},
         {"help", no_argument, NULL, 'h'},
         {NULL, 0, NULL, 0},
     };
     int option;
-    *config = (struct worker_config){.frame_size = 2048, .frame_count = 2048};
-    while ((option = getopt_long(argc, argv, "i:o:q:d:s:n:zgeh", options, NULL)) != -1) {
+    *config = (struct worker_config){.frame_size = 2048, .frame_count = 2048, .program_name = "beast_x3_redirect"};
+    while ((option = getopt_long(argc, argv, "i:o:q:d:s:n:zgep:r:P:m:h", options, NULL)) != -1) {
         switch (option) {
         case 'i': config->interface = optarg; break;
         case 'o': config->object_path = optarg; break;
@@ -113,12 +132,29 @@ static int parse_args(int argc, char **argv, struct worker_config *config) {
         case 'z': config->zero_copy = true; break;
         case 'g': config->generic_xdp = true; break;
         case 'e': config->echo = true; break;
+        case 'p': config->program_name = optarg; break;
+        case 'r': {
+            char *split = strchr(optarg, '=');
+            if (!split || split == optarg || !split[1] || config->reuse_count >= MAX_REUSE_PINS) {
+                usage(argv[0]);
+                return -EINVAL;
+            }
+            *split = '\0';
+            config->reuse[config->reuse_count++] = (struct reuse_pin){.map_name = optarg, .pin_path = split + 1};
+            break;
+        }
+        case 'P': config->pin_dir = optarg; break;
+        case 'm':
+            if (config->pin_map_count >= 4) { usage(argv[0]); return -EINVAL; }
+            config->pin_maps[config->pin_map_count++] = optarg;
+            break;
         default: usage(argv[0]); return -EINVAL;
         }
     }
     if (!config->interface || !config->object_path || config->queue_id >= 64 ||
         !is_power_of_two(config->frame_count) ||
-        config->frame_size < 2048 || config->frame_size % 2048 != 0) {
+        config->frame_size < 2048 || config->frame_size % 2048 != 0 ||
+        (config->pin_map_count && !config->pin_dir)) {
         usage(argv[0]);
         return -EINVAL;
     }
@@ -303,8 +339,25 @@ static int open_worker(const struct worker_config *config, struct worker_state *
 
     state->object = bpf_object__open_file(config->object_path, NULL);
     if (!state->object || libbpf_get_error(state->object)) return -ENOENT;
+    for (unsigned int i = 0; i < config->reuse_count; i++) {
+        struct bpf_map *map = bpf_object__find_map_by_name(state->object, config->reuse[i].map_name);
+        if (!map) return -ENOENT;
+        int pinned_fd = bpf_obj_get(config->reuse[i].pin_path);
+        if (pinned_fd < 0) return -errno;
+        result = bpf_map__reuse_fd(map, pinned_fd);   /* libbpf dups the fd; incompatible maps fail the load */
+        close(pinned_fd);
+        if (result) return result;
+    }
     if (bpf_object__load(state->object)) return -EACCES;
-    struct bpf_program *program = bpf_object__find_program_by_name(state->object, "beast_x3_redirect");
+    for (unsigned int i = 0; i < config->pin_map_count; i++) {
+        struct bpf_map *map = bpf_object__find_map_by_name(state->object, config->pin_maps[i]);
+        char pin_path[4096];
+        if (!map) return -ENOENT;
+        snprintf(pin_path, sizeof(pin_path), "%s/%s", config->pin_dir, config->pin_maps[i]);
+        result = bpf_map__pin(map, pin_path);
+        if (result) return result;
+    }
+    struct bpf_program *program = bpf_object__find_program_by_name(state->object, config->program_name);
     struct bpf_map *xsk_map = bpf_object__find_map_by_name(state->object, "xsks");
     struct bpf_map *stats_map = bpf_object__find_map_by_name(state->object, "stats");
     if (!program || !xsk_map || !stats_map) return -ENOENT;

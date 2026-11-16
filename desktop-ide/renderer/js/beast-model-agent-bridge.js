@@ -6,6 +6,10 @@
     { id:'phi-3.5-mini-instruct:3.8b', provider:'local_ollama', role:'Economy', confidence:71.2, latency:'0.82s', speed:'19.4 tok/s', size:'2.4 GB', context:'128K', quantization:'Q4_K_M', status:'Ready', runtime:'Ollama' },
     { id:'nemotron-super', provider:'nvidia_nim', role:'Escalation', confidence:97.4, latency:'cloud', speed:'managed', size:'remote', context:'128K', quantization:'NIM', status:'Standby', runtime:'NVIDIA NIM' }
   ];
+  const localCodingFallbackModels = [
+    { id:'qwen2.5-coder:1.5b', provider:'ollama', role:'Local coding · recommended', confidence:86, latency:'CPU/GPU local', speed:'1.5B coder', size:'986 MB', context:'32K', quantization:'Qwen Coder · Ollama', status:'Local Ollama · probe on use', selectable:true, runtime:'Ollama' },
+    { id:'qwen2.5:0.5b', provider:'ollama', role:'Emergency low-memory fallback', confidence:68, latency:'local', speed:'CPU local', size:'397 MB', context:'32K', quantization:'Ollama', status:'Fallback · probe on use', selectable:true, runtime:'Ollama' }
+  ];
   const demoAgents = [
     { id:'planner', label:'Planner Agent', role:'Architect', status:'Active', confidence:96, task:'Shape the mission route and approval gates', provider:'local_ollama', model:'qwen2.5-coder:7b', tools:['Runbook','Code Graph','Mission State'], files:3, budget:'42K tok' },
     { id:'graph', label:'Graph Analyst', role:'Analyst', status:'Active', confidence:92, task:'Resolve dependencies and impact paths', provider:'local_ollama', model:'qwen2.5-coder:7b', tools:['Code Graph','Symbols','Map'], files:12, budget:'31K tok' },
@@ -15,7 +19,7 @@
 
   function firstArray(...values) {
     for (const value of values) {
-      if (Array.isArray(value)) return value.filter(item => item != null);
+      if (Array.isArray(value)) return value;
       if (value && typeof value === 'object') {
         const entries = Object.entries(value);
         if (entries.length && entries.every(([, row]) => row && typeof row === 'object')) return entries.map(([key, row]) => ({ key, ...row }));
@@ -39,79 +43,240 @@
   }
   function settledValue(row) { return row?.status === 'fulfilled' ? row.value : null; }
 
-  function normalizeModels(registry={}, providerState={}, tooling={}, integrations={}, stats={}) {
-    registry = registry && typeof registry === 'object' ? registry : {};
-    providerState = providerState && typeof providerState === 'object' ? providerState : {};
-    tooling = tooling && typeof tooling === 'object' ? tooling : {};
-    integrations = integrations && typeof integrations === 'object' ? integrations : {};
-    stats = stats && typeof stats === 'object' ? stats : {};
-    const route = providerState.route || providerState.active_route || providerState.routing || {};
-    const credentialState = providerState.credentials && typeof providerState.credentials === 'object' ? providerState.credentials : {};
-    const credentialAlias = { codex:'openai', local_nim:'nvidia_nim' };
-    const providerIsConfigured = record => {
-      const env = Array.isArray(record?.env) ? record.env : [];
-      const requiresEndpoint = env.some(name => /_BASE_URL$/i.test(String(name)));
-      return record?.enabled !== false && !(requiresEndpoint && !record?.base_url);
+  const hostedNemotron = 'nvidia/nemotron-3.5-lightning-30b-a3b';
+  let verifiedHostedGateway = '';
+  let hostedVerificationPending = false;
+  function currentGateway() {
+    return String(BeastStore.get().connection?.gatewayUrl || '').replace(/\/$/, '');
+  }
+
+
+  const AUTO_ID = 'auto';
+  function isAutoRoute(id) {
+    const value = String(id || '').trim();
+    return !value || value === AUTO_ID || value === 'beast-auto';
+  }
+  function routeLabel(row) {
+    if (!row) return '';
+    if (row.governedAuto || row.governed_auto || isAutoRoute(row.id)) return 'Auto (BEAST governed)';
+    return String(row.label || `${row.model || row.id} · ${row.provider || ''}`.trim());
+  }
+  function inventoryRows(state) {
+    return (state?.models?.registry || []).filter(row => row && row.selectable !== false);
+  }
+  function findRoute(id, state) {
+    const rows = inventoryRows(state || BeastStore.get());
+    const requested = String(id || '').trim();
+    if (isAutoRoute(requested)) return rows.find(row => row.governedAuto || isAutoRoute(row.id)) || {
+      id: AUTO_ID, model: AUTO_ID, provider: 'beast', label: 'Auto (BEAST governed)',
+      governedAuto: true, selectable: true, configured: true, reachable: true, role: 'Capability router'
     };
-    const explicitModels = firstArray(
-      providerState.models, providerState.local_models,
-      registry.models, registry.local_models, registry.registry, registry.adapters, registry.records, registry.items,
-      tooling.models, tooling.local_models
-    );
-    // The live registry is provider-shaped: its `id` is a route id, while
-    // `default_model` is the value a completion endpoint actually accepts.
-    // Never put a provider id into the model selector.
-    const providerRecords = firstArray(registry.providers, providerState.providers).filter(providerIsConfigured);
-    const candidates = explicitModels.length ? explicitModels : providerRecords.map(record => ({
-      ...record,
-      id: record.default_model || record.model || record.provider_id || record.key,
-      model_id: record.default_model || record.model || record.provider_id || record.key,
-      provider: record.provider_id || record.provider || record.key,
-      runtime: record.backend || record.runtime,
-      credential_ready: record.credential_ready,
-      selectable: providerIsConfigured(record)
+    return rows.find(row => row.id === requested)
+      || rows.find(row => row.model === requested)
+      || null;
+  }
+  function fillModelSelect(select, state) {
+    if (!select) return;
+    const rows = inventoryRows(state);
+    const withAuto = rows.some(row => row.governedAuto || isAutoRoute(row.id))
+      ? rows
+      : [{ id: AUTO_ID, model: AUTO_ID, provider: 'beast', label: 'Auto (BEAST governed)', governedAuto: true, selectable: true }, ...rows];
+    const key = JSON.stringify(withAuto.map(row => [row.id, row.provider, row.label, (row.best_for || []).join(',')]));
+    if (select.dataset.optionsKey !== key) {
+      select.dataset.optionsKey = key;
+      const options = withAuto.map(row => {
+        const option = document.createElement('option');
+        option.value = row.id;
+        const best = (row.best_for || []).slice(0, 3);
+        option.textContent = row.governedAuto || isAutoRoute(row.id)
+          ? 'Auto (BEAST governed)'
+          : `${routeLabel(row)}${best.length ? ` · best: ${best.join(', ')}` : ''}`;
+        return option;
+      });
+      select.replaceChildren(...options);
+    }
+    const current = String(state.aiCoding?.model || state.models?.selectedId || state.models?.selectedModel || '').trim();
+    const match = withAuto.find(row => row.id === current)
+      || withAuto.find(row => row.model === current && (!state.aiCoding?.provider || row.provider === state.aiCoding.provider || (row.provider === 'ollama' && state.aiCoding.provider === 'local_ollama')))
+      || withAuto.find(row => row.governedAuto || isAutoRoute(row.id));
+    select.value = match?.id || AUTO_ID;
+  }
+  function normalizeInventory(inventory={}) {
+    const rows = Array.isArray(inventory.registry) ? inventory.registry.map(row => ({
+      id: String(row.id || ''),
+      model: String(row.model || row.id || ''),
+      provider: String(row.provider || ''),
+      label: String(row.label || routeLabel(row)),
+      role: String(row.role || ''),
+      status: String(row.status || ''),
+      runtime: String(row.runtime || row.provider || ''),
+      confidence: Number(row.confidence || 0) || 0,
+      latency: String(row.latency || 'n/a'),
+      speed: String(row.speed || 'n/a'),
+      size: String(row.size || ''),
+      context: String(row.context || 'n/a'),
+      quantization: String(row.quantization || ''),
+      placement: String(row.placement || ''),
+      key_env: String(row.key_env || ''),
+      selectable: row.selectable !== false,
+      configured: row.configured !== false,
+      reachable: row.reachable !== false,
+      installed: row.installed === true,
+      live: row.live,
+      governedAuto: row.governed_auto === true || row.governedAuto === true || row.id === AUTO_ID,
+      families: row.families || {},
+      best_for: Array.isArray(row.best_for) ? row.best_for : [],
+      usd_per_mtok_in: row.usd_per_mtok_in,
+      usd_per_mtok_out: row.usd_per_mtok_out,
+      gatewayUrl: currentGateway()
+    })).filter(row => row.id) : [];
+    if (currentGateway() && currentGateway() === verifiedHostedGateway) {
+      const hosted = rows.find(row => row.model === hostedNemotron || row.id === hostedNemotron || (row.provider === 'nvidia_nim' && String(row.model||'').includes('nemotron-3.5-lightning')));
+      if (hosted) {
+        hosted.hostedCoding = true;
+        hosted.hostedProvider = true;
+        hosted.inferenceVerified = true;
+        hosted.reachable = true;
+        hosted.id = hostedNemotron;
+        hosted.model = hostedNemotron;
+        hosted.provider = 'nvidia_nim';
+      } else {
+        rows.push({
+          id: hostedNemotron, model: hostedNemotron, provider: 'nvidia_nim',
+          label: 'Nemotron 3.5 Lightning 30B A3B · NVIDIA hosted',
+          role: 'Hosted · verified coding', status: 'Verified hosted inference', runtime: 'NVIDIA NIM',
+          confidence: 0, latency: 'n/a', speed: 'n/a', size: 'remote', context: 'n/a', quantization: '',
+          selectable: true, configured: true, reachable: true, installed: false, live: null,
+          governedAuto: false, hostedCoding: true, hostedProvider: true, inferenceVerified: true,
+          families: {}, best_for: [], gatewayUrl: currentGateway()
+        });
+      }
+    }
+    if (!rows.some(row => row.governedAuto)) {
+      rows.unshift({
+        id: AUTO_ID, model: AUTO_ID, provider: 'beast', label: 'Auto (BEAST governed)',
+        role: 'Capability router picks the best available lane per task family',
+        status: 'Default route', runtime: 'BEAST governed', confidence: 0, latency: 'routed per call',
+        speed: 'n/a', size: '', context: 'n/a', quantization: '', selectable: true, configured: true,
+        reachable: true, installed: false, live: null, governedAuto: true, families: inventory.family_leaders || {},
+        best_for: Object.keys(inventory.family_leaders || {})
+      });
+    }
+    const preferred = String(BeastStore.get().models.selectedId || BeastStore.get().models.selectedModel || BeastStore.get().aiCoding?.model || localStorage.getItem('beast.model') || '').trim();
+    const selected = rows.find(row => row.id === preferred || row.model === preferred) || rows.find(row => row.governedAuto) || rows[0];
+    const hardware = BeastStore.get().models.hardware || { name: 'Local compute', vram: 'n/a', temperature: 'n/a', status: 'Unknown' };
+    const live = inventory.live || {};
+    const runtimes = [];
+    if (live.tgi) runtimes.push({ id: 'tgi', label: 'TGI', status: live.tgi.up ? 'Live' : 'Down', detail: live.tgi.model || live.tgi.base_url || '' });
+    if (live.ollama) runtimes.push({ id: 'ollama', label: 'Ollama', status: live.ollama.up ? 'Live' : 'Down', detail: `${(live.ollama.models || []).length} installed` });
+    return {
+      active: selected?.id || AUTO_ID,
+      selectedId: selected?.id || AUTO_ID,
+      selectedModel: selected?.governedAuto ? AUTO_ID : (selected?.model || ''),
+      selectedProvider: selected?.provider || 'beast',
+      provider: selected?.provider || 'beast',
+      policy: String(inventory.policy || 'Auto (BEAST governed)'),
+      reason: selected?.governedAuto
+        ? 'Capability router will pick a lane per task family.'
+        : `${selected?.label || selected?.id} pinned through the governed path.`,
+      confidence: Number(selected?.confidence || 0) || 0,
+      latency: selected?.latency || 'n/a',
+      throughput: selected?.speed || 'n/a',
+      contextWindow: selected?.context || 'n/a',
+      cloudAllowed: rows.some(row => row.provider && !['ollama','tgi','beast','local_ollama'].includes(row.provider)),
+      registry: rows,
+      runtimes: runtimes.length ? runtimes : (BeastStore.get().models.runtimes || []),
+      hardware,
+      tests: Object.entries(inventory.family_leaders || {}).map(([family, leader]) => ({
+        id: family, model: `${leader.provider}/${leader.model}`, accuracy: Math.round((Number(leader.pass_rate) || 0) * 100),
+        latency: 'scorecard', throughput: `rank 1 · ${family}`, status: 'Family leader'
+      })),
+      familyLeaders: inventory.family_leaders || {},
+      families: inventory.families || [],
+      lastRefreshAt: Date.now(), loading: false, error: ''
+    };
+  }
+
+
+  async function verifyHostedNemotron(options={}) {
+    const gateway = currentGateway();
+    if (!gateway || BeastDesktopBridge.demoMode) throw new Error('A live BEAST gateway is required.');
+    if (hostedVerificationPending) throw new Error('Hosted model verification is already running.');
+    hostedVerificationPending = true;
+    verifiedHostedGateway = '';
+    BeastStore.patch('models', {registry:BeastStore.get().models.registry.filter(row => !row.hostedProvider)});
+    try {
+      const receipt = await BeastDesktopBridge.fetchJson('/edgek/providers/nvidia-nim/verify-picker-model', {
+        ...options, timeoutMs:22000, method:'POST', body:{confirm_live:true}
+      });
+      if (currentGateway() !== gateway) throw new Error('Gateway changed during hosted model verification.');
+      if (receipt?.ok !== true || receipt.provider !== 'nvidia_nim' ||
+          receipt.model !== hostedNemotron || receipt.status !== 'verified') {
+        throw new Error(`Hosted model verification failed: ${receipt?.status || 'invalid_receipt'}`);
+      }
+      verifiedHostedGateway = gateway;
+      const result = await refreshModels(options);
+      if (!result.registry.some(row => row.id === hostedNemotron && row.inferenceVerified === true)) {
+        throw new Error('Hosted model verified but unavailable in this gateway inventory.');
+      }
+      return result;
+    } finally {
+      hostedVerificationPending = false;
+    }
+  }
+
+  function normalizeModels(registry={}, providerState={}, tooling={}, integrations={}, stats={}, ollamaInventory={}) {
+    registry=registry ?? {}; providerState=providerState ?? {}; tooling=tooling ?? {}; integrations=integrations ?? {}; stats=stats ?? {}; ollamaInventory=ollamaInventory ?? {};
+    registry = registry ?? {};
+    providerState = providerState ?? {};
+    tooling = tooling ?? {};
+    integrations = integrations ?? {};
+    stats = stats ?? {};
+    // Provider registry rows are NOT model instances. Only explicit model inventories qualify.
+    const route = providerState.route || providerState.active_route || providerState.routing || {};
+    const installed = Array.isArray(ollamaInventory?.models) ? ollamaInventory.models : [];
+    const rows = installed.filter(m => m && typeof m.name === 'string' && m.name.trim()).slice(0, 64).map(m => ({
+      id: m.name, provider:'ollama', role:'Installed', confidence:0,
+      latency:'n/a', speed:'n/a', size:String(m.size || ''),
+      context:'n/a', quantization:String(m.details?.quantization_level || ''),
+      status:'Installed · inference unverified', runtime:'Ollama',
+      installed:true, reachable: Boolean(ollamaInventory?.ok), inferenceVerified:false
     }));
-    const fallback = BeastDesktopBridge.demoMode ? demoModels : [{
-      id:'qwen2.5:3b', model_id:'qwen2.5:3b', provider:'ollama', role:'Local coding · recommended',
-      confidence:86, latency:'CPU/GPU local', speed:'3B Qwen', size:'1.9 GB', context:'32K',
-      quantization:'Qwen Coder · Ollama', status:'Local Ollama · probe on use', credential_ready:true,
-      selectable:true, runtime:'Ollama'
-    }, {
-      id:'qwen2.5:0.5b', model_id:'qwen2.5:0.5b', provider:'ollama', role:'Emergency low-memory fallback',
-      confidence:68, latency:'local', speed:'CPU local', size:'397 MB', context:'32K',
-      quantization:'Ollama', status:'Fallback · probe on use', credential_ready:true,
-      selectable:true, runtime:'Ollama'
-    }];
-    const rows = candidates.length ? candidates.filter(model => model?.enabled !== false && model?.selectable !== false).map((model, index) => {
-      const id = String(model.model_id || model.default_model || model.model || label(model, `model-${index + 1}`));
-      const providerId = String(model.provider || model.provider_id || model.route_provider || model.key || providerState.active_provider || providerState.provider || 'local');
-      const credentialKey = credentialAlias[providerId] || providerId;
-      const hasCredentialSignal = Object.prototype.hasOwnProperty.call(credentialState, credentialKey);
-      const credentialReady = typeof model.credential_ready === 'boolean' ? model.credential_ready : (hasCredentialSignal ? Boolean(credentialState[credentialKey]) : null);
-      const activeHint = label(route.model || providerState.active_model || providerState.selected_model || registry.active_model || '');
-      const isPrimary = id === activeHint || Boolean(model.primary || model.active || model.selected) || (!activeHint && index === 0);
-      return {
-        id,
-        provider: providerId,
-        role: isPrimary ? 'Primary' : String(model.role || model.route_role || 'Fallback'),
-        confidence: percent(model.confidence ?? model.score ?? model.readiness, isPrimary ? 94 : 82),
-        latency: String(model.latency || model.latency_p50 || model.response_time || (isPrimary ? route.latency || 'n/a' : 'n/a')),
-        speed: String(model.speed || model.throughput || model.tokens_per_second || (isPrimary ? route.throughput || 'n/a' : 'n/a')),
-        size: String(model.size || model.disk_size || model.vram || model.parameters || ''),
-        context: String(model.context || model.context_window || model.context_length || 'n/a'),
-        quantization: String(model.quantization || model.quant || model.format || ''),
-        status: String(model.status || model.health || (credentialReady === false ? 'Credential missing' : model.ready === false ? 'Unavailable' : 'Ready')),
-        credentialReady,
-        selectable: model.selectable !== false && model.enabled !== false,
-        runtime: String(model.runtime || model.engine || model.backend || 'Local runtime'),
-        baseUrl: String(model.base_url || model.endpoint || model.ollama_base_url || route.base_url || providerState.base_url || '')
-      };
-    }) : fallback;
-    const usableRows = rows.filter(row => row.selectable !== false && row.credentialReady !== false && !/disabled|unavailable|missing/i.test(String(row.status || '')));
-    const requested = label(route.model || providerState.active_model || providerState.selected_model || registry.active_model, '');
-    const persisted = BeastStore.get().models.selectedId || localStorage.getItem('beast.model') || '';
-    const active = [requested, persisted].find(id => usableRows.some(row => row.id === id)) || usableRows[0]?.id || rows[0]?.id || BeastStore.get().models.active;
-    rows.forEach((row, index) => { row.role = row.id === active || (!active && index === 0) ? 'Primary' : row.role === 'Primary' ? 'Fallback' : row.role; });
+    const providerRows = firstArray(registry.providers, registry.items, registry.registry);
+    const credentials = providerState.credentials && typeof providerState.credentials === 'object' ? providerState.credentials : {};
+    // A credential-ready registry default is a selectable route.  It is not
+    // represented as installed or inference-verified: those claims require a
+    // provider-specific probe.
+    providerRows.forEach(record => {
+      const provider = String(record?.provider_id || record?.id || '');
+      const model = String(record?.default_model || '');
+      if (!provider || !model || record.enabled === false || provider === 'ollama' ||
+          credentials[provider] !== true || rows.some(row => row.id === model && row.provider === provider)) return;
+      const hostedCoding = provider === 'nvidia_nim' && model === hostedNemotron && currentGateway() === verifiedHostedGateway;
+      rows.push({
+        id:model, provider, role:'Configured provider default', confidence:0,
+        latency:'unverified', speed:'provider managed', size:'remote', context:'provider managed',
+        quantization:'n/a', status:'Credentials ready · inference unverified', runtime:String(record.backend || 'provider'),
+        configured:true, reachable:true, gatewayUrl:currentGateway(), inferenceVerified:hostedCoding,
+        hostedProvider:provider === 'nvidia_nim', hostedCoding, baseUrl:String(record.base_url || '')
+      });
+    });
+    const gateway = currentGateway();
+    const hosted = providerState.providers?.nvidia_nim;
+    if (gateway && gateway === verifiedHostedGateway &&
+        hosted?.enabled === true && providerState.credentials?.nvidia_nim === true &&
+        !rows.some(row => row.id === hostedNemotron)) {
+      rows.push({
+        id:hostedNemotron, provider:'nvidia_nim', role:'Hosted · verified coding',
+        status:'Verified hosted inference', runtime:'NVIDIA NIM', size:'remote',
+        configured:true, gatewayUrl:gateway, reachable:true, inferenceVerified:true,
+        hostedProvider:true, hostedCoding:true
+      });
+    }
+    const preferred = String(BeastStore.get().models.selectedId || '');
+    const selectedId = rows.some(row => row.id === preferred) ? preferred : '';
+    // Active means a verified executing route, never the first configured provider.
+    const active = '';
     const runtimeRows = firstArray(tooling.runtimes, tooling.model_runtimes, providerState.runtimes, registry.runtimes, integrations.runtimes);
     const runtimes = runtimeRows.length ? runtimeRows.slice(0, 8).map((runtime, index) => ({
       id: label(runtime, `runtime-${index + 1}`),
@@ -121,10 +286,10 @@
     })) : [];
     const gpu = tooling.gpu || tooling.hardware?.gpu || tooling.system?.gpu || {};
     const hardware = {
-      name: label(gpu, String(tooling.hardware?.name || tooling.device || 'Unreported')),
+      name: label(gpu, String(tooling.hardware?.name || tooling.device || 'Local compute')),
       vram: String(gpu.vram || gpu.memory || tooling.hardware?.vram || 'n/a'),
       temperature: String(gpu.temperature || tooling.temperature || 'n/a'),
-      status: String(gpu.status || tooling.hardware?.status || 'unreported')
+      status: String(gpu.status || tooling.hardware?.status || 'Unknown')
     };
     const testRows = firstArray(stats.tests, stats.benchmarks, stats.route_tests, providerState.tests);
     const tests = testRows.length ? testRows.slice(0, 8).map((test, index) => ({
@@ -134,15 +299,15 @@
     })) : [];
     return {
       active,
-      selectedId: usableRows.some(row => row.id === persisted) ? persisted : active,
-      provider: label(providerState.active_provider || providerState.provider || route.provider, rows.find(row => row.id === active)?.provider || ''),
-      policy: String(route.policy || providerState.policy || registry.policy || 'Unverified'),
-      reason: String(route.reason || providerState.reason || providerState.route_reason || 'No live provider route was reported.'),
-      confidence: rows.find(row => row.id === active)?.confidence || 0,
-      latency: String(route.latency || rows.find(row => row.id === active)?.latency || 'n/a'),
-      throughput: String(route.throughput || rows.find(row => row.id === active)?.speed || 'n/a'),
-      contextWindow: String(route.context_window || rows.find(row => row.id === active)?.context || 'n/a'),
-      cloudAllowed: Boolean(route.cloud_allowed ?? providerState.cloud_allowed ?? providerState.cloud),
+      selectedId,
+      provider: rows.find(row => row.id === selectedId)?.provider || '',
+      policy: String(route.policy || providerState.policy || registry.policy || 'Local First'),
+      reason: 'Model inventory only; no inference route is currently executing.',
+      confidence: 0,
+      latency: 'n/a',
+      throughput: 'n/a',
+      contextWindow: 'n/a',
+      cloudAllowed: false,
       registry: rows,
       runtimes, hardware, tests,
       lastRefreshAt: Date.now(), loading:false, error:''
@@ -152,23 +317,62 @@
   async function refreshModels(options={}) {
     BeastStore.patch('models', { loading:true, error:'' });
     if (BeastDesktopBridge.demoMode) {
-      const normalized = normalizeModels({ models:demoModels }, { active_model:'qwen2.5-coder:7b', active_provider:'local_ollama', policy:'Local First', route_reason:'Highest capability per local watt' }, { gpu:{ name:'RTX 4090', vram:'24 GB', temperature:'62°C', status:'Healthy' } }, {}, {});
+      const normalized = normalizeInventory({
+        registry: [
+          {id:AUTO_ID, model:AUTO_ID, provider:'beast', label:'Auto (BEAST governed)', role:'Capability router', status:'Default route', governed_auto:true, selectable:true, configured:true, reachable:true, confidence:0, latency:'routed per call'},
+          ...localCodingFallbackModels
+        ],
+        policy: 'Auto (BEAST governed)',
+        family_leaders: {}
+      });
       BeastStore.patch('models', normalized);
       BeastStore.addLedger('Model Router refreshed from demo telemetry');
       return normalized;
     }
     try {
+      const refreshGateway = currentGateway();
+      try {
+        const inventory = await BeastDesktopBridge.fetchJson('/edgek/ide/model-inventory', { ...options, timeoutMs: options.timeoutMs || 8000, cacheTtl: 0 });
+        if (currentGateway() !== refreshGateway) throw new Error('Gateway changed during model refresh.');
+        if (inventory && Array.isArray(inventory.registry) && inventory.registry.length) {
+          const normalized = normalizeInventory(inventory);
+          BeastStore.patch('models', normalized);
+          BeastStore.addLedger(`Model Router refreshed: ${normalized.registry.length} governed lanes`);
+          return normalized;
+        }
+      } catch (inventoryError) {
+        // Older gateways (live 8101) do not serve this inventory yet; fall through.
+        if (!String(inventoryError.message || inventoryError).includes('404') && !String(inventoryError.message || inventoryError).includes('Failed to fetch') && !String(inventoryError.message || inventoryError).includes('unavailable')) {
+          BeastStore.addLedger(`Governed inventory unavailable: ${String(inventoryError.message || inventoryError)}`);
+        }
+      }
       const query = rootQuery();
       const results = await Promise.allSettled([
         BeastDesktopBridge.fetchJson('/edgek/providers/registry', options),
         BeastDesktopBridge.fetchJson('/edgek/providers/state', options),
         BeastDesktopBridge.fetchJson(`/edgek/ide/tooling-snapshot${query}`, options),
-        BeastDesktopBridge.fetchJson('/edgek/tools/integrations', options),
-        // Optional endpoint: older gateways do not expose inference-stats.
-        // Do not let a 404/timeout hold the entire model refresh hostage.
-        Promise.resolve(null)
+        BeastDesktopBridge.fetchJson('/edgek/tools/integrations', options)
       ]);
-      const normalized = normalizeModels(...results.map(settledValue));
+      if (results[0].status !== 'fulfilled' || !results[0].value) {
+        throw new Error('Provider registry unavailable: ' +
+          String(results[0].reason?.message || results[0].reason || 'empty response'));
+      }
+      const missing = results.map((result, index) =>
+        result.status === 'rejected' ? index : -1
+      ).filter(index => index >= 0);
+      const payloads = results.map(result => settledValue(result) ?? {});
+      const ollamaInventory = typeof window.beastDesktop?.listOllamaModels === 'function'
+        ? await window.beastDesktop.listOllamaModels().catch(error => ({ok:false,error:String(error.message || error)}))
+        : {ok:false,error:'Ollama inventory IPC unavailable'};
+      if (currentGateway() !== refreshGateway) throw new Error('Gateway changed during model refresh.');
+      const normalized = normalizeModels(...payloads, {}, ollamaInventory);
+      if (!ollamaInventory.ok) normalized.error = `Ollama inventory unavailable: ${ollamaInventory.error || 'unknown error'}`;
+      if (missing.length) {
+        normalized.error = [normalized.error, 'Partial discovery: unavailable endpoint(s) ' +
+          missing.map(index => [
+            'registry', 'state', 'tooling', 'integrations'
+          ][index]).join(', ')].filter(Boolean).join(' | ');
+      }
       BeastStore.patch('models', normalized);
       BeastStore.addLedger(`Model Router refreshed: ${normalized.registry.length} routes`);
       return normalized;
@@ -180,116 +384,103 @@
 
   function selectModel(id) {
     const state = BeastStore.get();
-    const model = state.models.registry.find(row => row.id === id);
-    if (!model) return;
-    localStorage.setItem('beast.model', id);
-    if (model.provider) localStorage.setItem('beast.provider', model.provider);
-    BeastStore.patch('models', { selectedId:id, provider:model.provider || state.models.provider });
-    BeastStore.patch('terminal', { selectedModel:id, selectedProvider:model.provider || state.models.provider });
-    BeastStore.addLedger(`Model selected for inspection: ${id}`);
+    const model = findRoute(id, state);
+    if (!model) return model;
+    const auto = Boolean(model.governedAuto || isAutoRoute(model.id));
+    const selectedId = auto ? AUTO_ID : model.id;
+    const provider = auto ? 'beast' : String(model.provider || '');
+    const selectedModel = auto ? AUTO_ID : String(model.model || model.id);
+    BeastStore.patch('models', {
+      selectedId, selectedModel, selectedProvider: provider, provider, active: selectedId,
+      reason: auto ? 'Capability router will pick a lane per task family.' : `${routeLabel(model)} pinned through the governed path.`,
+      confidence: Number(model.confidence || 0) || 0,
+      latency: model.latency || 'n/a',
+      throughput: model.speed || 'n/a'
+    });
+    try {
+      localStorage.setItem('beast.model', selectedId);
+      localStorage.setItem('beast.provider', provider);
+      window.BeastAICoding?.syncModel?.(selectedId,{explicitSelection:true});
+      BeastStore.addLedger(auto ? 'Agent Coder route selected: Auto (BEAST governed)' : `Agent Coder route selected: ${provider}/${selectedModel}`);
+    } catch (error) {
+      BeastStore.addLedger(`Model selected for inspection: ${id} (${String(error.message || error)})`);
+    }
+    return model;
   }
 
-  function normalizeAgents(snapshot={}, tooling={}, swarm={}, swarmRuns={}) {
-    const sessions = firstArray(snapshot.agent_sessions?.sessions, snapshot.agent_sessions, snapshot.sessions, snapshot.agents, swarmRuns.runs);
+  function normalizeAgents(snapshot={}, tooling={}) {
+    const sessions = firstArray(snapshot.agent_sessions?.sessions, snapshot.agent_sessions, snapshot.sessions, snapshot.agents);
     const rows = sessions.length ? sessions.slice(0, 12).map((session, index) => {
       const id = label(session, `agent-${index + 1}`);
       const tools = firstArray(session.tools, session.tool_names, session.allowed_tools, session.capabilities).map(tool => label(tool, 'Tool')).slice(0, 6);
       return {
         id,
-        label: String(session.name || session.label || session.agent || session.objective || session.mode || id).replace(/[-_]/g,' ').replace(/\b\w/g, char => char.toUpperCase()),
-        role: String(session.role || session.permission || session.task_type || session.mode || 'Mission Agent'),
-        status: String(session.status || session.state || 'Reported'),
+        label: String(session.name || session.label || session.agent || session.mode || id).replace(/[-_]/g,' ').replace(/\b\w/g, char => char.toUpperCase()),
+        role: String(session.role || session.permission || session.mode || 'Mission Agent'),
+        status: String(session.status || session.state || 'Online'),
         confidence: percent(session.confidence ?? session.score ?? session.health, 86),
-        task: String(session.objective || session.task || session.last_prompt || 'No task detail reported'),
-        provider: String(session.provider || session.profile || 'not reported'), model: String(session.model || session.task_type || 'not reported'),
-        tools: tools.length ? tools : [],
+        task: String(session.objective || session.task || session.last_prompt || 'Mission support'),
+        provider: String(session.provider || 'local'), model: String(session.model || 'assigned route'),
+        tools: tools.length ? tools : ['Code Graph','Evidence','Runbook'],
         files: Number(session.files?.length ?? session.file_count ?? 0),
         budget: String(session.budget?.tokens || session.token_budget || 'governed'),
         updatedAt: String(session.updated_at || session.last_event_at || 'live')
       };
-    }) : (BeastDesktopBridge.demoMode ? demoAgents : Object.entries(swarm.role_lanes || {}).map(([id, lane]) => ({
-      id:`swarm-role:${id}`,
-      label:String(lane.label || id).replace(/[-_]/g,' ').replace(/\b\w/g, char => char.toUpperCase()),
-      role:'Swarm role lane', status:swarm.enabled ? 'Ready' : 'Disabled', confidence:0,
-      task:String(lane.purpose || 'No live swarm runs reported'), provider:'swarm kernel', model:String(lane.default_risk || 'governed'),
-      tools:[], files:0, budget:'governed', updatedAt:'live state'
-    })));
+    }) : (BeastDesktopBridge.demoMode ? demoAgents : []);
     const handoffs = rows.slice(0, 8).map((agent, index) => ({
       time: new Date(Date.now() - index * 65000).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
       label: `${agent.label}: ${agent.task}`,
       tone: /error|alert|blocked/i.test(agent.status) ? 'danger' : /working|active|running/i.test(agent.status) ? 'live' : 'idle'
     }));
     const allTools = firstArray(tooling.tools, tooling.integrations, tooling.tool_inventory).map(tool => label(tool, 'Tool'));
+    const orchestrator = snapshot.orchestrator && typeof snapshot.orchestrator === 'object' ? snapshot.orchestrator : {};
+    const permissions = firstArray(snapshot.permissions, snapshot.agent_permissions, tooling.permissions, tooling.agent_permissions).map(value => label(value, 'Permission'));
     return {
       sessions:rows,
       selectedId: BeastStore.get().agents.selectedId || rows[0]?.id || '',
-      tools: allTools.length ? [...new Set(allTools)].slice(0, 12) : [],
+      tools: [...new Set(allTools)].slice(0, 12),
+      permissions,
       handoffs,
-      swarmProof: normalizeSwarmProof(swarmRuns),
-      orchestrator:{ label:'Swarm / Mission Orchestrator', status:rows.some(row => /active|working|running/i.test(row.status)) ? 'Coordinating' : swarm.enabled ? 'Ready' : 'Not reported', health: rows.length ? Math.round(rows.reduce((sum,row)=>sum+row.confidence,0)/rows.length) : 0 },
+      orchestrator:{
+        label:'Mission Orchestrator',
+        status:String(orchestrator.status || (rows.some(row => /active|working|running/i.test(row.status)) ? 'Coordinating' : rows.length ? 'Online' : 'No active sessions')),
+        health:Number(orchestrator.health ?? (rows.length ? Math.round(rows.reduce((sum,row)=>sum+row.confidence,0)/rows.length) : 0))
+      },
       loading:false, error:'', lastRefreshAt:Date.now()
     };
   }
 
-  function normalizeSwarmProof(detail={}) {
-    const events = firstArray(detail.events, detail.role_events);
-    const byRole = new Map(events.map(item => [String(item.role || ''), item]));
-    const route = byRole.get('hermes')?.details?.route_decision || {};
-    const compressor = byRole.get('compressor')?.details || {};
-    const crystal = byRole.get('crystalist')?.details || {};
-    const archivist = byRole.get('archivist')?.details || {};
-    const metrics = [
-      ['Route', route.route || 'not reported', route.reason || 'Hermes has not emitted a route decision.'],
-      ['Context', compressor.final_tokens ? `${compressor.final_tokens} tokens` : 'not reported', compressor.reduction_ratio != null ? `${Math.round(Number(compressor.reduction_ratio) * 100)}% reduced` : 'No compression receipt'],
-      ['Interception', crystal.assistance_mode || 'not reported', crystal.mutation_authorized === false ? 'execution authority withheld' : 'No interception receipt'],
-      ['Isolation', byRole.has('forge_executor') ? 'reported' : 'not run', 'Worktree execution is opt-in'],
-      ['Verification', byRole.get('verifier')?.decision || 'not run', 'Fresh proof required'],
-      ['Archive', archivist.packet_hash ? 'sealed' : 'not reported', archivist.packet_hash || 'No unified packet hash']
-    ].map(([label,value,detail]) => ({label,value:String(value),detail:String(detail)}));
+  function normalizeSwarm(snapshot={}, runsPayload={}) {
+    const lanes = snapshot.role_lanes && typeof snapshot.role_lanes === 'object' ? snapshot.role_lanes : {};
+    const runs = firstArray(runsPayload.runs, runsPayload.items);
+    const roleLanes = Object.entries(lanes).map(([id, lane]) => ({
+      id,
+      label: String(id).replace(/[-_]/g, ' ').replace(/\b\w/g, char => char.toUpperCase()),
+      purpose: String(lane?.purpose || ''),
+      risk: String(lane?.default_risk || 'unverified')
+    }));
     return {
-      runId:String(detail.run_id || detail.id || ''),
-      status:String(detail.status || detail.state || (events.length ? 'reported' : 'not reported')),
-      metrics,
-      events:events.slice(-24).map(item => ({role:String(item.role || 'unknown'),decision:String(item.decision || 'reported'),state:String(item.state || ''),time:String(item.created_at || 'live'),details:item.details || {}})),
-      updatedAt:Date.now()
-    };
-  }
-
-  function normalizeGoldenProof(result={}) {
-    const proof = result.swarm_proof || {};
-    const route = proof.route || {};
-    const context = proof.context || {};
-    const interception = proof.interception || {};
-    const verification = proof.verification || {};
-    const archive = proof.archive || {};
-    const sourcePlan = proof.source_plan || {};
-    const crystal = proof.crystal_strengthening || {};
-    const authority = proof.isolation || {};
-    const model = result.residual || {};
-    return {
-      runId:String(result.mission_run_id || 'golden-path'),
-      status:String(result.status || 'reported'),
-      metrics:[
-        {label:'Route',value:String(route.route || 'not reported'),detail:String(route.reason || 'Hermes route receipt missing.')},
-        {label:'Context',value:context.final_tokens ? `${context.final_tokens} tokens` : 'not reported',detail:context.reduction_ratio != null ? `${Math.round(Number(context.reduction_ratio) * 100)}% reduced` : 'Compression receipt pending'},
-        {label:'Interception',value:String(interception.assistance_mode || 'not reported'),detail:interception.model_packet_digest || 'No interception receipt'},
-        {label:'Isolation',value:authority.worktree_task_id ? 'isolated' : 'not run',detail:authority.path || 'Worktree receipt missing'},
-        {label:'Verification',value:verification.status || 'not run',detail:verification.reason || 'Fresh proof required'},
-        {label:'Archive',value:archive.packet_hash ? 'sealed' : 'not reported',detail:archive.packet_hash || 'No unified packet hash'},
-        {label:'SourcePlan',value:sourcePlan.status || 'not reported',detail:sourcePlan.operator_decision || 'Operator review pending'},
-        {label:'Crystal',value:crystal.assistance_mode || 'not reported',detail:crystal.promotion_authorized === false ? 'promotion withheld' : 'Strengthening receipt missing'},
-        {label:'Model Evidence',value:model.model_mode || 'not reported',detail:model.model ? `${model.model} · ${model.provider_called === false ? 'crystal bypass' : `${model.usage?.prompt_tokens ?? '?'} prompt tokens`} · uplift not measured` : 'Live model result unavailable'}
-      ],
-      events:(result.golden_timeline || []).map(item => ({role:'golden-path',decision:String(item.label || item.state || 'stage'),state:String(item.status || 'pending'),time:'live',details:item.evidence || {}})),
-      updatedAt:Date.now()
+      loading: false,
+      error: '',
+      enabled: typeof snapshot.enabled === 'boolean' ? snapshot.enabled : null,
+      runs: Number(snapshot.runs || 0),
+      statuses: snapshot.statuses || {},
+      roleEvents: snapshot.role_events || {},
+      value: snapshot.value || {},
+      profiles: snapshot.profiles || {},
+      roleLanes,
+      recentRuns: runs.slice(0, 12),
+      updatedAt: Date.now()
     };
   }
 
   async function refreshAgents(options={}) {
     BeastStore.patch('agents', { loading:true, error:'' });
+    BeastStore.patch('agents', { swarm:{ ...BeastStore.get().agents.swarm, loading:true, error:'' } });
     if (BeastDesktopBridge.demoMode) {
       const normalized = normalizeAgents({ agent_sessions:{ sessions:demoAgents } }, { tools:['Code Graph','Profiler','Evidence Parser','File System','Shell','Runbook'] });
       BeastStore.patch('agents', normalized);
+      BeastStore.patch('agents', { swarm:{ ...BeastStore.get().agents.swarm, loading:false, error:'Swarm service is unavailable in demo mode.', updatedAt:Date.now() } });
       BeastStore.patch('mission', { metrics:{ ...BeastStore.get().mission.metrics, agents:normalized.sessions.length } });
       BeastStore.addLedger('Agent Constellation refreshed from demo telemetry');
       return normalized;
@@ -306,51 +497,27 @@
         BeastDesktopBridge.fetchJson('/edgek/swarm/state', options),
         BeastDesktopBridge.fetchJson('/edgek/swarm/runs?limit=20', options)
       ]);
-      if (!results.some(row => row.status === 'fulfilled')) throw new Error('No agent or swarm telemetry was returned by the gateway.');
-      const runsPayload = settledValue(results[3]) || {};
-      const latestRun = firstArray(runsPayload.runs, runsPayload.items)[0];
-      let detailPayload = {};
-      if (latestRun?.run_id) {
-        try { detailPayload = await BeastDesktopBridge.fetchJson(`/edgek/swarm/runs/${encodeURIComponent(latestRun.run_id)}`, options); } catch (_) { detailPayload = {}; }
-      }
-      const normalized = normalizeAgents(settledValue(results[0]) || {}, settledValue(results[1]) || {}, settledValue(results[2]) || {}, detailPayload || runsPayload);
+      const failures = results.slice(0, 2).flatMap((result, index) => result.status === 'rejected'
+        ? [`${index === 0 ? 'IDE snapshot' : 'Tooling snapshot'}: ${String(result.reason?.message || result.reason)}`]
+        : []);
+      if (failures.length) throw new Error(failures.join('; '));
+      const normalized = normalizeAgents(settledValue(results[0]) || {}, settledValue(results[1]) || {});
       BeastStore.patch('agents', normalized);
+      const swarmState = settledValue(results[2]) || {};
+      const swarmRuns = settledValue(results[3]) || {};
+      const swarmError = results[2].status === 'rejected' && results[3].status === 'rejected'
+        ? `Swarm state: ${String(results[2].reason?.message || results[2].reason)}; swarm runs: ${String(results[3].reason?.message || results[3].reason)}`
+        : results[2].status === 'rejected'
+          ? `Swarm state: ${String(results[2].reason?.message || results[2].reason)}`
+          : results[3].status === 'rejected' ? `Swarm runs: ${String(results[3].reason?.message || results[3].reason)}` : '';
+      BeastStore.patch('agents', { swarm:{ ...normalizeSwarm(swarmState, swarmRuns), error:swarmError } });
       BeastStore.patch('mission', { metrics:{ ...BeastStore.get().mission.metrics, agents:normalized.sessions.length } });
       BeastStore.addLedger(`Agent Constellation refreshed: ${normalized.sessions.length} sessions`);
       return normalized;
     } catch (error) {
-      const failure = { sessions:[], selectedId:'', tools:[], handoffs:[], orchestrator:{ label:'Swarm / Mission Orchestrator', status:'Unavailable', health:0 }, loading:false, error:String(error.message || error), lastRefreshAt:Date.now() };
-      BeastStore.patch('agents', failure);
-      BeastStore.patch('mission', { metrics:{ ...BeastStore.get().mission.metrics, agents:0 } });
-      BeastStore.addLedger(`Agent / Swarm telemetry unavailable: ${String(error.message || error)}`);
-      return failure;
+      BeastStore.patch('agents', { loading:false, error:String(error.message || error), lastRefreshAt:Date.now() });
+      throw error;
     }
-  }
-
-  async function createAgent(objective, options={}) {
-    const text = String(objective || '').trim();
-    if (!text) throw new Error('Agent objective is required.');
-    const state = BeastStore.get();
-    if (BeastDesktopBridge.demoMode) {
-      const id = `local-${Date.now()}`;
-      const local = { id, label:'Local Architect', role:'Architect', status:'Queued Locally', confidence:82, task:text, provider:state.models.provider, model:state.models.selectedId || state.models.active, tools:['Code Graph','Evidence','Runbook'], files:state.editor.activePath ? 1 : 0, budget:'120K tok' };
-      BeastStore.patch('agents', { sessions:[local, ...state.agents.sessions], selectedId:id, handoffs:[{time:'now',label:`Local Architect queued: ${text}`,tone:'idle'}, ...state.agents.handoffs] });
-      BeastStore.addLedger(`Agent queued locally: ${text}`);
-      return local;
-    }
-    if (state.connection.status !== 'online') throw new Error('Gateway offline: no agent was created.');
-    const provider=state.models.provider || localStorage.getItem('beast.provider') || '';
-    const model=state.models.selectedId || state.models.active || localStorage.getItem('beast.model') || '';
-    if (!provider || !model) throw new Error('Select a live model and provider before creating an agent session.');
-    const payload={ root_path:state.workspace.root, objective:text, mode:'architect', provider, model, files:state.editor.activePath ? [state.editor.activePath] : [], budget:{ tokens:120000, seconds:3600, cost_usd:0 } };
-    try {
-      const result = await BeastDesktopBridge.fetchJson('/edgek/ide/agent-sessions/create', { ...options, method:'POST', body:payload });
-      await refreshAgents(options);
-      const session = result?.session || result;
-      if (session?.session_id || session?.id) BeastStore.patch('agents', { selectedId:session.session_id || session.id });
-      BeastStore.addLedger(`Agent session created: ${session?.session_id || session?.id || text}`);
-      return session;
-    } catch (error) { BeastStore.patch('agents', { error:`Agent creation failed: ${String(error.message || error)}` }); throw error; }
   }
 
   async function runSwarm(objective, options={}) {
@@ -361,21 +528,69 @@
     const result = await BeastDesktopBridge.fetchJson('/edgek/swarm/run', {
       ...options,
       method:'POST',
-      body:{ objective:text, profile:'hermes', metadata:{ initiated_by:'desktop_ide', workspace_root:BeastStore.get().workspace.root || '' } }
+      body:{
+        objective:text,
+        profile:'hermes',
+        metadata:{ initiated_by:'desktop_ide', workspace_root:BeastStore.get().workspace.root || '' }
+      }
     });
-    await refreshAgents(options);
-    BeastStore.addLedger(`Swarm run recorded: ${result?.run_id || text}`);
+    const current = BeastStore.get().agents.swarm;
+    BeastStore.patch('agents', { swarm:{
+      ...current,
+      error:'',
+      runs:current.runs + 1,
+      recentRuns:[result, ...current.recentRuns.filter(run => run.run_id !== result.run_id)].slice(0, 12),
+      updatedAt:Date.now()
+    }});
+    BeastStore.addLedger(`Governed swarm run ${result.run_id || 'completed'} · ${result.status || 'status unavailable'}`);
+    await refreshAgents(options).catch(() => {});
     return result;
   }
 
-  async function runGoldenPath(options={}) {
-    if (BeastDesktopBridge.demoMode) throw new Error('Golden path is unavailable in demo mode.');
-    if (BeastStore.get().connection.status !== 'online') throw new Error('Gateway offline: golden path was not started.');
-    BeastStore.patch('agents', { goldenPath:{ ...BeastStore.get().agents.goldenPath, status:'running', timeline:[] } });
-    const result = await BeastDesktopBridge.fetchJson('/edgek/swarm/golden-path', { ...options, method:'POST', body:{} });
-    BeastStore.patch('agents', { goldenPath:{ status:String(result?.status || 'reported'), timeline:Array.isArray(result?.golden_timeline) ? result.golden_timeline : [], result, updatedAt:Date.now() }, swarmProof:normalizeGoldenProof(result) });
-    BeastStore.addLedger(`Golden path completed: ${result?.status || 'reported'}`);
-    return result;
+  async function runSwarmCoding(objective, options={}) {
+    const state=BeastStore.get();
+    if (state.aiCoding.streaming) throw new Error('Finish or cancel the current coding run first.');
+    if (!state.editor.activePath && !state.aiCoding.contextFiles?.length) throw new Error('Open or attach the target file in Agent Coder before starting a coding mission.');
+    const coder=window.BeastAICoding;
+    if (!coder?.send) throw new Error('Agent Coder is unavailable.');
+    coder.syncModel(state.aiCoding.model || state.models.selectedId);
+    const plan=await runSwarm(objective,options);
+    if (plan.status !== 'ready') throw new Error(`Swarm planning returned ${plan.status || 'unknown'}; coding was not started.`);
+    coder.setOpen(true);
+    await coder.setMode('agent');
+    if (BeastStore.get().aiCoding.mode !== 'agent') throw new Error('Agent mode transition was not completed.');
+    const run=await coder.send(objective,{preserveContext:true,swarmRunId:plan.run_id});
+    BeastStore.addLedger(`Swarm ${plan.run_id} handed off to coding run ${run?.run_id || 'starting'}`);
+    return {plan,run};
+  }
+
+  async function createAgent(objective, options={}) {
+    const text = String(objective || '').trim();
+    if (!text) throw new Error('Agent objective is required.');
+    const state = BeastStore.get();
+    if (!BeastDesktopBridge.demoMode && state.connection.status !== 'online') {
+      throw new Error('Agent session not created: BEAST gateway is offline. No execution was queued.');
+    }
+    if (BeastDesktopBridge.demoMode) {
+      const id = `local-${Date.now()}`;
+      const local = { id, label:'Local Architect', role:'Architect', status:'Queued Locally', confidence:82, task:text, provider:state.models.provider, model:state.models.selectedId || state.models.active, tools:['Code Graph','Evidence','Runbook'], files:state.editor.activePath ? 1 : 0, budget:'120K tok' };
+      BeastStore.patch('agents', { sessions:[local, ...state.agents.sessions], selectedId:id, handoffs:[{time:'now',label:`Local Architect queued: ${text}`,tone:'idle'}, ...state.agents.handoffs] });
+      BeastStore.addLedger(`Agent queued locally: ${text}`);
+      return local;
+    }
+    const selectedModel = findRoute(state.models.selectedId, state);
+    if (!selectedModel || !state.workspace.root) {
+      throw new Error('Agent session not created: select an available model and a workspace first.');
+    }
+    const auto = Boolean(selectedModel.governedAuto || isAutoRoute(selectedModel.id));
+    const result = await BeastDesktopBridge.fetchJson('/edgek/ide/agent-sessions/create', {
+      ...options, method:'POST', body:{ root_path:state.workspace.root, objective:text, mode:'architect', provider:auto ? 'beast' : selectedModel.provider, model:auto ? 'auto' : (selectedModel.model || selectedModel.id), governed_auto:auto, files:state.editor.activePath ? [state.editor.activePath] : [], budget:{ tokens:120000, seconds:3600, cost_usd:0 } }
+    });
+    await refreshAgents(options);
+    const session = result?.session || result;
+    if (session?.session_id || session?.id) BeastStore.patch('agents', { selectedId:session.session_id || session.id });
+    BeastStore.addLedger(`Agent session created: ${session?.session_id || session?.id || text}`);
+    return session;
   }
 
   function selectAgent(id) {
@@ -386,19 +601,20 @@
   async function controlAgent(id, action, options={}) {
     const state = BeastStore.get();
     if (!id) throw new Error('Select an agent first.');
-    if (String(id).startsWith('swarm-role:')) throw new Error('Swarm role lanes are declarative. Start a governed Swarm run instead of controlling a lane as an agent session.');
-    if (BeastDesktopBridge.demoMode || String(id).startsWith('local-')) {
+    if (!BeastDesktopBridge.demoMode && (state.connection.status !== 'online' || String(id).startsWith('local-'))) {
+      throw new Error('Agent control refused: no confirmed live agent session is available.');
+    }
+    if (BeastDesktopBridge.demoMode) {
       const mapped = action === 'resume' ? 'Active' : action === 'pause' ? 'Paused' : 'Cancelled';
       BeastStore.patch('agents', { sessions:state.agents.sessions.map(agent => agent.id === id ? {...agent,status:mapped} : agent) });
       BeastStore.addLedger(`Agent ${id}: ${mapped}`);
       return { ok:true, local:true };
     }
-    if (state.connection.status !== 'online') throw new Error('Gateway offline: agent control was not performed.');
     const endpoint = action === 'pause' ? '/edgek/ide/agent-sessions/pause' : action === 'resume' ? '/edgek/ide/agent-sessions/resume' : '/edgek/ide/agent-sessions/cancel';
-    const result = await BeastDesktopBridge.fetchJson(endpoint, { ...options, method:'POST', body:{ root_path:state.workspace.root, session_id:id, reason:action === 'cancel' ? 'Cancelled from the desktop IDE' : '' } });
+    const result = await BeastDesktopBridge.fetchJson(endpoint, { ...options, method:'POST', body:{ root_path:state.workspace.root, session_id:id, reason:action === 'cancel' ? 'Cancelled from BEAST Phase 4' : '' } });
     await refreshAgents(options);
     return result;
   }
 
-  window.BeastModelAgentBridge = { refreshModels, selectModel, refreshAgents, createAgent, runSwarm, runGoldenPath, selectAgent, controlAgent };
+  window.BeastModelAgentBridge = { refreshModels, verifyHostedNemotron, selectModel, refreshAgents, createAgent, runSwarm, runSwarmCoding, selectAgent, controlAgent, fillModelSelect, findRoute, isAutoRoute, routeLabel, AUTO_ID };
 })();

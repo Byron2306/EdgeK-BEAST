@@ -1,0 +1,478 @@
+{
+  "routes": 31,
+  "ok": 30,
+  "pages": [
+    {
+      "page": "studio",
+      "renderer": "BeastStudioPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-phase8-pages.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [
+        "/edgek/chronicle",
+        "/edgek/commons-economy",
+        "/edgek/compression/pipeline",
+        "/edgek/crystal-reuse",
+        "/edgek/ide/mission-runbook/export",
+        "/edgek/ide/mission-runbook/verify",
+        "/edgek/ide/model-inventory",
+        "/edgek/ide/phase-evidence",
+        "/edgek/ide/ports",
+        "/edgek/ide/ports/free",
+        "/edgek/ide/release-readiness/check",
+        "/edgek/ide/system/kill",
+        "/edgek/ide/worktree-mission/close",
+        "/edgek/ide/worktree-mission/create",
+        "/edgek/ide/worktree-mission/diff",
+        "/edgek/ide/worktree-mission/sourceplan-draft",
+        "/edgek/ide/worktree-mission/test",
+        "/edgek/insights/compile",
+        "/edgek/kv-cache/state",
+        "/edgek/prec/state",
+        "/edgek/providers/compression/toggle",
+        "/edgek/providers/kv-cache/clear",
+        "/edgek/providers/nvidia-nim/live-smoke",
+        "/edgek/providers/registry",
+        "/edgek/providers/secrets/set",
+        "/edgek/providers/state",
+        "/edgek/root-info",
+        "/edgek/runtime/state",
+        "/edgek/runtime/sweep"
+      ],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "workspace",
+      "renderer": "BeastWorkspacePage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-workspace-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "compatibility",
+      "renderer": "BeastCompatibilityPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-compatibility-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "source",
+      "renderer": "BeastSourcePlanPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-sourceplan-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "mission",
+      "renderer": "BeastMissionPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-mission-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "models",
+      "renderer": "BeastModelsPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-models-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [
+        "/edgek/ide/agent-sessions/cancel",
+        "/edgek/ide/agent-sessions/create",
+        "/edgek/ide/agent-sessions/pause",
+        "/edgek/ide/agent-sessions/resume",
+        "/edgek/ide/model-inventory",
+        "/edgek/providers/nvidia-nim/verify-picker-model",
+        "/edgek/providers/registry",
+        "/edgek/providers/state",
+        "/edgek/swarm/run",
+        "/edgek/swarm/runs",
+        "/edgek/swarm/state",
+        "/edgek/tools/integrations"
+      ],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "compute-fabric",
+      "renderer": "BeastComputeFabricPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-compute-fabric-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "live-fabric",
+      "renderer": "BeastLiveFabricPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-live-fabric-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "compute-control",
+      "renderer": "BeastComputeControlPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-compute-control-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "agents",
+      "renderer": "BeastAgentsPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-agents-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [
+        "/edgek/agent-runs",
+        "/edgek/ide/agent-sessions/create",
+        "/edgek/ide/worktree-mission/create",
+        "/edgek/providers/state"
+      ],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "review",
+      "renderer": "BeastReviewPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-review-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [
+        "/edgek/evidence-bus/query",
+        "/edgek/mcp/approvals",
+        "/edgek/zero/review-board",
+        "/edgek/zero/reviews"
+      ],
+      "missing_endpoints": [
+        "/edgek/zero/review-board",
+        "/edgek/zero/reviews"
+      ],
+      "ok": false
+    },
+    {
+      "page": "grand-closure",
+      "renderer": "BeastGrandClosurePage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-grand-closure-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "trust",
+      "renderer": "BeastTrustPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-trust-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [
+        "/edgek/chronicle",
+        "/edgek/evidence-bus/query",
+        "/edgek/mcp/approvals",
+        "/edgek/memory-security",
+        "/edgek/memory/compact",
+        "/edgek/skills/promote"
+      ],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "memory",
+      "renderer": "BeastMemoryPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-memory-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [
+        "/edgek/chronicle",
+        "/edgek/evidence-bus/query",
+        "/edgek/mcp/approvals",
+        "/edgek/memory-security",
+        "/edgek/memory/compact",
+        "/edgek/skills/promote"
+      ],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "evidence",
+      "renderer": "BeastEvidencePage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-evidence-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [
+        "/edgek/evidence-bus/query",
+        "/edgek/mcp/approvals"
+      ],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "crystallization",
+      "renderer": "BeastCrystallizationPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-crystallization-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [
+        "/edgek/crystal-chain",
+        "/edgek/crystal-chain/attest",
+        "/edgek/crystal-chain/witness",
+        "/edgek/crystal-lattice",
+        "/edgek/crystal-lattice/checkpoint",
+        "/edgek/crystal-reuse"
+      ],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "commons",
+      "renderer": "BeastCommonsPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-commons-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [
+        "/edgek/control-plane/commons",
+        "/edgek/control-plane/commons/remote",
+        "/edgek/control-plane/commons/remote/discovery",
+        "/edgek/control-plane/commons/remote/health",
+        "/edgek/control-plane/commons/remote/nodes",
+        "/edgek/control-plane/enterprise",
+        "/edgek/control-plane/services",
+        "/edgek/control-plane/tool-buckets",
+        "/edgek/control-plane/workspace-identity"
+      ],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "map",
+      "renderer": "BeastMapPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-map-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [
+        "/edgek/crystal-chain",
+        "/edgek/crystal-chain/attest",
+        "/edgek/crystal-chain/witness",
+        "/edgek/crystal-lattice",
+        "/edgek/crystal-lattice/checkpoint",
+        "/edgek/crystal-reuse"
+      ],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "terminal",
+      "renderer": "BeastTerminalPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-terminal-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [
+        "/edgek/benchmarks/public-grading-daemon",
+        "/edgek/capability-plane/summary",
+        "/edgek/ide/actions/manifest",
+        "/edgek/mcp/approvals",
+        "/edgek/mcp/audit",
+        "/edgek/mcp/executions",
+        "/edgek/mcp/schema-pins",
+        "/edgek/mcp/servers",
+        "/edgek/mcp/state",
+        "/edgek/plugins",
+        "/edgek/plugins/manifest/validate",
+        "/edgek/root-info",
+        "/edgek/safety-governor/classify-command",
+        "/edgek/skills",
+        "/edgek/skills/candidates",
+        "/edgek/skills/state"
+      ],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "testing",
+      "renderer": "BeastTestingPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-testing-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "tooling",
+      "renderer": "BeastToolingPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-tooling-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [
+        "/edgek/benchmarks/public-grading-daemon",
+        "/edgek/capability-plane/summary",
+        "/edgek/ide/actions/manifest",
+        "/edgek/mcp/approvals",
+        "/edgek/mcp/audit",
+        "/edgek/mcp/executions",
+        "/edgek/mcp/schema-pins",
+        "/edgek/mcp/servers",
+        "/edgek/mcp/state",
+        "/edgek/plugins",
+        "/edgek/plugins/manifest/validate",
+        "/edgek/root-info",
+        "/edgek/safety-governor/classify-command",
+        "/edgek/skills",
+        "/edgek/skills/candidates",
+        "/edgek/skills/state"
+      ],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "doctor",
+      "renderer": "BeastDoctorPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-doctor-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [
+        "/edgek/benchmarks/public-grading-daemon",
+        "/edgek/capability-plane/summary",
+        "/edgek/ide/actions/manifest",
+        "/edgek/mcp/approvals",
+        "/edgek/mcp/audit",
+        "/edgek/mcp/executions",
+        "/edgek/mcp/schema-pins",
+        "/edgek/mcp/servers",
+        "/edgek/mcp/state",
+        "/edgek/plugins",
+        "/edgek/plugins/manifest/validate",
+        "/edgek/root-info",
+        "/edgek/safety-governor/classify-command",
+        "/edgek/skills",
+        "/edgek/skills/candidates",
+        "/edgek/skills/state"
+      ],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "reality",
+      "renderer": "BeastRealityPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-reality-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "providers",
+      "renderer": "BeastProvidersPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-phase8-pages.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [
+        "/edgek/ide/agent-sessions/cancel",
+        "/edgek/ide/agent-sessions/create",
+        "/edgek/ide/agent-sessions/pause",
+        "/edgek/ide/agent-sessions/resume",
+        "/edgek/ide/model-inventory",
+        "/edgek/providers/nvidia-nim/verify-picker-model",
+        "/edgek/providers/registry",
+        "/edgek/providers/state",
+        "/edgek/swarm/run",
+        "/edgek/swarm/runs",
+        "/edgek/swarm/state",
+        "/edgek/tools/integrations"
+      ],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "system",
+      "renderer": "BeastSystemPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-phase8-pages.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "atlas",
+      "renderer": "BeastAtlasPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-atlas-page.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "worktrees",
+      "renderer": "BeastWorktreesPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-phase8-pages.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "deploy",
+      "renderer": "BeastDeployPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-phase8-pages.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "chronicle",
+      "renderer": "BeastChroniclePage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-phase8-pages.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "economy",
+      "renderer": "BeastEconomyPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-phase8-pages.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [],
+      "missing_endpoints": [],
+      "ok": true
+    },
+    {
+      "page": "settings",
+      "renderer": "BeastSettingsPage.renderer",
+      "module": "desktop-ide/renderer/js/pages/beast-phase8-pages.js",
+      "in_index": true,
+      "handlers": true,
+      "endpoints": [],
+      "missing_endpoints": [],
+      "ok": true
+    }
+  ],
+  "backend_route_count": 566
+}

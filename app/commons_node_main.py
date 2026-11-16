@@ -198,15 +198,15 @@ def build_remote_commons_app(config: RemoteCommonsNodeConfig) -> FastAPI:
                 "immutable_blobs",
                 "signed_revisions",
                 "replay_resistant_requests",
-                *(["ml_kem_768_key_agreement_proof"] if ml_kem_key is not None else []),
             ],
-            "ml_kem_public_key_digest": ml_kem_public.get("public_key_digest", ""),
             "maximum_authority": "verify_only",
         }
         descriptor = {
             "beast_object_type": "remote_commons_node_descriptor",
             "schema_version": "1.0",
             **attestation_subject,
+            # Ephemeral key metadata is node-signed without changing the lattice subject.
+            "ml_kem_public_key_digest": ml_kem_public.get("public_key_digest", ""),
             "attestation_subject_digest": sha256_bytes(canonical_json(attestation_subject)),
             "trust_evidence": current_trust_evidence(),
             "arda_appraisal": dict(config.arda_appraisal),

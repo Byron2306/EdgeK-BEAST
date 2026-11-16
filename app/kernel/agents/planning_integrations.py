@@ -188,10 +188,10 @@ class PlanningIntegrationRuntime:
                 "resume_failure_class": str(failure_analysis.get("failure_class") or ""),
                 "resume_missing_symbol": str(failure_analysis.get("missing_symbol") or ""),
                 "resume_target_paths": [str(path) for path in target_paths[:4]],
-                "resume_execution_target": str(latest_failure.get("execution_target") or ""),
-                "resume_target_execution": str(latest_failure.get("target_execution") or ""),
-                "resume_transport": str(latest_failure.get("transport") or ""),
-                "resume_verifier_command": [str(item) for item in (latest_failure.get("command") or [])[:12]],
+                "resume_execution_target": str((latest_failure or {}).get("execution_target") or ""),
+                "resume_target_execution": str((latest_failure or {}).get("target_execution") or ""),
+                "resume_transport": str((latest_failure or {}).get("transport") or ""),
+                "resume_verifier_command": [str(item) for item in ((latest_failure or {}).get("command") or [])[:12]],
                 "resume_step_id": str(approval_resume.get("step_id") or active_step_id),
                 "resume_state": str(approval_resume.get("resume_state") or ""),
             })
@@ -401,7 +401,8 @@ class PlanningIntegrationRuntime:
         tool_id = str(observation.get("tool_id") or "")
         status = str(observation.get("status") or "")
         transition: tuple[str, str, str] | None = None
-        if tool_id in {"workspace.index", "workspace.list", "workspace.search_text", "workspace.read_range"} and status == "completed":
+        bind_complete = any(step.get("step_id") == "bind" and step.get("status") == "completed" for step in steps)
+        if tool_id in {"workspace.index", "workspace.list", "workspace.search_text", "workspace.read_range"} and status == "completed" and not bind_complete:
             transition = ("inspect", "bind", "phase1_progress_workspace_inspected")
         elif tool_id == "worktree.bind" and status == "completed":
             transition = ("bind", "mutate", "phase1_progress_worktree_bound")
@@ -442,9 +443,10 @@ class PlanningIntegrationRuntime:
             analysis = result.get("analysis") if isinstance(result.get("analysis"), dict) else {}
             target_paths = result.get("target_paths") if isinstance(result.get("target_paths"), list) else []
             failure_class = str(analysis.get("failure_class") or "unknown")
+            failure_label = "syntax" if str(analysis.get("slot_type") or "") == "syntax_region" else failure_class
             missing_symbol = str(analysis.get("missing_symbol") or "").strip()
             target_summary = ", ".join(str(path) for path in target_paths[:2]) if target_paths else "latest mutation scope"
-            mutate_title = f"Repair {failure_class} failure in {target_summary}"
+            mutate_title = f"Repair {failure_label} failure in {target_summary}"
             if missing_symbol:
                 mutate_title += f" for {missing_symbol}"
             for step in steps:

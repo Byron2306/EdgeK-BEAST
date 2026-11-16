@@ -23,24 +23,46 @@ def get_orchestrator():
 
 @openai_router.get("/v1/models")
 async def list_models():
-    """List available models (OpenAI-compatible)"""
-    return {
-        "object": "list",
-        "data": [
-            {
-                "id": "gpt-3.5-turbo",
-                "object": "model",
-                "created": 1677610602,
-                "owned_by": "edgek-beast"
-            },
-            {
-                "id": "gpt-4",
-                "object": "model", 
-                "created": 1677610602,
-                "owned_by": "edgek-beast"
-            }
-        ]
-    }
+    """List models actually installed on the local Ollama server.
+
+    This inventory is not an assertion that the PREC chat-completions
+    route supports every listed model. Cloud providers are never silently
+    represented as locally installed models.
+    """
+    import asyncio
+    import os
+    import urllib.error
+    import urllib.request
+    from fastapi import HTTPException
+
+    raw_host = (os.environ.get("BEAST_OLLAMA_BASE_URL") or os.environ.get("OLLAMA_HOST") or "http://127.0.0.1:11434").strip()
+    host = raw_host if raw_host.startswith(("http://", "https://")) else "http://" + raw_host
+    url = host.rstrip("/") + "/api/tags"
+
+    def fetch_models():
+        with urllib.request.urlopen(url, timeout=3) as response:
+            result = json.load(response)
+        if not isinstance(result, dict) or not isinstance(result.get("models"), list):
+            raise ValueError("Ollama tags response is malformed")
+        return result["models"]
+
+    try:
+        installed = await asyncio.to_thread(fetch_models)
+    except (OSError, ValueError, urllib.error.URLError) as exc:
+        logger.warning("Local Ollama model inventory unavailable: %s", type(exc).__name__)
+        raise HTTPException(status_code=503, detail="Local Ollama model inventory unavailable") from exc
+
+    models = []
+    seen = set()
+    for item in installed:
+        if not isinstance(item, dict):
+            continue
+        name = str(item.get("name") or item.get("model") or "").strip()
+        if not name or name in seen:
+            continue
+        seen.add(name)
+        models.append({"id": name, "object": "model", "created": 0, "owned_by": "ollama"})
+    return {"object": "list", "data": models}
 
 @openai_router.post("/v1/chat/completions")
 async def chat_completions(request: Request):

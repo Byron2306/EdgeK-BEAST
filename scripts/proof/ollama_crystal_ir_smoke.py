@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 """Ask a local Ollama model for Crystal IR and validate it without mutation."""
 from __future__ import annotations
+try:  # closure-2026-11-16: governed egress shim
+    from app.kernel.compute import governed_egress as _egress
+except ModuleNotFoundError:  # run as a script: repo root not on sys.path yet
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _sys.path.insert(0, str(_Path(__file__).resolve().parents[2]))
+    from app.kernel.compute import governed_egress as _egress
 
 import json
 import hashlib
@@ -103,7 +111,7 @@ def main() -> int:
         headers={"Content-Type": "application/json"},
         method="POST",
     )
-    with urllib.request.urlopen(request, timeout=180) as response:
+    with _egress.urlopen("ollama_crystal_ir_smoke", request, timeout=180) as response:
         body = json.loads(response.read().decode())
     raw = body.get("response") or ""
     candidate = json.loads(raw) if isinstance(raw, str) else raw

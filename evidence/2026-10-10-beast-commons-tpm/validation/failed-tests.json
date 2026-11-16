@@ -1,0 +1,346 @@
+[
+  {
+    "test": "tests.benchmarks.test_beast_definitive_mega_test::test_resume_history_restores_active_crystallized_fingerprint",
+    "message": "KeyError: ('nvidia_nim', 'schema_validation')"
+  },
+  {
+    "test": "tests.integration.test_full_pipeline::test_full_pipeline_cpu_records_real_stage_evidence",
+    "message": "AssertionError: assert False is True\n +  where False = move('kv_b46b52623c8b1ccbac33', <CacheLocation.STORAGE: 'storage'>)\n +    where move = <app.kernel.compute.kv_cache_transport.CrossEngineKVCacheTransport object at 0x732070c209d0>.move\n +    and   'kv_b46b52623c8b1ccbac33' = KVCacheBlock(block_id='kv_b46b52623c8b1ccbac33', model='test', tokenizer='test', prompt_prefix_hash='695252f664b93b237...c29a'}, 'inference_artifact_identity_hash': 'sha256:addb3d7445fb467b290b105634323c71aebdea0c33a30ee14e98481b7766c29a'}).block_id\n +    and   <CacheLocation.STORAGE: 'storage'> = CacheLocation.STORAGE"
+  },
+  {
+    "test": "tests.proof.test_ollama_planner_provider::test_ollama_provider_injects_run_scoped_approval",
+    "message": "app.kernel.agents.planner_provider.PlannerDecisionError: Ollama model 'test' is not installed at http://127.0.0.1:11434; available: no models reported. Run `ollama pull test` or choose one of the listed models."
+  },
+  {
+    "test": "tests.proof.test_ollama_planner_provider::test_native_planner_path_sends_only_turn_suffix",
+    "message": "app.kernel.agents.planner_provider.PlannerDecisionError: Ollama model 'test' is not installed at http://127.0.0.1:11434; available: qwen2.5:0.5b, qwen2.5-coder:1.5b. Run `ollama pull test` or choose one of the listed models."
+  },
+  {
+    "test": "tests.proof.test_ollama_planner_provider::test_warm_model_does_not_receive_suffix_only",
+    "message": "app.kernel.agents.planner_provider.PlannerDecisionError: Ollama model 'test' is not installed at http://127.0.0.1:11434; available: no models reported. Run `ollama pull test` or choose one of the listed models."
+  },
+  {
+    "test": "tests.proof.test_ollama_planner_provider::test_invalid_native_context_falls_back_to_direct_generate",
+    "message": "app.kernel.agents.planner_provider.PlannerDecisionError: Ollama model 'test' is not installed at http://127.0.0.1:11434; available: no models reported. Run `ollama pull test` or choose one of the listed models."
+  },
+  {
+    "test": "tests.routes.test_agent_run_execution::test_post_launch_owns_execution_and_legacy_replay",
+    "message": "AssertionError: run did not reach {'completed'}; last={'beast_object_type': 'beast_agent_run', 'version': '2.0', 'run_id': 'analysis-1c6064bb-1e41aaec2c17', 'session_id': 'analysis-1c6064bb', 'objective': 'Explain this workspace', 'mode': 'analysis', 'provider': '', 'model': '', 'state': 'cancelled', 'root_path': '/tmp/pytest-of-byron/pytest-15/test_post_launch_owns_executio0', 'request': {'approval_timeout_seconds': 30, 'execution_target': 'local', 'prompt': 'Explain this workspace', 'simulate': True, 'transport': 'durable_agent_run_v2', 'workspace_root': '/tmp/pytest-of-byron/pytest-15/test_post_launch_owns_executio0'}, 'checkpoint': {'event_type': 'agent.run.cancelled', 'legacy_type': 'agent_run_done', 'payload_keys': ['cancel_reason', 'chars', 'ok', 'run_id', 'session', 'session_id', 'sourceplan_status'], 'sequence': 10}, 'budget': {'cost_usd': 0.0, 'seconds': 0, 'tokens': 0}, 'cancel_requested': False, 'cancel_reason': '', 'last_sequence': 10, 'head_hash': 'sha256:130c6fe7dd965b47742d1453f6376763d19c2bc960b8d2be5b232754bdcf5c86', 'error': '', 'created_at': 1791613402.2508392, 'updated_at': 1791613402.3046932, 'execution': {'active': False, 'task_name': '', 'done': True}}"
+  },
+  {
+    "test": "tests.routes.test_agent_run_execution::test_durable_approval_pauses_worker_and_resumes_same_run",
+    "message": "AssertionError: run did not reach {'waiting_for_approval'}; last={'beast_object_type': 'beast_agent_run', 'version': '2.0', 'run_id': 'analysis-0f1bb1f7-1c1e3940f205', 'session_id': 'analysis-0f1bb1f7', 'objective': 'Inspect sample', 'mode': 'analysis', 'provider': '', 'model': '', 'state': 'cancelled', 'root_path': '/tmp/pytest-of-byron/pytest-15/test_durable_approval_pauses_w0', 'request': {'approval_timeout_seconds': 30, 'context_files': ['sample.py'], 'execution_target': 'local', 'prompt': 'Inspect sample', 'simulate': True, 'workspace_root': '/tmp/pytest-of-byron/pytest-15/test_durable_approval_pauses_w0'}, 'checkpoint': {'event_type': 'agent.run.cancelled', 'legacy_type': 'agent_run_done', 'payload_keys': ['cancel_reason', 'chars', 'ok', 'run_id', 'session', 'session_id', 'sourceplan_status'], 'sequence': 14}, 'budget': {'cost_usd': 0.0, 'seconds': 0, 'tokens': 0}, 'cancel_requested': False, 'cancel_reason': '', 'last_sequence': 14, 'head_hash': 'sha256:4cdfc646db4fe916450f204b0d7e8687cf0e0951ce5af3c5d679f1a022ddb53f', 'error': '', 'created_at': 1791613410.6119397, 'updated_at': 1791613410.689831, 'execution': {'active': False, 'task_name': '', 'done': True}}"
+  },
+  {
+    "test": "tests.routes.test_agent_run_execution::test_resume_relaunches_persisted_request",
+    "message": "AssertionError: run did not reach {'completed'}; last={'beast_object_type': 'beast_agent_run', 'version': '2.0', 'run_id': 'analysis-dcbf1df2-949adda670b5', 'session_id': 'analysis-dcbf1df2', 'objective': 'Resume me', 'mode': 'analysis', 'provider': '', 'model': '', 'state': 'cancelled', 'root_path': '/tmp/pytest-of-byron/pytest-15/test_resume_relaunches_persist0', 'request': {'approval_timeout_seconds': 30, 'execution_target': 'local', 'prompt': 'Resume me', 'simulate': True, 'workspace_root': '/tmp/pytest-of-byron/pytest-15/test_resume_relaunches_persist0'}, 'checkpoint': {'event_type': 'agent.run.cancelled', 'legacy_type': 'agent_run_done', 'payload_keys': ['cancel_reason', 'chars', 'ok', 'run_id', 'session', 'session_id', 'sourceplan_status'], 'sequence': 11}, 'budget': {'cost_usd': 0.0, 'seconds': 0, 'tokens': 0}, 'cancel_requested': False, 'cancel_reason': '', 'last_sequence': 11, 'head_hash': 'sha256:6e90e92ef6e5784793cc599895665434f079bd3d3b067bf7dc065033de83b82e', 'error': '', 'created_at': 1791613419.142739, 'updated_at': 1791613419.20661, 'execution': {'active': False, 'task_name': '', 'done': True}}"
+  },
+  {
+    "test": "tests.routes.test_ide_route_decomposition::test_ide_route_families_exist_and_are_bounded",
+    "message": "assert 1028 < 900\n +  where 1028 = len(['\"\"\"Shared state and pure helpers for the IDE route family.', '', 'This module owns framework-independent behaviour t...e modules receive one explicit', '``IdeRouteContext`` instead of depending on a 4,000-line lexical scope.', '\"\"\"', ...])\n +    where ['\"\"\"Shared state and pure helpers for the IDE route family.', '', 'This module owns framework-independent behaviour t...e modules receive one explicit', '``IdeRouteContext`` instead of depending on a 4,000-line lexical scope.', '\"\"\"', ...] = <built-in method splitlines of str object at 0x185c7f10>()\n +      where <built-in method splitlines of str object at 0x185c7f10> = '\"\"\"Shared state and pure helpers for the IDE route family.\\n\\nThis module owns framework-independent behaviour that w...lt, context=context, task_id=task_id, approved=approved, operator_override=operator_override)\\n        return result\\n'.splitlines\n +        where '\"\"\"Shared state and pure helpers for the IDE route family.\\n\\nThis module owns framework-independent behaviour that w...lt, context=context, task_id=task_id, approved=approved, operator_override=operator_override)\\n        return result\\n' = read_text(encoding='utf-8')\n +          where read_text = PosixPath('app/routes/ide_context.py').read_text\n +            where PosixPath('app/routes/ide_context.py') = Path('app/routes/ide_context.py')"
+  },
+  {
+    "test": "tests.routes.test_ide_route_decomposition::test_ide_route_contract_preserves_legacy_and_adds_agent_run_v2",
+    "message": "AssertionError: assert [('GET', '/ed...search'), ...] == [('GET', '/ed...search'), ...]\n  \n  At index 45 diff: ('GET', '/edgek/agent-runs/{run_id}/console', 'edgek_agent_run_console') != ('GET', '/edgek/agent-runs/{run_id}/events', 'edgek_agent_run_events')\n  Left contains 74 more items, first extra item: ('GET', '/edgek/agent-runs/{run_id}/tools', 'edgek_agent_run_tools')\n  Use -v to get more diff"
+  },
+  {
+    "test": "tests.test_agent_planner_runtime::test_phase1_planning_integration_progresses_with_observations",
+    "message": "AssertionError: assert {'inspect': '...pending', ...} == {'inspect': '...mpleted', ...}\n  \n  Omitting 1 identical items, use -vv to show\n  Differing items:\n  {'bind': 'active'} != {'bind': 'completed'}\n  {'verify': 'pending'} != {'verify': 'completed'}\n  {'handoff': 'pending'} != {'handoff': 'completed'}\n  {'mutate': 'pending'} != {'mutate': 'completed'}\n  Use -v to get more diff"
+  },
+  {
+    "test": "tests.test_agent_planner_runtime::test_phase2_planning_integration_marks_repair_scope_after_failed_verify",
+    "message": "AssertionError: assert 'handoff' == 'mutate'\n  \n  - mutate\n  + handoff"
+  },
+  {
+    "test": "tests.test_agent_planner_runtime::test_phase3_planning_integration_records_latency_on_plan_steps",
+    "message": "AssertionError: assert 'workspace.read_range' == 'workspace.list'\n  \n  - workspace.list\n  + workspace.read_range"
+  },
+  {
+    "test": "tests.test_agent_planner_runtime::test_phase5_planning_integration_records_resume_continuity",
+    "message": "KeyError: 'continuity'"
+  },
+  {
+    "test": "tests.test_agent_planner_runtime::test_phase7_planning_integration_records_sourceplan_handoff_ready",
+    "message": "KeyError: 'handoff'"
+  },
+  {
+    "test": "tests.test_agent_planner_runtime::test_phase7_planning_integration_records_promotion_eligibility_and_commit",
+    "message": "assert None is not None"
+  },
+  {
+    "test": "tests.test_agent_planner_runtime::test_ollama_provider_exposes_route_and_timeout_usage_on_success",
+    "message": "app.kernel.agents.planner_provider.PlannerDecisionError: Ollama model 'qwen2.5:0.5b' is not installed at http://127.0.0.1:11434; available: no models reported. Run `ollama pull qwen2.5:0.5b` or choose one of the listed models."
+  },
+  {
+    "test": "tests.test_agent_planner_runtime::test_local_ollama_repair_prompt_elides_older_observations",
+    "message": "assert 'LATEST FAILURE:' in 'BEAST ACTION PLANNER. Controller only.\\nReturn ONE JSON object on ONE line. No markdown, prose, arrays, comments, or ...\"active\",\"step_id\":\"handoff\",\"success_criteria\":[],\"title\":\"Prepare SourcePlan handoff from verified worktree diff\"}]}'"
+  },
+  {
+    "test": "tests.test_agent_planner_runtime::test_nim_repair_prompt_elides_older_observations",
+    "message": "assert 'LATEST FAILURE:' in 'BEAST ACTION PLANNER. Controller only.\\nReturn ONE JSON object on ONE line. No markdown, prose, arrays, comments, or ...\"active\",\"step_id\":\"handoff\",\"success_criteria\":[],\"title\":\"Prepare SourcePlan handoff from verified worktree diff\"}]}'"
+  },
+  {
+    "test": "tests.test_agent_planner_runtime::test_large_real_repo_endurance_touches_20_files_and_hands_off_sourceplan",
+    "message": "AssertionError: assert 'budget_exhausted' == 'completed'\n  \n  - completed\n  + budget_exhausted"
+  },
+  {
+    "test": "tests.test_agent_planner_runtime::test_verification_planner_prefers_focused_pytest_for_changed_tests",
+    "message": "AssertionError: assert ['python3', '...gent_loop.py'] == ['python', '-...gent_loop.py']\n  \n  At index 0 diff: 'python3' != 'python'\n  Use -v to get more diff"
+  },
+  {
+    "test": "tests.test_agent_planner_runtime::test_edit_prompt_includes_target_aware_verification_hint",
+    "message": "assert '\"command\":[\"python\",\"-m\",\"pytest\",\"-q\",\"tests/test_agent_loop.py\"]' in 'BEAST ACTION PLANNER. Controller only.\\nReturn ONE JSON object on ONE line. No markdown, prose, arrays, comments, or ...\":{\"code_actions\":0,\"diagnostics\":0,\"import_edges\":0,\"references\":0,\"symbols\":0},\"top_references\":[],\"top_symbols\":[]}'"
+  },
+  {
+    "test": "tests.test_agent_planner_runtime::test_agent_phase_enforcement_runs_default_verify_and_sourceplan_after_mutation",
+    "message": "AssertionError: assert 'budget_exhausted' == 'completed'\n  \n  - completed\n  + budget_exhausted"
+  },
+  {
+    "test": "tests.test_agent_planner_runtime::test_failed_verification_records_analysis_and_target_paths",
+    "message": "assert 0 == 1"
+  },
+  {
+    "test": "tests.test_agent_planner_runtime::test_prompt_surfaces_structured_repair_contract_after_failed_verify",
+    "message": "assert 'repair the latest verifier failure with one bounded edit in answer.py' in 'BEAST ACTION PLANNER. Controller only.\\nReturn ONE JSON object on ONE line. No markdown, prose, arrays, comments, or ...\"active\",\"step_id\":\"handoff\",\"success_criteria\":[],\"title\":\"Prepare SourcePlan handoff from verified worktree diff\"}]}'"
+  },
+  {
+    "test": "tests.test_agent_scheduler_mission_cockpit::test_ide_agent_uses_approved_search_related_reads_and_skill_recipes",
+    "message": "Failed: Timeout (>30.0s) from pytest-timeout."
+  },
+  {
+    "test": "tests.test_agent_scheduler_mission_cockpit::test_ide_agent_session_run_events_repairs_to_action_ir",
+    "message": "Failed: Timeout (>30.0s) from pytest-timeout."
+  },
+  {
+    "test": "tests.test_agent_scheduler_mission_cockpit::test_ide_local_qwen_run_is_compact_and_uses_one_focused_action_ir_repair",
+    "message": "Failed: Timeout (>30.0s) from pytest-timeout."
+  },
+  {
+    "test": "tests.test_agent_scheduler_mission_cockpit::test_ide_agent_session_repairs_empty_action_ir_into_real_edit",
+    "message": "Failed: Timeout (>30.0s) from pytest-timeout."
+  },
+  {
+    "test": "tests.test_agent_scheduler_mission_cockpit::test_ide_agent_session_repairs_invalid_proposed_syntax_before_sourceplan",
+    "message": "Failed: Timeout (>30.0s) from pytest-timeout."
+  },
+  {
+    "test": "tests.test_agent_scheduler_mission_cockpit::test_ide_agent_session_retries_validation_until_a_governed_plan_passes",
+    "message": "Failed: Timeout (>30.0s) from pytest-timeout."
+  },
+  {
+    "test": "tests.test_agent_scheduler_mission_cockpit::test_ide_agent_session_runs_isolated_py_compile_before_sourceplan",
+    "message": "Failed: Timeout (>30.0s) from pytest-timeout."
+  },
+  {
+    "test": "tests.test_agent_scheduler_mission_cockpit::test_ide_agent_session_skips_unsafe_model_verifier",
+    "message": "Failed: Timeout (>30.0s) from pytest-timeout."
+  },
+  {
+    "test": "tests.test_agent_scheduler_mission_cockpit::test_modularized_route_families_own_active_paths",
+    "message": "AssertionError: assert 'app.main' == 'app.routes.commons'\n  \n  - app.routes.commons\n  + app.main"
+  },
+  {
+    "test": "tests.test_beast_cli_script::test_beast_spaces_packages_and_validates_tiny_llama_case",
+    "message": "json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+  },
+  {
+    "test": "tests.test_beast_cli_script::test_beast_compressors_reports_builtin_fallback",
+    "message": "AssertionError: assert 'native_beast_backend' == 'edgek_builtin_prune'\n  \n  - edgek_builtin_prune\n  + native_beast_backend"
+  },
+  {
+    "test": "tests.test_c4x_document_and_freeze::test_document_truth_arena_exports_real_pdf_audit_packets",
+    "message": "AssertionError: assert 'FileNotFoundError' == 'ok'\n  \n  - ok\n  + FileNotFoundError"
+  },
+  {
+    "test": "tests.test_commons_sensorium_integration::test_commons_artifact_admission_cross_checks_storage_and_emits_durable_evidence",
+    "message": "ValueError: Invalid event type: commons.artifact_admitted"
+  },
+  {
+    "test": "tests.test_compute_module_dispositions::test_every_present_compute_module_has_one_explicit_disposition",
+    "message": "assert False is True"
+  },
+  {
+    "test": "tests.test_compute_operations::test_forge_snapshot_promotes_candidate_centrally",
+    "message": "assert 0 == 1\n +  where 0 = len([])"
+  },
+  {
+    "test": "tests.test_crystal_compute_api::test_crystal_compute_api_records_reports_and_maintains",
+    "message": "assert 2 == 1"
+  },
+  {
+    "test": "tests.test_crystal_compute_api::test_crystal_compute_override_requires_operator_reason",
+    "message": "AttributeError: module 'app.main' has no attribute 'edgek_crystal_compute_record'. Did you mean: 'edgek_crystal_reuse_record'?"
+  },
+  {
+    "test": "tests.test_desktop_ide_manifest::test_desktop_ide_starts_or_attaches_to_beast_gateway",
+    "message": "assert \"bin', 'beast'\" in \"'use strict';\\n\\nconst { app, BrowserWindow, Menu, dialog, ipcMain, shell, screen } = require('electron');\\nconst { I...n  ideCompatibilityHost,\\n  notebookKernelHost,\\n  executionTargetHost,\\n  taskTestHost,\\n  beastExtensionHost,\\n});\\n\""
+  },
+  {
+    "test": "tests.test_desktop_ide_manifest::test_desktop_ide_renderer_uses_tui_workflow_surfaces",
+    "message": "FileNotFoundError: [Errno 2] No such file or directory: 'desktop-ide/renderer/app.js'"
+  },
+  {
+    "test": "tests.test_desktop_ide_manifest::test_opcb_dashboard_has_live_store_and_control_contract",
+    "message": "FileNotFoundError: [Errno 2] No such file or directory: 'desktop-ide/renderer/app.js'"
+  },
+  {
+    "test": "tests.test_desktop_ide_manifest::test_desktop_ide_backend_declares_action_manifest",
+    "message": "FileNotFoundError: [Errno 2] No such file or directory: 'desktop-ide/renderer/app.js'"
+  },
+  {
+    "test": "tests.test_desktop_ide_manifest::test_desktop_agent_context_does_not_fake_truncated_code_blocks",
+    "message": "FileNotFoundError: [Errno 2] No such file or directory: 'desktop-ide/renderer/app.js'"
+  },
+  {
+    "test": "tests.test_desktop_ide_manifest::test_desktop_ide_backend_uses_request_base_url_for_live_routes",
+    "message": "assert 'Request' in '\"\"\"IDE shell route family composition root.\\n\\nThe public ``build_ide_router`` contract remains stable while route ow...\\n    register_editor_sourceplans_routes(router, ctx)\\n    register_worktrees_routes(router, ctx)\\n    return router\\n'"
+  },
+  {
+    "test": "tests.test_desktop_ide_manifest::test_pair_programmer_refreshes_live_provider_route_before_starting",
+    "message": "assert 'const route = await resolveCodingRoute' in \"// BEAST Pair Programmer composition root.\\n// Behaviour lives in renderer/js/ai/*.js; this file wires the public API...chars${saved ? ` \u00b7 ${saved} chars withheld` : ''}`);\\n  }\\n\\n    return { applyCrystal, applyCompute };\\n  };\\n})();\\n\""
+  },
+  {
+    "test": "tests.test_desktop_ide_manifest::test_desktop_status_reports_runtime_stack_health",
+    "message": "assert 'function serviceRegistryPort' in \"'use strict';\\n\\nconst { app, BrowserWindow, Menu, dialog, ipcMain, shell, screen } = require('electron');\\nconst { I...n  ideCompatibilityHost,\\n  notebookKernelHost,\\n  executionTargetHost,\\n  taskTestHost,\\n  beastExtensionHost,\\n});\\n\""
+  },
+  {
+    "test": "tests.test_gateway::test_openai_models",
+    "message": "assert 404 == 200\n +  where 404 = <Response [404 Not Found]>.status_code"
+  },
+  {
+    "test": "tests.test_gateway::test_openai_chat_completion",
+    "message": "assert 404 == 200\n +  where 404 = <Response [404 Not Found]>.status_code"
+  },
+  {
+    "test": "tests.test_gateway::test_anthropic_message",
+    "message": "assert 404 == 200\n +  where 404 = <Response [404 Not Found]>.status_code"
+  },
+  {
+    "test": "tests.test_gemini_adapter::test_gemini_generate_content_endpoint_simulates_response",
+    "message": "assert 404 == 200\n +  where 404 = <Response [404 Not Found]>.status_code"
+  },
+  {
+    "test": "tests.test_huggingface_litellm_adapters::test_huggingface_adapter_simulates_without_token",
+    "message": "assert 404 == 200\n +  where 404 = <Response [404 Not Found]>.status_code"
+  },
+  {
+    "test": "tests.test_huggingface_litellm_adapters::test_litellm_adapter_simulates_when_upstream_missing",
+    "message": "assert 404 == 200\n +  where 404 = <Response [404 Not Found]>.status_code"
+  },
+  {
+    "test": "tests.test_ide_system_plane::test_package_report_detects_node_and_python",
+    "message": "AssertionError: assert '.' in {'desktop-ide', 'vscode-extension'}"
+  },
+  {
+    "test": "tests.test_insight_compiler::test_insight_compiler_ranks_repeated_chronicle_evidence",
+    "message": "assert 0.57659 > 0.6"
+  },
+  {
+    "test": "tests.test_interception_pipeline_wiring::test_governed_gateway_ingress_is_automatically_intercepted",
+    "message": "assert 404 == 200\n +  where 404 = <Response [404 Not Found]>.status_code"
+  },
+  {
+    "test": "tests.test_mammoth_beast_layers_gauntlet::test_mammoth_local_layers_gauntlet",
+    "message": "assert 7 >= 9"
+  },
+  {
+    "test": "tests.test_mammoth_beast_layers_gauntlet::test_mammoth_gateway_endpoints_gauntlet",
+    "message": "assert 7 >= 9"
+  },
+  {
+    "test": "tests.test_mcp_runtime_v2::test_mcp_readonly_profile_hides_and_blocks_mutating_tools",
+    "message": "KeyError: 'profile'"
+  },
+  {
+    "test": "tests.test_mcp_runtime_v2::test_session_handshake_and_capability_exchange_mcp_tools",
+    "message": "KeyError: 'privacy'"
+  },
+  {
+    "test": "tests.test_mcp_runtime_v2::test_provider_economist_and_tool_laziness_mcp_plugins",
+    "message": "IndexError: list index out of range"
+  },
+  {
+    "test": "tests.test_mcp_runtime_v2::test_otel_and_marketplace_mcp_plugins",
+    "message": "KeyError: 'exported'"
+  },
+  {
+    "test": "tests.test_mutation_negative_cases::test_negative_cases",
+    "message": "assert True is False"
+  },
+  {
+    "test": "tests.test_phase0_release_contract::test_phase0_master_plan_exit_gate_command_validates",
+    "message": "assert False is True"
+  },
+  {
+    "test": "tests.test_port_conflict_crystal::test_concrete_bind_requires_independent_probes_and_retains_lease",
+    "message": "ValueError: Invalid transition from reserved to HANDED_OFF"
+  },
+  {
+    "test": "tests.test_port_lease_broker::test_port_lease_is_owned_until_release",
+    "message": "ValueError: Invalid transition from reserved to HANDED_OFF"
+  },
+  {
+    "test": "tests.test_production_crystal_hostile_matrix::test_repeated_eligible_recurrences_get_distinct_one_use_authority",
+    "message": "KeyError: 'receipt'"
+  },
+  {
+    "test": "tests.test_production_crystal_hostile_matrix::test_malformed_input_stale_appraisal_and_expired_promotion_refuse",
+    "message": "AssertionError: assert 400 == 409\n +  where 400 = <Response [400 Bad Request]>.status_code\n +    where <Response [400 Bad Request]> = _post(<starlette.testclient.TestClient object at 0x731e84081350>, PosixPath('/tmp/pytest-of-byron/pytest-15/test_malformed_input_stale_app0/malformed'))\n +      where PosixPath('/tmp/pytest-of-byron/pytest-15/test_malformed_input_stale_app0/malformed') = _workspace(PosixPath('/tmp/pytest-of-byron/pytest-15/test_malformed_input_stale_app0'), 'malformed', b'not-json')"
+  },
+  {
+    "test": "tests.test_production_crystal_hostile_matrix::test_missing_handler_catalog_drift_and_verifier_failure_refuse",
+    "message": "AssertionError: assert 400 == 403\n +  where 400 = <Response [400 Bad Request]>.status_code\n +    where <Response [400 Bad Request]> = _post(<starlette.testclient.TestClient object at 0x731e84081f50>, PosixPath('/tmp/pytest-of-byron/pytest-15/test_missing_handler_catalog_d0/catalog-drift'))\n +      where PosixPath('/tmp/pytest-of-byron/pytest-15/test_missing_handler_catalog_d0/catalog-drift') = _workspace(PosixPath('/tmp/pytest-of-byron/pytest-15/test_missing_handler_catalog_d0'), 'catalog-drift')"
+  },
+  {
+    "test": "tests.test_production_crystal_hostile_matrix::test_cli_and_ide_use_same_explicitly_enforced_production_route",
+    "message": "ValueError: Invalid event type: mission.user_submitted"
+  },
+  {
+    "test": "tests.test_production_crystal_mission_path::test_real_http_mission_traverses_production_root_without_fixture_runtime",
+    "message": "AssertionError: {\"detail\":\"Invalid event type: mission.user_submitted\"}\nassert 400 == 200\n +  where 400 = <Response [400 Bad Request]>.status_code"
+  },
+  {
+    "test": "tests.test_production_disk_cleanup_route::test_promoted_disk_cleanup_uses_isolated_delegate_not_interpreter",
+    "message": "ValueError: Invalid event type: mission.user_submitted"
+  },
+  {
+    "test": "tests.test_production_readiness_hardening::test_production_readiness_hardening_gauntlet_writes_executable_receipt",
+    "message": "assert False is True"
+  },
+  {
+    "test": "tests.test_production_readiness_hardening::test_adapter_gate_keeps_lora_behavior_improvement_as_real_blocker",
+    "message": "AssertionError: assert 'blocked' == 'satisfied'\n  \n  - satisfied\n  + blocked"
+  },
+  {
+    "test": "tests.test_provider_handoff::test_output_gate_compiles_semantic_provider_transforms",
+    "message": "AssertionError: assert False is True\n +  where False = OutputGateResult(ok=False, operations=[], evidence={'provider': 'nvidia_nim', 'role': 'refs_only_action_ir_generator',...ktree_required': False}}, error='action a4 provider registry resolver pattern was not found', non_mutating_requests=[]).ok"
+  },
+  {
+    "test": "tests.test_provider_registry::test_ollama_adapter_emits_native_bounded_request_policy",
+    "message": "AssertionError: assert 'qwen2.5-coder:1.5b' == 'qwen2.5:0.5b'\n  \n  - qwen2.5:0.5b\n  + qwen2.5-coder:1.5b"
+  },
+  {
+    "test": "tests.test_provider_registry::test_ollama_model_can_be_overridden_without_changing_other_providers",
+    "message": "AssertionError: assert 'qwen2.5-coder:1.5b' == 'qwen2.5:3b'\n  \n  - qwen2.5:3b\n  + qwen2.5-coder:1.5b"
+  },
+  {
+    "test": "tests.test_provider_registry::test_codex_and_beast_auto_have_concrete_provider_contracts",
+    "message": "AssertionError: assert 'qwen2.5-coder:1.5b' == 'qwen2.5:0.5b'\n  \n  - qwen2.5:0.5b\n  + qwen2.5-coder:1.5b"
+  },
+  {
+    "test": "tests.test_semantic_generalizer::test_semantic_record_replay_rejects_stale_revoked_expired_and_verifier_drift",
+    "message": "AssertionError: assert 'world_digest' in 'semantic crystal expired'\n +  where 'semantic crystal expired' = SemanticReplayOutcome(reused=False, answer_frame=None, receipt_digest='sha256:9be22078c65985259a8155f0d8c9f11c9623df4799a7d1e1352d031d19794bb1', provider_called=False, refusal_reason='semantic crystal expired').refusal_reason"
+  },
+  {
+    "test": "tests.test_system_monitor::test_get_pressure_parsing",
+    "message": "assert PressureResource(some=PsiMetric(avg10=1.23, avg60=0.5, avg300=0.1, total_us=100), full=PsiMetric(avg10=0.0, avg60=0.0, avg300=0.0, total_us=0)) == 1.23\n +  where PressureResource(some=PsiMetric(avg10=1.23, avg60=0.5, avg300=0.1, total_us=100), full=PsiMetric(avg10=0.0, avg60=0.0, avg300=0.0, total_us=0)) = SystemPressure(cpu=PressureResource(some=PsiMetric(avg10=1.23, avg60=0.5, avg300=0.1, total_us=100), full=PsiMetric(av...PsiMetric(avg10=0.0, avg60=0.0, avg300=0.0, total_us=0), full=PsiMetric(avg10=0.0, avg60=0.0, avg300=0.0, total_us=0))).cpu"
+  },
+  {
+    "test": "tests.test_tui_intelligence::test_tiny_llama_demo_apply_runs_pytest_in_case_root",
+    "message": "AssertionError: assert False is True\n +  where False = ActionResult(ok=False, title='Patch apply', summary='', data={'worktree_gate': {'required': True, 'allowed': False, 'r...43}}, 'evidence_hash': '8c7eb0c7633e681086372be61f71f72da134966872d27ec8d50e726db42aff12'}}, error='worktree_required').ok"
+  },
+  {
+    "test": "tests.test_tui_output_governance::test_provider_route_summary_keeps_litellm_resolved_model_visible",
+    "message": "AssertionError: assert 'nvidia/nemot...per-120b-a12b' == 'litellm/ollama'\n  \n  - litellm/ollama\n  + nvidia/nemotron-3-super-120b-a12b"
+  }
+]

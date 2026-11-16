@@ -8,6 +8,8 @@ parsers, linters, databases, providers, and CLI surfaces.
 from __future__ import annotations
 
 import shutil
+import importlib.util
+import sys
 from dataclasses import asdict, dataclass, field
 from typing import Any, Dict, List, Optional
 
@@ -433,9 +435,14 @@ class CapabilityRegistry:
         ]
 
     def _linter_capabilities(self) -> List[CapabilityRecord]:
+        python_modules = {
+            "pytest": importlib.util.find_spec("pytest") is not None,
+            "ruff": importlib.util.find_spec("ruff") is not None,
+        }
         checks = [
             ("linter:py_compile", "python_py_compile", "python3 -m py_compile", "low"),
-            ("linter:pytest_collect", "pytest_collect", "pytest --collect-only", "low"),
+            ("linter:pytest_collect", "pytest_collect", f"{sys.executable} -m pytest --collect-only", "low"),
+            ("linter:ruff", "ruff", f"{sys.executable} -m ruff check", "low"),
             ("linter:eslint", "eslint", "eslint", "medium"),
             ("linter:tsc", "typescript", "tsc --noEmit", "medium"),
             ("linter:shellcheck", "shellcheck", "shellcheck", "medium"),
@@ -447,7 +454,13 @@ class CapabilityRegistry:
                 name=name,
                 command=command,
                 risk_level=risk,
-                status="available" if shutil.which(command.split()[0]) else "missing",
+                status=(
+                    "available"
+                    if (capability_id == "linter:pytest_collect" and python_modules["pytest"])
+                    or (capability_id == "linter:ruff" and python_modules["ruff"])
+                    or shutil.which(command.split()[0])
+                    else "missing"
+                ),
                 family="lint_syntax",
             )
             for capability_id, name, command, risk in checks

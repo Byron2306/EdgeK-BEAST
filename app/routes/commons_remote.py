@@ -21,6 +21,15 @@ def build_remote_commons_router(gateway: RemoteCommonsGateway, enterprise_plane:
     async def snapshot() -> dict[str, Any]:
         return gateway.snapshot()
 
+    @router.get("/health")
+    async def fabric_health() -> dict[str, Any]:
+        return await gateway.health(refresh=False)
+
+    @router.post("/health")
+    async def refresh_fabric_health(request: Request) -> dict[str, Any]:
+        require_local_operator(request)
+        return await gateway.health(refresh=True)
+
     @router.post("/nodes", status_code=201)
     async def register_node(request: Request, payload: dict[str, Any] | None = None) -> dict[str, Any]:
         require_local_operator(request)
@@ -73,6 +82,22 @@ def build_remote_commons_router(gateway: RemoteCommonsGateway, enterprise_plane:
         except LookupError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
         if not result.get("ok"):
+            raise HTTPException(status_code=424, detail=result)
+        return result
+
+    @router.post("/nodes/{node_id}/reconcile")
+    async def reconcile_node_endpoint(
+        node_id: str, request: Request, payload: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
+        require_local_operator(request)
+        candidate_endpoint = str((payload or {}).get("candidate_endpoint") or "").strip()
+        if not candidate_endpoint:
+            raise HTTPException(status_code=422, detail="candidate_endpoint is required")
+        try:
+            result = await gateway.reconcile_endpoint(node_id, candidate_endpoint)
+        except LookupError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        if result.get("status") != "reconciled":
             raise HTTPException(status_code=424, detail=result)
         return result
 

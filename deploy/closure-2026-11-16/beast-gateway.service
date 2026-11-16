@@ -1,0 +1,17 @@
+# ~/.config/systemd/user/beast-gateway.service  (user unit; replaces the terminal-launched uvicorn on :8101)
+[Unit]
+Description=EdgeK BEAST gateway (:8101) with governed interception
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/GitHub/EdgeK-BEAST
+EnvironmentFile=%h/GitHub/EdgeK-BEAST/deploy/closure-2026-11-16/beast-gateway.env
+ExecStart=%h/GitHub/EdgeK-BEAST/.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8101
+Restart=on-failure
+RestartSec=3
+KillMode=mixed
+TimeoutStopSec=20
+
+[Install]
+WantedBy=default.target

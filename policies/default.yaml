@@ -75,7 +75,7 @@ providers:
     # Ollama's native API is rooted at /api/*, not /v1/*.  The Pair
     # Programmer uses this native lane through BEAST governance.
     base_url: "http://127.0.0.1:11434"
-    default_model: "qwen2.5-coder:1.5b"
+    default_model: "qwen3:4b"
     runtime_max_concurrent: 1
     runtime_timeout_seconds: 180
     rate_limit_rpm: 30
@@ -135,7 +135,7 @@ providers:
   nvidia_nim:
     enabled: true
     base_url: "https://integrate.api.nvidia.com/v1"
-    default_model: "meta/llama-3.1-70b-instruct"
+    default_model: "nvidia/nemotron-3.5-lightning-30b-a3b"
     runtime_max_concurrent: 5
     runtime_timeout_seconds: 180
     rate_limit_rpm: 60
@@ -410,7 +410,7 @@ required_integrations:
 ollama_scout:
   enabled: true
   base_url: "http://127.0.0.1:11434"
-  default_model: "qwen2.5:0.5b"
+  default_model: "qwen3:4b"
   timeout_seconds: 45
   roles:
     - classify_task

@@ -1,0 +1,49 @@
+{
+  "parser": "tpm2_eventlog 5.7",
+  "pcrs": [
+    {
+      "pcr": 0,
+      "quoted": "a1686da80a7d5df0d21fc98f7133241ed6b1c37ecd870bc901f0e3a91783effd",
+      "replayed": "a1686da80a7d5df0d21fc98f7133241ed6b1c37ecd870bc901f0e3a91783effd",
+      "matches": true,
+      "covered": true
+    },
+    {
+      "pcr": 2,
+      "quoted": "40dd39b38cdcfde6e33606080df44e9054e322c83364f4c1c6f9002a663d13ae",
+      "replayed": "40dd39b38cdcfde6e33606080df44e9054e322c83364f4c1c6f9002a663d13ae",
+      "matches": true,
+      "covered": true
+    },
+    {
+      "pcr": 4,
+      "quoted": "f7b4477ea65305a2b47916e6b58851b4a4231f1ac1e56756927389a43fc73d94",
+      "replayed": "f7b4477ea65305a2b47916e6b58851b4a4231f1ac1e56756927389a43fc73d94",
+      "matches": true,
+      "covered": true
+    },
+    {
+      "pcr": 7,
+      "quoted": "a23d3ef4087ee43ee02301171725da7c05299eaba331e5975446c75a8f0bf2f5",
+      "replayed": "a23d3ef4087ee43ee02301171725da7c05299eaba331e5975446c75a8f0bf2f5",
+      "matches": true,
+      "covered": true
+    },
+    {
+      "pcr": 10,
+      "quoted": "0000000000000000000000000000000000000000000000000000000000000000",
+      "replayed": null,
+      "matches": false,
+      "covered": false
+    },
+    {
+      "pcr": 14,
+      "quoted": "bfde513a54a0e6e982679423ada31419f9856f7d534e42d985f859915005516f",
+      "replayed": "bfde513a54a0e6e982679423ada31419f9856f7d534e42d985f859915005516f",
+      "matches": true,
+      "covered": true
+    }
+  ],
+  "all_selected_pcrs_reconciled": false,
+  "claim_boundary": "Event-log replay is separate from EK/AK enrollment and independent ARDA appraisal"
+}

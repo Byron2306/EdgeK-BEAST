@@ -101,6 +101,13 @@ def test_unknown_arguments_are_rejected_before_execution(tmp_path: Path):
         asyncio.run(engine.execute_tool(run_id, "workspace.list", {"banana": True}))
 
 
+def test_verifier_command_rejects_shell_string_before_execution(tmp_path: Path):
+    engine, _ = _engine(tmp_path)
+    spec = engine.tool_registry.get("worktree.verify")
+    with pytest.raises(ValueError, match="command must have type array"):
+        engine.tool_registry.validate_arguments(spec, {"command": "python -m pytest -q"})
+
+
 def test_search_is_bounded_and_excludes_beast_state(tmp_path: Path):
     engine, run_id = _engine(tmp_path)
     state = tmp_path / ".beast" / "private.txt"

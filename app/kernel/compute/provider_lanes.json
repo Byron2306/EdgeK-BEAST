@@ -1,0 +1,145 @@
+{
+ "_doc": "Direct-provider lanes for the governed client (2026-11-16). Data only: used by governed_client.provider_lane_candidates() under BEAST_GOVERNED_INTERCEPTION; each provider activates only when its key env var exists in the environment or .beast/provider_secrets.env (names only, never values). Prices are USD per million tokens.",
+ "providers": {
+  "fireworks": {
+   "kind": "openai",
+   "base_url": "https://api.fireworks.ai/inference/v1",
+   "key_env": "FIREWORKS_API_KEY",
+   "pricing_source": "https://fireworks.ai/pricing (Standard serverless, 2026-11-16)",
+   "models": [
+    {
+     "model": "accounts/fireworks/models/kimi-k3",
+     "usd_per_mtok_in": 3.0,
+     "usd_per_mtok_out": 15.0,
+     "max_tokens": 2048
+    },
+    {
+     "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+     "usd_per_mtok_in": 0.3,
+     "usd_per_mtok_out": 1.2,
+     "max_tokens": 2048
+    },
+    {
+     "model": "accounts/fireworks/models/gpt-oss-120b",
+     "usd_per_mtok_in": 0.15,
+     "usd_per_mtok_out": 0.6,
+     "max_tokens": 2048
+    },
+    {
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "usd_per_mtok_in": 0.15,
+     "usd_per_mtok_out": 0.5,
+     "max_tokens": 2048
+    }
+   ]
+  },
+  "sambanova": {
+   "kind": "openai",
+   "base_url": "https://api.sambanova.ai/v1",
+   "key_env": "SAMBANOVA_API_KEY",
+   "pricing_source": "https://api.sambanova.ai/v1/models pricing field (2026-11-16)",
+   "models": [
+    {
+     "model": "gpt-oss-120b",
+     "usd_per_mtok_in": 0.22,
+     "usd_per_mtok_out": 0.59,
+     "max_tokens": 2048
+    },
+    {
+     "model": "MiniMax-M3.1-Flash",
+     "usd_per_mtok_in": 0.3,
+     "usd_per_mtok_out": 1.2,
+     "max_tokens": 2048
+    },
+    {
+     "model": "Meta-Llama-3.3-70B-Instruct",
+     "usd_per_mtok_in": 0.6,
+     "usd_per_mtok_out": 1.2,
+     "max_tokens": 2048
+    }
+   ]
+  },
+  "hyperbolic": {
+   "kind": "openai",
+   "base_url": "https://api.hyperbolic.ai/inference/v1",
+   "key_env": "HYPERBOLIC_API_KEY",
+   "pricing_source": "unverified: account could not list models (403 inference_requires_verified_phone); upper-bound prices assumed from Fireworks equivalents",
+   "_note": "api.hyperbolic.xyz/v1 is decommissioned (404); the Flux endpoint needs an sk_live_ key and a Pro/verified account.",
+   "models": [
+    {
+     "model": "glm-5.3-flash",
+     "usd_per_mtok_in": 0.15,
+     "usd_per_mtok_out": 0.5,
+     "max_tokens": 2048
+    },
+    {
+     "model": "kimi-k3",
+     "usd_per_mtok_in": 3.0,
+     "usd_per_mtok_out": 15.0,
+     "max_tokens": 2048
+    },
+    {
+     "model": "glm-5.3",
+     "usd_per_mtok_in": 1.4,
+     "usd_per_mtok_out": 4.4,
+     "max_tokens": 2048
+    }
+   ]
+  },
+  "replicate": {
+   "kind": "replicate",
+   "base_url": "https://api.replicate.com/v1",
+   "key_env": "REPLICATE_API_TOKEN",
+   "pricing_source": "gpt-oss-120b from replicate.com model page billingConfig (2026-11-16); others' public pages 404 -> assumed upper bound $1/$3 per Mtok",
+   "models": [
+    {
+     "model": "openai/gpt-oss-120b",
+     "usd_per_mtok_in": 0.18,
+     "usd_per_mtok_out": 0.72,
+     "max_tokens": 1024,
+     "input_map": {
+      "system": ""
+     }
+    },
+    {
+     "model": "deepseek-ai/deepseek-v3.1",
+     "usd_per_mtok_in": 1.0,
+     "usd_per_mtok_out": 3.0,
+     "max_tokens": 1024,
+     "input_map": {
+      "system": ""
+     }
+    },
+    {
+     "model": "qwen/qwen3-235b-a22b-instruct-2507",
+     "usd_per_mtok_in": 1.0,
+     "usd_per_mtok_out": 3.0,
+     "max_tokens": 1024,
+     "input_map": {
+      "system": ""
+     }
+    }
+   ],
+   "native_json_mode": false,
+   "_note": "Predictions API only; inputs have no json/schema/grammar option (checked openapi_schema 2026-11-16), so JSON is enforced by prompt + gate validation + one repair retry. No system_prompt input: system text is merged into prompt."
+  },
+  "fal_llm": {
+   "kind": "openai",
+   "base_url": "https://fal.run/openrouter/router/openai/v1",
+   "key_env": "FAL_KEY",
+   "auth_scheme": "Key",
+   "proxy_lane": true,
+   "priority": "low",
+   "pricing_source": "unverified (fal OpenRouter proxy bills OpenRouter token rates); upper bound assumed",
+   "_note": "fal's OpenAI-compatible OpenRouter proxy. Proxy lane, low priority: listed last so the router only reaches it after direct lanes.",
+   "models": [
+    {
+     "model": "openai/gpt-oss-120b",
+     "usd_per_mtok_in": 0.2,
+     "usd_per_mtok_out": 0.8,
+     "max_tokens": 1024
+    }
+   ]
+  }
+ }
+}

@@ -17,6 +17,17 @@
       const esc = window.BeastOperationsConsole?.esc || (value => String(value ?? ''));
       const card = durableCard?.cards?.[0] || durableCard?.items?.[0] || durableCard || {};
       const safeArgs = card.safe_arguments || card.argument_view || payload.safe_arguments || {};
+      const destination = card.execution_target_payload || payload.execution_target_payload || {};
+      const kind = card.execution_target || payload.execution_target ||
+        (['local','ssh','container'].includes(card.target) ? card.target : 'unknown');
+      const destinationKnown = kind === 'local' ||
+        (kind === 'ssh' && Boolean(destination.host && destination.remoteRoot)) ||
+        (kind === 'container' && Boolean(destination.containerId && destination.workspaceFolder));
+      const destinationLabel = kind === 'ssh'
+        ? `SSH ${destination.host || 'UNKNOWN'}:${destination.remoteRoot || 'UNKNOWN'}`
+        : kind === 'container'
+          ? `Container ${destination.containerId || 'UNKNOWN'}:${destination.workspaceFolder || 'UNKNOWN'}`
+          : kind === 'local' ? 'Local workspace' : 'Unverified destination';
       const files = card.affected_files || payload.paths || capabilities.flatMap(item => item.paths || []);
       const dialog = document.createElement('section');
       dialog.className = 'phase5-approval-dialog';
@@ -28,13 +39,13 @@
         <section class="phase5-approval-grid">
           <div><span>Run / step</span><b>${esc(card.run_id || runtime.streamState.runId || 'current')} · ${esc(card.step_id || 'unspecified')}</b></div>
           <div><span>Permission mode</span><b>${esc(card.permission_mode || BeastStore.get().aiCoding.mode || 'guided')}</b></div>
-          <div><span>Target</span><b>${esc(card.target || card.execution_target || 'governed runtime')}</b></div>
+          <div><span>Target</span><b>${esc(destinationLabel)}</b></div>
           <div><span>Expiry</span><b>${esc(card.approval?.expires_at || card.expires_at || 'one use')}</b></div>
         </section>
         <details open><summary>Safe arguments</summary><pre>${esc(renderSafeValue(safeArgs) || 'No safe argument view supplied.')}</pre></details>
         <details><summary>Affected resources</summary><pre>${esc((files || []).join('\n') || card.command || card.url || 'No affected resources declared.')}</pre></details>
         <p>${esc((card.expected_side_effects || []).join(' · ') || 'Source writes remain behind the SourcePlan promotion boundary.')}</p>
-        <footer><button type="button" data-approval-action="reject">Reject</button><button type="button" data-approval-action="replan">Request replan</button><button type="submit">Approve once</button></footer>
+        <footer><button type="button" data-approval-action="reject">Reject</button><button type="button" data-approval-action="replan">Request replan</button><button type="submit" ${destinationKnown ? '' : 'disabled title="Destination identity is missing"'}>Approve once</button></footer>
       </form>`;
       document.body.append(dialog);
       const close = decision => { dialog.remove(); resolve(decision); };

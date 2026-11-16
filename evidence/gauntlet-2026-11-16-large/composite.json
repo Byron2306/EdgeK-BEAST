@@ -1,0 +1,81 @@
+{
+  "authority_A_L": [
+    "workspace.read_range",
+    "worktree.bind",
+    "worktree.replace_exact",
+    "worktree.verify"
+  ],
+  "children": [
+    "family-crystal:f3f8ad2739d13e5733d13336",
+    "family-crystal:5298d8b45bf3e16b7e2fa9df"
+  ],
+  "composite": "family-crystal:a7b5eaea0ee8fae87e9a5923",
+  "digest": "sha256:a7b5eaea0ee8fae87e9a5923669d9e6f2a05e261322ee1d61dff91195880d841",
+  "families": [
+    "fix-off-by-one",
+    "fix-config-constant"
+  ],
+  "heldout": [
+    {
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:83a2504472f014fe2beeeecf1074d9b8ae55c2d91f60c2d1960379283fd04566",
+        "visible_rc": 0
+      },
+      "ok": true,
+      "task": "dual-h1",
+      "wall_ms": 237.151
+    },
+    {
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:b0b3a9394ab95d42a08327f9d34ab777c39f887644083789fe4917333a953391",
+        "visible_rc": 0
+      },
+      "ok": true,
+      "task": "dual-h2",
+      "wall_ms": 230.211
+    },
+    {
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:901d75453990cdc0bb5f347f18012d6fa87b1263246ea897d3a7a5fb60a978db",
+        "visible_rc": 0
+      },
+      "ok": true,
+      "task": "dual-h3",
+      "wall_ms": 235.127
+    }
+  ],
+  "promotion": {
+    "approved_by": "Byron",
+    "heldout_receipt": {
+      "attempts": 3,
+      "candidate_id": "family-crystal:a7b5eaea0ee8fae87e9a5923",
+      "episode_envelope_digest": "sha256:feac5454550404c85309e4aafee783eb7a7eebd0e0ff6a8e2ad05b5cf21f8ef8",
+      "evidence_root": "sha256:2d42c4888c2a77f48beb94bb685283274c4ca1f9a9ebfc71eb69c91af39070a3",
+      "promoted": true,
+      "reason": "held-out replay passed",
+      "reproduction_record_digest": "sha256:ea90b82770037815c26087288a3ec9f69a7bb2a3bca29ca5b656b7b9937c17f5",
+      "structured": false,
+      "successes": 3,
+      "variant_ids": [
+        "dual-h1",
+        "dual-h2",
+        "dual-h3"
+      ],
+      "variant_results": [
+        true,
+        true,
+        true
+      ],
+      "variant_results_digest": "sha256:72465275815927c4bf19a7ef2f90b7f4696be44c6ccdcbe6066b0f12596c16b2"
+    },
+    "promoted_at": 1794805442.5575411,
+    "record_digest": "sha256:ddb43817ab505e5616a6830815a71aaaddde3d6a4066cb20dfb3a3576415cf9b",
+    "status": "promoted"
+  }
+}

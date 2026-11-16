@@ -62,7 +62,7 @@ function createExecutionTargetHost({
   function executionTargetSummary(target=activeExecutionTarget) {
     const base={kind:'local',label:'Local workspace',root:getActiveWorkspaceRoot()||repoRoot,transport:'local'};
     let selected = base;
-    if(target?.kind==='ssh')selected = {kind:'ssh',label:`SSH · ${target.host}`,host:target.host,path:target.path||target.remoteRoot||'~',remoteRoot:target.remoteRoot||target.path||'~',transport:'ssh'};
+    if(target?.kind==='ssh')selected = {kind:'ssh',label:`SSH · ${target.host}`,host:target.host,path:target.path||target.remoteRoot||'~',remoteRoot:target.remoteRoot||target.path||'~',remotePython:String(target.remotePython||''),transport:'ssh'};
     else if(target?.kind==='container')selected = {kind:'container',label:`Container · ${target.name||target.containerId}`,containerId:target.containerId,name:target.name||target.containerId,root:target.root||getActiveWorkspaceRoot()||repoRoot,workspaceFolder:target.workspaceFolder||'/workspace',transport:'docker'};
     const session = targetSessionRegistry.summary(targetSessionRegistry.ensure(sessionIdentity(selected).kind, sessionIdentity(selected).identity, { label:selected.label, target:selected, transport:selected.transport }));
     return { ...selected, session };
@@ -71,7 +71,11 @@ function createExecutionTargetHost({
     if(target.kind==='ssh') {
       const host=remoteTarget(target.host || lastRemoteWorkspace?.host);const remoteRoot=remotePath(target.remoteRoot || target.path || lastRemoteWorkspace?.path || '~');
       if(!host||!remoteRoot)return {ok:false,error:'SSH target requires a verified host and safe remote path.',target:executionTargetSummary()};
-      activeExecutionTarget={kind:'ssh',host,path:remoteRoot,remoteRoot,label:`SSH · ${host}`,transport:'ssh'};
+      const inheritedPython = activeExecutionTarget?.kind==='ssh' && activeExecutionTarget.host===host ? activeExecutionTarget.remotePython : '';
+      const remotePython = String(target.remotePython === undefined ? (inheritedPython || '') : target.remotePython).trim();
+      if(remotePython && (!/^\/[A-Za-z0-9._+\/-]{1,1023}$/.test(remotePython) || remotePython.split('/').includes('..')))
+        return {ok:false,error:'Invalid SSH remote Python interpreter path.',target:executionTargetSummary()};
+      activeExecutionTarget={kind:'ssh',host,path:remoteRoot,remoteRoot,remotePython,label:`SSH · ${host}`,transport:'ssh'};
       targetSessionRegistry.activate('ssh', `${host}:${remoteRoot}`, { label:activeExecutionTarget.label, target:activeExecutionTarget, transport:'ssh', health:'healthy' });
     } else if(target.kind==='container') {
       const id=containerId(target.containerId || target.id || target.name);const workspaceFolder=remotePath(target.workspaceFolder || target.path || '/workspace');

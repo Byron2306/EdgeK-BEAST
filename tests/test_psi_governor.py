@@ -21,10 +21,14 @@ def test_low_pressure_admits_work(tmp_path: Path):
     assert PsiGovernor(tmp_path).decide("local_inference", PsiGovernor(tmp_path).sample()).admitted
 
 
-def test_runtime_governor_honors_pressure_lane(tmp_path: Path):
+def test_runtime_governor_pressure_only_shrinks_budget(tmp_path: Path):
+    # Compute Governor spine: PSI pressure alone never refuses; it shrinks the budget via the governor policy.
     for resource in ("cpu", "memory", "io"):
         (tmp_path / resource).write_text("some avg10=60 avg60=0 avg300=0 total=0\nfull avg10=60 avg60=0 avg300=0 total=0\n")
     governor = RuntimeGovernor(db_path=str(tmp_path / "runtime.db"), psi_governor=PsiGovernor(tmp_path))
     admission = governor.begin_execution("local", "model", metadata={"lane": "background"})
-    assert admission.allowed is False
-    assert "PSI admission" in admission.reason
+    assert admission.allowed is True
+    assert admission.pressure_factor == 0.25
+    assert "PSI pressure shrinks budget" in admission.reason
+    protected = governor.begin_execution("local", "model", metadata={"lane": "operator"})
+    assert protected.allowed is True and protected.pressure_factor == 1.0

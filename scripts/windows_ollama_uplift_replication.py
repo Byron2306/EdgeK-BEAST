@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 """Windows Ollama baseline versus provider-disabled residual crystal."""
 from __future__ import annotations
+try:  # closure-2026-11-16: governed egress shim
+    from app.kernel.compute import governed_egress as _egress
+except ModuleNotFoundError:  # run as a script: repo root not on sys.path yet
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
+    from app.kernel.compute import governed_egress as _egress
 import argparse, hashlib, json, math, os, platform, random, time, urllib.request, uuid
 from pathlib import Path
 
@@ -12,7 +20,7 @@ def model_hash(model,value,seed):
     prompt=f"Return only the exact lowercase SHA-256 hexadecimal digest of the UTF-8 bytes between <input> tags. No explanation. <input>{value}</input>"
     body=json.dumps({"model":model,"prompt":prompt,"stream":False,"options":{"temperature":0,"seed":seed,"num_predict":80}}).encode()
     req=urllib.request.Request("http://127.0.0.1:11434/api/generate",data=body,headers={"Content-Type":"application/json"})
-    with urllib.request.urlopen(req,timeout=120) as response: return str(json.loads(response.read()).get("response") or "")
+    with _egress.urlopen("windows_ollama_uplift_replication", req,timeout=120) as response: return str(json.loads(response.read()).get("response") or "")
 def normalize(v): return v.strip().lower().strip("`").replace("sha256:","").strip()
 def mcnemar(a,b):
     n=a+b

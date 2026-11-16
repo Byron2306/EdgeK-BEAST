@@ -6,6 +6,7 @@ returns context tokens.  Every call reports the honest reuse mode and measured
 prompt-evaluation metrics.
 """
 from __future__ import annotations
+from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 
 import hashlib
 import json
@@ -235,7 +236,7 @@ class OllamaKVManager:
         context_tokens: List[int] = []
         if not self._pressure_high():
             try:
-                response = self._session.post(
+                response = _egress.post(self._session, "ollama_kv_manager", 
                     f"{self.ollama_url}/api/generate",
                     json={
                         "model": model,
@@ -304,7 +305,7 @@ class OllamaKVManager:
         if supplied_native:
             payload["context"] = list(context_block.ollama_context)
         try:
-            response = self._session.post(f"{self.ollama_url}/api/generate", json=payload, timeout=120)
+            response = _egress.post(self._session, "ollama_kv_manager", f"{self.ollama_url}/api/generate", json=payload, timeout=120)
             response.raise_for_status()
             data = response.json()
             returned = data.get("context")

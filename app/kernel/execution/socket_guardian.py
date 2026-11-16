@@ -162,8 +162,14 @@ class SocketGuardianServer:
         network_namespace: str = "host",
         vrf: str = "production",
         ttl_seconds: float = 0,
+        contract_port: int | None = None,
+        topology_digest: str = "",
     ) -> PortLease:
         """Adopt a duplicate of a listener retained by an external supervisor.
+
+        ``contract_port``/``topology_digest`` come from the Phase 3 topology contract
+        (``socket_guardian_daemon.build_server``); when set, an inherited listener on any
+        other port is refused before a lease is issued.
 
         The caller keeps its descriptor. This property is what allows a new
         guardian process to recover after guardian failure without rebinding
@@ -185,6 +191,11 @@ class SocketGuardianServer:
             host, port = str(address[0]), int(address[1])
             if protocol == "TCP" and not held.getsockopt(socket.SOL_SOCKET, socket.SO_ACCEPTCONN):
                 raise ValueError("inherited TCP descriptor is not a listening socket")
+            if contract_port is not None and port != int(contract_port):
+                raise PermissionError(
+                    f"inherited {service_id} listener port {port} is not the topology contract port {contract_port}"
+                    + (f" ({topology_digest})" if topology_digest else "")
+                )
             request = {
                 "service_id": service_id,
                 "registry_digest": registry_digest,

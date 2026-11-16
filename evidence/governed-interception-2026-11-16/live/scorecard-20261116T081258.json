@@ -1,0 +1,608 @@
+{
+ "cells": [
+  {
+   "provider": "hf",
+   "model": "moonshotai/Kimi-K2.7-Code:deepinfra",
+   "family": "*",
+   "placement": "cloud",
+   "attempts": 4,
+   "pass_rate": 0.506,
+   "json_rate": 0.828,
+   "tokens_per_accept": 144.9232909192995,
+   "latency_ms_ewma": 14465.0,
+   "spend_usd": 0.001363,
+   "failures": {
+    "verifier_reject": 2
+   },
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "hf",
+   "model": "moonshotai/Kimi-K2.7-Code:deepinfra",
+   "family": "composite-refguard",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 254.0,
+   "latency_ms_ewma": 27116.8,
+   "spend_usd": 0.000864,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "hf",
+   "model": "moonshotai/Kimi-K2.7-Code:deepinfra",
+   "family": "fix-config-constant",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 32.0,
+   "latency_ms_ewma": 1606.8,
+   "spend_usd": 0.000109,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "hf",
+   "model": "moonshotai/Kimi-K2.7-Code:deepinfra",
+   "family": "refactor-rename-symbol",
+   "placement": "cloud",
+   "attempts": 2,
+   "pass_rate": 0.252,
+   "json_rate": 0.748,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 10995.3,
+   "spend_usd": 0.000391,
+   "failures": {
+    "verifier_reject": 2
+   },
+   "consecutive_failures": 2,
+   "cooldown_left": 3
+  },
+  {
+   "provider": "hf",
+   "model": "openai/gpt-oss-120b:deepinfra",
+   "family": "*",
+   "placement": "cloud",
+   "attempts": 8,
+   "pass_rate": 0.496,
+   "json_rate": 0.89,
+   "tokens_per_accept": 59.26922087292759,
+   "latency_ms_ewma": 2863.6,
+   "spend_usd": 8.8e-05,
+   "failures": {
+    "verifier_reject": 4
+   },
+   "consecutive_failures": 2,
+   "cooldown_left": 3
+  },
+  {
+   "provider": "hf",
+   "model": "openai/gpt-oss-120b:deepinfra",
+   "family": "composite-refguard",
+   "placement": "cloud",
+   "attempts": 2,
+   "pass_rate": 0.252,
+   "json_rate": 0.748,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 3690.4,
+   "spend_usd": 2.9e-05,
+   "failures": {
+    "verifier_reject": 2
+   },
+   "consecutive_failures": 2,
+   "cooldown_left": 3
+  },
+  {
+   "provider": "hf",
+   "model": "openai/gpt-oss-120b:deepinfra",
+   "family": "composite",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 55.0,
+   "latency_ms_ewma": 2429.0,
+   "spend_usd": 9e-06,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "hf",
+   "model": "openai/gpt-oss-120b:deepinfra",
+   "family": "far",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 118.0,
+   "latency_ms_ewma": 5000.0,
+   "spend_usd": 2e-05,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "hf",
+   "model": "openai/gpt-oss-120b:deepinfra",
+   "family": "fix-config-constant",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 32.0,
+   "latency_ms_ewma": 1715.2,
+   "spend_usd": 5e-06,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "hf",
+   "model": "openai/gpt-oss-120b:deepinfra",
+   "family": "refactor-rename-symbol",
+   "placement": "cloud",
+   "attempts": 2,
+   "pass_rate": 0.252,
+   "json_rate": 0.748,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 2462.6,
+   "spend_usd": 1.9e-05,
+   "failures": {
+    "verifier_reject": 2
+   },
+   "consecutive_failures": 2,
+   "cooldown_left": 3
+  },
+  {
+   "provider": "hf",
+   "model": "openai/gpt-oss-120b:deepinfra",
+   "family": "toolchain-regenerate",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 31.0,
+   "latency_ms_ewma": 8018.3,
+   "spend_usd": 5e-06,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "nim",
+   "model": "deepseek-ai/deepseek-v4.1-flash",
+   "family": "*",
+   "placement": "cloud",
+   "attempts": 2,
+   "pass_rate": 0.252,
+   "json_rate": 0.252,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 0.0,
+   "spend_usd": 0.0,
+   "failures": {
+    "transport_error": 2
+   },
+   "consecutive_failures": 2,
+   "cooldown_left": 3
+  },
+  {
+   "provider": "nim",
+   "model": "deepseek-ai/deepseek-v4.1-flash",
+   "family": "fix-config-constant",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.333,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 0.0,
+   "spend_usd": 0.0,
+   "failures": {
+    "transport_error": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "nim",
+   "model": "deepseek-ai/deepseek-v4.1-flash",
+   "family": "refactor-rename-symbol",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.333,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 0.0,
+   "spend_usd": 0.0,
+   "failures": {
+    "transport_error": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "nim",
+   "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+   "family": "*",
+   "placement": "cloud",
+   "attempts": 7,
+   "pass_rate": 0.33,
+   "json_rate": 0.88,
+   "tokens_per_accept": 45.266086239544656,
+   "latency_ms_ewma": 1488.8,
+   "spend_usd": 0.0,
+   "failures": {
+    "verifier_reject": 5
+   },
+   "consecutive_failures": 2,
+   "cooldown_left": 3
+  },
+  {
+   "provider": "nim",
+   "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+   "family": "composite-refguard",
+   "placement": "cloud",
+   "attempts": 2,
+   "pass_rate": 0.252,
+   "json_rate": 0.748,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 1710.0,
+   "spend_usd": 0.0,
+   "failures": {
+    "verifier_reject": 2
+   },
+   "consecutive_failures": 2,
+   "cooldown_left": 3
+  },
+  {
+   "provider": "nim",
+   "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+   "family": "fix-config-constant",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 32.0,
+   "latency_ms_ewma": 971.3,
+   "spend_usd": 0.0,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "nim",
+   "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+   "family": "fix-unhandled-exception",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 59.0,
+   "latency_ms_ewma": 1634.2,
+   "spend_usd": 0.0,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "nim",
+   "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+   "family": "refactor-rename-symbol",
+   "placement": "cloud",
+   "attempts": 2,
+   "pass_rate": 0.252,
+   "json_rate": 0.748,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 1009.7,
+   "spend_usd": 0.0,
+   "failures": {
+    "verifier_reject": 2
+   },
+   "consecutive_failures": 2,
+   "cooldown_left": 3
+  },
+  {
+   "provider": "nim",
+   "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+   "family": "toolchain-regenerate",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.667,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 1190.3,
+   "spend_usd": 0.0,
+   "failures": {
+    "verifier_reject": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "nim",
+   "model": "openai/gpt-oss-20b",
+   "family": "*",
+   "placement": "cloud",
+   "attempts": 4,
+   "pass_rate": 0.333,
+   "json_rate": 0.506,
+   "tokens_per_accept": 32.0,
+   "latency_ms_ewma": 39543.0,
+   "spend_usd": 0.0,
+   "failures": {
+    "transport_error": 2,
+    "verifier_reject": 1
+   },
+   "consecutive_failures": 2,
+   "cooldown_left": 3
+  },
+  {
+   "provider": "nim",
+   "model": "openai/gpt-oss-20b",
+   "family": "composite-refguard",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.667,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 103667.9,
+   "spend_usd": 0.0,
+   "failures": {
+    "verifier_reject": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "nim",
+   "model": "openai/gpt-oss-20b",
+   "family": "fix-config-constant",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 32.0,
+   "latency_ms_ewma": 57432.6,
+   "spend_usd": 0.0,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "nim",
+   "model": "openai/gpt-oss-20b",
+   "family": "refactor-rename-symbol",
+   "placement": "cloud",
+   "attempts": 2,
+   "pass_rate": 0.252,
+   "json_rate": 0.252,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 0.0,
+   "spend_usd": 0.0,
+   "failures": {
+    "transport_error": 2
+   },
+   "consecutive_failures": 2,
+   "cooldown_left": 3
+  },
+  {
+   "provider": "ollama",
+   "model": "granite3.3:2b",
+   "family": "*",
+   "placement": "auto",
+   "attempts": 4,
+   "pass_rate": 0.333,
+   "json_rate": 0.828,
+   "tokens_per_accept": 32.0,
+   "latency_ms_ewma": 14105.3,
+   "spend_usd": 0.0,
+   "failures": {
+    "verifier_reject": 3
+   },
+   "consecutive_failures": 2,
+   "cooldown_left": 3
+  },
+  {
+   "provider": "ollama",
+   "model": "granite3.3:2b",
+   "family": "composite-refguard",
+   "placement": "auto",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.667,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 14410.7,
+   "spend_usd": 0.0,
+   "failures": {
+    "verifier_reject": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "ollama",
+   "model": "granite3.3:2b",
+   "family": "fix-config-constant",
+   "placement": "auto",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 32.0,
+   "latency_ms_ewma": 11162.2,
+   "spend_usd": 0.0,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "ollama",
+   "model": "granite3.3:2b",
+   "family": "fix-unhandled-exception",
+   "placement": "auto",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.667,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 15125.9,
+   "spend_usd": 0.0,
+   "failures": {
+    "verifier_reject": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "ollama",
+   "model": "granite3.3:2b",
+   "family": "refactor-rename-symbol",
+   "placement": "auto",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.667,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 14062.1,
+   "spend_usd": 0.0,
+   "failures": {
+    "verifier_reject": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "ollama",
+   "model": "qwen3:4b",
+   "family": "*",
+   "placement": "auto",
+   "attempts": 10,
+   "pass_rate": 0.397,
+   "json_rate": 0.906,
+   "tokens_per_accept": 55.12118582971081,
+   "latency_ms_ewma": 21029.0,
+   "spend_usd": 0.0,
+   "failures": {
+    "verifier_reject": 6
+   },
+   "consecutive_failures": 2,
+   "cooldown_left": 3
+  },
+  {
+   "provider": "ollama",
+   "model": "qwen3:4b",
+   "family": "composite-refguard",
+   "placement": "auto",
+   "attempts": 2,
+   "pass_rate": 0.252,
+   "json_rate": 0.748,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 35244.6,
+   "spend_usd": 0.0,
+   "failures": {
+    "verifier_reject": 2
+   },
+   "consecutive_failures": 2,
+   "cooldown_left": 3
+  },
+  {
+   "provider": "ollama",
+   "model": "qwen3:4b",
+   "family": "fix-config-constant",
+   "placement": "auto",
+   "attempts": 2,
+   "pass_rate": 0.748,
+   "json_rate": 0.748,
+   "tokens_per_accept": 40.52599041782837,
+   "latency_ms_ewma": 16239.2,
+   "spend_usd": 0.0,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "ollama",
+   "model": "qwen3:4b",
+   "family": "fix-logic-operator",
+   "placement": "auto",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 59.0,
+   "latency_ms_ewma": 9493.5,
+   "spend_usd": 0.0,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "ollama",
+   "model": "qwen3:4b",
+   "family": "fix-off-by-one",
+   "placement": "auto",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 80.0,
+   "latency_ms_ewma": 13875.1,
+   "spend_usd": 0.0,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "ollama",
+   "model": "qwen3:4b",
+   "family": "fix-unhandled-exception",
+   "placement": "auto",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.667,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 7678.5,
+   "spend_usd": 0.0,
+   "failures": {
+    "verifier_reject": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "ollama",
+   "model": "qwen3:4b",
+   "family": "refactor-rename-symbol",
+   "placement": "auto",
+   "attempts": 2,
+   "pass_rate": 0.252,
+   "json_rate": 0.748,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 28857.3,
+   "spend_usd": 0.0,
+   "failures": {
+    "verifier_reject": 2
+   },
+   "consecutive_failures": 2,
+   "cooldown_left": 3
+  },
+  {
+   "provider": "ollama",
+   "model": "qwen3:4b",
+   "family": "toolchain-regenerate",
+   "placement": "auto",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.667,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 13279.2,
+   "spend_usd": 0.0,
+   "failures": {
+    "verifier_reject": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  }
+ ]
+}

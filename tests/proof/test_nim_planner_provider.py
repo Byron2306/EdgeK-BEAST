@@ -1,6 +1,29 @@
 import asyncio
+import threading
 
 from app.kernel.agents.nim_planner_provider import NIMPlannerProvider
+
+
+def test_late_request_completion_after_cancel_does_not_corrupt_loop():
+    async def scenario():
+        released = threading.Event()
+        errors = []
+        loop = asyncio.get_running_loop()
+        loop.set_exception_handler(lambda _loop, context: errors.append(context))
+        def request(_payload):
+            released.wait(1)
+            return {"content": "late result"}
+        task = asyncio.create_task(NIMPlannerProvider._call_request(request, {}))
+        await asyncio.sleep(0.01)
+        task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
+        released.set()
+        await asyncio.sleep(0.05)
+        assert not errors
+    asyncio.run(scenario())
 
 
 def test_nim_planner_provider_parses_streamed_action(monkeypatch):
@@ -45,6 +68,14 @@ def test_nim_planner_provider_requests_structured_outputs_by_default(monkeypatch
     payload = provider._request_payload("prompt", repair="", turn=1)
     assert payload["structured_outputs"]["json"] == provider.ACTION_SCHEMA
     assert "nvext" not in payload
+
+
+def test_nim_unwraps_structured_required_optional_argument_groups():
+    raw = '{"decision_type":"tool","tool_id":"worktree.replace_exact","arguments":{"required":{"path":"a.py","old_text":"x","new_text":"y"},"optional":{"expected_occurrences":1}}}'
+    normalized = NIMPlannerProvider._unwrap_argument_groups(raw)
+    assert '"required"' not in normalized
+    assert '"path":"a.py"' in normalized
+    assert '"expected_occurrences":1' in normalized
 
 
 def test_nim_planner_provider_can_add_legacy_guided_json(monkeypatch):

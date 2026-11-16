@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import asdict
 from typing import Any, Callable, Mapping
 from .grand_closure_g2 import G2LiveComposition
 from .grand_closure_g3 import G3ReachabilityAuditor, mount_g3
@@ -14,7 +15,10 @@ def create_g3_audit_router(composition: G2LiveComposition):
     @router.get("/grand-closure/contract-audit")
     def contract_audit():
         receipt = G3ReachabilityAuditor(composition, mounted=True).audit()
-        return {"receipt_digest": receipt.receipt_digest, **receipt.__dict__}
+        return {
+            **asdict(receipt),
+            "receipt_digest": receipt.receipt_digest,
+        }
 
     return router
 

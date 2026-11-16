@@ -1,0 +1,350 @@
+/* IDE legibility pass — 16 Nov 2026.
+   Last in the live stack (after studio-repair-r1). Fixes tiny 7–8px type,
+   the stolen editor row from a second toolbar, explorer tab overflow,
+   Agent Coder transcript/diff contrast, and model picker readability.
+   Does not restyle the dead Phase 7/8/release shells. */
+
+/* Workspace uses one toolbar + header + editor. Keep the editor as the flex row. */
+#beastPageOutlet .beast-workspace-page.phase2-workspace,
+#beastPageOutlet .beast-workspace-page {
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 8px;
+}
+
+#beastPageOutlet .beast-workspace-page .beast-page-head {
+  padding: 10px 4px 0;
+}
+#beastPageOutlet .beast-workspace-page .beast-page-head h2 {
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  color: #e8f2ea;
+}
+#beastPageOutlet .beast-workspace-page .beast-page-head .sub,
+#beastPageOutlet .beast-workspace-page .tiny {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: #9aa89f;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(220px, 0.8fr) auto;
+  grid-template-areas:
+    "root picker state"
+    "status status status";
+  align-items: end;
+  gap: 10px 14px;
+  min-height: 0;
+  margin-bottom: 0;
+  padding: 10px 12px;
+}
+#beastPageOutlet .beast-workspace-page .cortex-root { grid-area: root; }
+#beastPageOutlet .beast-workspace-page .cortex-model-picker { grid-area: picker; min-width: 0; }
+#beastPageOutlet .beast-workspace-page .beast-workspace-state {
+  grid-area: state;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+  align-items: center;
+}
+#beastPageOutlet .beast-workspace-page [data-pair-coding-status] {
+  grid-area: status;
+  font: 12px/1.4 var(--beast-mono, ui-monospace, monospace);
+  color: #b7c6bc;
+  min-height: 1.2em;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-model-picker,
+#beastPageOutlet .beast-workspace-page .cortex-agent-model,
+#beastPageOutlet .cortex-agent-panel .cortex-agent-model {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font: 700 11px/1.2 var(--beast-mono, ui-monospace, monospace);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #c5d4cb;
+}
+#beastPageOutlet .beast-workspace-page select[data-pair-coding-model],
+#beastPageOutlet .cortex-agent-panel select[data-ai-model],
+#beastPageOutlet .beast-models-page select {
+  min-height: 34px;
+  width: 100%;
+  max-width: 100%;
+  padding: 4px 8px;
+  border: 1px solid rgba(157, 174, 168, 0.45);
+  border-radius: 4px;
+  background: #07110c;
+  color: #e8f2ea;
+  font: 13px/1.3 var(--beast-mono, ui-monospace, monospace);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* File tree: stop 8px type, show one name, keep indent readable. */
+#beastPageOutlet .beast-workspace-page .cortex-tabbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  grid-template-columns: none;
+}
+#beastPageOutlet .beast-workspace-page .cortex-tabbar button,
+#beastPageOutlet .beast-workspace-page .cortex-editor-tools button,
+#beastPageOutlet .beast-workspace-page .cortex-explorer-tools button,
+#beastPageOutlet .beast-workspace-page .cortex-tab,
+#beastPageOutlet .beast-workspace-page .cortex-explorer-foot button {
+  font: 700 11px/1.2 var(--beast-mono, ui-monospace, monospace);
+  letter-spacing: 0.04em;
+  color: #c5d4cb;
+  min-height: 28px;
+  padding: 0 8px;
+}
+#beastPageOutlet .beast-workspace-page .cortex-tabbar button.active,
+#beastPageOutlet .beast-workspace-page .cortex-tab.active {
+  color: #f3fff4;
+  border-color: rgba(119, 255, 61, 0.55);
+}
+#beastPageOutlet .beast-workspace-page .beast-file-row {
+  min-height: 32px;
+  font-size: 13px;
+  color: #e0ebe4;
+  align-items: center;
+}
+#beastPageOutlet .beast-workspace-page .beast-file-copy strong {
+  font: 600 13px/1.35 var(--beast-mono, ui-monospace, monospace);
+  color: #eef5f0;
+  letter-spacing: 0;
+  text-transform: none;
+}
+#beastPageOutlet .beast-workspace-page .beast-file-copy small,
+#beastPageOutlet .beast-workspace-page .beast-file-row em,
+#beastPageOutlet .beast-workspace-page .cortex-explorer-foot,
+#beastPageOutlet .beast-workspace-page .cortex-statusbar,
+#beastPageOutlet .beast-workspace-page .cortex-empty span {
+  font: 11px/1.35 var(--beast-mono, ui-monospace, monospace);
+  color: #9aa89f;
+}
+#beastPageOutlet .beast-workspace-page .cortex-explorer {
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  padding: 10px 10px 8px;
+}
+#beastPageOutlet .beast-workspace-page .beast-file-list {
+  overflow: auto;
+  min-height: 0;
+}
+#beastPageOutlet .beast-workspace-page .cortex-root strong {
+  font: 700 12px/1.4 var(--beast-mono, ui-monospace, monospace);
+  color: #e8f2ea;
+  max-width: 100%;
+}
+
+/* Monaco host: give the editor the remaining height, visible scrollbars, no overlay clip. */
+#beastPageOutlet .beast-workspace-page .cortex-layout {
+  min-height: 0;
+  height: 100%;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+}
+#beastPageOutlet .beast-workspace-page .cortex-layout.has-agent-panel.agent-open,
+#beastPageOutlet .beast-workspace-page .cortex-layout.has-agent-panel.ai-open {
+  grid-template-columns: minmax(200px, 240px) minmax(0, 1fr) minmax(320px, 420px);
+}
+#beastPageOutlet .beast-workspace-page .cortex-editor-stage,
+#beastPageOutlet .beast-workspace-page .cortex-editor-pane,
+#beastPageOutlet .beast-workspace-page .monaco-editor,
+#beastPageOutlet .beast-workspace-page .monaco-editor .overflow-guard {
+  min-height: 0;
+  height: 100%;
+}
+#beastPageOutlet .beast-workspace-page .beast-editor-fallback {
+  font: 14px/1.55 var(--beast-mono, ui-monospace, monospace);
+  color: #e8f2ea;
+}
+#beastPageOutlet .beast-workspace-page .cortex-tab {
+  min-width: 128px;
+  max-width: 240px;
+  font-size: 12px;
+  text-transform: none;
+  color: #dce6df;
+}
+#beastPageOutlet .beast-workspace-page .cortex-statusbar {
+  font-size: 11px;
+  color: #9aa89f;
+  min-height: 28px;
+}
+
+/* Agent Coder: readable transcript, diffs, tool calls; no clipped action footer. */
+#beastPageOutlet .cortex-agent-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 10px 10px 8px;
+  gap: 8px;
+}
+#beastPageOutlet .cortex-agent-panel .cortex-agent-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(140px, 1.1fr) auto auto;
+  gap: 8px;
+  align-items: end;
+}
+#beastPageOutlet .cortex-agent-panel .cortex-agent-head strong {
+  display: block;
+  font-size: 16px;
+  color: #e8f2ea;
+  letter-spacing: 0.04em;
+}
+#beastPageOutlet .cortex-agent-panel .cortex-agent-head span {
+  font-size: 10px;
+  color: #9aa89f;
+}
+#beastPageOutlet .cortex-agent-panel .cortex-ai-mode-description,
+#beastPageOutlet .cortex-agent-panel .cortex-ai-cockpit,
+#beastPageOutlet .cortex-agent-panel .cortex-agent-status {
+  font: 12px/1.45 var(--beast-mono, ui-monospace, monospace);
+  color: #c5d4cb;
+}
+#beastPageOutlet .cortex-agent-panel .cortex-ai-cockpit {
+  padding: 8px 10px !important;
+  gap: 4px !important;
+  background: rgba(7, 17, 12, 0.8);
+  border: 1px solid rgba(157, 174, 168, 0.25);
+  border-radius: 4px;
+}
+#beastPageOutlet .cortex-agent-panel .cortex-ai-cockpit b,
+#beastPageOutlet .cortex-agent-panel .cortex-ai-cockpit em {
+  font-size: 12px;
+  color: #e8f2ea;
+}
+#beastPageOutlet .cortex-agent-panel .cortex-ai-compose-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+#beastPageOutlet .cortex-agent-panel .cortex-ai-compose-actions button,
+#beastPageOutlet .cortex-agent-panel .cortex-agent-actions .beast-button,
+#beastPageOutlet .cortex-agent-panel [data-ai-action] {
+  font: 700 12px/1.2 var(--beast-mono, ui-monospace, monospace);
+  min-height: 30px;
+}
+#beastPageOutlet .cortex-agent-panel [data-ai-messages] {
+  flex: 1 1 0;
+  min-height: 160px;
+  overflow: auto;
+}
+#beastPageOutlet .cortex-agent-panel .cortex-agent-message {
+  padding: 8px 10px;
+  border: 1px solid rgba(157, 174, 168, 0.2);
+  border-radius: 4px;
+  margin-bottom: 8px;
+  background: rgba(4, 10, 7, 0.72);
+}
+#beastPageOutlet .cortex-agent-panel .cortex-agent-message > strong {
+  display: block;
+  font: 700 11px/1.3 var(--beast-mono, ui-monospace, monospace);
+  letter-spacing: 0.08em;
+  color: #a3ff5a;
+  margin-bottom: 4px;
+}
+#beastPageOutlet .cortex-agent-panel .cortex-ai-message-body,
+#beastPageOutlet .cortex-agent-panel .cortex-ai-edit-preview pre {
+  font: 13px/1.5 var(--beast-mono, ui-monospace, monospace);
+  color: #e8f2ea;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 0;
+}
+#beastPageOutlet .cortex-agent-panel .cortex-ai-edit-preview pre:first-of-type {
+  background: rgba(91, 29, 29, 0.35);
+  color: #ffd0cb;
+  padding: 8px;
+  border-radius: 4px 4px 0 0;
+}
+#beastPageOutlet .cortex-agent-panel .cortex-ai-edit-preview pre:last-of-type {
+  background: rgba(23, 77, 36, 0.35);
+  color: #d4f5c8;
+  padding: 8px;
+  border-radius: 0 0 4px 4px;
+}
+#beastPageOutlet .cortex-agent-panel .cortex-ai-trace,
+#beastPageOutlet .cortex-agent-panel .cortex-ai-proposal,
+#beastPageOutlet .cortex-agent-panel .cortex-ai-validation {
+  font: 12px/1.45 var(--beast-mono, ui-monospace, monospace);
+  color: #c5d4cb;
+}
+#beastPageOutlet .cortex-agent-panel .cortex-ai-trace p {
+  margin: 0 0 4px;
+  padding: 4px 6px;
+  background: rgba(8, 18, 12, 0.9);
+  border-left: 2px solid rgba(119, 255, 61, 0.45);
+}
+#beastPageOutlet .cortex-agent-panel [data-ai-prompt] {
+  font: 14px/1.45 var(--beast-mono, ui-monospace, monospace);
+  color: #e8f2ea;
+  background: #07110c;
+  border: 1px solid rgba(157, 174, 168, 0.4);
+  min-height: 72px !important;
+  max-height: 140px !important;
+  padding: 8px 10px;
+}
+#beastPageOutlet .cortex-agent-panel .cortex-agent-actions {
+  max-height: none;
+  overflow: visible;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+#beastPageOutlet .cortex-agent-panel .cortex-agent-mode,
+#beastPageOutlet .cortex-agent-panel .cortex-agent-mode select {
+  font: 12px/1.3 var(--beast-mono, ui-monospace, monospace);
+  color: #e8f2ea;
+}
+#beastPageOutlet .cortex-agent-panel .cortex-ai-context-body {
+  max-height: 120px !important;
+  font-size: 12px;
+  color: #c5d4cb;
+}
+
+/* Models page: stop rendering 0% as if it were a measured score. */
+#beastPageOutlet .beast-models-page .model-registry-row {
+  font-size: 13px;
+  color: #e8f2ea;
+  min-height: 44px;
+}
+#beastPageOutlet .beast-models-page .model-registry-row b {
+  font-size: 13px;
+  color: #f3fff4;
+}
+#beastPageOutlet .beast-models-page .model-registry-row small,
+#beastPageOutlet .beast-models-page .model-registry-row em,
+#beastPageOutlet .beast-models-page .model-summary-card span {
+  font-size: 11px;
+  color: #9aa89f;
+}
+#beastPageOutlet .beast-models-page .model-summary-card strong,
+#beastPageOutlet .beast-models-page .model-detail-hero strong {
+  font-size: 16px;
+  color: #e8f2ea;
+}
+
+@media (max-width: 1100px) {
+  #beastPageOutlet .beast-workspace-page .cortex-toolbar {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "root"
+      "picker"
+      "state"
+      "status";
+  }
+  #beastPageOutlet .beast-workspace-page .cortex-layout.has-agent-panel.agent-open,
+  #beastPageOutlet .beast-workspace-page .cortex-layout.has-agent-panel.ai-open {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(180px, 32vh) minmax(240px, 1fr) minmax(280px, 42vh);
+  }
+  #beastPageOutlet .cortex-agent-panel .cortex-agent-head {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+  #beastPageOutlet .cortex-agent-panel .cortex-agent-model {
+    grid-column: 1 / -1;
+  }
+}

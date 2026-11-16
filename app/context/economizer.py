@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 import copy
 import logging
+import re
 
 from app.kernel.compute.perceive import EdgeKIR
 
@@ -33,11 +34,57 @@ class ContextEconomizer:
     def __init__(self, policies: Optional[Dict[str, Any]] = None):
         self.policies = policies or {}
 
+    @staticmethod
+    def _is_protected_message(message: Dict[str, Any]) -> bool:
+        """Conservative exact-source boundary; unrecognized structured payloads stay intact."""
+        if not isinstance(message, dict):
+            return True
+        if any(message.get(key) is True for key in
+               ("exact_content", "preserve_exact", "source_integrity_required")):
+            return True
+        if message.get("content_integrity") in ("exact", "byte_exact", "protected"):
+            return True
+        if message.get("content_type") in (
+            "source", "code", "diff", "patch", "json", "verification_receipt", "source_anchor"
+        ):
+            return True
+        content = message.get("content")
+        if not isinstance(content, str):
+            return True
+        if "```" in content:
+            return True
+        if re.search(r"(?m)^(?:[ \t]*(?:def |class |async def |from \S+ import |import |assert |return |raise |@pytest|@@ |diff --git|--- a/|\+\+\+ b/))", content):
+            return True
+        if re.search(r"(?m)^\s{4,}\S", content):
+            return True
+        if re.search(r"(?m)^\s*[\[{]\s*$|^\s*\"[^\"]+\"\s*:", content):
+            return True
+        if re.search(r"\bsha256:[0-9a-f]{64}\b", content):
+            return True
+        return False
+
+    def _protected_messages_present(self, messages: List[Dict[str, Any]]) -> bool:
+        return any(self._is_protected_message(message) for message in messages)
+
     def economize(self, ir: EdgeKIR) -> ContextEconomyResult:
         meta_rules = self.policies.get("meta_rules", {})
         enabled = meta_rules.get("context_economizer_enabled", True)
         original_tokens = self._estimate_tokens(ir.messages or [])
+        # Envelope-level exactness is an explicit contract: never alter it.
+        envelope_exact = (ir.metadata or {}).get("content_integrity") in (
+            "exact", "byte_exact", "protected"
+        )
+        if envelope_exact:
+            max_input = int(meta_rules.get("max_input_tokens_per_request", 8000))
+            if original_tokens > max_input:
+                raise ValueError("protected_context_exceeds_input_budget")
+            return self._unchanged(ir, original_tokens, "protected_exact_content", [
+                "Exact envelope preserved byte-for-byte"
+            ])
 
+        ir = self._apply_compression_tiers(ir)
+        original_tokens = self._estimate_tokens(ir.messages or []) if (ir.metadata or {}).get(
+            "context_tiers") else original_tokens
         if not enabled:
             return self._unchanged(ir, original_tokens, "disabled", ["Context economizer disabled"])
 
@@ -58,6 +105,9 @@ class ContextEconomizer:
         if original_tokens > max_input:
             target_tokens = min(target_tokens, int(max_input * 0.9))
         target_tokens = max(1, min(target_tokens, trigger_tokens))
+
+        if self._protected_messages_present(ir.messages or []):
+            target_tokens = max_input
 
         min_recent_messages = int(meta_rules.get("context_economizer_min_recent_messages", 4))
         max_message_chars = int(meta_rules.get("context_economizer_max_message_chars", 12000))
@@ -83,6 +133,8 @@ class ContextEconomizer:
             "messages_removed": messages_removed,
             "chars_removed": chars_removed,
             "strategy": "deterministic_trim",
+            "token_count_kind": "estimated_chars_div_4",
+            "provider_tokens_measured": False,
             "notes": notes
         }
 
@@ -127,83 +179,42 @@ class ContextEconomizer:
         notes = []
         chars_removed = 0
         messages_removed = 0
+        # Coding lane: retain exact messages and current turn unchanged. Only
+        # remove eligible older history; never rewrite code, system prompts,
+        # structured tool results, or the latest user request.
         normalized = [copy.deepcopy(message) for message in messages]
-
-        for message in normalized:
-            content = message.get("content")
-            if isinstance(content, str):
-                compacted = " ".join(content.split())
-                chars_removed += max(0, len(content) - len(compacted))
-                message["content"] = compacted
-
-        trimmed = []
-        for message in normalized:
-            content = message.get("content")
-            if isinstance(content, str) and len(content) > max_message_chars:
-                half = max(1, (max_message_chars - 80) // 2)
-                omitted = len(content) - (half * 2)
-                message["content"] = (
-                    content[:half]
-                    + f"\n\n[EdgeK context economy: {omitted} characters omitted from middle]\n\n"
-                    + content[-half:]
-                )
-                chars_removed += max(0, omitted)
-            trimmed.append(message)
-
-        normalized = trimmed
         if self._estimate_tokens(normalized) <= target_tokens:
-            if chars_removed:
-                notes.append("Whitespace and long-message trimming reached target")
-            return normalized, messages_removed, chars_removed, notes
-
-        system_messages = []
-        non_system_messages = []
-        for message in normalized:
-            if preserve_system and message.get("role") == "system":
-                system_messages.append(message)
-            else:
-                non_system_messages.append(message)
-
-        recent_count = min(len(non_system_messages), max(1, min_recent_messages))
-        recent_messages = non_system_messages[-recent_count:]
-        older_messages = non_system_messages[:-recent_count]
-
-        kept_older = []
-        for message in reversed(older_messages):
-            candidate = system_messages + list(reversed(kept_older + [message])) + recent_messages
-            if self._estimate_tokens(candidate) <= target_tokens:
-                kept_older.append(message)
-            else:
-                messages_removed += 1
-                chars_removed += len(str(message.get("content", "")))
-
-        kept_older = list(reversed(kept_older))
-        compressed = system_messages + kept_older + recent_messages
-
-        if messages_removed:
-            summary = {
-                "role": "system",
-                "content": (
-                    f"[EdgeK context economy: {messages_removed} older messages omitted "
-                    f"to satisfy the input budget.]"
-                )
-            }
-            insert_at = len(system_messages)
-            compressed.insert(insert_at, summary)
-            notes.append(f"Omitted {messages_removed} older messages")
-
-        while self._estimate_tokens(compressed) > target_tokens and len(compressed) > len(system_messages) + 1:
-            removable_index = len(system_messages)
-            if compressed[removable_index].get("content", "").startswith("[EdgeK context economy:"):
-                removable_index += 1
-            removed = compressed.pop(removable_index)
+            return normalized, 0, 0, notes
+        protected_indexes = {
+            i for i, message in enumerate(normalized)
+            if self._is_protected_message(message)
+            or (preserve_system and message.get("role") == "system")
+        }
+        # Protect the latest user turn, even if it is ordinary prose.
+        for i in range(len(normalized) - 1, -1, -1):
+            if normalized[i].get("role") == "user":
+                protected_indexes.add(i)
+                break
+        # Keep recent conversational continuity when possible, but allow
+        # removal of old, unprotected messages first.
+        eligible = [i for i in range(len(normalized)) if i not in protected_indexes]
+        keep_recent = set(eligible[-max(0, min_recent_messages - 1):])
+        removal_order = [i for i in eligible if i not in keep_recent] + [
+            i for i in eligible if i in keep_recent
+        ]
+        removed = set()
+        for i in removal_order:
+            remaining = [m for j, m in enumerate(normalized) if j not in removed]
+            if self._estimate_tokens(remaining) <= target_tokens:
+                break
+            removed.add(i)
             messages_removed += 1
-            chars_removed += len(str(removed.get("content", "")))
-
+            chars_removed += len(str(normalized[i].get("content", "")))
+        compressed = [m for i, m in enumerate(normalized) if i not in removed]
         if self._estimate_tokens(compressed) > target_tokens:
-            compressed = self._force_trim_recent(compressed, target_tokens, preserve_system)
-            notes.append("Applied final recent-message trimming")
-
+            raise ValueError("protected_context_exceeds_input_budget")
+        if messages_removed:
+            notes.append(f"Omitted {messages_removed} eligible historical messages; protected content unchanged")
         return compressed, messages_removed, chars_removed, notes
 
     def _force_trim_recent(
@@ -270,6 +281,8 @@ class ContextEconomizer:
             "within_target": True,
             "within_input_budget": True,
             "strategy": strategy,
+            "token_count_kind": "estimated_chars_div_4",
+            "provider_tokens_measured": False,
             "notes": notes
         })
         unchanged_ir = EdgeKIR(
@@ -294,6 +307,36 @@ class ContextEconomizer:
             chars_removed=0,
             notes=notes
         )
+
+    def _apply_compression_tiers(self, ir: EdgeKIR) -> EdgeKIR:
+        """Experimental tiers (BEAST_COMPRESSION_TIERS=1): only messages explicitly marked ``context_tier``."""
+        from app.context.compression_tiers import default_router, tiers_enabled
+
+        if not tiers_enabled() or not any(isinstance(m, dict) and m.get("context_tier") for m in ir.messages or []):
+            return ir
+        router = default_router()
+        messages, receipts = [], []
+        for message in ir.messages or []:
+            tier = message.get("context_tier") if isinstance(message, dict) else None
+            if tier not in ("longcodezip", "sqz") or not isinstance(message.get("content"), str):
+                messages.append(message)
+                continue
+            try:
+                out = router.compress(tier, message["content"], query=str(message.get("tier_query") or ""),
+                                      edit_targets=message.get("edit_targets") or ())
+            except PermissionError as exc:  # governor refused: keep the message unchanged
+                receipts.append({"tier": tier, "refused": str(exc)})
+                messages.append(message)
+                continue
+            passed = bool(out["fidelity"]["passed"])
+            messages.append({**message, "content": out["content"] if passed else message["content"]})
+            receipts.append({"tier": tier, "fidelity_passed": passed, "metrics": out["metrics"],
+                             "governor_receipt_id": out["governor"]["receipt_id"]})
+        metadata = copy.deepcopy(ir.metadata or {})
+        metadata["context_tiers"] = receipts
+        return EdgeKIR(messages=messages, model=ir.model, max_tokens=ir.max_tokens, temperature=ir.temperature,
+                       top_p=ir.top_p, stream=ir.stream, tools=ir.tools, tool_choice=ir.tool_choice, stop=ir.stop,
+                       metadata=metadata)
 
     def _estimate_tokens(self, messages: List[Dict[str, Any]]) -> int:
         total_chars = sum(len(str(message.get("content", ""))) for message in messages or [])

@@ -1,0 +1,858 @@
+{
+ "new_provider_cells": [
+  {
+   "provider": "fal_llm",
+   "model": "openai/gpt-oss-120b",
+   "family": "smoke-tiny",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.333,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 0.0,
+   "spend_usd": 0.0,
+   "failures": {
+    "http_error": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+   "family": "*",
+   "placement": "cloud",
+   "attempts": 18,
+   "pass_rate": 0.622,
+   "json_rate": 0.936,
+   "tokens_per_accept": 855.8621043799709,
+   "latency_ms_ewma": 2142.0,
+   "spend_usd": 0.006176,
+   "failures": {
+    "verifier_reject": 6
+   },
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+   "family": "composite-refguard",
+   "placement": "cloud",
+   "attempts": 4,
+   "pass_rate": 0.506,
+   "json_rate": 0.828,
+   "tokens_per_accept": 1395.0767090807003,
+   "latency_ms_ewma": 2396.6,
+   "spend_usd": 0.002253,
+   "failures": {
+    "verifier_reject": 2
+   },
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+   "family": "composite",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 769.0,
+   "latency_ms_ewma": 1890.4,
+   "spend_usd": 0.000283,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+   "family": "far",
+   "placement": "cloud",
+   "attempts": 2,
+   "pass_rate": 0.252,
+   "json_rate": 0.748,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 1873.7,
+   "spend_usd": 0.000515,
+   "failures": {
+    "verifier_reject": 2
+   },
+   "consecutive_failures": 2,
+   "cooldown_left": 3
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+   "family": "fix-config-constant",
+   "placement": "cloud",
+   "attempts": 2,
+   "pass_rate": 0.748,
+   "json_rate": 0.748,
+   "tokens_per_accept": 558.5779712534851,
+   "latency_ms_ewma": 1969.1,
+   "spend_usd": 0.00039,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+   "family": "fix-logic-operator",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 565.0,
+   "latency_ms_ewma": 2072.7,
+   "spend_usd": 0.0002,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+   "family": "fix-off-by-one",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 610.0,
+   "latency_ms_ewma": 1980.8,
+   "spend_usd": 0.000216,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+   "family": "fix-unhandled-exception",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 635.0,
+   "latency_ms_ewma": 2025.8,
+   "spend_usd": 0.000246,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+   "family": "refactor-rename-symbol",
+   "placement": "cloud",
+   "attempts": 5,
+   "pass_rate": 0.57,
+   "json_rate": 0.85,
+   "tokens_per_accept": 921.8469645857757,
+   "latency_ms_ewma": 2146.1,
+   "spend_usd": 0.001804,
+   "failures": {
+    "verifier_reject": 2
+   },
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+   "family": "smoke-tiny",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 67.0,
+   "latency_ms_ewma": 1787.7,
+   "spend_usd": 4.2e-05,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+   "family": "toolchain-regenerate",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 782.0,
+   "latency_ms_ewma": 1849.0,
+   "spend_usd": 0.000269,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/glm-5p3-flash",
+   "family": "*",
+   "placement": "cloud",
+   "attempts": 18,
+   "pass_rate": 0.626,
+   "json_rate": 0.882,
+   "tokens_per_accept": 835.09421211094,
+   "latency_ms_ewma": 4399.7,
+   "spend_usd": 0.003712,
+   "failures": {
+    "json_invalid": 1,
+    "verifier_reject": 5
+   },
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/glm-5p3-flash",
+   "family": "composite-refguard",
+   "placement": "cloud",
+   "attempts": 3,
+   "pass_rate": 0.599,
+   "json_rate": 0.796,
+   "tokens_per_accept": 1221.1435783844483,
+   "latency_ms_ewma": 4873.2,
+   "spend_usd": 0.000717,
+   "failures": {
+    "verifier_reject": 1
+   },
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/glm-5p3-flash",
+   "family": "composite",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 769.0,
+   "latency_ms_ewma": 2790.9,
+   "spend_usd": 0.000136,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/glm-5p3-flash",
+   "family": "far",
+   "placement": "cloud",
+   "attempts": 2,
+   "pass_rate": 0.252,
+   "json_rate": 0.496,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 5656.2,
+   "spend_usd": 0.001235,
+   "failures": {
+    "json_invalid": 1,
+    "verifier_reject": 1
+   },
+   "consecutive_failures": 2,
+   "cooldown_left": 3
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/glm-5p3-flash",
+   "family": "fix-config-constant",
+   "placement": "cloud",
+   "attempts": 2,
+   "pass_rate": 0.748,
+   "json_rate": 0.748,
+   "tokens_per_accept": 558.5779712534851,
+   "latency_ms_ewma": 1290.3,
+   "spend_usd": 0.000189,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/glm-5p3-flash",
+   "family": "fix-logic-operator",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 565.0,
+   "latency_ms_ewma": 1281.8,
+   "spend_usd": 9.7e-05,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/glm-5p3-flash",
+   "family": "fix-off-by-one",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 610.0,
+   "latency_ms_ewma": 1249.9,
+   "spend_usd": 0.000104,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/glm-5p3-flash",
+   "family": "fix-unhandled-exception",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 635.0,
+   "latency_ms_ewma": 2139.9,
+   "spend_usd": 0.000117,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/glm-5p3-flash",
+   "family": "refactor-rename-symbol",
+   "placement": "cloud",
+   "attempts": 6,
+   "pass_rate": 0.506,
+   "json_rate": 0.867,
+   "tokens_per_accept": 965.584501213673,
+   "latency_ms_ewma": 3614.9,
+   "spend_usd": 0.00099,
+   "failures": {
+    "verifier_reject": 3
+   },
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/glm-5p3-flash",
+   "family": "smoke-tiny",
+   "placement": "cloud",
+   "attempts": 2,
+   "pass_rate": 0.504,
+   "json_rate": 0.504,
+   "tokens_per_accept": 67.0,
+   "latency_ms_ewma": 417.6,
+   "spend_usd": 1.8e-05,
+   "failures": {
+    "http_error": 1
+   },
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/glm-5p3-flash",
+   "family": "toolchain-regenerate",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 775.0,
+   "latency_ms_ewma": 2005.5,
+   "spend_usd": 0.000127,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/gpt-oss-120b",
+   "family": "smoke-tiny",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 69.0,
+   "latency_ms_ewma": 2363.8,
+   "spend_usd": 2.2e-05,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "fireworks",
+   "model": "accounts/fireworks/models/kimi-k3",
+   "family": "smoke-tiny",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.667,
+   "json_rate": 0.667,
+   "tokens_per_accept": 65.0,
+   "latency_ms_ewma": 4312.2,
+   "spend_usd": 0.000459,
+   "failures": {},
+   "consecutive_failures": 0,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "hyperbolic",
+   "model": "glm-5.3-flash",
+   "family": "smoke-tiny",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.333,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 0.0,
+   "spend_usd": 0.0,
+   "failures": {
+    "http_error": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "hyperbolic",
+   "model": "glm-5.3",
+   "family": "smoke-tiny",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.333,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 0.0,
+   "spend_usd": 0.0,
+   "failures": {
+    "http_error": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "hyperbolic",
+   "model": "kimi-k3",
+   "family": "smoke-tiny",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.333,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 0.0,
+   "spend_usd": 0.0,
+   "failures": {
+    "http_error": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "replicate",
+   "model": "deepseek-ai/deepseek-v3.1",
+   "family": "smoke-tiny",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.333,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 1550.7,
+   "spend_usd": 0.000163,
+   "failures": {
+    "http_error": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "replicate",
+   "model": "openai/gpt-oss-120b",
+   "family": "smoke-tiny",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.333,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 1627.2,
+   "spend_usd": 2.9e-05,
+   "failures": {
+    "http_error": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "replicate",
+   "model": "qwen/qwen3-235b-a22b-instruct-2507",
+   "family": "smoke-tiny",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.333,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 1225.4,
+   "spend_usd": 0.000163,
+   "failures": {
+    "http_error": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "sambanova",
+   "model": "Meta-Llama-3.3-70B-Instruct",
+   "family": "smoke-tiny",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.333,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 0.0,
+   "spend_usd": 0.0,
+   "failures": {
+    "http_error": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "sambanova",
+   "model": "MiniMax-M3.1-Flash",
+   "family": "smoke-tiny",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.333,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 0.0,
+   "spend_usd": 0.0,
+   "failures": {
+    "http_error": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  },
+  {
+   "provider": "sambanova",
+   "model": "gpt-oss-120b",
+   "family": "smoke-tiny",
+   "placement": "cloud",
+   "attempts": 1,
+   "pass_rate": 0.333,
+   "json_rate": 0.333,
+   "tokens_per_accept": null,
+   "latency_ms_ewma": 0.0,
+   "spend_usd": 0.0,
+   "failures": {
+    "http_error": 1
+   },
+   "consecutive_failures": 1,
+   "cooldown_left": 0
+  }
+ ],
+ "top6_by_family": {
+  "refactor-rename-symbol": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash",
+    "value": 0.704671,
+    "pass_rate": 0.5702,
+    "attempts": 4.671,
+    "source": "family",
+    "explore_bonus": 0.282861
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash",
+    "value": 0.621203,
+    "pass_rate": 0.5064,
+    "attempts": 5.512,
+    "source": "family",
+    "explore_bonus": 0.263966
+   },
+   {
+    "ident": "ollama:qwen3:4b",
+    "value": 0.589763,
+    "pass_rate": 0.5,
+    "attempts": 0.0,
+    "source": "prior",
+    "explore_bonus": 0.35
+   },
+   {
+    "ident": "ollama:granite3.3:2b",
+    "value": 0.589763,
+    "pass_rate": 0.5,
+    "attempts": 0.0,
+    "source": "prior",
+    "explore_bonus": 0.35
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:featherless-ai",
+    "value": 0.589763,
+    "pass_rate": 0.5,
+    "attempts": 0.0,
+    "source": "prior",
+    "explore_bonus": 0.35
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:novita",
+    "value": 0.589763,
+    "pass_rate": 0.5,
+    "attempts": 0.0,
+    "source": "prior",
+    "explore_bonus": 0.35
+   }
+  ],
+  "composite-refguard": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash",
+    "value": 0.735652,
+    "pass_rate": 0.5987,
+    "attempts": 2.899,
+    "source": "family",
+    "explore_bonus": 0.326173
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra",
+    "value": 0.642827,
+    "pass_rate": 0.6027,
+    "attempts": 7.109,
+    "source": "family",
+    "explore_bonus": 0.226179
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash",
+    "value": 0.635523,
+    "pass_rate": 0.5057,
+    "attempts": 3.8,
+    "source": "family",
+    "explore_bonus": 0.293963
+   },
+   {
+    "ident": "ollama:qwen3:4b",
+    "value": 0.589763,
+    "pass_rate": 0.5,
+    "attempts": 0.0,
+    "source": "prior",
+    "explore_bonus": 0.35
+   },
+   {
+    "ident": "ollama:granite3.3:2b",
+    "value": 0.589763,
+    "pass_rate": 0.5,
+    "attempts": 0.0,
+    "source": "prior",
+    "explore_bonus": 0.35
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:featherless-ai",
+    "value": 0.589763,
+    "pass_rate": 0.5,
+    "attempts": 0.0,
+    "source": "prior",
+    "explore_bonus": 0.35
+   }
+  ],
+  "fix-config-constant": [
+   {
+    "ident": "hf:openai/gpt-oss-120b:deepinfra",
+    "value": 0.921026,
+    "pass_rate": 0.7959,
+    "attempts": 2.899,
+    "source": "family",
+    "explore_bonus": 0.286885
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra",
+    "value": 0.914544,
+    "pass_rate": 0.7959,
+    "attempts": 2.899,
+    "source": "family",
+    "explore_bonus": 0.286885
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash",
+    "value": 0.899014,
+    "pass_rate": 0.7479,
+    "attempts": 1.966,
+    "source": "family",
+    "explore_bonus": 0.328929
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash",
+    "value": 0.893378,
+    "pass_rate": 0.7479,
+    "attempts": 1.966,
+    "source": "family",
+    "explore_bonus": 0.328929
+   },
+   {
+    "ident": "nim:nvidia/nemotron-3.5-lightning-30b-a3b",
+    "value": 0.881172,
+    "pass_rate": 0.6667,
+    "attempts": 1.0,
+    "source": "family",
+    "explore_bonus": 0.35
+   },
+   {
+    "ident": "nim:openai/gpt-oss-20b",
+    "value": 0.807577,
+    "pass_rate": 0.6667,
+    "attempts": 1.0,
+    "source": "family",
+    "explore_bonus": 0.35
+   }
+  ],
+  "far": [
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra",
+    "value": 0.822519,
+    "pass_rate": 0.7479,
+    "attempts": 1.966,
+    "source": "family",
+    "explore_bonus": 0.313478
+   },
+   {
+    "ident": "hf:openai/gpt-oss-120b:deepinfra",
+    "value": 0.713759,
+    "pass_rate": 0.5987,
+    "attempts": 2.899,
+    "source": "family",
+    "explore_bonus": 0.273409
+   },
+   {
+    "ident": "ollama:qwen3:4b",
+    "value": 0.589763,
+    "pass_rate": 0.5,
+    "attempts": 0.0,
+    "source": "prior",
+    "explore_bonus": 0.35
+   },
+   {
+    "ident": "ollama:granite3.3:2b",
+    "value": 0.589763,
+    "pass_rate": 0.5,
+    "attempts": 0.0,
+    "source": "prior",
+    "explore_bonus": 0.35
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:featherless-ai",
+    "value": 0.589763,
+    "pass_rate": 0.5,
+    "attempts": 0.0,
+    "source": "prior",
+    "explore_bonus": 0.35
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:novita",
+    "value": 0.589763,
+    "pass_rate": 0.5,
+    "attempts": 0.0,
+    "source": "prior",
+    "explore_bonus": 0.35
+   }
+  ],
+  "fix-unhandled-exception": [
+   {
+    "ident": "hf:openai/gpt-oss-120b:deepinfra",
+    "value": 0.840791,
+    "pass_rate": 0.7479,
+    "attempts": 1.966,
+    "source": "family",
+    "explore_bonus": 0.292459
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash",
+    "value": 0.812211,
+    "pass_rate": 0.6667,
+    "attempts": 1.0,
+    "source": "family",
+    "explore_bonus": 0.35
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash",
+    "value": 0.811407,
+    "pass_rate": 0.6667,
+    "attempts": 1.0,
+    "source": "family",
+    "explore_bonus": 0.35
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra",
+    "value": 0.808578,
+    "pass_rate": 0.6667,
+    "attempts": 1.0,
+    "source": "family",
+    "explore_bonus": 0.35
+   },
+   {
+    "ident": "nim:nvidia/nemotron-3.5-lightning-30b-a3b",
+    "value": 0.689631,
+    "pass_rate": 0.4957,
+    "attempts": 1.966,
+    "source": "family",
+    "explore_bonus": 0.292459
+   },
+   {
+    "ident": "ollama:qwen3:4b",
+    "value": 0.589763,
+    "pass_rate": 0.5,
+    "attempts": 0.0,
+    "source": "prior",
+    "explore_bonus": 0.35
+   }
+  ],
+  "toolchain-regenerate": [
+   {
+    "ident": "hf:openai/gpt-oss-120b:deepinfra",
+    "value": 0.865633,
+    "pass_rate": 0.7959,
+    "attempts": 2.899,
+    "source": "family",
+    "explore_bonus": 0.261837
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash",
+    "value": 0.807183,
+    "pass_rate": 0.6667,
+    "attempts": 1.0,
+    "source": "family",
+    "explore_bonus": 0.35
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash",
+    "value": 0.806299,
+    "pass_rate": 0.6667,
+    "attempts": 1.0,
+    "source": "family",
+    "explore_bonus": 0.35
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra",
+    "value": 0.789159,
+    "pass_rate": 0.6667,
+    "attempts": 1.0,
+    "source": "family",
+    "explore_bonus": 0.35
+   },
+   {
+    "ident": "ollama:qwen3:4b",
+    "value": 0.589763,
+    "pass_rate": 0.5,
+    "attempts": 0.0,
+    "source": "prior",
+    "explore_bonus": 0.35
+   },
+   {
+    "ident": "ollama:granite3.3:2b",
+    "value": 0.589763,
+    "pass_rate": 0.5,
+    "attempts": 0.0,
+    "source": "prior",
+    "explore_bonus": 0.35
+   }
+  ]
+ },
+ "default_candidates": 34,
+ "note": "ranked after replaying all evidence with smoke kept out of the '*' aggregate and the exploration bonus capped at explore_c"
+}

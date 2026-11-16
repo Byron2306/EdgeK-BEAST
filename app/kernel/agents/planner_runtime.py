@@ -3,20 +3,30 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import os
+import time
 import uuid
 from dataclasses import replace
 from typing import Any
 
 from app.kernel.agents.failure_analyst import analyze_failure
+from app.kernel.agents.file_review import (
+    ReviewEvidence, ReviewPacketError, collect_review_evidence, review_paths, review_timeout_seconds,
+)
+from app.kernel.agents.post_session_graduation import assess as assess_post_session_graduation
+from app.kernel.agents.post_session_quality import verify as verify_post_session_quality
 from app.kernel.agents.planning_integrations import PlanningIntegrationRuntime
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType, PlannerState
 from app.kernel.agents.planner_provider import HeuristicPlannerProvider, PlannerDecisionError, PlannerProvider, parse_planner_decision
 from app.kernel.agents.run_state import AgentRunState, TERMINAL_STATES, normalize_state
 from app.kernel.agents.semantic_context import semantic_context_contract
-from app.kernel.agents.tool_runtime import ToolExecutionFailed
-from app.kernel.agents.verification_planner import plan_verification
+from app.kernel.agents.tool_models import ToolEffect, is_read_only_run
+from app.kernel.agents.tool_runtime import ToolExecutionFailed, h12_approval_authorizes
+from app.kernel.agents.verification_planner import plan_verification, verified_handoff_command
+from app.kernel.compute.coding_crystals import REVIEWED_TOOLS as CRYSTAL_REVIEWED_TOOLS
+from app.kernel.sensorium.episode_envelope import EpisodeEnvelopeBuilder, RunBudgetTracker
 
 
 class PlannerBudgetExhausted(RuntimeError):
@@ -24,8 +34,21 @@ class PlannerBudgetExhausted(RuntimeError):
 
 
 class AgentPlannerRuntime:
-    def __init__(self, engine: Any, provider: PlannerProvider, *, max_turns: int = 8, observation_limit: int = 12, max_repair_cycles: int = 3, context_packet_builder: Any = None, execution_gateway: Any = None, compute_governor: Any = None):
+    def __init__(self, engine: Any, provider: PlannerProvider, *, max_turns: int = 8, observation_limit: int = 12, max_repair_cycles: int = 3, context_packet_builder: Any = None, execution_gateway: Any = None, compute_governor: Any = None, budget_tracker: Any = None, envelope_store: Any = None, crystal_planner: Any = None, adaptive_router: Any = None, governor: Any = None, memory_reader: Any = None):
         self.engine = engine
+        # D5: every real provider call, tool call and wall-clock slice is metered into the run budget.
+        self.budget_tracker = budget_tracker or RunBudgetTracker(engine.store, emit=engine.emit)
+        self.envelope_store = envelope_store
+        self._supplied_decisions: dict[str, tuple[str, str]] = {}
+        # D6: optional reviewed coding-crystal planner; it only supplies decisions, the loop still authorizes and executes.
+        self.crystal_planner = crystal_planner
+        # D9: optional proposal-only router (BEAST_ADAPTIVE_ROUTER); it can only withhold crystal activation.
+        self.adaptive_router = adaptive_router
+        self._crystal_nominations: dict[str, str] = {}
+        self.governor = governor  # Compute Governor spine: crystal proposals activate only behind admit
+        self.memory_reader = memory_reader  # 4-tier memory contract: nominations feed admit, never grant
+        self._crystal_sessions: dict[str, Any] = {}
+        self._crystal_succeeded: dict[str, Any] = {}
         self.provider = provider
         self.max_turns = max(1, min(int(max_turns), 64))
         self.observation_limit = max(1, min(int(observation_limit), 50))
@@ -107,6 +130,41 @@ class AgentPlannerRuntime:
         return bool(state.repair_cycles > 0 or state.verification_failures or state.turn >= 2)
 
     @staticmethod
+    def _r323_contract_compact(prompt: str, budget: int) -> str:
+        """Preserve decision grammar and meaningful prompt ends across compaction.
+
+        Never grant authority or synthesize an executable tool decision here.
+        """
+        # BEAST_R323_CANONICAL_PROMPT_INTEGRITY
+        grammar = (
+            "BEAST ACTION PLANNER. Controller only.\n"
+            "Return EXACTLY ONE JSON object; no top-level arrays, markdown, or multiple objects. Nested argument arrays are allowed.\n"
+            "decision_type must be exactly tool, complete, or blocked.\n"
+            "TOOL DECISION: decision_type=tool, tool_id must name one allowed tool; "
+            "arguments must match its schema exactly and be based on observed files.\n"
+            'DONE: {"decision_type":"complete","arguments":{},"summary":"Verified work complete."}\n'
+            'BLOCK: {"decision_type":"blocked","arguments":{},"blocker":"Precise cause."}\n'
+            "Never infer paths or replacement text from instructions. "
+            "Only observed source and operator-scoped targets authorize tool arguments.\n"
+        )
+        # Keep the task header and most recent observations/authority rather than
+        # slicing away either end. Avoid copying large, stale middle sections.
+        space = max(0, int(budget) - len(grammar) - 2)
+        if len(prompt) <= space:
+            return grammar + "\n" + prompt
+        if "OBSERVATIONS:" in prompt and "ALLOWED TOOLS:" in prompt:
+            # The task, next phase and tool schemas are executable contracts.
+            # Head/tail slicing used to remove all three from the middle.
+            header, observations = prompt.split("OBSERVATIONS:", 1)
+            # Observations have already been bounded by _compact_observation.
+            # Cutting their JSON here loses the latest tool outcome and can
+            # make the controller repeat an edit that already succeeded.
+            return grammar + "\n" + header + "OBSERVATIONS:" + observations
+        head = min(space // 4, 650)
+        tail = max(0, space - head)
+        return grammar + "\n" + prompt[:head] + "\n" + (prompt[-tail:] if tail else "")
+
+    @staticmethod
     def _compact_retry_prompt(prompt: str) -> str:
         contract = (
             "\n\nRETRY MODE: Return one valid planner JSON object only. "
@@ -116,7 +174,7 @@ class AgentPlannerRuntime:
         budget = 2200
         if len(prompt) <= budget:
             return prompt + contract
-        return prompt[-budget:] + contract
+        return AgentPlannerRuntime._r323_contract_compact(prompt, budget) + contract
 
     @staticmethod
     def _partial_structured_decision(run: dict[str, Any], partial_text: str) -> PlannerDecision | None:
@@ -153,22 +211,29 @@ class AgentPlannerRuntime:
                 return nested_text
         return ""
 
-    def _recent_model_delta_text(self, run_id: str, *, limit: int = 12) -> str:
+    def _recent_model_delta_text(self, run_id: str, *, limit: int = 256) -> str:
+        """Recover only model output emitted during the current planner turn."""
         try:
             events = self.engine.store.events(run_id, limit=limit)
         except Exception:
             return ""
+
         chunks: list[str] = []
         for event in reversed(events):
-            if str(event.get("event_type") or "") != "agent.model.delta":
-                if chunks:
-                    break
+            event_type = str(event.get("event_type") or "")
+
+            if event_type == "agent.planner.turn.started":
+                break
+
+            if event_type != "agent.model.delta":
                 continue
+
             payload = event.get("payload") if isinstance(event.get("payload"), dict) else {}
-            text = str(payload.get("text") or "").strip()
+            text = str(payload.get("text") or "")
             if text:
                 chunks.append(text)
-        return "".join(chunks).strip()
+
+        return "".join(reversed(chunks)).strip()
 
     @classmethod
     def _salvage_partial_decision_from_provider(
@@ -195,18 +260,40 @@ class AgentPlannerRuntime:
         return None
 
     @classmethod
-    def _primary_retry_provider(cls, provider: Any, *, _seen: set[int] | None = None) -> Any:
-        seen = _seen or set()
-        if provider is None:
+    def _primary_retry_provider(cls, provider: Any, *, run: dict[str, Any] | None = None, _seen: set[int] | None = None) -> Any:
+        """Resolve the exact requested inference provider, never a heuristic wrapper.
+
+        Inspect only already-constructed provider objects. A missing or ambiguous
+        route fails closed rather than falling through to deterministic planning.
+        """
+        # BEAST_R322_EXACT_PROVIDER_RESOLVER
+        requested = str((run or {}).get("provider") or "").strip().lower()
+        model = str((run or {}).get("model") or "").strip()
+        if requested not in {"ollama", "local_ollama", "nim", "nvidia_nim", "local_nim"} or not model:
             return None
-        marker = id(provider)
-        if marker in seen:
-            return provider
-        seen.add(marker)
-        primary = getattr(provider, "primary", None)
-        if primary is not None:
-            return cls._primary_retry_provider(primary, _seen=seen)
-        return provider
+        wanted = "OllamaPlannerProvider" if requested in {"ollama", "local_ollama"} else "NIMPlannerProvider"
+        seen: set[int] = set()
+        matches: list[Any] = []
+
+        def visit(node: Any) -> None:
+            if node is None or id(node) in seen:
+                return
+            seen.add(id(node))
+            if any(c.__name__ == wanted for c in type(node).__mro__):
+                if str(getattr(node, "model", "")) == model:
+                    matches.append(node)
+                return
+            for attribute in ("primary", "fallback"):
+                visit(getattr(node, attribute, None))
+            routes = getattr(node, "routes", None)
+            if isinstance(routes, (list, tuple)):
+                for route in routes:
+                    nested = route.get("provider") if isinstance(route, dict) else getattr(route, "provider", None)
+                    visit(nested)
+
+        visit(provider)
+        return matches[0] if len(matches) == 1 else None
+
 
     @staticmethod
     def _invalid_mutation_reason(decision: PlannerDecision) -> str:
@@ -282,16 +369,21 @@ class AgentPlannerRuntime:
                 return "worktree.write_file retry recovery must stay within the already inspected target file set."
         return cls._invalid_mutation_reason(decision)
 
-    @staticmethod
-    def _mutation_argument_retry_prompt(prompt: str, decision: PlannerDecision, reason: str) -> str:
+    @classmethod
+    def _mutation_argument_retry_prompt(cls, prompt: str, decision: PlannerDecision, reason: str, state: PlannerState) -> str:
         tool_id = decision.tool_id or "worktree.replace_exact"
         path = str(decision.arguments.get("path") or "").strip()
+        latest = cls._latest_completed_read(state)
+        result = latest.get("result") if isinstance(latest, dict) and isinstance(latest.get("result"), dict) else {}
+        inspected_path = str(result.get("path") or "").strip()
+        inspected_content = str(result.get("content") or "")[:1800]
         contract = (
             "\n\nEXACT MUTATION REQUIRED: The last mutation payload was structurally incomplete. "
             f"{reason} "
-            f"Return one valid planner JSON object for {tool_id} with exact bounded arguments for {path or 'the target file'}. "
+            f"Return one valid planner JSON object for {tool_id} with exact bounded arguments for {path or inspected_path or 'the target file'}. "
             "Do not use empty strings for placeholder edit text. "
             "If you cannot produce exact mutation text, choose workspace.read_range only for the specific target file once, or block with a precise reason."
+            f"\nINSPECTED TARGET: {inspected_path}\nINSPECTED CONTENT:\n{inspected_content}"
         )
         budget = 2600
         if len(prompt) <= budget:
@@ -377,7 +469,7 @@ class AgentPlannerRuntime:
         budget = 3200
         if len(prompt) <= budget:
             return prompt + contract
-        return prompt[-budget:] + contract
+        return cls._r323_contract_compact(prompt, budget) + contract
 
     async def _retry_primary_for_first_mutation(
         self,
@@ -391,8 +483,13 @@ class AgentPlannerRuntime:
     ) -> PlannerDecision | None:
         if not self._can_attempt_first_mutation_reentry(run, state):
             return None
-        target_provider = self._primary_retry_provider(provider)
-        retry_timeout = max(2.0, min(10.0, self._decision_timeout_seconds(run) * 0.45))
+        target_provider = self._primary_retry_provider(provider, run=run)
+        if target_provider is None:
+            raise PlannerDecisionError(
+                f"BEAST R3.22 REFUSE: exact inference provider unavailable or ambiguous for "
+                f"{run.get('provider')}/{run.get('model')}"
+            )
+        retry_timeout = max(10.0, min(180.0, float(os.environ.get("BEAST_OLLAMA_MUTATION_DECISION_TIMEOUT", "90"))))
         retry_prompt = self._first_mutation_retry_prompt(prompt, state)
         latest = self._latest_completed_read(state)
         latest_result = latest.get("result") if isinstance(latest, dict) and isinstance(latest.get("result"), dict) else {}
@@ -405,10 +502,17 @@ class AgentPlannerRuntime:
             "timeout_ms": int(retry_timeout * 1000),
         })
         try:
-            return await asyncio.wait_for(
-                target_provider.next_decision(retry_prompt, run=run, turn=turn),
+            model_decision = await asyncio.wait_for(
+                self._metered_decision(target_provider, retry_prompt, run=run, turn=turn),
                 timeout=retry_timeout,
             )
+            self.engine.emit(run.get("run_id") or "", "agent.provider.mutation_decision_returned", {
+                "turn": turn, "model": str(run.get("model") or ""),
+                "decision_type": model_decision.decision_type.value,
+                "tool_id": model_decision.tool_id,
+                "blocker": model_decision.blocker if model_decision.decision_type is PlannerDecisionType.BLOCKED else "",
+            })
+            return model_decision
         except Exception as exc:
             self.engine.emit(run.get("run_id") or "", "agent.provider.first_mutation_retry_failed", {
                 "turn": turn,
@@ -448,8 +552,13 @@ class AgentPlannerRuntime:
     ) -> PlannerDecision | None:
         if not self._strong_reentry_allowed(run, state):
             return None
-        target_provider = self._primary_retry_provider(provider)
-        retry_timeout = max(2.0, min(12.0, self._decision_timeout_seconds(run) * 0.5))
+        target_provider = self._primary_retry_provider(provider, run=run)
+        if target_provider is None:
+            raise PlannerDecisionError(
+                f"BEAST R3.22 REFUSE: exact inference provider unavailable or ambiguous for "
+                f"{run.get('provider')}/{run.get('model')}"
+            )
+        retry_timeout = max(10.0, min(180.0, float(os.environ.get("BEAST_OLLAMA_MUTATION_DECISION_TIMEOUT", "90"))))
         retry_prompt = self._compact_retry_prompt(prompt)
         self.engine.emit(run.get("run_id") or "", "agent.provider.strong_retry", {
             "turn": turn,
@@ -459,10 +568,17 @@ class AgentPlannerRuntime:
             "timeout_ms": int(retry_timeout * 1000),
         })
         try:
-            return await asyncio.wait_for(
-                target_provider.next_decision(retry_prompt, run=run, turn=turn),
+            model_decision = await asyncio.wait_for(
+                self._metered_decision(target_provider, retry_prompt, run=run, turn=turn),
                 timeout=retry_timeout,
             )
+            self.engine.emit(run.get("run_id") or "", "agent.provider.mutation_decision_returned", {
+                "turn": turn, "model": str(run.get("model") or ""),
+                "decision_type": model_decision.decision_type.value,
+                "tool_id": model_decision.tool_id,
+                "blocker": model_decision.blocker if model_decision.decision_type is PlannerDecisionType.BLOCKED else "",
+            })
+            return model_decision
         except Exception as exc:
             self.engine.emit(run.get("run_id") or "", "agent.provider.strong_retry_failed", {
                 "turn": turn,
@@ -522,12 +638,15 @@ class AgentPlannerRuntime:
             str(tool.get("tool_id") or ""): tool
             for tool in self.engine.list_tools()
             if str(tool.get("tool_id") or "") != "git.status"
+            and (not is_read_only_run(run) or (
+                tool.get("effect") == ToolEffect.READ.value and not tool.get("requires_worktree")
+            ))
         }
         # Small models do better when the action vocabulary is narrow. After a
         # file has already been inspected and the worktree is bound, hide
         # exploratory tools so the next turn stays mutation-first.
         preferred = self._preferred_tool_ids(state)
-        tools = [all_tools[key] for key in preferred if key in all_tools]
+        tools = [] if is_read_only_run(run) else [all_tools[key] for key in preferred if key in all_tools]
         if not tools:
             tools = list(all_tools.values())[:8]
         compact_tools = []
@@ -576,6 +695,18 @@ class AgentPlannerRuntime:
             plan_brief = self.planning_integrations.current_plan_brief(str(run.get("run_id") or state.run_id))
         except Exception:
             plan_brief = {}
+        if late_compact_turn and plan_brief.get("steps"):
+            # Small/compact models on late turns: keep the durable plan to step ids, statuses and the
+            # active step's title so the prompt stays inside the compact budget.
+            active_step = str(plan_brief.get("active_step_id") or "")
+            plan_brief = {
+                "active_step_id": active_step,
+                "steps": [
+                    {"step_id": step.get("step_id", ""), "status": step.get("status", ""),
+                     **({"title": step.get("title", "")} if step.get("step_id") == active_step else {})}
+                    for step in plan_brief.get("steps", [])
+                ],
+            }
         plan_contract = ""
         if plan_brief.get("steps"):
             plan_contract = f"\nDURABLE PLAN: {json.dumps(plan_brief, sort_keys=True, default=str, separators=(',', ':'))}"
@@ -587,7 +718,8 @@ class AgentPlannerRuntime:
                 f"{approved[-1].get('approval_id', '')}\n"
             )
         tool_contract = "\n".join(
-            f"- {item['tool_id']}({','.join(item['required_arguments']) or '-'})"
+            f"- {item['tool_id']}({','.join(item['required_arguments'])})"
+            + (f" optional({','.join(item['optional_arguments'])})" if item['optional_arguments'] else "")
             + (" [APPROVAL]" if item["requires_approval"] else "")
             + (" [WORKTREE]" if item["requires_worktree"] else "")
             for item in compact_tools
@@ -625,6 +757,11 @@ class AgentPlannerRuntime:
                 next_phase = "NEXT REQUIRED: inspect/index evidence is present; choose worktree.bind before any mutation."
             elif latest_failure is not None:
                 failure_class = str(latest_failure.get("analysis", {}).get("failure_class") or "unknown")
+                failure_label = (
+                    "syntax"
+                    if str(latest_failure.get("analysis", {}).get("slot_type") or "") == "syntax_region"
+                    else failure_class
+                )
                 retryable = bool(latest_failure.get("analysis", {}).get("retryable_without_code_change"))
                 target_paths = latest_failure.get("target_paths") if isinstance(latest_failure.get("target_paths"), list) else []
                 failure_execution = str(latest_failure.get("target_execution") or latest_failure.get("execution_target") or "").strip()
@@ -633,12 +770,12 @@ class AgentPlannerRuntime:
                 if retryable:
                     next_phase = (
                         "NEXT REQUIRED: latest verifier failure appears retryable/environmental; rerun worktree.verify once "
-                        f"or inspect the environment before editing code{transport_clause}. Failure class: {failure_class}."
+                        f"or inspect the environment before editing code{transport_clause}. Failure class: {failure_label}."
                     )
                 else:
                     next_phase = (
                         "NEXT REQUIRED: repair the latest verifier failure with one bounded edit"
-                        f"{target_clause}, then rerun worktree.verify{transport_clause}. Failure class: {failure_class}."
+                        f"{target_clause}, then rerun worktree.verify{transport_clause}. Failure class: {failure_label}."
                     )
             elif not any(tool in observed_tools for tool in {"worktree.replace_exact", "worktree.write_file"}):
                 next_phase = "NEXT REQUIRED: choose one bounded worktree.replace_exact edit. Never rewrite a whole file."
@@ -649,12 +786,19 @@ class AgentPlannerRuntime:
             else:
                 next_phase = "NEXT REQUIRED: complete with a concise summary of verified physical changes."
         else:
-            next_phase = "NEXT REQUIRED: gather enough read-only evidence, then complete with only observed facts."
+            next_phase = (
+                "NEXT REQUIRED: read the attached files with workspace.read_range, then put your actual "
+                "findings and inspection limits in the complete decision's summary. "
+                "Use only observed facts and never request worktree tools."
+            )
         prompt = (
             "BEAST ACTION PLANNER. Controller only.\n"
-            "Return ONE JSON object on ONE line. No markdown, prose, arrays, comments, or code.\n"
+            "Return ONE JSON object on ONE line. No markdown, prose, top-level arrays, comments, or code.\n"
             "decision_type is exactly tool, complete, or blocked.\n"
-            'TOOL: {"decision_type":"tool","tool_id":"workspace.read_range","arguments":{"path":"app/main.py","start_line":1,"line_count":40},"summary":""}\n'
+            "STRICT TOOL SCHEMAS: required and optional argument keys listed below are the ONLY permitted keys. "
+            "workspace.index accepts limit and include_symbols, NEVER path; use workspace.read_range to inspect a named file.\n"
+            'worktree.verify command MUST be an argv array, e.g. ["python","-m","pytest","-q"], never a shell string.\n'
+            "TOOL DECISION: return a JSON tool decision using one allowed tool. For file tools, select a path established by the current workspace index, task target, or successful file observation. Never copy a demonstration path. If a read fails because a file does not exist, do not repeat the same read without new evidence.\n"
             'DONE: {"decision_type":"complete","arguments":{},"summary":"Inspected files."}\n'
             'BLOCK: {"decision_type":"blocked","arguments":{},"blocker":"Evidence unavailable."}\n'
             "Use one listed tool and exact arguments. Never include tool_id for done/block. Never claim unobserved work. For edits: inspect, bind, bounded replace, verify, sourceplan. Never emit whole-file source; never request promotion authority.\n"
@@ -669,7 +813,8 @@ class AgentPlannerRuntime:
             f"{context_contract}{semantic_contract}{plan_contract}{repair_contract}"
         )
         if compact_provider:
-            return prompt[:(3600 if late_compact_turn else 4800)]
+            budget = 8000 if late_compact_turn else 12000
+            return prompt if len(prompt) <= budget else self._r323_contract_compact(prompt, budget)
         return prompt
 
     async def _await_tool_approval(self, run_id: str, approval_id: str, *, timeout_seconds: float = 3600.0) -> bool:
@@ -710,12 +855,154 @@ class AgentPlannerRuntime:
             return "sourceplan.promote" in capability_ids
         return False
 
+    async def _one_schema_correction(
+        self, run: dict[str, Any], run_id: str, decision: PlannerDecision, turn: int,
+        *, state: PlannerState | None = None,
+    ) -> tuple[PlannerDecision | None, str]:
+        """Ask the model once to fix a rejected schema, without executing or granting authority.
+
+        Retain the same tool and operator-locked destination. Never silently
+        discard unknown fields or replace a malformed call with a guessed one.
+        """
+        try:
+            spec = self.engine.tool_registry.get(decision.tool_id)
+        except Exception:
+            # Unknown-tool handling remains with the existing tool runtime.
+            return decision, ""
+
+        def validate(args: dict[str, Any]) -> None:
+            normalized = self.engine.tool_registry.validate_arguments(spec, args)
+            if normalized != args:
+                raise ValueError("argument normalization would alter the requested tool call")
+
+        try:
+            validate(decision.arguments)
+            return decision, ""
+        except Exception as exc:
+            first_error = f"{type(exc).__name__}: {exc}"
+
+        schema = spec.input_schema if isinstance(spec.input_schema, dict) else {}
+        properties = schema.get("properties") if isinstance(schema.get("properties"), dict) else {}
+        allowed = sorted(properties)
+        required = schema.get("required") if isinstance(schema.get("required"), list) else []
+        self.engine.emit(run_id, "agent.planner.tool_arguments_refused", {
+            "tool_id": decision.tool_id,
+            "arguments": decision.arguments,
+            "reason": first_error,
+            "approval_created": False,
+            "retry_available": True,
+        })
+        mutation = decision.tool_id in {"worktree.replace_exact", "worktree.write_file"}
+        evidence = [
+            item["result"] for item in (state.observations if state is not None and mutation else [])
+            if isinstance(item, dict) and item.get("tool_id") == "workspace.read_range"
+            and item.get("status") == "completed" and isinstance(item.get("result"), dict)
+        ]
+        evidence_paths = sorted({item["path"] for item in evidence if isinstance(item.get("path"), str)})
+        mutation_context = (
+            f"OBSERVED MUTATION PATHS: {json.dumps(evidence_paths)}\n"
+            "Preserve any supplied path and copy exact old_text from observed source.\n"
+            if mutation else ""
+        )
+        repair_prompt = (
+            "BEAST TOOL-SCHEMA CORRECTION. Your previous tool decision was REJECTED "
+            "before execution and before approval. Return exactly ONE JSON object "
+            "with decision_type=tool, the SAME tool_id, and a validated arguments object. "
+            "Do not change tools, execution target, or expand scope. "
+            "Never invent paths, contents, permissions, or source changes. "
+            f"TOOL_ID: {decision.tool_id}\n"
+            f"ALLOWED_ARGUMENT_KEYS: {json.dumps(allowed)}\n"
+            f"REQUIRED_ARGUMENT_KEYS: {json.dumps(required)}\n"
+            f"ARGUMENT_SCHEMA: {json.dumps(schema, sort_keys=True)}\n"
+            f"PREVIOUS_ARGUMENTS: {json.dumps(decision.arguments, sort_keys=True, default=str)}\n"
+            f"REJECTION: {first_error}\n"
+            f"{mutation_context}"
+            f"OBJECTIVE: {str(run.get('objective') or '')[:500]}\n"
+            "FORMAT: {\"decision_type\":\"tool\",\"tool_id\":\"<same ID>\","
+            "\"arguments\":{...}}"
+        )
+        self.engine.emit(run_id, "agent.provider.tool_schema_retry", {
+            "tool_id": decision.tool_id, "turn": turn, "original_reason": first_error,
+            "permitted_keys": allowed, "required_keys": required,
+        })
+        try:
+            candidate = await asyncio.wait_for(
+                self._metered_decision(self.provider, repair_prompt, run=run, turn=turn),
+                timeout=max(4.0, min(16.0, self._decision_timeout_seconds(run) / 2.0)),
+            )
+            if candidate.decision_type is not PlannerDecisionType.TOOL or candidate.tool_id != decision.tool_id:
+                raise ValueError("correction changed the tool identity or decision type")
+            if candidate.execution_target not in {"local", decision.execution_target}:
+                raise ValueError("correction attempted to change the locked execution target")
+            validate(candidate.arguments)
+            if mutation:
+                path = candidate.arguments.get("path")
+                original_path = decision.arguments.get("path")
+                if path not in evidence_paths or (original_path and path != original_path):
+                    raise ValueError("correction did not preserve an observed mutation path")
+                if candidate.tool_id == "worktree.replace_exact":
+                    old_text = candidate.arguments.get("old_text")
+                    if not isinstance(old_text, str) or not old_text or not any(
+                        item.get("path") == path and old_text in str(item.get("content") or "") for item in evidence
+                    ):
+                        raise ValueError("correction requires exact old_text from the observed file")
+                invalid = self._invalid_mutation_reason(candidate)
+                if invalid:
+                    raise ValueError(invalid)
+        except Exception as exc:
+            error = (
+                f"REFUSE_INVALID_TOOL_ARGUMENTS:{decision.tool_id}: {first_error}; "
+                f"bounded schema correction refused: {type(exc).__name__}: {exc}"
+            )
+            self.engine.emit(run_id, "agent.provider.tool_schema_retry_refused", {
+                "tool_id": decision.tool_id, "turn": turn,
+                "reason": f"{type(exc).__name__}: {exc}", "approval_created": False,
+            })
+            return None, error
+
+        recovered = replace(candidate, execution_target=decision.execution_target, approval_id="")
+        self.engine.emit(run_id, "agent.provider.tool_schema_retry_recovered", {
+            "tool_id": decision.tool_id, "turn": turn,
+            "original_arguments": decision.arguments, "recovered_arguments": recovered.arguments,
+            "approval_created": False,
+        })
+        return recovered, ""
+
     async def _authorize_tool(self, run: dict[str, Any], run_id: str, decision: PlannerDecision) -> PlannerDecision | None:
         """Create and await an approval card instead of treating it as a tool error."""
+        handoff_command = (
+            verified_handoff_command(run)
+            if decision.tool_id == "worktree.verify" and self._is_mutating_mode(run)
+            else None
+        )
+        if handoff_command is not None and decision.arguments != {"command": handoff_command}:
+            raise ValueError("REFUSE_UNBOUND_VERIFIED_HANDOFF_COMMAND")
         try:
             spec = self.engine.tool_registry.get(decision.tool_id)
         except Exception:
             return decision
+        if is_read_only_run(run) and (spec.effect != ToolEffect.READ or spec.requires_worktree):
+            raise ValueError(f"REFUSE_READ_ONLY_TOOL:{spec.tool_id}")
+        # H13.2: reject malformed functional tool arguments before
+        # creating or reusing any operator approval.
+        try:
+            validated_args = self.engine.tool_registry.validate_arguments(
+                spec, decision.arguments
+            )
+        except Exception as exc:
+            self.engine.emit(run_id, "agent.planner.tool_arguments_refused", {
+                "tool_id": decision.tool_id,
+                "arguments": decision.arguments,
+                "reason": f"{type(exc).__name__}: {exc}",
+                "approval_created": False,
+            })
+            raise ValueError(
+                f"REFUSE_INVALID_TOOL_ARGUMENTS:{decision.tool_id}: {exc}"
+            ) from exc
+        if validated_args != decision.arguments:
+            raise ValueError(
+                f"REFUSE_ARGUMENT_NORMALIZATION:{decision.tool_id}"
+            )
         if not getattr(spec, "requires_approval", False):
             return decision
         approvals = self.engine.store.approvals(run_id)
@@ -723,7 +1010,15 @@ class AgentPlannerRuntime:
             (
                 item for item in reversed(approvals)
                 if item.get("status") == "approved"
-                and self._approval_satisfies_tool(item, decision.tool_id)
+                and (
+                    handoff_command is None
+                    or ((item.get("request") or {}).get("tool_id") == decision.tool_id
+                        and (item.get("request") or {}).get("safe_arguments") == decision.arguments)
+                )
+                and h12_approval_authorizes(
+                    item, decision.tool_id, decision.arguments, decision.execution_target,
+                    self._execution_target_payload(run, decision.execution_target),
+                )
             ),
             None,
         )
@@ -742,6 +1037,7 @@ class AgentPlannerRuntime:
             "summary": f"Approve governed agent tool: {getattr(spec, 'title', decision.tool_id)}",
             "risk_class": getattr(getattr(spec, "risk", None), "value", "governed"),
             "execution_target": decision.execution_target,
+            "execution_target_payload": self._execution_target_payload(run, decision.execution_target),
             "capabilities": [{
                 "id": decision.tool_id,
                 "label": getattr(spec, "title", decision.tool_id),
@@ -946,6 +1242,18 @@ class AgentPlannerRuntime:
                 contract["target_paths"] = paths[:4]
         return contract
 
+    @staticmethod
+    def _is_broad_wave(run: dict[str, Any]) -> bool:
+        request = run.get("request") if isinstance(run.get("request"), dict) else {}
+        objective = str(run.get("objective") or "").casefold()
+        return bool(request.get("long_horizon") or request.get("monorepo") or request.get("architecture_planning")
+                    or any(term in objective for term in ("large", "monorepo", "cross-cutting", "many files")))
+
+    @classmethod
+    def _broad_wave_mutation_open(cls, run: dict[str, Any], state: PlannerState) -> bool:
+        """A broad multi-file wave may keep mutating before verify; the model, not pre-enforcement, decides."""
+        return cls._is_broad_wave(run) and 0 < len(set(cls._latest_mutation_paths(state))) < 32
+
     @classmethod
     def _required_phase_decision(cls, run: dict[str, Any], state: PlannerState, decision: PlannerDecision | None = None) -> PlannerDecision | None:
         if not cls._is_mutating_mode(run):
@@ -965,16 +1273,24 @@ class AgentPlannerRuntime:
             return PlannerDecision(
                 decision_type=PlannerDecisionType.TOOL,
                 tool_id="worktree.bind",
-                arguments={
-                    "objective": str(run.get("objective") or "Bounded agent implementation"),
-                    "provider": str(run.get("provider") or ""),
-                    "risk": "high",
-                },
+                arguments={},
                 rationale="Mutating agent runs require an isolated worktree before any file mutation.",
             )
         inspected_paths = cls._inspected_paths(state)
-        if not inspected_paths:
+        # A completed bounded mutation proves that the target path was already
+        # resolved well enough to edit.  Do not spend the following turn on a
+        # redundant source-workspace read; the isolated worktree must be
+        # verified next, especially when the run is at its turn budget edge.
+        if not inspected_paths and not cls._latest_mutation_paths(state):
             targeted_path = cls._targeted_read_path(run)
+            if (
+                isinstance(decision, PlannerDecision)
+                and decision.decision_type is PlannerDecisionType.TOOL
+                and decision.tool_id in {"worktree.replace_exact", "worktree.write_file"}
+                and str(decision.arguments.get("path") or "").strip() == targeted_path
+                and not cls._invalid_mutation_reason(decision)
+            ):
+                return None
             if targeted_path:
                 return PlannerDecision(
                     decision_type=PlannerDecisionType.TOOL,
@@ -987,11 +1303,8 @@ class AgentPlannerRuntime:
         latest_verify_index = cls._latest_index(state, {"worktree.verify"})
         latest_verify = cls._latest_observation(state, "worktree.verify")
         if mutation_paths and (latest_verify_index < 0 or latest_mutation_index > latest_verify_index):
-            request = run.get("request") if isinstance(run.get("request"), dict) else {}
-            objective = str(run.get("objective") or "").casefold()
-            broad_wave = bool(request.get("long_horizon") or request.get("monorepo") or request.get("architecture_planning") or any(term in objective for term in ("large", "monorepo", "cross-cutting", "many files")))
             if (
-                broad_wave
+                cls._is_broad_wave(run)
                 and isinstance(decision, PlannerDecision)
                 and decision.decision_type is PlannerDecisionType.TOOL
                 and decision.tool_id in {"worktree.write_file", "worktree.replace_exact"}
@@ -1017,7 +1330,50 @@ class AgentPlannerRuntime:
                 arguments={},
                 rationale="A verified worktree diff must be materialized into SourcePlan before completion.",
             )
+        if (
+            mutation_paths
+            and latest_verify_index >= latest_mutation_index
+            and latest_sourceplan_index >= latest_verify_index
+        ):
+            return PlannerDecision(
+                decision_type=PlannerDecisionType.COMPLETE,
+                arguments={},
+                summary="Completed bounded changes; verification passed and SourcePlan evidence is ready.",
+                rationale="Fresh verification and handoff evidence satisfy the coding loop completion contract.",
+            )
         return None
+
+    @classmethod
+    def _ground_read_only_completion(
+        cls, run: dict[str, Any], state: PlannerState, decision: PlannerDecision,
+    ) -> PlannerDecision:
+        """Do not report a review of an attachment without a successful file read."""
+        if not is_read_only_run(run) or decision.decision_type is not PlannerDecisionType.COMPLETE:
+            return decision
+        request = run.get("request") if isinstance(run.get("request"), dict) else {}
+        files = request.get("context_files")
+        if not isinstance(files, list):
+            return decision
+        inspected = cls._inspected_paths(state)
+        for path in files:
+            if not isinstance(path, str) or not path.strip() or path in inspected:
+                continue
+            reads = [item for item in state.observations if isinstance(item, dict)
+                     and item.get("tool_id") == "workspace.read_range"
+                     and (item.get("arguments") or {}).get("path") == path]
+            if any(item.get("status") == "completed" for item in reads):
+                continue
+            if reads:
+                return PlannerDecision(
+                    decision_type=PlannerDecisionType.BLOCKED, arguments={},
+                    blocker=f"Could not read attached file {path}: {reads[-1].get('error') or 'read failed'}",
+                )
+            return PlannerDecision(
+                decision_type=PlannerDecisionType.TOOL, tool_id="workspace.read_range",
+                arguments={"path": path, "start_line": 1, "line_count": 80},
+                rationale="Inspect the attached file before reporting review findings.",
+            )
+        return decision
 
     @staticmethod
     def _completion_ready(run: dict[str, Any], state: PlannerState) -> bool:
@@ -1100,7 +1456,264 @@ class AgentPlannerRuntime:
             projected["result"] = {"summary": encoded[:2800] + "[truncated]", "truncated": True}
         return projected
 
+    def _review_incomplete(self, state: PlannerState, reason: str, coverage: str) -> dict[str, Any]:
+        run_id = state.run_id
+        state.status = "review_incomplete"
+        state.final_summary = ""
+        state.blocker = reason
+        self._save_state(state)
+        self.engine.emit(run_id, "agent.planner.review_incomplete", {
+            "state": "failed", "ok": False, "completion_mode": "read_only_review_incomplete",
+            "error": reason, "coverage": coverage,
+        })
+        self.engine.store.transition(run_id, AgentRunState.FAILED, error=reason)
+        return self.engine.store.get_run(run_id) or {}
+
+    async def _finish_file_review(
+        self, run: dict[str, Any], state: PlannerState, evidence: ReviewEvidence,
+    ) -> dict[str, Any]:
+        run_id = state.run_id
+        coverage = evidence.coverage()
+        if evidence.blocker:
+            return self._review_incomplete(state, evidence.blocker, coverage)
+        if not any(evidence.visible.values()) and any(evidence.totals.values()):
+            return self._review_incomplete(state, "No complete source lines fit in the review context.", coverage)
+        # Use the selected Ollama model directly when it can be resolved,
+        # rather than allowing a heuristic or a different model to answer.
+        provider = self._primary_retry_provider(self.provider, run=run) or self.provider
+        reason = ""
+        timeout = review_timeout_seconds(run)
+        native = getattr(provider, "supports_native_file_review", False) is True
+        for attempt in (1, 2):
+            self.engine.raise_if_cancelled(run_id)
+            self.engine.emit(run_id, "agent.planner.review_attempt", {
+                "attempt": attempt, "coverage": coverage, "timeout_seconds": timeout,
+            })
+            prompt = evidence.prompt(str(run.get("objective") or ""), reason, native=native)
+            started = time.monotonic()
+            text = ""
+            try:
+                answer = await asyncio.wait_for(
+                    self._metered_decision(provider, prompt, run=run, turn=state.turn + attempt),
+                    timeout=timeout,
+                )
+                text, reason = evidence.answer(answer, native=native)
+                outcome = "accepted" if text else "evidence_rejected"
+            except TimeoutError:
+                outcome, reason = "timeout", "Ollama review generation timed out." if native else "Review generation timed out."
+            except ReviewPacketError as exc:
+                outcome, reason = "invalid_packet", str(exc)
+            except PlannerDecisionError as exc:
+                outcome, reason = "provider_refused", str(exc)[:300]
+            except OSError:
+                outcome, reason = "transport_error", "Review provider did not return a usable response."
+            self.engine.raise_if_cancelled(run_id)
+            route = getattr(provider, "last_route", {}) or {}
+            usage = getattr(provider, "last_usage", {}) or {}
+            retry = attempt == 1 and outcome in {"evidence_rejected", "invalid_packet"}
+            self.engine.emit(run_id, "agent.planner.review_result", {
+                "attempt": attempt, "accepted": bool(text), "provider": run.get("provider"),
+                "model": run.get("model"), "route": route.get("route_kind"),
+                "outcome": outcome, "reason": reason, "retry_available": retry,
+                "elapsed_ms": round((time.monotonic() - started) * 1000),
+                "timeout_seconds": timeout,
+                **{key: usage.get(key) for key in (
+                    "num_ctx", "num_predict", "done_reason", "eval_count", "prompt_eval_count",
+                )},
+            })
+            if text:
+                state.status = "completed"
+                state.final_summary = text
+                state.last_decision = answer.as_dict()
+                self._save_state(state)
+                self.engine.store.transition(run_id, AgentRunState.FINALIZING)
+                self.engine.emit(run_id, "agent.run.advisory", {
+                    "text": text, "message": "Read-only review delivered. No files were changed.",
+                    "coverage": coverage,
+                })
+                self.engine.emit(run_id, "agent.planner.completed", {
+                    "turns": state.turn, "summary": text, "completion_mode": "read_only_advisory",
+                    "observation_count": len(state.observations), "coverage": coverage,
+                })
+                self.engine.store.transition(run_id, AgentRunState.COMPLETED)
+                return self.engine.store.get_run(run_id) or {}
+            self.engine.emit(run_id, "agent.planner.review_answer_rejected", {
+                "attempt": attempt, "outcome": outcome, "reason": reason, "retry_available": retry,
+            })
+            if not retry:
+                break
+        suffix = " after one retry" if attempt == 2 else ""
+        detail = f"File read succeeded, but no grounded review was produced{suffix}. {reason}"
+        return self._review_incomplete(state, detail, coverage)
+
+    async def _metered_decision(self, provider: Any, prompt: str, *, run: dict[str, Any], turn: int) -> PlannerDecision:
+        decision = await provider.next_decision(prompt, run=run, turn=turn)
+        run_id = str(run.get("run_id") or "")
+        if run_id:
+            try:
+                usage = getattr(provider, "last_usage", None)
+                self.budget_tracker.record_model_turn(
+                    run_id, prompt=str(prompt or ""), decision=decision,
+                    usage=usage if isinstance(usage, dict) else None,
+                )
+            except Exception as exc:
+                self.engine.emit(run_id, "agent.budget.failed", {"stage": "model_turn", "reason": type(exc).__name__})
+        return decision
+
+    def _record_tool_budget(self, run_id: str, decision: PlannerDecision, observation: dict[str, Any]) -> None:
+        supplied = self._supplied_decisions.pop(run_id, None)
+        source = supplied[0] if supplied and supplied[1] == decision.tool_id else "runtime"
+        try:
+            self.budget_tracker.record_tool_call(
+                run_id, tool_id=str(decision.tool_id or ""), status=str(observation.get("status") or "failed"), source=source,
+            )
+        except Exception as exc:
+            self.engine.emit(run_id, "agent.budget.failed", {"stage": "tool_call", "reason": type(exc).__name__})
+
+    def _crystal_decision(self, run_id: str, run: dict[str, Any], state: PlannerState) -> PlannerDecision | None:
+        if self.crystal_planner is None:
+            return None
+        if run_id not in self._crystal_sessions and not self._route_allows_crystal(run_id, run):
+            self._crystal_sessions[run_id] = None
+        if run_id not in self._crystal_sessions:
+            try:
+                nominated = self._crystal_nominations.pop(run_id, "")
+                session = (self.crystal_planner.activate(run, run_id, engine=self.engine, nominated_crystal_id=nominated)
+                           if nominated else self.crystal_planner.activate(run, run_id, engine=self.engine))
+            except Exception as exc:
+                self.engine.emit(run_id, "agent.crystal.refused", {"reason": f"activation_error:{type(exc).__name__}"})
+                session = None
+            self._crystal_sessions[run_id] = session
+        session = self._crystal_sessions.get(run_id)
+        if session is None:
+            return None
+        try:
+            decision = session.next_decision(run, state)
+        except Exception as exc:
+            decision = None
+            with contextlib.suppress(Exception):
+                session.abort(f"session_error:{type(exc).__name__}")
+        if decision is None:
+            if getattr(session, "aborted", "") or getattr(session, "succeeded", False):
+                self._crystal_sessions[run_id] = None
+            return None
+        if decision.decision_type is PlannerDecisionType.TOOL and decision.tool_id not in CRYSTAL_REVIEWED_TOOLS:
+            # Fail closed: a crystal may only drive reviewed coding ops, whatever its recipe claims.
+            with contextlib.suppress(Exception):
+                session.abort("unreviewed_tool")
+            self.engine.emit(run_id, "agent.crystal.refused", {"reason": "unreviewed_tool", "tool_id": str(decision.tool_id or "")})
+            self._crystal_sessions[run_id] = None
+            return None
+        return decision
+
+    def _route_allows_crystal(self, run_id: str, run: dict[str, Any]) -> bool:
+        governor = getattr(self, "governor", None)
+        if self.adaptive_router is None:
+            # An enforcing governor has no route to admit, so no crystal proposal runs.
+            return governor is None or not getattr(governor, "enforce", False)
+        try:
+            decision = self.adaptive_router.route_run(run)
+        except Exception as exc:
+            self.engine.emit(run_id, "agent.route.failed", {"reason": type(exc).__name__})
+            return False  # fail closed: no route, no crystal proposal
+        body = decision.to_dict()
+        self.engine.emit(run_id, "agent.route.decision", {key: body[key] for key in (
+            "route", "band", "similarity", "fingerprint_compatible", "crystal_id", "envelope_digest",
+            "demotion_signal", "verifier", "proposal_only", "execution_granted", "digest")})
+        if body["route"] != "crystal_replay":
+            return False
+        if governor is not None and not self._governor_admits_crystal(run_id, body):
+            self._crystal_nominations.pop(run_id, None)  # a stale nomination never outlives a refusal
+            return False
+        self._crystal_nominations[run_id] = str(body["crystal_id"])  # D6 still validates and gates this crystal
+        return True
+
+    def _governor_admits_crystal(self, run_id: str, route: dict[str, Any]) -> bool:
+        from app.kernel.governance.governor_spine import Episode, Proposal
+
+        history = self.__dict__.setdefault("_governor_signatures", {}).setdefault(run_id, [])
+        memory = None
+        reader = getattr(self, "memory_reader", None)  # governor_spine memory contract (Perceive, cheapest-first)
+        if reader is not None:
+            try:
+                read = reader.read({"crystal_id": str(route["crystal_id"]), "run_id": run_id})
+                memory = read.admission_inputs()
+                self.engine.emit(run_id, "agent.memory.read", read.task_envelope_fields())
+            except Exception as exc:
+                self.engine.emit(run_id, "agent.memory.failed", {"reason": type(exc).__name__})
+        proposal = Proposal(kind="crystal", crystal_id=str(route["crystal_id"]), route_decision=route, memory=memory)
+        try:
+            decision = self.governor.admit(Episode(run_id=run_id, signatures=tuple(history)), proposal)
+        except Exception as exc:
+            self.engine.emit(run_id, "agent.governor.failed", {"reason": type(exc).__name__})
+            return False  # fail closed
+        history.append(proposal.signature())
+        self.engine.emit(run_id, "agent.governor.decision", {
+            "outcome": decision.outcome, "reasons": list(decision.reasons), "enforced": decision.enforced,
+            "receipt_id": decision.receipt_id, "crystal_id": proposal.crystal_id})
+        return decision.permits()
+
+    def _seal_episode(self, run_id: str) -> None:
+        try:
+            envelope = EpisodeEnvelopeBuilder().build(self.engine.store, run_id)
+            stored = False
+            if self.envelope_store is not None:
+                self.envelope_store.put(envelope)
+                stored = True
+            self.engine.emit(run_id, "agent.episode.sealed", {
+                "envelope_digest": envelope.envelope_digest,
+                "task_family": envelope.task_family,
+                "verification": dict(envelope.verification),
+                "budget": dict(envelope.budget),
+                "stored": stored,
+            })
+        except Exception as exc:
+            self._crystal_succeeded.pop(run_id, None)
+            self.engine.emit(run_id, "agent.episode.seal_failed", {"reason": f"{type(exc).__name__}: {exc}"[:240]})
+            return
+        session = self._crystal_succeeded.pop(run_id, None)
+        if session is None or not hasattr(self.crystal_planner, "on_reuse_sealed"):
+            return
+        try:
+            accounted = self.crystal_planner.on_reuse_sealed(session, envelope)
+            if accounted:
+                self.engine.emit(run_id, "agent.crystal.reduction_receipt", {
+                    "receipt_id": accounted["receipt"]["receipt_id"], "kind": accounted["receipt"]["provenance"]["kind"],
+                    "credited": bool(accounted["entry"].get("credited")), "units": accounted["entry"].get("units", 0.0),
+                    "reason": accounted["entry"].get("reason", ""),
+                })
+        except Exception as exc:
+            self.engine.emit(run_id, "agent.crystal.reduction_failed", {"reason": f"{type(exc).__name__}: {exc}"[:240]})
+
     async def run(self, run_id: str) -> dict[str, Any]:
+        run = self.engine.store.get_run(run_id)
+        if not run or normalize_state(str(run.get("state") or "created")) in TERMINAL_STATES:
+            return await self._run_loop(run_id)
+        self.budget_tracker.start(run_id)
+        try:
+            result = await self._run_loop(run_id)
+        finally:
+            self._supplied_decisions.pop(run_id, None)
+            session = self._crystal_sessions.pop(run_id, None)
+            if session is not None and hasattr(session, "sync"):
+                try:
+                    session.sync(self._load_state(run_id))  # runtime-enforced closure steps still settle the crystal
+                    if getattr(session, "succeeded", False):
+                        self._crystal_succeeded[run_id] = session
+                except Exception as exc:
+                    self.engine.emit(run_id, "agent.crystal.aborted", {"reason": f"final_sync_error:{type(exc).__name__}"})
+            try:
+                self.budget_tracker.mark_wall(run_id)
+            except Exception as exc:
+                self.engine.emit(run_id, "agent.budget.failed", {"stage": "wall", "reason": type(exc).__name__})
+        latest = self.engine.store.get_run(run_id) or result
+        if normalize_state(str(latest.get("state") or "")) in TERMINAL_STATES:
+            self._seal_episode(run_id)
+            latest = self.engine.store.get_run(run_id) or latest
+        self._crystal_succeeded.pop(run_id, None)
+        return latest if isinstance(result, dict) else result
+
+    async def _run_loop(self, run_id: str) -> dict[str, Any]:
         run = self.engine.store.get_run(run_id)
         if not run:
             raise KeyError(f"unknown agent run: {run_id}")
@@ -1137,7 +1750,23 @@ class AgentPlannerRuntime:
             self.engine.raise_if_cancelled(run_id)
             self.engine.store.transition(run_id, AgentRunState.PLANNING)
             run = self.engine.store.get_run(run_id) or run
-            prompt = self._prompt(run, state)
+            paths = review_paths(run)
+            if paths:
+                evidence = collect_review_evidence(paths, state.observations)
+                if evidence.blocker or not evidence.next_read:
+                    return await self._finish_file_review(run, state, evidence)
+            prompt = self._prompt(run, state) if not paths else ""
+            phase_decision = self._required_phase_decision(run, state) if not paths else None
+            pre_enforced = phase_decision if (
+                isinstance(phase_decision, PlannerDecision)
+                and (
+                    phase_decision.decision_type is PlannerDecisionType.COMPLETE
+                    or phase_decision.tool_id in {"worktree.verify", "worktree.sourceplan_draft"}
+                )
+                # Broad waves: do not pre-empt the model's next write with a verify; post-decision
+                # phase enforcement still forces verify as soon as the model stops mutating.
+                and not (phase_decision.tool_id == "worktree.verify" and self._broad_wave_mutation_open(run, state))
+            ) else None
             self.engine.emit(run_id, "agent.planner.turn.started", {
                 "turn": state.turn + 1,
                 "max_turns": state.max_turns,
@@ -1156,9 +1785,25 @@ class AgentPlannerRuntime:
                 })
             decision_timeout = self._decision_timeout_seconds(run)
             original_provider = self.provider
-            decision_task = asyncio.create_task(
-                self.provider.next_decision(prompt, run=run, turn=state.turn + 1)
-            )
+            async def next_step() -> PlannerDecision:
+                if pre_enforced is not None:
+                    self._supplied_decisions[run_id] = ("runtime", str(pre_enforced.tool_id or ""))
+                    return pre_enforced
+                if paths:
+                    self._supplied_decisions[run_id] = ("runtime", "workspace.read_range")
+                    return PlannerDecision(
+                        decision_type=PlannerDecisionType.TOOL, tool_id="workspace.read_range",
+                        arguments=evidence.next_read, rationale="Read the next range of an attached review file.",
+                    )
+                crystal_decision = self._crystal_decision(run_id, run, state)
+                if crystal_decision is not None:
+                    self._supplied_decisions[run_id] = ("crystal", str(crystal_decision.tool_id or ""))
+                    return crystal_decision
+                supplied = await self._metered_decision(self.provider, prompt, run=run, turn=state.turn + 1)
+                self._supplied_decisions[run_id] = ("model", str(supplied.tool_id or ""))
+                return supplied
+
+            decision_task = asyncio.create_task(next_step())
             try:
                 decision = await asyncio.wait_for(
                     asyncio.shield(decision_task),
@@ -1181,21 +1826,32 @@ class AgentPlannerRuntime:
                         pass
                     except Exception:
                         pass
-                partial_text = self._provider_partial_text(self.provider) or self._recent_model_delta_text(run_id)
-                if mode in {"chat", "analysis", "ask"} and partial_text:
-                    decision = PlannerDecision(
-                        decision_type=PlannerDecisionType.COMPLETE,
-                        arguments={},
-                        summary=partial_text,
-                        rationale="Completed from partial streamed provider text after planner decision timeout.",
-                    )
-                    self.engine.emit(run_id, "agent.provider.partial_completion", {
+                partial_text = self._recent_model_delta_text(run_id)
+
+                if mode in {"chat", "analysis", "ask"}:
+                    parsed = self._partial_structured_decision(run, partial_text)
+                    decision_task.cancel()
+
+                    if (
+                        parsed is None
+                        or parsed.decision_type is not PlannerDecisionType.COMPLETE
+                        or not str(parsed.summary or "").strip()
+                    ):
+                        raise TimeoutError(
+                            f"planner provider decision exceeded {int(decision_timeout * 1000)} ms "
+                            "without a validated read-only completion"
+                        )
+
+                    decision = parsed
+                    self.engine.emit(run_id, "agent.provider.partial_decision_salvaged", {
                         "turn": state.turn + 1,
                         "provider": str(run.get("provider") or ""),
                         "model": str(run.get("model") or ""),
+                        "decision_type": decision.decision_type.value,
                         "chars": len(partial_text),
                     })
                 else:
+                    partial_text = self._provider_partial_text(self.provider) or partial_text
                     partial_decision = self._partial_structured_decision(run, partial_text)
                     if partial_decision is not None:
                         decision = partial_decision
@@ -1238,6 +1894,24 @@ class AgentPlannerRuntime:
                                 "model": str(run.get("model") or ""),
                                 "decision_type": decision.decision_type.value,
                             })
+            except PlannerDecisionError as exc:
+                decision_task.cancel()
+                # A malformed or exhausted provider packet must never strand
+                # an AgentRun in PLANNING after a successful worktree edit.
+                state.status = "blocked"
+                state.blocker = f"REFUSE_PLANNER_PROVIDER_DECISION: {exc}"
+                self.engine.emit(run_id, "agent.provider.decision_refused", {
+                    "turn": state.turn + 1,
+                    "reason": str(exc)[:1000],
+                    "usage": {
+                        key: getattr(self.provider, "last_usage", {}).get(key)
+                        for key in ("done_reason", "response_chars", "num_predict", "attempt")
+                        if isinstance(getattr(self.provider, "last_usage", None), dict)
+                    },
+                })
+                self._save_state(state)
+                self.engine.store.transition(run_id, AgentRunState.POLICY_BLOCKED, error=state.blocker)
+                return self.engine.store.get_run(run_id) or {}
             except Exception:
                 decision_task.cancel()
                 raise
@@ -1321,8 +1995,8 @@ class AgentPlannerRuntime:
                         "reason": f"{type(exc).__name__}: {exc}",
                         "event_type": "agent.model.usage",
                     })
-            provider_partial = self._provider_partial_text(self.provider)
-            delta_partial = self._recent_model_delta_text(run_id)
+            provider_partial = self._provider_partial_text(self.provider) if not paths else ""
+            delta_partial = self._recent_model_delta_text(run_id) if not paths else ""
             salvaged_decision = self._salvage_partial_decision_from_provider(
                 run,
                 self.provider,
@@ -1365,7 +2039,8 @@ class AgentPlannerRuntime:
                 retry_timeout = max(2.0, min(12.0, self._decision_timeout_seconds(run) * 0.5))
                 try:
                     retried = await asyncio.wait_for(
-                        original_provider.next_decision(
+                        self._metered_decision(
+                            original_provider,
                             self._mutation_retry_prompt(prompt, duplicate_path),
                             run=run,
                             turn=state.turn + 1,
@@ -1432,8 +2107,9 @@ class AgentPlannerRuntime:
                 retry_timeout = max(2.0, min(12.0, self._decision_timeout_seconds(run) * 0.5))
                 try:
                     retried = await asyncio.wait_for(
-                        original_provider.next_decision(
-                            self._mutation_argument_retry_prompt(prompt, decision, mutation_reason),
+                        self._metered_decision(
+                            original_provider,
+                            self._mutation_argument_retry_prompt(prompt, decision, mutation_reason, state),
                             run=run,
                             turn=state.turn + 1,
                         ),
@@ -1479,6 +2155,112 @@ class AgentPlannerRuntime:
                             "reason": retried_reason,
                             "error": "retry_returned_invalid_mutation",
                         })
+            if decision.decision_type is PlannerDecisionType.BLOCKED:
+                route = getattr(self.provider, "last_route", None)
+                route_kind = str((route or {}).get("route_kind") or "")
+                blocked_on_heuristic_dead_end = (
+                    route_kind == "heuristic"
+                    and "stronger planner route required" in str(decision.blocker or "").casefold()
+                )
+                first_mutation_retried = False
+                if (
+                    (route_kind in {"sticky_fallback", "fallback", "fallback_unavailable"} or blocked_on_heuristic_dead_end)
+                    and self._strong_reentry_allowed(run, state)
+                ):
+                    mutation_retry = await self._retry_primary_for_first_mutation(
+                        original_provider,
+                        prompt,
+                        run,
+                        state,
+                        turn=state.turn + 1,
+                        reason=decision.blocker or route_kind or "first_mutation_blocked",
+                    )
+                    if mutation_retry is not None and mutation_retry.decision_type is not PlannerDecisionType.BLOCKED:
+                        decision = mutation_retry
+                        first_mutation_retried = True
+                        self.engine.emit(run_id, "agent.provider.strong_retry_recovered", {
+                            "turn": state.turn + 1,
+                            "provider": str(run.get("provider") or ""),
+                            "model": str(run.get("model") or ""),
+                            "decision_type": decision.decision_type.value,
+                            "recovery_kind": "first_mutation_retry",
+                        })
+                    else:
+                        self.provider = original_provider
+                if (
+                    not first_mutation_retried
+                    and (route_kind in {"sticky_fallback", "fallback", "fallback_unavailable"} or blocked_on_heuristic_dead_end)
+                    and self._strong_reentry_allowed(run, state)
+                ):
+                    retried = await self._retry_primary_after_heuristic_block(
+                        original_provider,
+                        prompt,
+                        run,
+                        state,
+                        turn=state.turn + 1,
+                        reason=decision.blocker or route_kind or "heuristic_blocked",
+                    )
+                    if retried is not None and retried.decision_type is not PlannerDecisionType.BLOCKED:
+                        decision = retried
+                        self.engine.emit(run_id, "agent.provider.strong_retry_recovered", {
+                            "turn": state.turn + 1,
+                            "provider": str(run.get("provider") or ""),
+                            "model": str(run.get("model") or ""),
+                            "decision_type": decision.decision_type.value,
+                        })
+                    else:
+                        self.provider = original_provider
+            decision = self._ground_read_only_completion(run, state, decision)
+            if decision.decision_type is PlannerDecisionType.TOOL:
+                run_request = run.get("request") if isinstance(run.get("request"), dict) else {}
+                locked_target = str(run_request.get("execution_target") or "local")
+                if locked_target not in {"local", "ssh", "container"}:
+                    raise PermissionError("AgentRun has an invalid locked execution target")
+                if decision.execution_target != locked_target:
+                    # The model may omit execution_target (parsed as local),
+                    # but only the operator's durable run chooses its destination.
+                    self.engine.emit(run_id, "agent.planner.target_bound", {
+                        "model_target": decision.execution_target,
+                        "locked_target": locked_target,
+                        "tool_id": decision.tool_id,
+                    })
+                    decision = replace(decision, execution_target=locked_target)
+            if decision.decision_type is PlannerDecisionType.TOOL:
+                original_decision = decision
+                # Both provider-selected and phase-inserted verification enter
+                # here, after target locking and before schema/approval.
+                try:
+                    handoff_command = (
+                        verified_handoff_command(run)
+                        if decision.tool_id == "worktree.verify" and self._is_mutating_mode(run)
+                        else None
+                    )
+                except ValueError as exc:
+                    decision, schema_error = None, str(exc)
+                else:
+                    if handoff_command is not None:
+                        decision = replace(decision, arguments={"command": handoff_command}, approval_id="")
+                        self.engine.emit(run_id, "agent.planner.handoff_verifier_bound", {
+                            "turn": state.turn + 1,
+                            "command": handoff_command,
+                            "execution_target": decision.execution_target,
+                            "source": "durable_run_request",
+                        })
+                    decision, schema_error = await self._one_schema_correction(
+                        run, run_id, decision, state.turn + 1, state=state,
+                    )
+                if decision is None:
+                    state.turn += 1
+                    state.last_decision = original_decision.as_dict()
+                    state.status = "blocked"
+                    state.blocker = schema_error
+                    self.engine.emit(run_id, "agent.planner.blocked", {
+                        "turn": state.turn, "blocker": schema_error,
+                        "tool_id": original_decision.tool_id,
+                    })
+                    self._save_state(state)
+                    self.engine.store.transition(run_id, AgentRunState.POLICY_BLOCKED, error=schema_error)
+                    return self.engine.store.get_run(run_id) or {}
             state.turn += 1
             state.last_decision = decision.as_dict()
             self.engine.emit(run_id, "agent.planner.decision", {
@@ -1503,6 +2285,34 @@ class AgentPlannerRuntime:
                     })
                     self._save_state(state)
                     continue
+                if is_read_only_run(run):
+                    state.status = "completed"
+                    state.final_summary = decision.summary
+                    self._save_state(state)
+                    self.engine.store.transition(run_id, AgentRunState.FINALIZING)
+                    self.engine.emit(run_id, "agent.run.advisory", {
+                        "text": state.final_summary,
+                        "message": "Read-only review complete. No files were changed.",
+                    })
+                    self.engine.emit(run_id, "agent.planner.completed", {
+                        "turns": state.turn,
+                        "summary": state.final_summary,
+                        "completion_mode": "read_only_advisory",
+                        "observation_count": len(state.observations),
+                    })
+                    self.engine.store.transition(run_id, AgentRunState.COMPLETED)
+                    return self.engine.store.get_run(run_id) or {}
+                current_run = self.engine.store.get_run(run_id) or run
+                quality = verify_post_session_quality(current_run, state.observations)
+                self.engine.emit(run_id, "agent.post_session.quality", quality)
+                graduation = assess_post_session_graduation(current_run, state.observations, quality)
+                self.engine.emit(run_id, "agent.graduation.assessed", graduation)
+                if graduation["graduation_status"] != "READY_FOR_HUMAN_APPROVAL":
+                    state.status = "session_complete_graduation_refused" if graduation["graduation_status"] == "REFUSE" else "session_complete_needs_review"
+                    state.blocker = "; ".join(graduation["reasons"])
+                    self._save_state(state)
+                    self.engine.store.transition(run_id, AgentRunState.POLICY_BLOCKED, error=state.blocker)
+                    return self.engine.store.get_run(run_id) or {}
                 state.status = "completed"
                 state.final_summary = decision.summary
                 record_verified = getattr(self.provider, "record_verified_decision", None)
@@ -1530,77 +2340,70 @@ class AgentPlannerRuntime:
                 return self.engine.store.get_run(run_id) or {}
 
             if decision.decision_type is PlannerDecisionType.BLOCKED:
-                route = getattr(self.provider, "last_route", None)
-                route_kind = str((route or {}).get("route_kind") or "")
-                blocked_on_heuristic_dead_end = (
-                    route_kind == "heuristic"
-                    and "stronger planner route required" in str(decision.blocker or "").casefold()
+                state.status = "blocked"
+                state.blocker = decision.blocker
+                self.engine.emit(run_id, "agent.planner.blocked", {
+                    "turn": state.turn, "blocker": decision.blocker,
+                })
+                self._save_state(state)
+                self.engine.store.transition(run_id, AgentRunState.POLICY_BLOCKED, error=decision.blocker)
+                return self.engine.store.get_run(run_id) or {}
+
+            # H12.2: Never re-execute an identical failed workspace read
+            # without intervening evidence. Preserve the original failure
+            # receipt and refuse the duplicate before authorization/execution.
+            if (
+                decision.decision_type is PlannerDecisionType.TOOL
+                and decision.tool_id == "workspace.read_range"
+            ):
+                proposed = json.dumps(
+                    decision.arguments, sort_keys=True, default=str,
                 )
-                first_mutation_retried = False
-                if (
-                    (route_kind in {"sticky_fallback", "fallback", "fallback_unavailable"} or blocked_on_heuristic_dead_end)
-                    and self._strong_reentry_allowed(run, state)
-                ):
-                    mutation_retry = await self._retry_primary_for_first_mutation(
-                        original_provider,
-                        prompt,
-                        run,
-                        state,
-                        turn=state.turn,
-                        reason=decision.blocker or route_kind or "first_mutation_blocked",
-                    )
-                    if mutation_retry is not None and mutation_retry.decision_type is not PlannerDecisionType.BLOCKED:
-                        decision = mutation_retry
-                        state.last_decision = decision.as_dict()
-                        first_mutation_retried = True
-                        self.engine.emit(run_id, "agent.provider.strong_retry_recovered", {
+                for previous in reversed(state.observations):
+                    if not isinstance(previous, dict):
+                        continue
+                    if (
+                        previous.get("tool_id") == decision.tool_id
+                        and previous.get("status") == "failed"
+                        and json.dumps(
+                            previous.get("arguments") or {},
+                            sort_keys=True, default=str,
+                        ) == proposed
+                    ):
+                        blocker = (
+                            "REFUSE_DUPLICATE_FAILED_READ: "
+                            f"{decision.arguments.get('path', '')}"
+                        )
+                        self.engine.emit(run_id, "agent.planner.duplicate_failed_action", {
                             "turn": state.turn,
-                            "provider": str(run.get("provider") or ""),
-                            "model": str(run.get("model") or ""),
-                            "decision_type": decision.decision_type.value,
-                            "recovery_kind": "first_mutation_retry",
+                            "tool_id": decision.tool_id,
+                            "arguments": decision.arguments,
+                            "previous_observation_id": previous.get("observation_id", ""),
+                            "reason": blocker,
                         })
-                    else:
-                        self.provider = original_provider
-                if (
-                    not first_mutation_retried
-                    and (route_kind in {"sticky_fallback", "fallback", "fallback_unavailable"} or blocked_on_heuristic_dead_end)
-                    and self._strong_reentry_allowed(run, state)
-                ):
-                    retried = await self._retry_primary_after_heuristic_block(
-                        original_provider,
-                        prompt,
-                        run,
-                        state,
-                        turn=state.turn,
-                        reason=decision.blocker or route_kind or "heuristic_blocked",
-                    )
-                    if retried is not None and retried.decision_type is not PlannerDecisionType.BLOCKED:
-                        decision = retried
-                        state.last_decision = decision.as_dict()
-                        self.engine.emit(run_id, "agent.provider.strong_retry_recovered", {
-                            "turn": state.turn,
-                            "provider": str(run.get("provider") or ""),
-                            "model": str(run.get("model") or ""),
-                            "decision_type": decision.decision_type.value,
-                        })
-                    else:
-                        self.provider = original_provider
-                if decision.decision_type is not PlannerDecisionType.BLOCKED:
-                    pass
-                else:
-                    state.status = "blocked"
-                    state.blocker = decision.blocker
-                    self.engine.emit(run_id, "agent.planner.blocked", {
-                        "turn": state.turn,
-                        "blocker": decision.blocker,
-                    })
-                    self._save_state(state)
-                    self.engine.store.transition(run_id, AgentRunState.POLICY_BLOCKED, error=decision.blocker)
-                    return self.engine.store.get_run(run_id) or {}
+                        state.status = "blocked"
+                        state.blocker = blocker
+                        self._save_state(state)
+                        self.engine.store.transition(
+                            run_id, AgentRunState.POLICY_BLOCKED, error=blocker,
+                        )
+                        return self.engine.store.get_run(run_id) or {}
 
             self.engine.store.transition(run_id, AgentRunState.EXECUTING_TOOL)
-            authorized = await self._authorize_tool(run, run_id, decision)
+            try:
+                authorized = await self._authorize_tool(run, run_id, decision)
+            except ValueError as exc:
+                # Defense in depth: a schema change between preflight and
+                # approval must end cleanly without an orphaned executing run.
+                state.status = "blocked"
+                state.blocker = f"REFUSE_TOOL_AUTHORIZATION:{type(exc).__name__}: {exc}"
+                self.engine.emit(run_id, "agent.planner.blocked", {
+                    "turn": state.turn, "blocker": state.blocker,
+                    "tool_id": decision.tool_id,
+                })
+                self._save_state(state)
+                self.engine.store.transition(run_id, AgentRunState.POLICY_BLOCKED, error=state.blocker)
+                return self.engine.store.get_run(run_id) or {}
             if authorized is None:
                 state.status = "blocked"
                 state.blocker = f"operator did not approve {decision.tool_id}"
@@ -1629,6 +2432,8 @@ class AgentPlannerRuntime:
                     "arguments": decision.arguments,
                     "result": {},
                 }
+
+            self._record_tool_budget(run_id, decision, observation)
 
             if decision.tool_id == "worktree.verify" and observation.get("status") != "completed":
                 result = observation.get("result") if isinstance(observation.get("result"), dict) else {}
@@ -1691,7 +2496,10 @@ class AgentPlannerRuntime:
                     "evidence_digest": observation.get("evidence_digest", ""),
                 })
             state.observations.append(observation)
-            state.observations = state.observations[-self.observation_limit:]
+            # Review coverage is cumulative. Dropping old reads would reopen
+            # already inspected ranges on a larger review or after reconnect.
+            keep = max(self.observation_limit, state.max_turns) if paths else self.observation_limit
+            state.observations = state.observations[-keep:]
             self.engine.store.transition(run_id, AgentRunState.UPDATING_PLAN)
             self.engine.emit(run_id, "agent.planner.observation.accepted", {
                 "turn": state.turn,
@@ -1723,7 +2531,63 @@ class AgentPlannerRuntime:
                 })
             self._save_state(state)
 
+            # Operator opt-in only: after a verified SourcePlan handoff, close
+            # deterministically rather than asking a small model for another
+            # edit. The independent post-session quality gate still runs and
+            # can refuse; no SourcePlan promotion authority is introduced.
+            request = run.get("request") if isinstance(run.get("request"), dict) else {}
+            if (request.get("post_session_closure") == "verified_handoff"
+                    and decision.tool_id == "worktree.sourceplan_draft"
+                    and observation.get("status") == "completed"
+                    and self._is_mutating_mode(run)
+                    and self._completion_ready(run, state)):
+                self.engine.emit(run_id, "agent.planner.verified_handoff_requested", {
+                    "turn": state.turn,
+                    "reason": "operator_opt_in_after_sourceplan",
+                    "model_completion_decision": False,
+                })
+                current_run = self.engine.store.get_run(run_id) or run
+                quality = verify_post_session_quality(current_run, state.observations)
+                self.engine.emit(run_id, "agent.post_session.quality", quality)
+                graduation = assess_post_session_graduation(current_run, state.observations, quality)
+                self.engine.emit(run_id, "agent.graduation.assessed", graduation)
+                if graduation["graduation_status"] != "READY_FOR_HUMAN_APPROVAL":
+                    state.status = "session_complete_graduation_refused"
+                    state.blocker = "; ".join(graduation["reasons"])
+                    self._save_state(state)
+                    self.engine.store.transition(run_id, AgentRunState.POLICY_BLOCKED, error=state.blocker)
+                    return self.engine.store.get_run(run_id) or {}
+                state.status = "completed"
+                state.final_summary = self._completion_summary_from_state(run, state)
+                self.engine.store.transition(run_id, AgentRunState.FINALIZING)
+                self.engine.emit(run_id, "agent.planner.completed", {
+                    "turns": state.turn,
+                    "summary": state.final_summary,
+                    "observation_count": len(state.observations),
+                    "completion_mode": "operator_opt_in_verified_sourceplan_handoff",
+                })
+                self._save_state(state)
+                self.engine.store.transition(run_id, AgentRunState.COMPLETED)
+                return self.engine.store.get_run(run_id) or {}
+
+        paths = review_paths(run)
+        if paths:
+            evidence = collect_review_evidence(paths, state.observations)
+            if not evidence.blocker and evidence.next_read and not any(evidence.visible.values()):
+                return self._review_incomplete(state, "No attached source could be read within the review budget.", evidence.coverage())
+            return await self._finish_file_review(run, state, evidence)
         if self._is_mutating_mode(run) and self._completion_ready(run, state):
+            current_run = self.engine.store.get_run(run_id) or run
+            quality = verify_post_session_quality(current_run, state.observations)
+            self.engine.emit(run_id, "agent.post_session.quality", quality)
+            graduation = assess_post_session_graduation(current_run, state.observations, quality)
+            self.engine.emit(run_id, "agent.graduation.assessed", graduation)
+            if graduation["graduation_status"] != "READY_FOR_HUMAN_APPROVAL":
+                state.status = "session_complete_graduation_refused" if graduation["graduation_status"] == "REFUSE" else "session_complete_needs_review"
+                state.blocker = "; ".join(graduation["reasons"])
+                self._save_state(state)
+                self.engine.store.transition(run_id, AgentRunState.POLICY_BLOCKED, error=state.blocker)
+                return self.engine.store.get_run(run_id) or {}
             state.status = "completed"
             state.final_summary = self._completion_summary_from_state(run, state)
             self.engine.store.transition(run_id, AgentRunState.FINALIZING)
@@ -1745,3 +2609,5 @@ class AgentPlannerRuntime:
         self._save_state(state)
         self.engine.store.transition(run_id, AgentRunState.BUDGET_EXHAUSTED, error=state.blocker)
         return self.engine.store.get_run(run_id) or {}
+
+# BEAST_R321_MUTATION_INFERENCE: bounded native Ollama mutation decision budgets and observable results.

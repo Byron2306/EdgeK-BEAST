@@ -1,0 +1,1858 @@
+[
+ {
+  "description": "Explain the active BEAST MCP tool profile, visible tools, hidden tools, and blocked mutations.",
+  "inputSchema": {
+   "properties": {},
+   "type": "object"
+  },
+  "name": "beast_tool_profile"
+ },
+ {
+  "description": "Evaluate declared tool capabilities through BEAST Mode Router and risk buckets. Returns receipts; it never executes a tool.",
+  "inputSchema": {
+   "properties": {
+    "approved": {
+     "default": false,
+     "type": "boolean"
+    },
+    "network": {
+     "default": false,
+     "type": "boolean"
+    },
+    "phase": {
+     "default": "scout",
+     "type": "string"
+    },
+    "risk": {
+     "default": "low",
+     "type": "string"
+    },
+    "tools": {
+     "items": {
+      "type": "object"
+     },
+     "type": "array"
+    }
+   },
+   "required": [
+    "tools"
+   ],
+   "type": "object"
+  },
+  "name": "beast_least_authority_plan"
+ },
+ {
+  "description": "Read durable bounded Conductor dispatch receipts for a workflow. This is inspection-only.",
+  "inputSchema": {
+   "properties": {
+    "limit": {
+     "default": 20,
+     "type": "integer"
+    },
+    "workflow_id": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_conductor_dispatch_history"
+ },
+ {
+  "description": "Prepare a canonical BEAST task envelope from a user request.",
+  "inputSchema": {
+   "properties": {
+    "dry_run": {
+     "default": true,
+     "type": "boolean"
+    },
+    "project": {
+     "type": "string"
+    },
+    "provider": {
+     "type": "string"
+    },
+    "task_class": {
+     "type": "string"
+    },
+    "user_request": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "user_request"
+   ],
+   "type": "object"
+  },
+  "name": "beast_prepare_task"
+ },
+ {
+  "description": "Run the local Quality Cascade before cloud escalation.",
+  "inputSchema": {
+   "properties": {
+    "envelope": {
+     "type": "object"
+    },
+    "provider": {
+     "type": "string"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "envelope",
+    "provider"
+   ],
+   "type": "object"
+  },
+  "name": "beast_run_quality_cascade"
+ },
+ {
+  "description": "Run repo hygiene checks: compile, pytest collection, dependency sanity, docs links, and extension syntax.",
+  "inputSchema": {
+   "properties": {
+    "include_extension_checks": {
+     "default": true,
+     "type": "boolean"
+    },
+    "include_markdown": {
+     "default": true,
+     "type": "boolean"
+    },
+    "pytest_args": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    },
+    "python_versions": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    },
+    "run_packaging": {
+     "default": false,
+     "type": "boolean"
+    },
+    "run_tests": {
+     "default": false,
+     "type": "boolean"
+    },
+    "timeout_seconds": {
+     "default": 60,
+     "type": "integer"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_run_maintenance_cascade"
+ },
+ {
+  "description": "Build a bounded context packet for a cloud-model handoff.",
+  "inputSchema": {
+   "properties": {
+    "envelope": {
+     "type": "object"
+    },
+    "max_tokens": {
+     "default": 8000,
+     "type": "integer"
+    },
+    "provider": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "envelope",
+    "provider"
+   ],
+   "type": "object"
+  },
+  "name": "beast_prepare_handoff"
+ },
+ {
+  "description": "Prepare a governed SourcePlan with output governance, bounded context, and selected files.",
+  "inputSchema": {
+   "properties": {
+    "files": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    },
+    "objective": {
+     "type": "string"
+    },
+    "provider": {
+     "default": "nvidia_nim",
+     "type": "string"
+    },
+    "provider_text": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "objective"
+   ],
+   "type": "object"
+  },
+  "name": "beast_sourceplan_prepare"
+ },
+ {
+  "description": "Render a unified diff preview for a BEAST SourcePlan without applying it.",
+  "inputSchema": {
+   "properties": {
+    "plan": {
+     "type": "object"
+    }
+   },
+   "required": [
+    "plan"
+   ],
+   "type": "object"
+  },
+  "name": "beast_sourceplan_preview_hunks"
+ },
+ {
+  "description": "Build a pre-apply SourcePlan risk, impact, and test-targeting scorecard.",
+  "inputSchema": {
+   "properties": {
+    "plan": {
+     "type": "object"
+    }
+   },
+   "required": [
+    "plan"
+   ],
+   "type": "object"
+  },
+  "name": "beast_sourceplan_scorecard"
+ },
+ {
+  "description": "Report Code Cortex adapter availability, including optional Gortex and local fallback.",
+  "inputSchema": {
+   "properties": {
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_code_cortex_status"
+ },
+ {
+  "description": "Search workspace symbols through Code Cortex adapters with local fallback.",
+  "inputSchema": {
+   "properties": {
+    "limit": {
+     "default": 20,
+     "type": "integer"
+    },
+    "query": {
+     "type": "string"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "query"
+   ],
+   "type": "object"
+  },
+  "name": "beast_code_cortex_search_symbols"
+ },
+ {
+  "description": "Find files that import/depend on a workspace path through Code Cortex adapters.",
+  "inputSchema": {
+   "properties": {
+    "limit": {
+     "default": 80,
+     "type": "integer"
+    },
+    "path": {
+     "type": "string"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "path"
+   ],
+   "type": "object"
+  },
+  "name": "beast_code_cortex_dependents"
+ },
+ {
+  "description": "Select edit-relevant files and symbols through Code Cortex as BEAST's code-context front door.",
+  "inputSchema": {
+   "properties": {
+    "limit": {
+     "default": 12,
+     "type": "integer"
+    },
+    "query": {
+     "type": "string"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "query"
+   ],
+   "type": "object"
+  },
+  "name": "beast_code_cortex_editing_context"
+ },
+ {
+  "description": "Select and explain a BEAST role mode for a task phase, risk, provider, or SourcePlan.",
+  "inputSchema": {
+   "properties": {
+    "phase": {
+     "type": "string"
+    },
+    "provider": {
+     "type": "string"
+    },
+    "requested_mode": {
+     "type": "string"
+    },
+    "risk": {
+     "type": "string"
+    },
+    "sourceplan": {
+     "type": "object"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_mode_router_select"
+ },
+ {
+  "description": "List BEAST Worktree Forge mission records for a workspace.",
+  "inputSchema": {
+   "properties": {
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_worktree_list"
+ },
+ {
+  "description": "Create an isolated git worktree for a BEAST mission.",
+  "inputSchema": {
+   "properties": {
+    "base_ref": {
+     "type": "string"
+    },
+    "mode": {
+     "type": "string"
+    },
+    "objective": {
+     "type": "string"
+    },
+    "provider": {
+     "type": "string"
+    },
+    "risk": {
+     "type": "string"
+    },
+    "task_id": {
+     "type": "string"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "objective"
+   ],
+   "type": "object"
+  },
+  "name": "beast_worktree_create"
+ },
+ {
+  "description": "Return dirty-file status for a BEAST worktree mission.",
+  "inputSchema": {
+   "properties": {
+    "task_id": {
+     "type": "string"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "task_id"
+   ],
+   "type": "object"
+  },
+  "name": "beast_worktree_status"
+ },
+ {
+  "description": "Return a bounded diff for a BEAST worktree mission.",
+  "inputSchema": {
+   "properties": {
+    "max_chars": {
+     "default": 40000,
+     "type": "integer"
+    },
+    "task_id": {
+     "type": "string"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "task_id"
+   ],
+   "type": "object"
+  },
+  "name": "beast_worktree_diff"
+ },
+ {
+  "description": "Run an explicit verifier command inside a BEAST worktree mission.",
+  "inputSchema": {
+   "properties": {
+    "command": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    },
+    "task_id": {
+     "type": "string"
+    },
+    "timeout": {
+     "default": 120,
+     "type": "number"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "task_id"
+   ],
+   "type": "object"
+  },
+  "name": "beast_worktree_test"
+ },
+ {
+  "description": "Promote an approved and verified BEAST worktree branch back to the workspace.",
+  "inputSchema": {
+   "properties": {
+    "approved": {
+     "default": false,
+     "type": "boolean"
+    },
+    "require_tests": {
+     "default": true,
+     "type": "boolean"
+    },
+    "task_id": {
+     "type": "string"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "task_id",
+    "approved"
+   ],
+   "type": "object"
+  },
+  "name": "beast_worktree_promote"
+ },
+ {
+  "description": "Mark a BEAST worktree mission archived without deleting files.",
+  "inputSchema": {
+   "properties": {
+    "reason": {
+     "type": "string"
+    },
+    "task_id": {
+     "type": "string"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "task_id"
+   ],
+   "type": "object"
+  },
+  "name": "beast_worktree_archive"
+ },
+ {
+  "description": "Compile scoped project instructions into a hashed BEAST Spec Covenant.",
+  "inputSchema": {
+   "properties": {
+    "files": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    },
+    "max_rules": {
+     "default": 18,
+     "type": "integer"
+    },
+    "mode": {
+     "type": "string"
+    },
+    "objective": {
+     "type": "string"
+    },
+    "operator_notes": {
+     "type": "string"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "objective"
+   ],
+   "type": "object"
+  },
+  "name": "beast_spec_covenant_compile"
+ },
+ {
+  "description": "Classify a shell/setup command before execution and return a safety receipt.",
+  "inputSchema": {
+   "properties": {
+    "command": {
+     "type": "string"
+    },
+    "mode": {
+     "type": "string"
+    },
+    "operator_override": {
+     "type": "string"
+    },
+    "task_id": {
+     "type": "string"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "command"
+   ],
+   "type": "object"
+  },
+  "name": "beast_safety_classify_command"
+ },
+ {
+  "description": "Scan selected files or bootstrap/package files for setup and execution risks.",
+  "inputSchema": {
+   "properties": {
+    "files": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    },
+    "max_files": {
+     "default": 250,
+     "type": "integer"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_safety_scan_workspace"
+ },
+ {
+  "description": "Plan local/provider BEAST agent lanes for a mission without executing them.",
+  "inputSchema": {
+   "properties": {
+    "crystal_match": {
+     "type": "boolean"
+    },
+    "graph_confidence": {
+     "type": "number"
+    },
+    "high_value": {
+     "type": "boolean"
+    },
+    "objective": {
+     "type": "string"
+    },
+    "phase": {
+     "type": "string"
+    },
+    "provider_fitness": {
+     "type": "number"
+    },
+    "risk": {
+     "type": "string"
+    },
+    "verification_failed": {
+     "type": "boolean"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "objective"
+   ],
+   "type": "object"
+  },
+  "name": "beast_agent_scheduler_plan"
+ },
+ {
+  "description": "Summarize recent BEAST agent scheduler receipts and local/cloud split.",
+  "inputSchema": {
+   "properties": {
+    "limit": {
+     "default": 20,
+     "type": "integer"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_agent_scheduler_summary"
+ },
+ {
+  "description": "Return a compact mission cockpit summary across modes, worktrees, safety, compute, Code Cortex, and rules.",
+  "inputSchema": {
+   "properties": {
+    "objective": {
+     "type": "string"
+    },
+    "phase": {
+     "type": "string"
+    },
+    "risk": {
+     "type": "string"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_mission_cockpit_summary"
+ },
+ {
+  "description": "Summarize proof-carrying mission lattice cells learned from verified SourcePlan evidence.",
+  "inputSchema": {
+   "properties": {
+    "limit": {
+     "default": 8,
+     "type": "integer"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_mission_lattice_summary"
+ },
+ {
+  "description": "Look up verified mission lattice cells for a proposed SourcePlan without applying edits.",
+  "inputSchema": {
+   "properties": {
+    "limit": {
+     "default": 5,
+     "type": "integer"
+    },
+    "plan": {
+     "type": "object"
+    },
+    "scorecard": {
+     "type": "object"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "plan"
+   ],
+   "type": "object"
+  },
+  "name": "beast_mission_lattice_lookup"
+ },
+ {
+  "description": "Create a gated lattice replay workflow: match, SourcePlan scaffold, policy gate, verification plan, and evidence closure. Never applies edits.",
+  "inputSchema": {
+   "properties": {
+    "limit": {
+     "default": 5,
+     "type": "integer"
+    },
+    "plan": {
+     "type": "object"
+    },
+    "scorecard": {
+     "type": "object"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "plan"
+   ],
+   "type": "object"
+  },
+  "name": "beast_mission_lattice_replay_scaffold"
+ },
+ {
+  "description": "Summarize BEAST's canonical evidence pointer index for the workspace.",
+  "inputSchema": {
+   "properties": {
+    "limit": {
+     "default": 20,
+     "type": "integer"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_evidence_bus_summary"
+ },
+ {
+  "description": "Filter BEAST's canonical evidence pointer index by task, type, source, status, plan id, or receipt id.",
+  "inputSchema": {
+   "properties": {
+    "artifact_type": {
+     "type": "string"
+    },
+    "limit": {
+     "default": 50,
+     "type": "integer"
+    },
+    "plan_id": {
+     "type": "string"
+    },
+    "receipt_id": {
+     "type": "string"
+    },
+    "source": {
+     "type": "string"
+    },
+    "status": {
+     "type": "string"
+    },
+    "task_id": {
+     "type": "string"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_evidence_bus_query"
+ },
+ {
+  "description": "Find all Evidence Bus receipts related to a task, SourcePlan id, hash, path, or receipt id.",
+  "inputSchema": {
+   "properties": {
+    "key": {
+     "type": "string"
+    },
+    "limit": {
+     "default": 50,
+     "type": "integer"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "key"
+   ],
+   "type": "object"
+  },
+  "name": "beast_evidence_bus_related"
+ },
+ {
+  "description": "Build a governed SourcePlan by replacing one locally resolved symbol block.",
+  "inputSchema": {
+   "properties": {
+    "objective": {
+     "type": "string"
+    },
+    "path": {
+     "type": "string"
+    },
+    "provider": {
+     "default": "local_symbol_surgeon",
+     "type": "string"
+    },
+    "replacement": {
+     "type": "string"
+    },
+    "symbol": {
+     "type": "string"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "path",
+    "symbol",
+    "replacement"
+   ],
+   "type": "object"
+  },
+  "name": "beast_symbol_surgeon_plan"
+ },
+ {
+  "description": "Apply selected SourcePlan hunks with approval, verification, rollback, and Chronicle crystallization.",
+  "inputSchema": {
+   "properties": {
+    "approved": {
+     "default": false,
+     "type": "boolean"
+    },
+    "plan": {
+     "type": "object"
+    }
+   },
+   "required": [
+    "plan",
+    "approved"
+   ],
+   "type": "object"
+  },
+  "name": "beast_sourceplan_apply_selected"
+ },
+ {
+  "description": "Rollback the latest BEAST SourcePlan apply using the local rollback snapshot.",
+  "inputSchema": {
+   "properties": {},
+   "type": "object"
+  },
+  "name": "beast_sourceplan_rollback_latest"
+ },
+ {
+  "description": "Summarize provider route fitness, Chronicle evidence, and recommended runtime role.",
+  "inputSchema": {
+   "properties": {
+    "limit": {
+     "default": 50,
+     "type": "integer"
+    },
+    "provider": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_provider_fitness"
+ },
+ {
+  "description": "Choose the best eligible provider route for a requested role using hidden-clean economics, rescue rate, latency, auth confidence, and cost limits.",
+  "inputSchema": {
+   "properties": {
+    "candidates": {
+     "items": {
+      "type": "object"
+     },
+     "type": "array"
+    },
+    "max_latency_ms": {
+     "type": "number"
+    },
+    "max_usd_per_fix": {
+     "type": "number"
+    },
+    "min_auth_confidence": {
+     "default": 0.6,
+     "type": "number"
+    },
+    "prefer_hidden_clean": {
+     "default": true,
+     "type": "boolean"
+    },
+    "requested_role": {
+     "default": "primary_patch_provider",
+     "type": "string"
+    },
+    "require_cost_observation": {
+     "default": false,
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "candidates",
+    "requested_role"
+   ],
+   "type": "object"
+  },
+  "name": "beast_provider_economist_select"
+ },
+ {
+  "description": "Record whether a tool call was useful so BEAST can learn future call/skip policy.",
+  "inputSchema": {
+   "properties": {
+    "called": {
+     "default": true,
+     "type": "boolean"
+    },
+    "cost_usd": {
+     "default": 0,
+     "type": "number"
+    },
+    "latency_ms": {
+     "default": 0,
+     "type": "number"
+    },
+    "scenario": {
+     "type": "string"
+    },
+    "tokens_spent": {
+     "default": 0,
+     "type": "integer"
+    },
+    "tool_name": {
+     "type": "string"
+    },
+    "useful": {
+     "type": "boolean"
+    },
+    "value_score": {
+     "default": 0,
+     "type": "number"
+    }
+   },
+   "required": [
+    "tool_name",
+    "scenario",
+    "useful"
+   ],
+   "type": "object"
+  },
+  "name": "beast_tool_laziness_record"
+ },
+ {
+  "description": "Given candidate tools and a scenario, explicitly identify tools not worth calling based on prior low-value outcomes.",
+  "inputSchema": {
+   "properties": {
+    "candidate_tools": {
+     "items": {
+      "oneOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "object"
+       }
+      ]
+     },
+     "type": "array"
+    },
+    "min_samples": {
+     "default": 3,
+     "type": "integer"
+    },
+    "required_tools": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    },
+    "scenario": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "candidate_tools",
+    "scenario"
+   ],
+   "type": "object"
+  },
+  "name": "beast_tool_laziness_recommend"
+ },
+ {
+  "description": "Compile Chronicle, route-card, packet-timing, and provider-fitness evidence into OTLP/HTTP spans and optionally export to Grafana Tempo, Jaeger, or another OTLP collector.",
+  "inputSchema": {
+   "properties": {
+    "approved": {
+     "default": false,
+     "type": "boolean"
+    },
+    "chronicles": {
+     "items": {
+      "type": "object"
+     },
+     "type": "array"
+    },
+    "dry_run": {
+     "default": true,
+     "type": "boolean"
+    },
+    "endpoint": {
+     "type": "string"
+    },
+    "packet_evidence": {
+     "items": {
+      "type": "object"
+     },
+     "type": "array"
+    },
+    "provider_fitness": {
+     "items": {
+      "type": "object"
+     },
+     "type": "array"
+    },
+    "route_cards": {
+     "items": {
+      "type": "object"
+     },
+     "type": "array"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_otel_export"
+ },
+ {
+  "description": "Optionally prepare schema hashes, then validate a BEAST plugin manifest's risk class, permissions, budget, approval policy, and immutable tool schema pins.",
+  "inputSchema": {
+   "properties": {
+    "manifest": {
+     "type": "object"
+    },
+    "prepare_hashes": {
+     "default": false,
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "manifest"
+   ],
+   "type": "object"
+  },
+  "name": "beast_plugin_manifest_validate"
+ },
+ {
+  "description": "Dry-run or install a valid schema-pinned BEAST plugin manifest; live installation requires explicit approval.",
+  "inputSchema": {
+   "properties": {
+    "approved": {
+     "default": false,
+     "type": "boolean"
+    },
+    "dry_run": {
+     "default": true,
+     "type": "boolean"
+    },
+    "manifest": {
+     "type": "object"
+    }
+   },
+   "required": [
+    "manifest"
+   ],
+   "type": "object"
+  },
+  "name": "beast_plugin_marketplace_install"
+ },
+ {
+  "description": "Prepare, contextually rank, or submit privacy-allowlisted tool/skill evidence. Submission is opt-in, approval-gated, and dry-run by default.",
+  "inputSchema": {
+   "properties": {
+    "action": {
+     "enum": [
+      "state",
+      "prepare",
+      "rank",
+      "submit"
+     ],
+     "type": "string"
+    },
+    "approved": {
+     "default": false,
+     "type": "boolean"
+    },
+    "capability": {
+     "type": "object"
+    },
+    "dry_run": {
+     "default": true,
+     "type": "boolean"
+    },
+    "evidence": {
+     "oneOf": [
+      {
+       "type": "object"
+      },
+      {
+       "items": {
+        "type": "object"
+       },
+       "type": "array"
+      }
+     ]
+    },
+    "outcome": {
+     "type": "object"
+    },
+    "persist_local": {
+     "default": true,
+     "type": "boolean"
+    },
+    "role": {
+     "type": "string"
+    },
+    "task_class": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "action"
+   ],
+   "type": "object"
+  },
+  "name": "beast_capability_exchange"
+ },
+ {
+  "description": "Summarize BEAST's unified read-only capability plane across registry, skills, plugins, exchange, and commons.",
+  "inputSchema": {
+   "properties": {
+    "limit": {
+     "default": 100,
+     "type": "integer"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_capability_plane_summary"
+ },
+ {
+  "description": "Query available, verified, local, reusable, or risky BEAST capabilities through one facade.",
+  "inputSchema": {
+   "properties": {
+    "family": {
+     "type": "string"
+    },
+    "kind": {
+     "type": "string"
+    },
+    "limit": {
+     "default": 50,
+     "type": "integer"
+    },
+    "local": {
+     "type": "boolean"
+    },
+    "reusable": {
+     "type": "boolean"
+    },
+    "risk": {
+     "type": "string"
+    },
+    "source": {
+     "type": "string"
+    },
+    "text": {
+     "type": "string"
+    },
+    "verified": {
+     "type": "boolean"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_capability_plane_query"
+ },
+ {
+  "description": "Ingest and rank contextual capability priors, stage candidates, or locally approve adoption.",
+  "inputSchema": {
+   "properties": {
+    "action": {
+     "enum": [
+      "state",
+      "ingest",
+      "discovery_ingest",
+      "rank",
+      "propose",
+      "adopt",
+      "snapshot"
+     ],
+     "type": "string"
+    },
+    "approved": {
+     "default": false,
+     "type": "boolean"
+    },
+    "approved_by": {
+     "type": "string"
+    },
+    "candidate": {
+     "type": "object"
+    },
+    "candidate_id": {
+     "type": "string"
+    },
+    "dry_run": {
+     "default": true,
+     "type": "boolean"
+    },
+    "evidence": {
+     "oneOf": [
+      {
+       "type": "object"
+      },
+      {
+       "items": {
+        "type": "object"
+       },
+       "type": "array"
+      }
+     ]
+    },
+    "kind": {
+     "type": "string"
+    },
+    "limit": {
+     "default": 25,
+     "type": "integer"
+    },
+    "reason": {
+     "type": "string"
+    },
+    "role": {
+     "type": "string"
+    },
+    "source": {
+     "type": "string"
+    },
+    "sources": {
+     "items": {
+      "type": "object"
+     },
+     "type": "array"
+    },
+    "stage_candidates": {
+     "default": true,
+     "type": "boolean"
+    },
+    "task_class": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "action"
+   ],
+   "type": "object"
+  },
+  "name": "beast_meta_tool_commons"
+ },
+ {
+  "description": "Inspect Phase 1 Compute Plans, gates, receipts, and counterfactual savings estimates.",
+  "inputSchema": {
+   "properties": {
+    "action": {
+     "enum": [
+      "state",
+      "metrics",
+      "savings_summary",
+      "plans",
+      "receipts",
+      "receipt"
+     ],
+     "type": "string"
+    },
+    "limit": {
+     "default": 50,
+     "type": "integer"
+    },
+    "receipt_id": {
+     "type": "string"
+    },
+    "weekly_call_volume": {
+     "type": "integer"
+    }
+   },
+   "required": [
+    "action"
+   ],
+   "type": "object"
+  },
+  "name": "beast_compute_shadow"
+ },
+ {
+  "description": "Return accepted/implemented BEAST architecture decisions and enforcement invariants.",
+  "inputSchema": {
+   "properties": {},
+   "type": "object"
+  },
+  "name": "beast_architecture_decisions"
+ },
+ {
+  "description": "Check whether an action is allowed under current governance rules.",
+  "inputSchema": {
+   "properties": {
+    "action": {
+     "type": "string"
+    },
+    "context": {
+     "type": "object"
+    }
+   },
+   "required": [
+    "action"
+   ],
+   "type": "object"
+  },
+  "name": "beast_check_policy"
+ },
+ {
+  "description": "Create a provider route card for diagnostics or handoffs.",
+  "inputSchema": {
+   "properties": {
+    "envelope": {
+     "type": "object"
+    },
+    "persist": {
+     "default": true,
+     "type": "boolean"
+    },
+    "provider": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "provider"
+   ],
+   "type": "object"
+  },
+  "name": "beast_build_route_card"
+ },
+ {
+  "description": "Persist a diagnostic or governance result to the Chronicle store.",
+  "inputSchema": {
+   "properties": {
+    "diagnostic_result": {
+     "type": "object"
+    }
+   },
+   "required": [
+    "diagnostic_result"
+   ],
+   "type": "object"
+  },
+  "name": "beast_publish_chronicle"
+ },
+ {
+  "description": "Attach metadata-only packet-probe evidence to a provider diagnostic and optionally persist its Chronicle.",
+  "inputSchema": {
+   "properties": {
+    "diagnostic": {
+     "type": "object"
+    },
+    "persist": {
+     "default": false,
+     "type": "boolean"
+    },
+    "probe": {
+     "type": "object"
+    },
+    "source": {
+     "default": "packet_probe",
+     "type": "string"
+    }
+   },
+   "required": [
+    "diagnostic",
+    "probe"
+   ],
+   "type": "object"
+  },
+  "name": "beast_attach_network_chronicle"
+ },
+ {
+  "description": "Fetch a GitHub PR diff, check runs, and review comments and convert them into a bounded BEAST task envelope.",
+  "inputSchema": {
+   "properties": {
+    "max_comments": {
+     "default": 30,
+     "type": "integer"
+    },
+    "max_files": {
+     "default": 20,
+     "type": "integer"
+    },
+    "pr_number": {
+     "minimum": 1,
+     "type": "integer"
+    },
+    "repo": {
+     "description": "GitHub repository in owner/name form.",
+     "type": "string"
+    }
+   },
+   "required": [
+    "repo",
+    "pr_number"
+   ],
+   "type": "object"
+  },
+  "name": "beast_github_pr_ingest"
+ },
+ {
+  "description": "Draft or publish a bounded Chronicle summary as a GitHub PR comment; live writes require explicit approval.",
+  "inputSchema": {
+   "properties": {
+    "approved": {
+     "default": false,
+     "type": "boolean"
+    },
+    "chronicle": {
+     "type": "object"
+    },
+    "dry_run": {
+     "default": true,
+     "type": "boolean"
+    },
+    "pr_number": {
+     "minimum": 1,
+     "type": "integer"
+    },
+    "repo": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "repo",
+    "pr_number",
+    "chronicle"
+   ],
+   "type": "object"
+  },
+  "name": "beast_github_pr_publish_chronicle"
+ },
+ {
+  "description": "Return a lightweight Code Cortex-fronted view of workspace graph/dependency context.",
+  "inputSchema": {
+   "properties": {
+    "depth": {
+     "default": 2,
+     "type": "integer"
+    },
+    "query": {
+     "default": "",
+     "type": "string"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_get_workspace_graph"
+ },
+ {
+  "description": "Build a bounded evidence packet from a task envelope, route card, and quality report.",
+  "inputSchema": {
+   "properties": {
+    "envelope": {
+     "type": "object"
+    },
+    "include_content": {
+     "default": true,
+     "type": "boolean"
+    },
+    "max_files": {
+     "type": "integer"
+    },
+    "quality_report": {
+     "type": "object"
+    },
+    "route_card": {
+     "type": "object"
+    },
+    "semantic_limit": {
+     "default": 5,
+     "type": "integer"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "envelope"
+   ],
+   "type": "object"
+  },
+  "name": "beast_build_context_packet"
+ },
+ {
+  "description": "Build a pre-edit Forge scorecard with risk, benefit, gate, and verification signals.",
+  "inputSchema": {
+   "properties": {
+    "context_packet": {
+     "type": "object"
+    },
+    "envelope": {
+     "type": "object"
+    },
+    "quality_report": {
+     "type": "object"
+    },
+    "route_card": {
+     "type": "object"
+    }
+   },
+   "required": [
+    "envelope"
+   ],
+   "type": "object"
+  },
+  "name": "beast_score_forge"
+ },
+ {
+  "description": "Build a Conductor workflow card using swarm role advice and current V2 artifacts.",
+  "inputSchema": {
+   "properties": {
+    "context_packet": {
+     "type": "object"
+    },
+    "envelope": {
+     "type": "object"
+    },
+    "forge_scorecard": {
+     "type": "object"
+    },
+    "persist": {
+     "default": false,
+     "type": "boolean"
+    },
+    "quality_report": {
+     "type": "object"
+    },
+    "route_card": {
+     "type": "object"
+    },
+    "run_swarm": {
+     "default": true,
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "envelope"
+   ],
+   "type": "object"
+  },
+  "name": "beast_plan_workflow"
+ },
+ {
+  "description": "Validate a BEAST object or artifact bundle against the V2 canon registry.",
+  "inputSchema": {
+   "properties": {
+    "artifacts": {
+     "type": "object"
+    },
+    "object": {
+     "type": "object"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_validate_canon"
+ },
+ {
+  "description": "Check whether repeated successful work is eligible for approval-gated promotion.",
+  "inputSchema": {
+   "properties": {
+    "artifacts": {
+     "type": "object"
+    },
+    "category": {
+     "type": "string"
+    },
+    "min_repetitions": {
+     "default": 2,
+     "type": "integer"
+    },
+    "persist": {
+     "default": true,
+     "type": "boolean"
+    },
+    "provider": {
+     "type": "string"
+    },
+    "route_id": {
+     "type": "string"
+    },
+    "task_class": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_check_promotion"
+ },
+ {
+  "description": "Tell an attached agent it is operating inside BEAST and provide local capabilities, cooperation rules, and strict preflight/scout latency budgets.",
+  "inputSchema": {
+   "properties": {
+    "candidate_tools": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    },
+    "mode": {
+     "default": "openclaw",
+     "type": "string"
+    },
+    "objective": {
+     "type": "string"
+    },
+    "preflight_budget_ms": {
+     "default": 500,
+     "type": "integer"
+    },
+    "scout_budget_ms": {
+     "default": 300,
+     "type": "integer"
+    },
+    "session_id": {
+     "type": "string"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "objective"
+   ],
+   "type": "object"
+  },
+  "name": "beast_session_handshake"
+ },
+ {
+  "description": "Create an Ollama-first Openclaw/Nemoclaw execution plan from workflow artifacts.",
+  "inputSchema": {
+   "properties": {
+    "candidate_tools": {
+     "items": {
+      "oneOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "object"
+       }
+      ]
+     },
+     "type": "array"
+    },
+    "context_packet": {
+     "type": "object"
+    },
+    "mode": {
+     "default": "openclaw",
+     "type": "string"
+    },
+    "objective": {
+     "type": "string"
+    },
+    "preflight_budget_ms": {
+     "default": 500,
+     "type": "integer"
+    },
+    "provider_candidates": {
+     "items": {
+      "type": "object"
+     },
+     "type": "array"
+    },
+    "requested_role": {
+     "default": "primary_patch_provider",
+     "type": "string"
+    },
+    "required_tools": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    },
+    "scout_budget_ms": {
+     "default": 300,
+     "type": "integer"
+    },
+    "use_ollama": {
+     "default": true,
+     "type": "boolean"
+    },
+    "workflow": {
+     "type": "object"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "objective"
+   ],
+   "type": "object"
+  },
+  "name": "beast_openclaw_plan"
+ },
+ {
+  "description": "Execute allowed Openclaw/Nemoclaw workflow actions through the governed MCP broker; dry-run by default.",
+  "inputSchema": {
+   "properties": {
+    "approved": {
+     "default": false,
+     "type": "boolean"
+    },
+    "candidate_tools": {
+     "items": {
+      "oneOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "object"
+       }
+      ]
+     },
+     "type": "array"
+    },
+    "context_packet": {
+     "type": "object"
+    },
+    "dry_run": {
+     "default": true,
+     "type": "boolean"
+    },
+    "mode": {
+     "default": "openclaw",
+     "type": "string"
+    },
+    "objective": {
+     "type": "string"
+    },
+    "preflight_budget_ms": {
+     "default": 500,
+     "type": "integer"
+    },
+    "provider_candidates": {
+     "items": {
+      "type": "object"
+     },
+     "type": "array"
+    },
+    "requested_role": {
+     "default": "primary_patch_provider",
+     "type": "string"
+    },
+    "required_tools": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    },
+    "scout_budget_ms": {
+     "default": 300,
+     "type": "integer"
+    },
+    "use_ollama": {
+     "default": true,
+     "type": "boolean"
+    },
+    "workflow": {
+     "type": "object"
+    },
+    "workspace_root": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "objective"
+   ],
+   "type": "object"
+  },
+  "name": "beast_openclaw_execute"
+ },
+ {
+  "description": "Inspect Crystal Compute negative capabilities and Phase 2 shadow friction profiles.",
+  "inputSchema": {
+   "properties": {
+    "include_expired": {
+     "default": false,
+     "type": "boolean"
+    }
+   },
+   "type": "object"
+  },
+  "name": "beast_crystal_compute"
+ },
+ {
+  "description": "Return MCP server health, tool catalog, broker audit counters, and local inference readiness.",
+  "inputSchema": {
+   "properties": {},
+   "type": "object"
+  },
+  "name": "beast_mcp_status"
+ },
+ {
+  "description": "Return BEAST MCP tools with schema, risk, audit, and execution metadata.",
+  "inputSchema": {
+   "properties": {},
+   "type": "object"
+  },
+  "name": "beast_mcp_tool_catalog"
+ },
+ {
+  "description": "Run the deterministic public benchmark grading daemon against a benchmark packet directory, producing provisional and structural verdicts.",
+  "inputSchema": {
+   "properties": {
+    "interval_seconds": {
+     "default": 60.0,
+     "type": "number"
+    },
+    "loop": {
+     "default": false,
+     "type": "boolean"
+    },
+    "max_cycles": {
+     "default": 1,
+     "type": "integer"
+    },
+    "packet_dir": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "packet_dir"
+   ],
+   "type": "object"
+  },
+  "name": "beast_public_benchmark_grading_daemon"
+ }
+]

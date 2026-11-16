@@ -16,10 +16,7 @@
     setTimeout(()=>img.remove(),900);
   }
   function matrix(){
-    // The release visual runtime is the sole owner of the matrix canvases.
-    // Starting the legacy animator here caused two RAF loops to paint the
-    // same canvas and produced the ghost-data flicker.
-    window.BeastAtmosphere?.stop?.();
+    if (window.BeastAtmosphere?.start) { window.BeastAtmosphere.start(); return; }
   }
   function logoFlicker(){
     const el=document.querySelector('.beast-ascii');

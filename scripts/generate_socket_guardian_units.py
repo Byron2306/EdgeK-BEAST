@@ -5,22 +5,78 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 import sys
-import yaml
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
+from app.kernel.networking.fabric_topology import FabricTopology, TopologyDriftError  # noqa: E402
 from app.kernel.networking.service_registry import ServiceRegistry
 
 
-def generate(registry_file: Path, config_file: Path, output_dir: Path, repository: Path) -> list[Path]:
+def _contract(registry_file: Path, lab_manifest: Path | None, compose_base: Path | None,
+              compose_override: Path | None) -> dict:
+    topology = FabricTopology.load(
+        services_path=registry_file,
+        lab_manifest_path=lab_manifest or REPOSITORY_ROOT / ".beast" / "remote-commons-lab" / "manifest.json",
+        compose_base_path=compose_base or REPOSITORY_ROOT / "docker-compose.commons-lab.yml",
+        compose_override_path=compose_override,
+    )
+    try:
+        return topology.guardian_bindings()
+    except TopologyDriftError as exc:
+        raise RuntimeError(f"refusing to generate Guardian units on topology drift: {exc.findings}") from exc
+
+
+def _install_instructions(output_dir: Path, socket_names: list[str], consumers: list[str], config_file: Path,
+                          contract: dict, registry_file: Path) -> str:
+    ports = ", ".join(f"{name}={item['port']}" for name, item in sorted(contract["services"].items()))
+    port_list = [str(item["port"]) for _, item in sorted(contract["services"].items())]
+    beast_port = str(contract["services"].get("beast", {}).get("port") or port_list[0])
+    units = " ".join(socket_names)
+    return (
+        "# Socket Guardian user units — operator install steps (generated, NOT installed)\n\n"
+        f"Topology digest: `{contract['topology_digest']}`  Contract ports: {ports}\n\n"
+        f"Enabling a `.socket` unit makes systemd own its port ({', '.join(port_list)}). If a port is the operator's\n"
+        "running 8101 gateway, stop that process first; otherwise use the lab registry (spare port 8131).\n\n"
+        "1. Provision host roots (D3.1; writes ~/.config/beast and ~/.local/state/beast, keys mode 0600):\n"
+        f"   `.venv/bin/python scripts/provision_guardian_validation.py --plan --registry {registry_file}` then\n"
+        f"   `.venv/bin/python scripts/provision_guardian_validation.py --registry {registry_file} "
+        "--sovereign-proof /home/byron/Metatron/live_horror_class_proof_qwen15m/00_manifest.json`\n"
+        "   (ARDA authorizer = Metatron `backend.services.arda_authorization_service` from /usr/lib/arda/src/arda_os,\n"
+        "   run in `seraph-backend:latest`; `--arda-build-context /home/byron/Metatron` rebuilds the July image)\n"
+        "2. Start the ARDA authorizer (127.0.0.1:18401):\n"
+        "   `docker compose -f ~/.config/beast/arda-guardian-compose.yaml up -d` then fail-closed smoke (expect 403):\n"
+        "   `curl -sS -X POST -H 'content-type: application/json' -d '{}' "
+        "http://127.0.0.1:18401/authorize/socket-guardian`\n"
+        "3. Install the units:\n"
+        f"   `mkdir -p ~/.config/systemd/user && cp {output_dir}/*.socket {output_dir}/*.service "
+        "~/.config/systemd/user/`\n"
+        "   `systemctl --user daemon-reload`\n"
+        f"   `systemd-analyze --user verify ~/.config/systemd/user/beast-socket-guardian.service`\n"
+        "4. Enable and start (sockets first, then the Guardian, then consumers):\n"
+        f"   `systemctl --user enable --now {units}`\n"
+        "   `systemctl --user enable --now beast-socket-guardian.service`\n"
+        + "".join(f"   `systemctl --user enable --now {name}`\n" for name in consumers)
+        + "5. Verify:\n"
+        "   `systemctl --user status beast-socket-guardian.service`\n"
+        "   `journalctl --user -u beast-socket-guardian.service -n 50`\n"
+        f"   `ss -ltnp | grep -E ':({'|'.join(port_list)})\\b'`\n"
+        f"   `curl -fsS http://127.0.0.1:{beast_port}/health`\n"
+        f"   `.venv/bin/python scripts/check_fabric_topology.py --services {registry_file}`\n"
+        "   `cat ~/.local/state/beast/beast-handoff.json | python3 -m json.tool | head`\n"
+        f"\nGuardian config: `{config_file}`\n"
+        "Rollback: `systemctl --user disable --now beast-*-guardian-consumer.service beast-socket-guardian.service "
+        f"{units}` and remove the copied unit files.\n"
+    )
+
+
+def generate(registry_file: Path, config_file: Path, output_dir: Path, repository: Path, *,
+             lab_manifest: Path | None = None, compose_base: Path | None = None,
+             compose_override: Path | None = None) -> list[Path]:
     registry = ServiceRegistry.from_file(registry_file)
-    raw_services = (yaml.safe_load(registry_file.read_text(encoding="utf-8")) or {}).get("services") or {}
-    guardian_services = {
-        name for name, item in raw_services.items()
-        if name in registry.services and isinstance(item, dict) and item.get("socket_guardian") is True
-    }
+    contract = _contract(registry_file, lab_manifest, compose_base, compose_override)
+    guardian_services = set(contract["services"])
     if not guardian_services:
         raise ValueError("at least one service must explicitly opt into socket_guardian ownership")
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -28,7 +84,9 @@ def generate(registry_file: Path, config_file: Path, output_dir: Path, repositor
     # deployment appraisal is produced with the project interpreter, so the
     # generated user units must use that exact venv rather than an arbitrary
     # system Python (which would correctly be rejected by ARDA).
-    interpreter = repository / "venv" / "bin" / "python"
+    interpreter = repository / ".venv" / "bin" / "python"
+    if not interpreter.is_file():
+        interpreter = repository / "venv" / "bin" / "python"
     if not interpreter.is_file():
         interpreter = Path(sys.executable).resolve()
     socket_names = [
@@ -71,9 +129,10 @@ def generate(registry_file: Path, config_file: Path, output_dir: Path, repositor
         path = output_dir / f"beast-socket-guardian-{name}.socket"
         path.write_text(
             "[Unit]\n"
-            f"Description=BEAST externally retained listener for {name}\n\n"
+            f"Description=BEAST externally retained listener for {name}\n"
+            f"X-Beast-Topology-Digest={contract['topology_digest']}\n\n"
             "[Socket]\n"
-            f"ListenStream={item.upstream}\n"
+            f"ListenStream={contract['services'][name]['upstream']}\n"
             f"FileDescriptorName={name}\n"
             "Service=beast-socket-guardian.service\n"
             "NoDelay=true\n"
@@ -87,7 +146,7 @@ def generate(registry_file: Path, config_file: Path, output_dir: Path, repositor
         ("beast", "gateway --socket-mode guardian --guardian-service beast"),
         ("commons", "commons-gateway --socket-mode guardian"),
     ):
-        if service_id not in registry.services or not registry.services[service_id].enabled:
+        if service_id not in guardian_services or not registry.services[service_id].enabled:
             continue
         consumer = output_dir / f"beast-{service_id}-guardian-consumer.service"
         consumer.write_text(
@@ -103,6 +162,7 @@ def generate(registry_file: Path, config_file: Path, output_dir: Path, repositor
             "Environment=BEAST_COMMONS_ROOT=%S/beast/commons-spaces\n"
             "EnvironmentFile=-%h/.config/beast/socket-consumer.env\n"
             "Environment=BEAST_GUARDIAN_CONTROL_SOCKET=%t/beast/socket-guardian.sock\n"
+            f"Environment=BEAST_GUARDIAN_SERVICE_REGISTRY={registry_file}\n"
             "Environment=BEAST_GUARDIAN_RECEIPT_PUBLIC_KEY=%h/.config/beast/guardian-receipt-ed25519.pub.pem\n"
             "Environment=BEAST_GUARDIAN_AUTHORITY_PUBLIC_KEY=%h/.config/beast/arda-operation-ed25519.pub.pem\n"
             "LoadCredential=guardian_authorization_token:%h/.config/beast/guardian-authorization.token\n"
@@ -129,6 +189,11 @@ def generate(registry_file: Path, config_file: Path, output_dir: Path, repositor
             encoding="utf-8",
         )
         outputs.append(consumer)
+    install = output_dir / "INSTALL.md"
+    install.write_text(_install_instructions(
+        output_dir, socket_names, [p.name for p in outputs if p.name.endswith("-guardian-consumer.service")],
+        config_file, contract, registry_file), encoding="utf-8")
+    outputs.append(install)
     manifest = output_dir / "MANIFEST.txt"
     manifest.write_text(
         "Generated Socket Guardian user units.\n"
@@ -147,6 +212,9 @@ def main() -> int:
     parser.add_argument("--registry", default=".byron/services.yaml")
     parser.add_argument("--config", default=".byron/socket-guardian.yaml")
     parser.add_argument("--output", default=".beast/generated/systemd-user")
+    parser.add_argument("--lab-manifest", default="")
+    parser.add_argument("--compose-base", default="")
+    parser.add_argument("--compose-override", default="")
     args = parser.parse_args()
     root = REPOSITORY_ROOT
     for path in generate(
@@ -154,6 +222,9 @@ def main() -> int:
         (root / args.config).resolve(),
         (root / args.output).resolve(),
         root,
+        lab_manifest=Path(args.lab_manifest).expanduser() if args.lab_manifest else None,
+        compose_base=Path(args.compose_base).expanduser() if args.compose_base else None,
+        compose_override=Path(args.compose_override).expanduser() if args.compose_override else None,
     ):
         print(path)
     return 0

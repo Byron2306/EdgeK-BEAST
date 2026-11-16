@@ -6,6 +6,14 @@ adjudicator will not accept for truth credit.  Use ``--live`` to call Gemini and
 produce provenance-bearing ``gemini_native_vision`` rows.
 """
 from __future__ import annotations
+try:  # closure-2026-11-16: governed egress shim
+    from app.kernel.compute import governed_egress as _egress
+except ModuleNotFoundError:  # run as a script: repo root not on sys.path yet
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
+    from app.kernel.compute import governed_egress as _egress
 
 import argparse
 import base64
@@ -197,7 +205,7 @@ def _call_gemini_vision(image_path: Path, *, prompt: str, model: str, timeout_se
         "generationConfig": {"responseMimeType": "application/json"},
     }
     with httpx.Client(timeout=timeout_seconds) as client:
-        response = client.post(
+        response = _egress.post(client, "run_c4x_gemini_document_vision_sidecar", 
             base_url.rstrip("/") + "/v1beta/" + model_path + ":generateContent",
             headers={"x-goog-api-key": api_key, "Content-Type": "application/json"},
             json=payload,

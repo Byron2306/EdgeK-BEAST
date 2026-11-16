@@ -6,6 +6,7 @@ execution a default runtime dependency.
 """
 
 from __future__ import annotations
+from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 
 import hashlib
 import os
@@ -155,7 +156,7 @@ class NvidiaNIMLiveProbe:
     def _complete(self, cfg: NIMProbeConfig, api_key: str, model: str, prompt: str, system_prompt: str) -> Dict[str, Any]:
         started = time.perf_counter()
         try:
-            response = self.client.post(
+            response = _egress.post(self.client, "nim_live_probe", 
                 cfg.base_url + "/chat/completions",
                 headers=self._headers(api_key),
                 json={

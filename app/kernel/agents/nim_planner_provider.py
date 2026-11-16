@@ -1,6 +1,7 @@
 """OpenAI-compatible NVIDIA NIM planner for the canonical AgentRun loop."""
 
 from __future__ import annotations
+from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 
 import asyncio
 import json
@@ -31,7 +32,7 @@ class NIMPlannerProvider:
             "execution_target": {"type": "string"},
             "approval_id": {"type": "string"},
         },
-        "required": ["decision_type", "arguments"],
+        "required": ["decision_type", "arguments", "tool_id"],
         "additionalProperties": False,
     }
 
@@ -111,16 +112,20 @@ class NIMPlannerProvider:
         payload = {
             "model": self.model,
             "messages": [
-                {"role": "system", "content": "You are BEAST's bounded action controller. Follow the user JSON contract exactly."},
+                {"role": "system", "content": "You are BEAST's bounded action controller. Return one JSON decision. For decision_type tool, tool_id is REQUIRED and must name an allowed tool. For complete or blocked, set tool_id to an empty string. Follow the user argument schemas exactly."},
                 {"role": "user", "content": prompt + repair},
             ],
             "temperature": 0,
             "seed": 731947 + int(turn),
-            "max_tokens": int(os.environ.get("BEAST_NIM_MAX_TOKENS", "128")),
+            "max_tokens": int(os.environ.get("BEAST_NIM_MAX_TOKENS", "2048")),
             "stream": os.environ.get("BEAST_NIM_PLANNER_STREAM", "0").strip().lower() in {"1", "true", "yes"},
         }
         if self._structured_output_enabled():
             payload["structured_outputs"] = {"json": self.ACTION_SCHEMA}
+        if self.model.startswith("nvidia/nemotron-3.5-"):
+            # These models otherwise spend the bounded controller budget on
+            # hidden reasoning before emitting the executable JSON action.
+            payload["chat_template_kwargs"] = {"enable_thinking": False}
         # Keep the older nvext path available for compatibility with NIM
         # deployments that still expect guided_json passthrough.
         if os.environ.get("BEAST_NIM_GUIDED_JSON", "0").strip().lower() in {"1", "true", "yes"}:
@@ -128,17 +133,51 @@ class NIMPlannerProvider:
         return payload
 
     @staticmethod
+    def _unwrap_argument_groups(raw: str) -> str:
+        """Normalize a structured-output wrapper without changing authority.
+
+        Some NIM models mirror the prompt's required/optional labels inside
+        ``arguments``. The tool registry still validates the flattened keys,
+        types, inspected path and approval before anything can execute.
+        """
+        try:
+            payload = json.loads(str(raw or ""))
+        except (TypeError, ValueError):
+            return raw
+        if not isinstance(payload, dict) or not isinstance(payload.get("arguments"), dict):
+            return raw
+        arguments = payload["arguments"]
+        if not set(arguments).issubset({"required", "optional"}):
+            return raw
+        required = arguments.get("required")
+        optional = arguments.get("optional")
+        if not isinstance(required, dict) or (optional is not None and not isinstance(optional, dict)):
+            return raw
+        payload["arguments"] = {**required, **(optional or {})}
+        return json.dumps(payload, separators=(",", ":"))
+
+    @staticmethod
     async def _call_request(request_method: Any, payload: dict[str, Any]) -> dict[str, Any]:
         loop = asyncio.get_running_loop()
         future: asyncio.Future[dict[str, Any]] = loop.create_future()
+
+        def deliver(result: Any = None, error: Exception | None = None) -> None:
+            if future.done():
+                return
+            if error is not None:
+                future.set_exception(error)
+            else:
+                future.set_result(result)
 
         def runner() -> None:
             try:
                 result = request_method(payload)
             except Exception as exc:
-                loop.call_soon_threadsafe(future.set_exception, exc)
+                if not loop.is_closed():
+                    loop.call_soon_threadsafe(deliver, None, exc)
                 return
-            loop.call_soon_threadsafe(future.set_result, result)
+            if not loop.is_closed():
+                loop.call_soon_threadsafe(deliver, result)
 
         thread = threading.Thread(target=runner, name="nim-planner-request", daemon=True)
         thread.start()
@@ -192,7 +231,7 @@ class NIMPlannerProvider:
                     await asyncio.sleep(0.2 * (attempt + 1))
                     continue
                 raise RuntimeError(f"NIM planner request failed: {error}")
-            raw = str(body.get("content") or "")
+            raw = self._unwrap_argument_groups(str(body.get("content") or ""))
             mode = str(run.get("mode") or "").strip().lower()
             if mode in {"chat", "analysis", "ask"} and raw.strip():
                 try:
@@ -229,7 +268,7 @@ class NIMPlannerProvider:
                 last_error = str(exc)
                 if self.route_dampener is not None:
                     self.last_usage["route"] = self._route_event("schema")
-                repair = "\nREPAIR: Your previous response was not a JSON action. Output one object matching the guided schema now."
+                repair = f"\nREPAIR: The previous action was rejected: {str(exc)[:250]}. Return one JSON object; a tool decision MUST include tool_id naming the allowed tool and its arguments."
                 if attempt < self.max_retries:
                     await asyncio.sleep(0.2)
         raise PlannerDecisionError(f"NIM failed to produce a valid planner decision: {last_error}")
@@ -248,7 +287,7 @@ class NIMPlannerProvider:
         content: list[str] = []
         usage: dict[str, Any] = {}
         finish_reason = ""
-        with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
+        with _egress.urlopen("nim_planner_provider", request, timeout=self.timeout_seconds) as response:
             for raw_line in response:
                 line = raw_line.decode("utf-8", errors="replace").strip()
                 if not line or not line.startswith("data:"):
@@ -287,7 +326,7 @@ class NIMPlannerProvider:
             },
             method="POST",
         )
-        with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
+        with _egress.urlopen("nim_planner_provider", request, timeout=self.timeout_seconds) as response:
             body = json.loads(response.read().decode("utf-8", errors="replace"))
         choices = body.get("choices") if isinstance(body.get("choices"), list) else []
         choice = choices[0] if choices and isinstance(choices[0], dict) else {}

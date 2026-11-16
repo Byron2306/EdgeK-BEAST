@@ -1,0 +1,11 @@
+# Guardian lab profile (Phase 3 Task 3): BEAST gateway on spare port 8131 so the operator's 8101 is untouched.
+# Use with scripts/provision_guardian_validation.py --registry and scripts/generate_socket_guardian_units.py --registry.
+version: 1
+services:
+  beast:
+    hostname: beast-lab.test
+    upstream: 127.0.0.1:8131
+    port: 8131
+    health_path: /health
+    trust_domain: operator
+    socket_guardian: true

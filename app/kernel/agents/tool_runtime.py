@@ -20,6 +20,7 @@ from app.kernel.agents.tool_models import (
     ToolRequest,
     ToolRisk,
     ToolSpec,
+    is_read_only_run,
 )
 from app.kernel.agents.tool_registry import AgentToolRegistry
 
@@ -748,6 +749,44 @@ def build_default_tool_registry() -> AgentToolRegistry:
     return registry
 
 
+
+# H12: the executor, not the model, resolves approval authority.
+def h12_approval_authorizes(approval, tool_id, arguments, execution_target="local", execution_target_payload=None):
+    if not isinstance(approval, dict) or approval.get("status") != "approved":
+        return False
+    req = approval.get("request") if isinstance(approval.get("request"), dict) else {}
+    capabilities = req.get("capabilities") if isinstance(req.get("capabilities"), list) else []
+    ids = {str(c.get("id") or "") for c in capabilities if isinstance(c, dict)}
+    named = str(req.get("tool_id") or "")
+    explicit = named == tool_id or tool_id in ids
+    broad = ("worktree_mutation" in ids and tool_id in {"worktree.bind", "worktree.write_file", "worktree.replace_exact", "worktree.verify"}) or ("run_isolated_verifier" in ids and tool_id == "worktree.verify")
+    if not (explicit or broad): return False
+    target = req.get("execution_target")
+    if target and str(target) != str(execution_target): return False
+    if str(execution_target) != "local":
+        # A kind-only approval for "ssh" is not authority over every SSH host.
+        # Old unbound approvals fail closed for remote execution.
+        bound = req.get("execution_target_payload")
+        if not isinstance(bound, dict) or bound != execution_target_payload:
+            return False
+    limits = req.get("safe_arguments")
+    if limits is not None:
+        if not isinstance(limits, dict): return False
+        # A single-tool approval binds all submitted arguments; broad capabilities
+        # may declare partial restrictions, but never loosen a declared field.
+        for k, value in limits.items():
+            if arguments.get(k) != value: return False
+        if named == tool_id and arguments != limits: return False
+    declared_paths = req.get("affected_files")
+    if declared_paths is None: declared_paths = req.get("paths")
+    cap_paths = [c.get("paths") for c in capabilities if isinstance(c, dict) and c.get("id") in (tool_id,"worktree_mutation") and "paths" in c]
+    # An empty paths list in legacy bind approvals is not a restriction.
+    restrictions = [v for v in [declared_paths, *cap_paths] if isinstance(v, list) and v]
+    actual = [str(arguments[k]) for k in ("path","target_path") if arguments.get(k)]
+    for allowed in restrictions:
+        if actual and not set(actual).issubset({str(p) for p in allowed}): return False
+    return True
+
 class AgentToolRuntime:
     def __init__(self, engine: Any, registry: AgentToolRegistry | None = None) -> None:
         self.engine = engine
@@ -759,21 +798,35 @@ class AgentToolRuntime:
             raise KeyError(f"unknown agent run: {run_id}")
         self.engine.raise_if_cancelled(run_id)
         spec = self.registry.get(request.tool_id)
+        if is_read_only_run(run) and (spec.effect != ToolEffect.READ or spec.requires_worktree):
+            raise PermissionError(f"REFUSE_READ_ONLY_TOOL:{spec.tool_id}")
         arguments = self.registry.validate_arguments(spec, request.arguments)
         target = str(request.execution_target or "local")
         target_payload = request.execution_target_payload if isinstance(request.execution_target_payload, dict) else {}
         if target not in spec.targets:
             raise PermissionError(f"tool {spec.tool_id} does not support target {target}")
+        run_request = run.get("request") if isinstance(run.get("request"), dict) else {}
+        run_target = str(run_request.get("execution_target") or "local")
+        run_payload = run_request.get("execution_target_payload") if isinstance(run_request.get("execution_target_payload"), dict) else {}
+        if target != run_target:
+            raise PermissionError("execution target differs from the immutable AgentRun destination")
+        if target != "local" and (not run_payload or target_payload != run_payload):
+            raise PermissionError("execution destination identity differs from the immutable AgentRun destination")
         if spec.effect == ToolEffect.PROMOTION:
             raise PermissionError("promotion tools are never agent-executable")
         if spec.requires_approval:
             approval = self.engine.store.get_approval(run_id, request.approval_id) if request.approval_id else None
-            if not approval or approval.get("status") != "approved":
+            if not h12_approval_authorizes(approval, spec.tool_id, arguments, target, target_payload):
                 raise PermissionError(f"tool {spec.tool_id} requires an approved capability")
         checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
         worktree_root = str(checkpoint.get("worktree_root") or "")
         if spec.requires_worktree and not worktree_root:
             raise PermissionError(f"tool {spec.tool_id} requires an isolated worktree")
+        if spec.requires_worktree and target != "local":
+            if (checkpoint.get("worktree_execution_target") != target or
+                checkpoint.get("worktree_execution_target_payload") != target_payload or
+                not checkpoint.get("worktree_remote")):
+                raise PermissionError("remote worktree custody is not bound to this destination")
         context = ToolExecutionContext(
             run_id=run_id,
             workspace_root=str(run.get("root_path") or self.engine.workspace_root),

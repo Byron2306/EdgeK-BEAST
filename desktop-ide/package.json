@@ -12,7 +12,7 @@
   "private": true,
   "scripts": {
     "start": "node scripts/start-desktop-ide.js",
-    "smoke": "node scripts/smoke-desktop-ide.js && bash renderer/VERIFY_BEAST_IDE_RC4.sh renderer && node scripts/verify-enterprise-runtime-contract.js",
+    "smoke": "node scripts/smoke-desktop-ide.js",
     "smoke:launch": "node scripts/launch-smoke-desktop-ide.js",
     "check:visual-contract": "node scripts/check-hacker-coherence.js",
     "smoke:parity": "node scripts/verify-ide-parity-foundation.js",

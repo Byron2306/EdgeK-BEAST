@@ -106,9 +106,25 @@ def verify_crystal_seal(payload: Dict[str, Any], seal: Dict[str, Any]) -> Dict[s
     }
 
 
+def _import_oqs() -> Any:
+    """Import liboqs-python with its import-time stdout logger bound to stderr.
+
+    ``oqs`` attaches ``logging.StreamHandler(sys.stdout)`` and logs a faulthandler notice on first import; that line
+    would corrupt machine-readable CLI stdout (JSON). Redirecting stdout during the import binds the handler to stderr.
+    """
+    import contextlib
+    import sys
+
+    if "oqs" in sys.modules:
+        return sys.modules["oqs"]
+    with contextlib.redirect_stdout(sys.stderr):
+        import oqs  # type: ignore
+    return oqs
+
+
 def _try_oqs_seal(body: bytes, *, signature_alg: str, kem_alg: str) -> Dict[str, Any]:
     try:
-        import oqs  # type: ignore
+        oqs = _import_oqs()
     except Exception:
         return {}
     try:
@@ -144,7 +160,7 @@ def _try_oqs_verify(body: bytes, seal: Dict[str, Any]) -> bool:
     profile = seal.get("crypto_profile") if isinstance(seal.get("crypto_profile"), dict) else {}
     alg = str(profile.get("signature") or "")
     try:
-        import oqs  # type: ignore
+        oqs = _import_oqs()
 
         signature = str(seal.get("signature") or "")
         if not signature.startswith("ml-dsa:"):

@@ -1,4 +1,7 @@
-print("DEBUG: factory.py imported")
+import logging
+
+_log = logging.getLogger(__name__)
+_log.debug("factory.py imported")
 from app.kernel.compute.container import container
 from pathlib import Path
 
@@ -8,10 +11,10 @@ class ServiceFactory:
     @staticmethod
     def initialize():
         if ServiceFactory._initialized:
-            print("ServiceFactory: Already initialized.")
+            _log.info("ServiceFactory: Already initialized.")
             return
 
-        print("ServiceFactory: Initializing...")
+        _log.info("ServiceFactory: Initializing...")
         from app.kernel.governance.reason import reasoner
         from app.kernel.execution.crystallize import crystallizer
         from app.kernel.governance.runtime import runtime_governor
@@ -25,7 +28,7 @@ class ServiceFactory:
         data_dir = Path(__file__).resolve().parents[2] / "data"
         observation_store = ObservationStore(data_dir)
         container.register("observation_store", observation_store)
-        print("ServiceFactory: Registered observation_store.")
+        _log.info("ServiceFactory: Registered observation_store.")
 
         # Core services
         container.register("reasoner", reasoner)
@@ -41,4 +44,4 @@ class ServiceFactory:
         container.register("prec_orchestrator", prec_orchestrator)
         
         ServiceFactory._initialized = True
-        print("ServiceFactory: Initialization complete.")
+        _log.info("ServiceFactory: Initialization complete.")

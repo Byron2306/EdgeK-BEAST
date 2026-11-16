@@ -7,6 +7,7 @@ grant execution authority.
 """
 
 from __future__ import annotations
+from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 
 import json
 import os
@@ -255,7 +256,7 @@ class AdapterComparisonGauntlet:
         try:
             with self._ollama_slots:
                 request = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"}, method="POST")
-                with urllib.request.urlopen(request, timeout=90) as response:
+                with _egress.urlopen("adapter_comparison", request, timeout=90) as response:
                     body = json.loads(response.read().decode("utf-8", errors="replace"))
             output = str(body.get("response") or "") if isinstance(body, dict) else ""
             return output, int((body or {}).get("eval_count") or _rough_token_count(output)), "measured"

@@ -1,6 +1,7 @@
 """Final-boss crystallization gauntlet for multi-file coding migration."""
 
 from __future__ import annotations
+from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 
 import hashlib
 import json
@@ -126,7 +127,7 @@ class FinalBossTeacher:
             f"Current client.py:\n{(repo_root / 'gateway/client.py').read_text(encoding='utf-8')}\n"
         )
         started = time.perf_counter()
-        response = self.client.post(
+        response = _egress.post(self.client, "final_boss_crystallization_gauntlet", 
             self.ollama_host + "/api/generate",
             json={
                 "model": self.ollama_model,
@@ -190,7 +191,7 @@ class GoogleGeminiFinalBossTeacher(FinalBossTeacher):
             f"Current client.py:\n{(repo_root / 'gateway/client.py').read_text(encoding='utf-8')}\n"
         )
         started = time.perf_counter()
-        response = self.client.post(
+        response = _egress.post(self.client, "final_boss_crystallization_gauntlet", 
             f"{self.base_url}/v1beta/models/{self.model}:generateContent",
             headers={"Content-Type": "application/json", "x-goog-api-key": api_key},
             json={

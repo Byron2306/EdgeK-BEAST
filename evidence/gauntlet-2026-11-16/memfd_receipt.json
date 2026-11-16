@@ -1,0 +1,252 @@
+{
+  "beast_object_type": "crystal_memfd_replay_receipt",
+  "capsule": {
+    "bytes_total": 3699,
+    "header_bytes": 444,
+    "manifest_digest": "sha256:59521100b9059472062e16c8365212fe57a7852ca00c94357a407da965d3c68b",
+    "payload_bytes": 3255,
+    "payload_sha256": "sha256:9409f38e7e3963b970ad50c13c860a9e9dd16acfb53d81710efa5fc056e33e08",
+    "payload_sha256_child": "sha256:9409f38e7e3963b970ad50c13c860a9e9dd16acfb53d81710efa5fc056e33e08",
+    "seals_readback_child": [
+      "F_SEAL_SEAL",
+      "F_SEAL_SHRINK",
+      "F_SEAL_GROW",
+      "F_SEAL_WRITE"
+    ],
+    "seals_readback_parent": [
+      "F_SEAL_SEAL",
+      "F_SEAL_SHRINK",
+      "F_SEAL_GROW",
+      "F_SEAL_WRITE"
+    ],
+    "seals_value": 15,
+    "write_after_seal": {
+      "errno": 1,
+      "error": "EPERM",
+      "refused": true
+    }
+  },
+  "computation_saved": {
+    "cold_models": [
+      "nvidia/nemotron-3.5-lightning-30b-a3b"
+    ],
+    "model_calls_avoided": 1,
+    "tokens_avoided": 801,
+    "tokens_completion_avoided": 460,
+    "tokens_prompt_avoided": 341,
+    "wall_ms_saved": 3660.342
+  },
+  "copies": {
+    "memfd": {
+      "bytes_copied_into_memfd": 3699,
+      "child_bytes_read_via_read_syscalls": 0,
+      "child_mmaps_read_only": 1,
+      "child_userland_parse_copy_bytes": 3255,
+      "end_to_end_ms": 439.743,
+      "fd_pass_socket_bytes": 202,
+      "fd_passes_scm_rights": 1,
+      "payload_bytes_through_socket": 0,
+      "transport_copy_bytes": 3699,
+      "write_calls_into_memfd": 2
+    },
+    "pipe_baseline": {
+      "bytes_read_from_pipe": 3699,
+      "bytes_written_to_pipe": 3699,
+      "end_to_end_ms": 63.875,
+      "sha256_child": "sha256:e21005e290b1fe4c47605317a319c9c2a2f1fda00acfa5ac8051860207e867c6",
+      "transport_copies_bytes": 7398
+    },
+    "transport_copy_bytes_saved": 3699
+  },
+  "crystal_digest": "sha256:4720e3bdaa55dd552f88cdad6d3edd3b5ca78273d7399b69d5adc64df81125e3",
+  "crystal_id": "coding-crystal:4720e3bdaa55dd552f88cdad",
+  "governor": {
+    "admit_token_echoed_by_child": true,
+    "one_use": true,
+    "outcome": "admit",
+    "receipt_hash": "sha256:62895ec9c8766628a18609ffc091b6c709f7e595b47401f8c685c6c4b67bb279",
+    "receipt_id": "gov_eb83d71944248479974fac5e"
+  },
+  "no_model_calls_proof": {
+    "child_net_dev_after": {
+      "lo": {
+        "rx_bytes": 0,
+        "rx_packets": 0,
+        "tx_bytes": 0,
+        "tx_packets": 0
+      }
+    },
+    "child_network_counters": {
+      "connects": 0,
+      "dns_lookups": 0,
+      "http_sends": 0,
+      "inet_sockets": 0
+    },
+    "model_calls": 0,
+    "parent_model_calls_during_replay": 0
+  },
+  "pgec_eq6": {
+    "c_avoided": 1.938489,
+    "c_lookup_plus_verify": 0.501385,
+    "c_maintenance": 0.05,
+    "c_risk": 0.0,
+    "credit": 1.387103,
+    "formula": "PGEC v1.0 eq.(6): V_K = C_avoided - (C_lookup + C_verify + C_risk + C_maintenance)",
+    "tokens_counted": true,
+    "v_k": 1.387103,
+    "weights": {
+      "model_turn": 1.0,
+      "observed_ktokens": 0.5,
+      "tool_call": 0.1,
+      "wall_second": 0.01
+    }
+  },
+  "postcondition": {
+    "child": {
+      "checks": {
+        "returncode": true,
+        "target_sha256_after": true,
+        "tests_run": true
+      },
+      "passed": true,
+      "returncode": 0,
+      "target_sha256": "sha256:f538f060abe20d3e769ea89bbf5af7d88bb70858cac040441e806a3561f43162",
+      "tests_run": 2,
+      "verify_ms": 42.842
+    },
+    "expected": {
+      "expect_returncode": 0,
+      "implementation_target": "billing/config.py",
+      "target_sha256_after": "sha256:f538f060abe20d3e769ea89bbf5af7d88bb70858cac040441e806a3561f43162",
+      "tests_run": 2,
+      "verify_command": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "test_billing_contract"
+      ]
+    },
+    "parent_independent": {
+      "checks": {
+        "returncode": true,
+        "target_sha256_after": true,
+        "tests_run": true
+      },
+      "passed": true,
+      "returncode": 0,
+      "target_sha256": "sha256:f538f060abe20d3e769ea89bbf5af7d88bb70858cac040441e806a3561f43162",
+      "tests_run": 2,
+      "verify_ms": 44.575
+    }
+  },
+  "promotion": {
+    "approved_by": "Byron",
+    "crystal_digest": "sha256:4720e3bdaa55dd552f88cdad6d3edd3b5ca78273d7399b69d5adc64df81125e3",
+    "crystal_id": "coding-crystal:4720e3bdaa55dd552f88cdad",
+    "heldout_receipt": {
+      "attempts": 3,
+      "candidate_id": "coding-crystal:4720e3bdaa55dd552f88cdad",
+      "episode_envelope_digest": "sha256:2edae81cd934058610abea980902841713743520e5f21f2f8a1fd1ae2e94e0aa",
+      "evidence_root": "sha256:eed87888211250325695bd8632aadbbc4cd2755b25493f234486885860f531a3",
+      "promoted": true,
+      "reason": "held-out replay passed",
+      "reproduction_record_digest": "sha256:194718d8933f76ce3cf46c8b0b9c2de49b10635f62365e5d7fff4639bfde389b",
+      "structured": false,
+      "successes": 3,
+      "variant_ids": [
+        "heldout-scheduler",
+        "heldout-auth",
+        "heldout-cache"
+      ],
+      "variant_results": [
+        true,
+        true,
+        true
+      ],
+      "variant_results_digest": "sha256:de78912c85aa4ed2b66edfaed9142bcdcb223af82fc6f3d12b50b2b3e3910cf8"
+    },
+    "promoted_at": 1794800461.1774747,
+    "record_digest": "sha256:8c7c61aa23f4590379d199f41eb5acf269268318547c0db71765577f4cd23e3d",
+    "source_envelope_digest": "sha256:2edae81cd934058610abea980902841713743520e5f21f2f8a1fd1ae2e94e0aa",
+    "status": "promoted"
+  },
+  "receipt_digest": "sha256:e7e318f7730b827c9ac7d5e8926104c09582498887af75fe35ffcefd87a84b6d",
+  "registry_record_digest": "sha256:2db8a844eba077dd8a2525d7bec1889d4ac3c72d0ee4e91a80dfad1686a3ea07",
+  "replay": {
+    "child_wall_ms": 138.508,
+    "cold_episode_wall_ms": 3798.85,
+    "edit_derived_by_resolve_constant": {
+      "new_text": "INVOICE_RETRY_LIMIT = 5",
+      "old_text": "INVOICE_RETRY_LIMIT = 3"
+    },
+    "hydrate_ms": 0.427,
+    "isolation": "unshare -rn (empty netns)",
+    "ok": true,
+    "parent_hydrate_handoff_replay_ms": 444.3,
+    "process": "separate child pid 1476067",
+    "replay_wall_ms": 94.463,
+    "speedup_vs_cold": 27.43,
+    "steps": [
+      {
+        "expect": null,
+        "ms": 0.076,
+        "opcode": "worktree.inspect",
+        "returncode": null
+      },
+      {
+        "expect": null,
+        "ms": 0.647,
+        "opcode": "worktree.bind",
+        "returncode": null
+      },
+      {
+        "expect": "fail",
+        "ms": 47.359,
+        "opcode": "worktree.verify",
+        "returncode": 1
+      },
+      {
+        "expect": null,
+        "ms": 0.133,
+        "opcode": "repair.resolve_constant",
+        "returncode": null
+      },
+      {
+        "expect": null,
+        "ms": 0.275,
+        "opcode": "worktree.replace_exact",
+        "returncode": null
+      },
+      {
+        "expect": "pass",
+        "ms": 45.932,
+        "opcode": "worktree.verify",
+        "returncode": 0
+      },
+      {
+        "expect": null,
+        "ms": 0.002,
+        "opcode": "crystal.complete",
+        "returncode": null
+      }
+    ],
+    "tool_calls": 5
+  },
+  "route_decision": {
+    "band": "exact",
+    "digest": "sha256:cfef90d197452cca8306b1dd601d7643550d108a8bf1a5118f26d9872791e2c2",
+    "fingerprint_compatible": true,
+    "route": "crystal_replay",
+    "similarity": 1.0
+  },
+  "shadow_credit": {
+    "financial_value": null,
+    "mode": "shadow_ledger_only",
+    "redeemable": false,
+    "settlement": "none",
+    "transferable": false,
+    "unit": "non_financial_commons_credit",
+    "units": 1.387103
+  },
+  "version": "1.0"
+}

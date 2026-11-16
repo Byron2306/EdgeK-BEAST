@@ -1,0 +1,39 @@
+{
+ "model": "qwen2.5-coder:7b",
+ "rows": [
+  {
+   "num_gpu": 10,
+   "num_ctx": 2048,
+   "error": "HTTPError: HTTP Error 500: Internal Server Error"
+  },
+  {
+   "num_gpu": 10,
+   "num_ctx": 1024,
+   "error": "HTTPError: HTTP Error 500: Internal Server Error"
+  },
+  {
+   "num_gpu": 6,
+   "num_ctx": 2048,
+   "timed_out": false,
+   "first_token_s": 49.386,
+   "wall_s": 77.34,
+   "load_s": 28.74,
+   "decode_tok_s": 2.76,
+   "eval_count": 77,
+   "prompt_tok_s": 2.67,
+   "prompt_count": 55,
+   "ollama_size_mib": null,
+   "ollama_size_vram_mib": null,
+   "vram_before_mib": 4164,
+   "vram_during_mib": 5607,
+   "vram_peak_seen_mib": 5607,
+   "ram_avail_before_mib": 4998,
+   "ram_avail_during_mib": 4098,
+   "swap_free_during_mib": 6031
+  }
+ ],
+ "host": {
+  "gpu": "RTX 3050 6GB Laptop",
+  "cpu": "Ryzen 5 150 (12 threads)"
+ }
+}

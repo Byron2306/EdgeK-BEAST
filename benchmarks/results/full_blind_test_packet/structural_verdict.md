@@ -1,6 +1,6 @@
 # Public Economic Thesis Verdict
 
-Generated: `2026-07-31T16:41:14Z`
+Generated: `2026-10-18T20:17:37Z`
 
 - Claim status: `supported`
 - Rationale: Governed lane outperformed the baseline on blinded pass rate with published cost ledgers. This verdict is based on deterministic scoring of patch structure, verification planning, and observed verifier outcomes.

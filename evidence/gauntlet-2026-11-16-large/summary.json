@@ -1,0 +1,861 @@
+{
+  "approved_by": "Byron",
+  "composite": {
+    "authority_A_L": [
+      "workspace.read_range",
+      "worktree.bind",
+      "worktree.replace_exact",
+      "worktree.verify"
+    ],
+    "children": [
+      "family-crystal:f3f8ad2739d13e5733d13336",
+      "family-crystal:5298d8b45bf3e16b7e2fa9df"
+    ],
+    "composite": "family-crystal:a7b5eaea0ee8fae87e9a5923",
+    "promoted": true
+  },
+  "duration_s": 1818.1,
+  "families": [
+    {
+      "cold_by": "provider:nemotron",
+      "cold_calls": 1,
+      "cold_tokens": 643,
+      "cold_wall_ms": 1155.872,
+      "crystal": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+      "equivalence": "byte_identical",
+      "family": "fix-config-constant",
+      "heldout_passed": 3,
+      "promoted": true,
+      "warm": [
+        {
+          "accepted_by": "crystal",
+          "false_accept": false,
+          "model_calls": 0,
+          "passed": true,
+          "role": "warm",
+          "route": "crystal_replay",
+          "similarity": 1.0,
+          "task": "const-w1",
+          "tokens_total": 0,
+          "wall_ms": 506.811
+        },
+        {
+          "accepted_by": "crystal",
+          "false_accept": false,
+          "model_calls": 0,
+          "passed": true,
+          "role": "warm",
+          "route": "crystal_replay",
+          "similarity": 1.0,
+          "task": "const-w2",
+          "tokens_total": 0,
+          "wall_ms": 476.581
+        },
+        {
+          "accepted_by": "specialist:qwen3:4b",
+          "false_accept": false,
+          "model_calls": 1,
+          "passed": true,
+          "role": "near",
+          "route": "local_specialist_adapter",
+          "similarity": 0.85,
+          "task": "const-near",
+          "tokens_total": 573,
+          "wall_ms": 7507.747
+        },
+        {
+          "accepted_by": null,
+          "false_accept": false,
+          "model_calls": 2,
+          "passed": false,
+          "role": "decoy",
+          "route": "crystal_replay",
+          "similarity": 1.0,
+          "task": "const-decoy",
+          "tokens_total": 1462,
+          "wall_ms": 3030.048
+        }
+      ]
+    },
+    {
+      "cold_by": "specialist:qwen3:4b",
+      "cold_calls": 1,
+      "cold_tokens": 614,
+      "cold_wall_ms": 18615.659,
+      "crystal": "family-crystal:2b089f9fd334db975992def8",
+      "equivalence": "byte_identical",
+      "family": "fix-logic-operator",
+      "heldout_passed": 3,
+      "promoted": true,
+      "warm": [
+        {
+          "accepted_by": "crystal",
+          "false_accept": false,
+          "model_calls": 0,
+          "passed": true,
+          "role": "warm",
+          "route": "crystal_replay",
+          "similarity": 1.0,
+          "task": "op-w1",
+          "tokens_total": 0,
+          "wall_ms": 660.62
+        },
+        {
+          "accepted_by": "crystal",
+          "false_accept": false,
+          "model_calls": 0,
+          "passed": true,
+          "role": "warm",
+          "route": "crystal_replay",
+          "similarity": 1.0,
+          "task": "op-w2",
+          "tokens_total": 0,
+          "wall_ms": 588.62
+        },
+        {
+          "accepted_by": "provider:nemotron",
+          "false_accept": false,
+          "model_calls": 3,
+          "passed": true,
+          "role": "near",
+          "route": "local_specialist_adapter",
+          "similarity": 0.85,
+          "task": "op-near",
+          "tokens_total": 2107,
+          "wall_ms": 20290.601
+        }
+      ]
+    },
+    {
+      "cold_by": "specialist:qwen3:4b",
+      "cold_calls": 1,
+      "cold_tokens": 689,
+      "cold_wall_ms": 9318.382,
+      "crystal": "family-crystal:f3f8ad2739d13e5733d13336",
+      "equivalence": "byte_identical",
+      "family": "fix-off-by-one",
+      "heldout_passed": 3,
+      "promoted": true,
+      "warm": [
+        {
+          "accepted_by": "crystal",
+          "false_accept": false,
+          "model_calls": 0,
+          "passed": true,
+          "role": "warm",
+          "route": "crystal_replay",
+          "similarity": 1.0,
+          "task": "obo-w1",
+          "tokens_total": 0,
+          "wall_ms": 694.753
+        },
+        {
+          "accepted_by": "crystal",
+          "false_accept": false,
+          "model_calls": 0,
+          "passed": true,
+          "role": "warm",
+          "route": "crystal_replay",
+          "similarity": 1.0,
+          "task": "obo-w2",
+          "tokens_total": 0,
+          "wall_ms": 605.588
+        },
+        {
+          "accepted_by": "provider:nemotron",
+          "false_accept": false,
+          "model_calls": 3,
+          "passed": true,
+          "role": "near",
+          "route": "local_specialist_adapter",
+          "similarity": 0.85,
+          "task": "obo-near",
+          "tokens_total": 2156,
+          "wall_ms": 16021.572
+        }
+      ]
+    },
+    {
+      "cold_by": "provider:nemotron",
+      "cold_calls": 1,
+      "cold_tokens": 788,
+      "cold_wall_ms": 1767.823,
+      "crystal": "family-crystal:1e0b690bad92323d87963482",
+      "equivalence": "verifier_equivalent",
+      "family": "fix-unhandled-exception",
+      "heldout_passed": 3,
+      "promoted": true,
+      "warm": [
+        {
+          "accepted_by": "crystal",
+          "false_accept": false,
+          "model_calls": 0,
+          "passed": true,
+          "role": "warm",
+          "route": "crystal_replay",
+          "similarity": 1.0,
+          "task": "exc-w1",
+          "tokens_total": 0,
+          "wall_ms": 588.778
+        },
+        {
+          "accepted_by": "crystal",
+          "false_accept": false,
+          "model_calls": 0,
+          "passed": true,
+          "role": "warm",
+          "route": "crystal_replay",
+          "similarity": 1.0,
+          "task": "exc-w2",
+          "tokens_total": 0,
+          "wall_ms": 554.339
+        },
+        {
+          "accepted_by": "provider:nemotron",
+          "false_accept": false,
+          "model_calls": 3,
+          "passed": true,
+          "role": "near",
+          "route": "local_specialist_adapter",
+          "similarity": 0.85,
+          "task": "exc-near",
+          "tokens_total": 2491,
+          "wall_ms": 15798.647
+        }
+      ]
+    },
+    {
+      "cold_by": null,
+      "cold_calls": 2,
+      "cold_tokens": 1729,
+      "cold_wall_ms": 2517.48,
+      "crystal": null,
+      "equivalence": null,
+      "family": "refactor-rename-symbol",
+      "heldout_passed": 0,
+      "promoted": false,
+      "warm": [
+        {
+          "accepted_by": null,
+          "false_accept": false,
+          "model_calls": 2,
+          "passed": false,
+          "role": "warm",
+          "route": "provider_fallback",
+          "similarity": 0.45,
+          "task": "ren-w1",
+          "tokens_total": 1719,
+          "wall_ms": 2581.761
+        },
+        {
+          "accepted_by": null,
+          "false_accept": false,
+          "model_calls": 2,
+          "passed": false,
+          "role": "warm",
+          "route": "provider_fallback",
+          "similarity": 0.45,
+          "task": "ren-w2",
+          "tokens_total": 1717,
+          "wall_ms": 3184.515
+        },
+        {
+          "accepted_by": null,
+          "false_accept": false,
+          "model_calls": 2,
+          "passed": false,
+          "role": "near",
+          "route": "provider_fallback",
+          "similarity": 0.45,
+          "task": "ren-near",
+          "tokens_total": 2300,
+          "wall_ms": 4942.874
+        }
+      ]
+    },
+    {
+      "cold_by": "provider:nemotron",
+      "cold_calls": 3,
+      "cold_tokens": 2732,
+      "cold_wall_ms": 12578.924,
+      "crystal": "family-crystal:a0b362d365da0274266f6ba5",
+      "equivalence": "byte_identical",
+      "family": "toolchain-regenerate",
+      "heldout_passed": 3,
+      "promoted": true,
+      "warm": [
+        {
+          "accepted_by": "crystal",
+          "false_accept": false,
+          "model_calls": 0,
+          "passed": true,
+          "role": "warm",
+          "route": "crystal_replay",
+          "similarity": 1.0,
+          "task": "tool-w1",
+          "tokens_total": 0,
+          "wall_ms": 793.368
+        },
+        {
+          "accepted_by": "crystal",
+          "false_accept": false,
+          "model_calls": 0,
+          "passed": true,
+          "role": "warm",
+          "route": "crystal_replay",
+          "similarity": 1.0,
+          "task": "tool-w2",
+          "tokens_total": 0,
+          "wall_ms": 646.856
+        },
+        {
+          "accepted_by": null,
+          "false_accept": false,
+          "model_calls": 3,
+          "passed": false,
+          "role": "near",
+          "route": "local_specialist_adapter",
+          "similarity": 0.85,
+          "task": "tool-near",
+          "tokens_total": 2883,
+          "wall_ms": 13227.333
+        }
+      ]
+    }
+  ],
+  "governor_chain": {
+    "count": 126,
+    "errors": [],
+    "valid": true
+  },
+  "lattice": {
+    "lattice_id": "family-crystal:a7b5eaea0ee8fae87e9a5923",
+    "negative_controls": [
+      {
+        "accepted_by": "crystal",
+        "expect": "single crystal, not lattice",
+        "false_accept": false,
+        "lattice_selected": false,
+        "model_calls": 0,
+        "passed": true,
+        "route": "crystal_replay",
+        "route_crystal": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+        "task": "fresh-single-ad38",
+        "tokens_total": 0,
+        "top_candidates": [
+          {
+            "children": [],
+            "composite": false,
+            "crystal_id": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+            "expected_failures": 1,
+            "features": {
+              "failure_count": true,
+              "failure_signature": true,
+              "python_target": true,
+              "resolver_plan": true,
+              "unittest_verify": true
+            },
+            "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+            "similarity": 1.0,
+            "task_family": "fix-config-constant"
+          },
+          {
+            "children": [],
+            "composite": false,
+            "crystal_id": "family-crystal:2b089f9fd334db975992def8",
+            "expected_failures": 1,
+            "features": {
+              "failure_count": true,
+              "failure_signature": true,
+              "python_target": true,
+              "resolver_plan": false,
+              "unittest_verify": true
+            },
+            "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+            "similarity": 0.85,
+            "task_family": "fix-logic-operator"
+          },
+          {
+            "children": [],
+            "composite": false,
+            "crystal_id": "family-crystal:f3f8ad2739d13e5733d13336",
+            "expected_failures": 1,
+            "features": {
+              "failure_count": true,
+              "failure_signature": true,
+              "python_target": true,
+              "resolver_plan": false,
+              "unittest_verify": true
+            },
+            "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+            "similarity": 0.85,
+            "task_family": "fix-off-by-one"
+          }
+        ]
+      },
+      {
+        "accepted_by": "provider:nemotron",
+        "expect": "no exact lattice; fallback",
+        "false_accept": false,
+        "lattice_selected": false,
+        "model_calls": 2,
+        "passed": true,
+        "route": "local_specialist_adapter",
+        "route_crystal": "family-crystal:a7b5eaea0ee8fae87e9a5923",
+        "task": "fresh-diff-ad38",
+        "tokens_total": 1746,
+        "top_candidates": [
+          {
+            "children": [
+              "family-crystal:f3f8ad2739d13e5733d13336",
+              "family-crystal:5298d8b45bf3e16b7e2fa9df"
+            ],
+            "composite": true,
+            "crystal_id": "family-crystal:a7b5eaea0ee8fae87e9a5923",
+            "expected_failures": 2,
+            "features": {
+              "failure_count": true,
+              "failure_signature": true,
+              "python_target": true,
+              "resolver_plan": false,
+              "unittest_verify": true
+            },
+            "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+            "similarity": 0.85,
+            "task_family": "composite:fix-off-by-one+fix-config-constant"
+          },
+          {
+            "children": [],
+            "composite": false,
+            "crystal_id": "family-crystal:2b089f9fd334db975992def8",
+            "expected_failures": 1,
+            "features": {
+              "failure_count": false,
+              "failure_signature": true,
+              "python_target": true,
+              "resolver_plan": true,
+              "unittest_verify": true
+            },
+            "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+            "similarity": 0.85,
+            "task_family": "fix-logic-operator"
+          },
+          {
+            "children": [],
+            "composite": false,
+            "crystal_id": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+            "expected_failures": 1,
+            "features": {
+              "failure_count": false,
+              "failure_signature": true,
+              "python_target": true,
+              "resolver_plan": false,
+              "unittest_verify": true
+            },
+            "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+            "similarity": 0.7,
+            "task_family": "fix-config-constant"
+          }
+        ]
+      }
+    ],
+    "premium": {
+      "children_scaled_to_v_l": true,
+      "credited_premium": 0.0,
+      "credited_reason": "scaled_children_exhaust_v_l",
+      "rule": "S = max(0, V_L - sum(max(0, V_Ci))); children scaled to V_L when they exceed it",
+      "sum_children": 2.659307,
+      "surplus_S": 0.0,
+      "v_l": 1.006957
+    },
+    "selected": true,
+    "used_to_complete": true,
+    "v_l": 1.006957
+  },
+  "memfd": [
+    {
+      "bytes": 3129,
+      "child_wall_ms": 135.664,
+      "credit": 1.281702,
+      "crystal": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+      "family": "fix-config-constant",
+      "net": {
+        "connects": 0,
+        "dns_lookups": 0,
+        "http_sends": 0,
+        "inet_sockets": 0,
+        "lo_after": {
+          "rx_bytes": 0,
+          "rx_packets": 0,
+          "tx_bytes": 0,
+          "tx_packets": 0
+        }
+      },
+      "ok": true,
+      "seals": 15,
+      "v_k": 1.281702
+    },
+    {
+      "bytes": 3107,
+      "child_wall_ms": 247.471,
+      "credit": 1.440682,
+      "crystal": "family-crystal:2b089f9fd334db975992def8",
+      "family": "fix-logic-operator",
+      "net": {
+        "connects": 0,
+        "dns_lookups": 0,
+        "http_sends": 0,
+        "inet_sockets": 0,
+        "lo_after": {
+          "rx_bytes": 0,
+          "rx_packets": 0,
+          "tx_bytes": 0,
+          "tx_packets": 0
+        }
+      },
+      "ok": true,
+      "seals": 15,
+      "v_k": 1.440682
+    },
+    {
+      "bytes": 3098,
+      "child_wall_ms": 178.473,
+      "credit": 1.385899,
+      "crystal": "family-crystal:f3f8ad2739d13e5733d13336",
+      "family": "fix-off-by-one",
+      "net": {
+        "connects": 0,
+        "dns_lookups": 0,
+        "http_sends": 0,
+        "inet_sockets": 0,
+        "lo_after": {
+          "rx_bytes": 0,
+          "rx_packets": 0,
+          "tx_bytes": 0,
+          "tx_packets": 0
+        }
+      },
+      "ok": true,
+      "seals": 15,
+      "v_k": 1.385899
+    },
+    {
+      "bytes": 3124,
+      "child_wall_ms": 138.94,
+      "credit": 1.360289,
+      "crystal": "family-crystal:1e0b690bad92323d87963482",
+      "family": "fix-unhandled-exception",
+      "net": {
+        "connects": 0,
+        "dns_lookups": 0,
+        "http_sends": 0,
+        "inet_sockets": 0,
+        "lo_after": {
+          "rx_bytes": 0,
+          "rx_packets": 0,
+          "tx_bytes": 0,
+          "tx_packets": 0
+        }
+      },
+      "ok": true,
+      "seals": 15,
+      "v_k": 1.360289
+    },
+    {
+      "bytes": 3148,
+      "child_wall_ms": 182.657,
+      "credit": 4.439963,
+      "crystal": "family-crystal:a0b362d365da0274266f6ba5",
+      "family": "toolchain-regenerate",
+      "net": {
+        "connects": 0,
+        "dns_lookups": 0,
+        "http_sends": 0,
+        "inet_sockets": 0,
+        "lo_after": {
+          "rx_bytes": 0,
+          "rx_packets": 0,
+          "tx_bytes": 0,
+          "tx_packets": 0
+        }
+      },
+      "ok": true,
+      "seals": 15,
+      "v_k": 4.439963
+    }
+  ],
+  "negative_controls": [],
+  "provider_h2h": {
+    "fix-config-constant": {
+      "deepseek": {
+        "latency_ms": 75486.853,
+        "passed": false,
+        "reasoning_tokens": 0,
+        "tokens_total": 0
+      },
+      "gpt-oss": {
+        "latency_ms": 90484.848,
+        "passed": false,
+        "reasoning_tokens": 0,
+        "tokens_total": 0
+      },
+      "nemotron": {
+        "latency_ms": 1216.625,
+        "passed": true,
+        "reasoning_tokens": 0,
+        "tokens_total": 647
+      }
+    },
+    "fix-logic-operator": {
+      "deepseek": {
+        "latency_ms": 75469.246,
+        "passed": false,
+        "reasoning_tokens": 0,
+        "tokens_total": 0
+      },
+      "gpt-oss": {
+        "latency_ms": 90489.578,
+        "passed": false,
+        "reasoning_tokens": 0,
+        "tokens_total": 0
+      },
+      "nemotron": {
+        "latency_ms": 1147.35,
+        "passed": true,
+        "reasoning_tokens": 0,
+        "tokens_total": 643
+      }
+    },
+    "fix-off-by-one": {
+      "deepseek": {
+        "latency_ms": 0.0,
+        "passed": false,
+        "reasoning_tokens": 0,
+        "tokens_total": 0
+      },
+      "gpt-oss": {
+        "latency_ms": 0.0,
+        "passed": false,
+        "reasoning_tokens": 0,
+        "tokens_total": 0
+      },
+      "nemotron": {
+        "latency_ms": 1340.184,
+        "passed": true,
+        "reasoning_tokens": 0,
+        "tokens_total": 719
+      }
+    },
+    "fix-unhandled-exception": {
+      "deepseek": {
+        "latency_ms": 0.0,
+        "passed": false,
+        "reasoning_tokens": 0,
+        "tokens_total": 0
+      },
+      "gpt-oss": {
+        "latency_ms": 0.0,
+        "passed": false,
+        "reasoning_tokens": 0,
+        "tokens_total": 0
+      },
+      "nemotron": {
+        "latency_ms": 1362.687,
+        "passed": true,
+        "reasoning_tokens": 0,
+        "tokens_total": 796
+      }
+    },
+    "refactor-rename-symbol": {
+      "deepseek": {
+        "latency_ms": 0.0,
+        "passed": false,
+        "reasoning_tokens": 0,
+        "tokens_total": 0
+      },
+      "gpt-oss": {
+        "latency_ms": 0.0,
+        "passed": false,
+        "reasoning_tokens": 0,
+        "tokens_total": 0
+      },
+      "nemotron": {
+        "latency_ms": 2152.231,
+        "passed": false,
+        "reasoning_tokens": 0,
+        "tokens_total": 1745
+      }
+    },
+    "toolchain-regenerate": {
+      "deepseek": {
+        "latency_ms": 0.0,
+        "passed": false,
+        "reasoning_tokens": 0,
+        "tokens_total": 0
+      },
+      "gpt-oss": {
+        "latency_ms": 0.0,
+        "passed": false,
+        "reasoning_tokens": 0,
+        "tokens_total": 0
+      },
+      "nemotron": {
+        "latency_ms": 2200.425,
+        "passed": true,
+        "reasoning_tokens": 0,
+        "tokens_total": 1946
+      }
+    }
+  },
+  "rates": {
+    "crystal_hit_rate": 0.833,
+    "crystal_hits": 10,
+    "false_accepts_total": 2,
+    "near_miss": [
+      {
+        "accepted_by": "specialist:qwen3:4b",
+        "false_accept": false,
+        "passed": true,
+        "route": "local_specialist_adapter",
+        "task": "const-near"
+      },
+      {
+        "accepted_by": "provider:nemotron",
+        "false_accept": false,
+        "passed": true,
+        "route": "local_specialist_adapter",
+        "task": "op-near"
+      },
+      {
+        "accepted_by": "provider:nemotron",
+        "false_accept": false,
+        "passed": true,
+        "route": "local_specialist_adapter",
+        "task": "obo-near"
+      },
+      {
+        "accepted_by": "provider:nemotron",
+        "false_accept": false,
+        "passed": true,
+        "route": "local_specialist_adapter",
+        "task": "exc-near"
+      },
+      {
+        "accepted_by": null,
+        "false_accept": false,
+        "passed": false,
+        "route": "provider_fallback",
+        "task": "ren-near"
+      },
+      {
+        "accepted_by": null,
+        "false_accept": false,
+        "passed": false,
+        "route": "local_specialist_adapter",
+        "task": "tool-near"
+      }
+    ],
+    "near_miss_correct": 6,
+    "pipeline_episodes": 31,
+    "warm_exact_tasks": 12
+  },
+  "receipt_digests": {
+    "composite.json": "sha256:bb374b60810e5d2145d49e521831686b6ad42d552cb0bfbcba7f579363832219",
+    "families.json": "sha256:8524db19b33979f4c33934caab952fd667795f21509cff005bb9a45564dbe002",
+    "lattice_experiment.json": "sha256:8dbdb975640ddafe02e16e378a5eca59f48010681cab4b65da028d6b93777238",
+    "memfd_receipts.json": "sha256:edce2b4a2f46a0f9aa12a79bc33b73c1ed47a437179dc1193adf7c43a83ac903",
+    "model_calls.json": "sha256:fa1789a242d38f2215f8ca2a27667f6d17e9460e3aaf95f05f1db1aec1627bdb",
+    "negative_controls.json": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "provider_head_to_head.json": "sha256:4eebc675907a370e573e5f49e13bbb65b72430f2b66c25bf6d23136f4d661f62",
+    "specialist_benchmark.json": "sha256:6714c82b786ddddaca96bc95609cdbc01724ea38dc72c427189bdbbdba61833c",
+    "warm.json": "sha256:ffc478740666d54c151ee28cd5225fe2cbd7eafad32d7fdeef912680a428d4d7"
+  },
+  "saved_by_crystal_hits": {
+    "model_calls": 14,
+    "tokens": 10932
+  },
+  "shadow_credits_total": 9.908535,
+  "specialist_benchmark": {
+    "granite3.2:2b|after": {
+      "false_accepts": 0,
+      "of": 8,
+      "passed": 2,
+      "tokens": 8295,
+      "wall_s": 76.3
+    },
+    "granite3.2:2b|before": {
+      "false_accepts": 1,
+      "of": 8,
+      "passed": 4,
+      "tokens": 3514,
+      "wall_s": 39.3
+    },
+    "granite3.3:2b|after": {
+      "false_accepts": 0,
+      "of": 8,
+      "passed": 6,
+      "tokens": 7071,
+      "wall_s": 54.5
+    },
+    "granite3.3:2b|before": {
+      "false_accepts": 0,
+      "of": 8,
+      "passed": 3,
+      "tokens": 3556,
+      "wall_s": 31.3
+    },
+    "qwen3:4b|after": {
+      "false_accepts": 0,
+      "of": 8,
+      "passed": 5,
+      "tokens": 6971,
+      "wall_s": 103.5
+    },
+    "qwen3:4b|before": {
+      "false_accepts": 0,
+      "of": 8,
+      "passed": 0,
+      "tokens": 9820,
+      "wall_s": 978.8
+    }
+  },
+  "spend": {
+    "nim:deepseek|deepseek-ai/deepseek-v4.1-flash": {
+      "calls": 2,
+      "circuit_open_skipped": 11,
+      "failed_or_timeout": 2,
+      "tokens": 0
+    },
+    "nim:gpt-oss|openai/gpt-oss-20b": {
+      "calls": 2,
+      "circuit_open_skipped": 4,
+      "failed_or_timeout": 2,
+      "tokens": 0
+    },
+    "nim:nemotron|nvidia/nemotron-3.5-lightning-30b-a3b": {
+      "calls": 31,
+      "circuit_open_skipped": 0,
+      "failed_or_timeout": 0,
+      "tokens": 26434
+    },
+    "ollama|granite3.2:2b": {
+      "calls": 18,
+      "circuit_open_skipped": 0,
+      "failed_or_timeout": 0,
+      "tokens": 11809
+    },
+    "ollama|granite3.3:2b": {
+      "calls": 17,
+      "circuit_open_skipped": 0,
+      "failed_or_timeout": 0,
+      "tokens": 10627
+    },
+    "ollama|qwen3:4b": {
+      "calls": 30,
+      "circuit_open_skipped": 0,
+      "failed_or_timeout": 0,
+      "tokens": 25647
+    }
+  },
+  "started_at": 1794805046.8920038
+}

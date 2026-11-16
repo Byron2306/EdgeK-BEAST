@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 """Run the Crystal IR intent, refusal, and execution gauntlet."""
 from __future__ import annotations
+try:  # closure-2026-11-16: governed egress shim
+    from app.kernel.compute import governed_egress as _egress
+except ModuleNotFoundError:  # run as a script: repo root not on sys.path yet
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _sys.path.insert(0, str(_Path(__file__).resolve().parents[2]))
+    from app.kernel.compute import governed_egress as _egress
 
 import argparse
 import hashlib
@@ -102,7 +110,7 @@ def live_translate(raw: dict, model: str, timeout_seconds: float = 90.0) -> tupl
     endpoint = os.environ.get("OLLAMA_BASE_URL", "http://127.0.0.1:11434").rstrip("/") + "/api/generate"
     request = urllib.request.Request(endpoint, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"}, method="POST")
     started = time.perf_counter()
-    with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
+    with _egress.urlopen("crystal_ir_intent_gauntlet", request, timeout=timeout_seconds) as response:
         body = json.loads(response.read().decode())
     raw_response = body.get("response") or "{}"
     candidate = json.loads(raw_response) if isinstance(raw_response, str) else raw_response
@@ -115,7 +123,7 @@ def warm_ollama(model: str) -> dict:
     payload = {"model": model, "prompt": "Return a clarification packet.", "stream": False, "format": CRYSTAL_IR_TRANSLATOR_SCHEMA, "options": {"temperature": 0, "num_ctx": 512, "num_predict": 16, "num_thread": 2}, "keep_alive": "30m"}
     request = urllib.request.Request(endpoint, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"}, method="POST")
     started = time.perf_counter()
-    with urllib.request.urlopen(request, timeout=60) as response:
+    with _egress.urlopen("crystal_ir_intent_gauntlet", request, timeout=60) as response:
         body = json.loads(response.read().decode())
     return {"latency_ms": round((time.perf_counter() - started) * 1000, 2), "total_duration_ns": body.get("total_duration"), "load_duration_ns": body.get("load_duration")}
 

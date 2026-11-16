@@ -80,7 +80,7 @@
     function patch(state){
       if(disposed)return;const map=state.map;
       root.querySelector('[data-map-health]').textContent=`${clamp(map.health)}%`;root.querySelector('[data-map-nodes]').textContent=map.nodes.length;root.querySelector('[data-map-edges]').textContent=map.edges.length;root.querySelector('[data-map-orphans]').textContent=map.orphaned;
-      root.querySelector('[data-map-status]').textContent=map.loading?'Scanning repository topology…':map.error?`Live map unavailable · ${map.error}`:`${map.nodes.length} nodes · ${map.edges.length} links · updated ${map.updatedAt?new Date(map.updatedAt).toLocaleTimeString():'pending'}`;
+      root.querySelector('[data-map-status]').textContent=map.loading?'Scanning repository topology…':map.error?`Resilient local map · ${map.error}`:`${map.nodes.length} nodes · ${map.edges.length} links · updated ${map.updatedAt?new Date(map.updatedAt).toLocaleTimeString():'pending'}`;
       root.querySelector('[data-map-world]').style.setProperty('--map-zoom',map.zoom);root.querySelector('[data-map-zoom-label]').textContent=`${Math.round(map.zoom*100)}%`;
       root.querySelector('[data-map-health-orbit]').style.setProperty('--health',clamp(map.health));root.querySelector('[data-map-health-orbit-value]').textContent=`${clamp(map.health)}%`;root.querySelector('[data-map-coverage]').textContent=`${clamp(map.coverage)}%`;root.querySelector('[data-map-freshness]').textContent=`${clamp(map.freshness)}%`;root.querySelector('[data-map-consistency]').textContent=`${clamp(map.consistency)}%`;root.querySelector('[data-map-orphan-fact]').textContent=map.orphaned;
       root.querySelectorAll('[data-map-filter]').forEach(button=>button.classList.toggle('active',button.dataset.mapFilter===map.filter));

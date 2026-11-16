@@ -41,7 +41,22 @@ def test_swarm_kernel_runs_role_state_machine_and_logs_value(tmp_path):
 
     roles = [event["role"] for event in result["events"]]
 
-    assert result["status"] == "succeeded"
+    # A caller-supplied success flag is not verified execution evidence.
+    assert result["status"] == "ready"
+    verifier_events = [
+        event for event in result["events"]
+        if event["role"] == "verifier"
+    ]
+    assert verifier_events
+    assert verifier_events[-1]["decision"] == "checks_planned"
+    assert verifier_events[-1]["details"]["model_call_executed"] is False
+
+    scribe_events = [
+        event for event in result["events"]
+        if event["role"] == "scribe"
+    ]
+    assert scribe_events
+    assert scribe_events[-1]["details"]["promotion_authorized"] is False
     assert result["state"] == "completed"
     assert result["task_type"] == "test_repair"
     assert "conductor" in roles

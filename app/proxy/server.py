@@ -17,18 +17,31 @@ from app.adapters.gemini_adapter import gemini_router
 from app.adapters.huggingface_adapter import _run_prec, huggingface_router
 from app.adapters.openai_adapter import openai_router
 from app.kernel.adapters.provider_adapters import ProviderAdapterRegistry
+from app.kernel.governance.reason import reasoner
 from app.kernel.registry.provider_registry import ProviderRegistry
 
 proxy_router = APIRouter(tags=["proxy"])
 
 
+def _proxy_base_url(request: Request | None) -> str:
+    """Advertise the address this gateway is actually serving on (was hard-coded :8000, which is not BEAST)."""
+    import os
+
+    configured = os.environ.get("BEAST_PUBLIC_BASE_URL", "").strip().rstrip("/")
+    if configured:
+        return configured + "/proxy"
+    if request is not None:
+        return str(request.base_url).rstrip("/") + "/proxy"
+    return f"http://127.0.0.1:{os.environ.get('BEAST_GATEWAY_PORT', '8101')}/proxy"
+
+
 @proxy_router.get("/health")
-async def proxy_health():
-    registry = ProviderRegistry().records(include_disabled=False)
+async def proxy_health(request: Request):
+    registry = ProviderRegistry(reasoner.policies).records(include_disabled=False)
     return {
         "status": "healthy",
         "service": "edgek-beast-proxy",
-        "base_url": "http://127.0.0.1:8000/proxy",
+        "base_url": _proxy_base_url(request),
         "governance": "BEAST proxy remains in front of native, OpenAI-compatible, LiteLLM, and Ollama lanes.",
         "providers": [record.provider_id for record in registry],
         "backend_classes": sorted(ProviderRegistry.BACKENDS),
@@ -49,9 +62,10 @@ proxy_router.include_router(huggingface_router, prefix="/huggingface")
 async def _registry_chat(provider: str, request: Request):
     provider = provider.replace("-", "_")
     try:
-        adapter_plan = ProviderAdapterRegistry().adapter_for(provider).plan_chat()
+        adapter = ProviderAdapterRegistry(reasoner.policies).adapter_for(provider)
     except KeyError:
         raise HTTPException(status_code=404, detail=f"Unknown provider registry entry: {provider}")
+    adapter_plan = adapter.plan_chat()
     if adapter_plan.backend.startswith("native_"):
         raise HTTPException(
             status_code=404,
@@ -59,7 +73,7 @@ async def _registry_chat(provider: str, request: Request):
         )
     body: Dict[str, Any] = await request.json()
     body = dict(body)
-    adapter_plan = ProviderAdapterRegistry().adapter_for(provider).plan_chat(str(body.get("model") or ""))
+    adapter_plan = adapter.plan_chat(str(body.get("model") or ""))
     body["model"] = adapter_plan.model
     body.setdefault("metadata", {})
     if isinstance(body["metadata"], dict):
@@ -199,7 +213,24 @@ async def _governed_openai_sse_live(
                     "message": f"{provider} is still generating through BEAST governance",
                     "elapsed_seconds": elapsed_seconds,
                 }, separators=(",", ":")) + "\n\n"
-        response = await task
+        try:
+            response = await task
+        except Exception as exc:
+            # Once SSE headers are sent, failures must be framed as terminal
+            # events rather than escaping into Starlette's stream_response.
+            import logging
+            logging.getLogger(__name__).exception("Governed streaming execution failed")
+            code = (
+                "CONTEXT_BUDGET_EXCEEDED"
+                if str(exc).startswith("protected_context_exceeds_")
+                else "GOVERNED_EXECUTION_FAILED"
+            )
+            yield "event: edgek_error\n" + "data: " + json.dumps({
+                "error": {"type": "governed_execution_error", "code": code,
+                          "message": "Protected context exceeds input budget" if code == "CONTEXT_BUDGET_EXCEEDED" else "Governed execution failed"}
+            }, separators=(",", ":")) + "\n\n"
+            yield "data: [DONE]\n\n"
+            return
         if response.status_code >= 400:
             yield "event: edgek_error\n" + "data: " + response.body.decode("utf-8", errors="replace") + "\n\n"
             yield "data: [DONE]\n\n"

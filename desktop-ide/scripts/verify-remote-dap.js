@@ -36,7 +36,7 @@ function handshake(name, target, adapter) {
 
 async function main() {
   const sshHost = process.env.BEAST_PARITY_SSH_HOST;
-  if (sshHost) await handshake('SSH remote DAP handshake', { kind: 'ssh', host: sshHost, remoteRoot: process.env.BEAST_PARITY_SSH_ROOT || '~' }, process.env.BEAST_PARITY_SSH_DAP_ADAPTER || 'debugpy');
+  if (sshHost) await handshake('SSH remote DAP handshake', { kind: 'ssh', host: sshHost, remoteRoot: process.env.BEAST_PARITY_SSH_ROOT || '~', remotePython: process.env.BEAST_PARITY_SSH_PYTHON || '' }, process.env.BEAST_PARITY_SSH_DAP_ADAPTER || 'debugpy');
   else record('SSH remote DAP handshake', 'skipped', 'Set BEAST_PARITY_SSH_HOST and BEAST_PARITY_SSH_ROOT to validate a real remote adapter.');
   const containerId = process.env.BEAST_PARITY_CONTAINER_ID;
   if (containerId) await handshake('Container DAP handshake', { kind: 'container', containerId, workspaceFolder: process.env.BEAST_PARITY_CONTAINER_WORKSPACE || '/workspace' }, process.env.BEAST_PARITY_CONTAINER_DAP_ADAPTER || 'debugpy');

@@ -154,9 +154,18 @@ def test_remote_worktree_mutation_and_verification_execute_on_target(tmp_path, m
 
         monkeypatch.setattr(worktree_tools_module, "_run_target_shell", fake_target_shell)
         engine = AgentRunEngine(root)
-        run_id = engine.create_run(session_id="session", objective="remote mutate", run_id="run-remote")["run_id"]
-        approval = _approved(engine, run_id)
         target_payload = {"kind": "ssh", "sessionId": "target-ssh-mutate", "host": "devbox", "remoteRoot": "/repo"}
+        run_id = engine.create_run(
+            session_id="session", objective="remote mutate", run_id="run-remote",
+            request={"execution_target": "ssh", "execution_target_payload": target_payload},
+        )["run_id"]
+        engine.store.create_approval(run_id, {
+            "request_id": "mutation", "execution_target": "ssh",
+            "execution_target_payload": target_payload,
+            "capabilities": [{"id": "worktree_mutation"}],
+        })
+        engine.store.resolve_approval(run_id, "mutation", {"approved": True})
+        approval = "mutation"
         bind = await engine.execute_tool(
             run_id,
             "worktree.bind",

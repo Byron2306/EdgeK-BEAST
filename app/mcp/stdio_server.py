@@ -7,8 +7,11 @@ runtime is lazy-loaded only when tools/resources/prompts are requested.
 
 from __future__ import annotations
 
+from app.mcp.builtin_custody import dispatch_with_custody
+
 import json
 import logging
+import os
 import sys
 from functools import lru_cache
 from typing import Any, Dict, Optional
@@ -573,30 +576,54 @@ def _runtime():
     return runtime
 
 
+# MCP stdio transport framing.  The spec (and every official SDK/client)
+# uses newline-delimited JSON; the legacy LSP-style Content-Length framing
+# is still accepted for older BEAST clients.  Replies mirror the framing of
+# the most recent request so either kind of client gets what it expects.
+_FRAMING = {"mode": "ndjson"}
+SUPPORTED_PROTOCOL_VERSIONS = ("2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05")
+
+
 def _read_message() -> Optional[Dict[str, Any]]:
-    headers: Dict[str, str] = {}
     while True:
-        line = sys.stdin.buffer.readline()
+        line = _STDIN.readline()
         if not line:
             return None
-        if line in (b"\r\n", b"\n"):
-            break
-        key, value = line.decode("utf-8").split(":", 1)
-        headers[key.strip().lower()] = value.strip()
-    length = int(headers.get("content-length", "0"))
-    if length <= 0:
-        return None
-    payload = sys.stdin.buffer.read(length)
-    if not payload:
-        return None
-    return json.loads(payload.decode("utf-8"))
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if stripped.startswith(b"{") or stripped.startswith(b"["):
+            _FRAMING["mode"] = "ndjson"
+            return json.loads(stripped.decode("utf-8"))
+        # Legacy Content-Length header block.
+        headers: Dict[str, str] = {}
+        while True:
+            if b":" in line:
+                key, value = line.decode("utf-8").split(":", 1)
+                headers[key.strip().lower()] = value.strip()
+            line = _STDIN.readline()
+            if not line:
+                return None
+            if line in (b"\r\n", b"\n"):
+                break
+        length = int(headers.get("content-length", "0"))
+        if length <= 0:
+            continue
+        payload = _STDIN.read(length)
+        if not payload:
+            return None
+        _FRAMING["mode"] = "content-length"
+        return json.loads(payload.decode("utf-8"))
 
 
 def _write_message(message: Dict[str, Any]) -> None:
     encoded = json.dumps(message, separators=(",", ":")).encode("utf-8")
-    sys.stdout.buffer.write(f"Content-Length: {len(encoded)}\r\n\r\n".encode("ascii"))
-    sys.stdout.buffer.write(encoded)
-    sys.stdout.buffer.flush()
+    if _FRAMING["mode"] == "content-length":
+        _STDOUT.write(f"Content-Length: {len(encoded)}\r\n\r\n".encode("ascii"))
+        _STDOUT.write(encoded)
+    else:
+        _STDOUT.write(encoded + b"\n")
+    _STDOUT.flush()
 
 
 def _success(msg_id: Any, result: Dict[str, Any]) -> Dict[str, Any]:
@@ -611,8 +638,9 @@ def _handle(method: str, params: Optional[Dict[str, Any]]) -> Dict[str, Any]:
     params = params or {}
     if method == "initialize":
         requested = params.get("protocolVersion") or PROTOCOL_VERSION
-        # Prefer the client's version for compatibility, but keep a safe fallback.
-        negotiated = requested if isinstance(requested, str) else PROTOCOL_VERSION
+        # Echo the client's version only when we support it; otherwise answer
+        # with our preferred version (per MCP lifecycle negotiation rules).
+        negotiated = requested if requested in SUPPORTED_PROTOCOL_VERSIONS else PROTOCOL_VERSION
         return {
             "protocolVersion": negotiated,
             "capabilities": CAPABILITIES,
@@ -622,10 +650,10 @@ def _handle(method: str, params: Optional[Dict[str, Any]]) -> Dict[str, Any]:
     if method == "ping":
         return {}
     if method == "tools/list":
-        return {"tools": TOOL_DEFINITIONS}
+        return {"tools": _listed_tools()}
     if method == "tools/call":
-        result = _runtime().call_tool(params.get("name", ""), params.get("arguments", {}))
-        return {"content": [{"type": "text", "text": json.dumps(result, indent=2)}], "isError": False}
+        result = dispatch_with_custody(_runtime(), params.get("name", ""), params.get("arguments", {}))
+        return {"content": [{"type": "text", "text": json.dumps(result, indent=2)}], "isError": bool(result.get("isError") or result.get("ok") is False)}
     if method == "resources/list":
         return {"resources": RESOURCE_DEFINITIONS}
     if method == "resources/read":
@@ -634,28 +662,86 @@ def _handle(method: str, params: Optional[Dict[str, Any]]) -> Dict[str, Any]:
         return {"prompts": PROMPT_DEFINITIONS}
     if method == "prompts/get":
         return _runtime().get_prompt(params.get("name", ""), params.get("arguments", {}))
-    raise ValueError(f"Unsupported MCP method: {method}")
+    raise _MethodNotFound(f"Unsupported MCP method: {method}")
+
+
+def _listed_tools() -> list:
+    """All runtime tools (closure 2026-11-16; was the 36-entry lightweight TOOL_DEFINITIONS).
+
+    Default profile: the generated snapshot app/mcp/tool_definitions.json (kept in parity with the runtime by
+    tests/test_mcp_tool_parity.py), so tools/list still does not warm the kernel. Any BEAST_MCP_TOOLS profile or
+    allow/deny list asks the runtime, which applies the same visibility rules as tools/call.
+    """
+    import os as _os
+    from pathlib import Path as _Path
+
+    profile = str(_os.environ.get("BEAST_MCP_TOOLS") or "full").strip().lower()
+    if profile in {"", "full"} and not _os.environ.get("BEAST_MCP_TOOLS_ALLOW") and not _os.environ.get("BEAST_MCP_TOOLS_DENY"):
+        snap = _Path(__file__).with_name("tool_definitions.json")
+        try:
+            return json.loads(snap.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            pass
+    try:
+        return _runtime().tool_definitions()
+    except Exception:  # noqa: BLE001 - never fail tools/list; fall back to the lightweight set
+        return TOOL_DEFINITIONS
+
+
+class _MethodNotFound(Exception):
+    pass
+
+
+def _bind_stdio() -> None:
+    """Reserve the real stdout for JSON-RPC and point fd 1 at stderr.
+
+    Lazily imported kernel modules (e.g. ``factory.py``) print banners to
+    stdout; on a stdio MCP transport that corrupts the protocol stream.  We
+    duplicate the original stdout fd for protocol use and redirect fd 1 (and
+    ``sys.stdout``) to stderr so any stray print lands in the client's log.
+    """
+    global _STDIN, _STDOUT
+    _STDIN = sys.stdin.buffer
+    proto_fd = os.dup(1)
+    os.dup2(2, 1)
+    sys.stdout = sys.stderr
+    _STDOUT = os.fdopen(proto_fd, "wb", buffering=0)
+
+
+_STDIN = sys.stdin.buffer
+_STDOUT = sys.stdout.buffer
 
 
 def serve_stdio() -> None:
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, stream=sys.stderr)
+    _bind_stdio()
     logger.info("Starting EdgeK BEAST MCP stdio server")
     while True:
-        message = _read_message()
+        try:
+            message = _read_message()
+        except (ValueError, UnicodeDecodeError) as exc:
+            _write_message(_error(None, -32700, f"Parse error: {exc}"))
+            continue
         if message is None:
             break
+        if not isinstance(message, dict):
+            _write_message(_error(None, -32600, "Invalid request"))
+            continue
         msg_id = message.get("id")
         method = message.get("method")
         if not method:
-            if msg_id is not None:
+            if msg_id is not None and "result" not in message and "error" not in message:
                 _write_message(_error(msg_id, -32600, "Invalid request"))
             continue
-        if method == "notifications/initialized":
+        if method.startswith("notifications/"):
             continue
         try:
             result = _handle(method, message.get("params"))
             if msg_id is not None:
                 _write_message(_success(msg_id, result))
+        except _MethodNotFound as exc:
+            if msg_id is not None:
+                _write_message(_error(msg_id, -32601, str(exc)))
         except Exception as exc:
             logger.exception("MCP stdio request failed")
             if msg_id is not None:

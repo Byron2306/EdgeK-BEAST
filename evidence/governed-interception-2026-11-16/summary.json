@@ -1,0 +1,1380 @@
+{
+ "routed": {
+  "tasks": 10,
+  "accepted": 7,
+  "rows": [
+   {
+    "task": "const-h1",
+    "family": "fix-config-constant",
+    "source_files": 2,
+    "accepted": true,
+    "accepted_by": "ollama:qwen3:4b@auto",
+    "model_calls": 1,
+    "wall_s": 20.27
+   },
+   {
+    "task": "op-h1",
+    "family": "fix-logic-operator",
+    "source_files": 2,
+    "accepted": true,
+    "accepted_by": "ollama:qwen3:4b@auto",
+    "model_calls": 1,
+    "wall_s": 9.81
+   },
+   {
+    "task": "obo-h1",
+    "family": "fix-off-by-one",
+    "source_files": 2,
+    "accepted": true,
+    "accepted_by": "ollama:qwen3:4b@auto",
+    "model_calls": 1,
+    "wall_s": 14.41
+   },
+   {
+    "task": "exc-h1",
+    "family": "fix-unhandled-exception",
+    "source_files": 2,
+    "accepted": true,
+    "accepted_by": "nim:nvidia/nemotron-3.5-lightning-30b-a3b@cloud",
+    "model_calls": 3,
+    "wall_s": 24.81
+   },
+   {
+    "task": "ren-h1",
+    "family": "refactor-rename-symbol",
+    "source_files": 4,
+    "accepted": false,
+    "accepted_by": "",
+    "model_calls": 3,
+    "wall_s": 161.91
+   },
+   {
+    "task": "ren-h2",
+    "family": "refactor-rename-symbol",
+    "source_files": 4,
+    "accepted": false,
+    "accepted_by": "",
+    "model_calls": 3,
+    "wall_s": 134.62
+   },
+   {
+    "task": "tool-h1",
+    "family": "toolchain-regenerate",
+    "source_files": 5,
+    "accepted": true,
+    "accepted_by": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+    "model_calls": 3,
+    "wall_s": 22.83
+   },
+   {
+    "task": "refguard-h1",
+    "family": "composite-refguard",
+    "source_files": 5,
+    "accepted": false,
+    "accepted_by": "",
+    "model_calls": 3,
+    "wall_s": 41.38
+   },
+   {
+    "task": "dual-h1",
+    "family": "composite",
+    "source_files": 2,
+    "accepted": true,
+    "accepted_by": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+    "model_calls": 1,
+    "wall_s": 2.61
+   },
+   {
+    "task": "far-1",
+    "family": "far",
+    "source_files": 2,
+    "accepted": true,
+    "accepted_by": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+    "model_calls": 1,
+    "wall_s": 5.22
+   }
+  ]
+ },
+ "hard_rerun_with_feedback": {
+  "tasks": 5,
+  "accepted": 1,
+  "rows": [
+   {
+    "task": "ren-h1",
+    "accepted": false,
+    "accepted_by": "",
+    "model_calls": 4,
+    "wall_s": 142.52
+   },
+   {
+    "task": "ren-h2",
+    "accepted": true,
+    "accepted_by": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+    "model_calls": 3,
+    "wall_s": 16.17
+   },
+   {
+    "task": "ren-h3",
+    "accepted": false,
+    "accepted_by": "",
+    "model_calls": 4,
+    "wall_s": 38.2
+   },
+   {
+    "task": "refguard-h1",
+    "accepted": false,
+    "accepted_by": "",
+    "model_calls": 4,
+    "wall_s": 124.05
+   },
+   {
+    "task": "refguard-h2",
+    "accepted": false,
+    "accepted_by": "",
+    "model_calls": 4,
+    "wall_s": 140.91
+   }
+  ]
+ },
+ "h2h": [
+  {
+   "candidate": "ollama:qwen3:4b",
+   "task": "const-h2",
+   "status": "ok",
+   "accepted": true
+  },
+  {
+   "candidate": "ollama:qwen3:4b",
+   "task": "ren-h3",
+   "status": "verifier_reject",
+   "accepted": false
+  },
+  {
+   "candidate": "ollama:qwen3:4b",
+   "task": "refguard-h2",
+   "status": "verifier_reject",
+   "accepted": false
+  },
+  {
+   "candidate": "ollama:granite3.3:2b",
+   "task": "const-h2",
+   "status": "ok",
+   "accepted": true
+  },
+  {
+   "candidate": "ollama:granite3.3:2b",
+   "task": "ren-h3",
+   "status": "verifier_reject",
+   "accepted": false
+  },
+  {
+   "candidate": "ollama:granite3.3:2b",
+   "task": "refguard-h2",
+   "status": "verifier_reject",
+   "accepted": false
+  },
+  {
+   "candidate": "nim:nvidia/nemotron-3.5-lightning-30b-a3b",
+   "task": "const-h2",
+   "status": "ok",
+   "accepted": true
+  },
+  {
+   "candidate": "nim:nvidia/nemotron-3.5-lightning-30b-a3b",
+   "task": "ren-h3",
+   "status": "verifier_reject",
+   "accepted": false
+  },
+  {
+   "candidate": "nim:nvidia/nemotron-3.5-lightning-30b-a3b",
+   "task": "refguard-h2",
+   "status": "verifier_reject",
+   "accepted": false
+  },
+  {
+   "candidate": "nim:deepseek-ai/deepseek-v4.1-flash",
+   "task": "const-h2",
+   "status": "transport_error",
+   "accepted": false
+  },
+  {
+   "candidate": "nim:deepseek-ai/deepseek-v4.1-flash",
+   "task": "ren-h3",
+   "status": "skipped_circuit_open",
+   "accepted": false
+  },
+  {
+   "candidate": "nim:deepseek-ai/deepseek-v4.1-flash",
+   "task": "refguard-h2",
+   "status": "skipped_circuit_open",
+   "accepted": false
+  },
+  {
+   "candidate": "nim:openai/gpt-oss-20b",
+   "task": "const-h2",
+   "status": "ok",
+   "accepted": true
+  },
+  {
+   "candidate": "nim:openai/gpt-oss-20b",
+   "task": "ren-h3",
+   "status": "transport_error",
+   "accepted": false
+  },
+  {
+   "candidate": "nim:openai/gpt-oss-20b",
+   "task": "refguard-h2",
+   "status": "verifier_reject",
+   "accepted": false
+  },
+  {
+   "candidate": "hf:openai/gpt-oss-120b:deepinfra",
+   "task": "const-h2",
+   "status": "ok",
+   "accepted": true
+  },
+  {
+   "candidate": "hf:openai/gpt-oss-120b:deepinfra",
+   "task": "ren-h3",
+   "status": "verifier_reject",
+   "accepted": false
+  },
+  {
+   "candidate": "hf:openai/gpt-oss-120b:deepinfra",
+   "task": "refguard-h2",
+   "status": "verifier_reject",
+   "accepted": false
+  },
+  {
+   "candidate": "hf:moonshotai/Kimi-K2.7-Code:deepinfra",
+   "task": "const-h2",
+   "status": "ok",
+   "accepted": true
+  },
+  {
+   "candidate": "hf:moonshotai/Kimi-K2.7-Code:deepinfra",
+   "task": "ren-h3",
+   "status": "verifier_reject",
+   "accepted": false
+  },
+  {
+   "candidate": "hf:moonshotai/Kimi-K2.7-Code:deepinfra",
+   "task": "refguard-h2",
+   "status": "ok",
+   "accepted": true
+  }
+ ],
+ "per_call": {
+  "calls_answered": 52,
+  "json_valid": 52,
+  "early_stops": 52,
+  "median_completion_tokens": 72,
+  "early_stop_headroom_tokens_sum": 101938,
+  "transport_errors": 6
+ },
+ "spend": {
+  "ollama:qwen3:4b": {
+   "calls": 11,
+   "transport_errors": 0,
+   "circuit_skips": 0,
+   "completion_tokens": 1344,
+   "prompt_tokens_est": 8256,
+   "usd_est": 0.0
+  },
+  "ollama:granite3.3:2b": {
+   "calls": 7,
+   "transport_errors": 0,
+   "circuit_skips": 0,
+   "completion_tokens": 748,
+   "prompt_tokens_est": 5681,
+   "usd_est": 0.0
+  },
+  "nim:nvidia/nemotron-3.5-lightning-30b-a3b": {
+   "calls": 9,
+   "transport_errors": 0,
+   "circuit_skips": 0,
+   "completion_tokens": 1024,
+   "prompt_tokens_est": 8289,
+   "usd_est": 0.0
+  },
+  "nim:deepseek-ai/deepseek-v4.1-flash": {
+   "calls": 4,
+   "transport_errors": 4,
+   "circuit_skips": 2,
+   "completion_tokens": 0,
+   "prompt_tokens_est": 0,
+   "usd_est": 0.0
+  },
+  "nim:openai/gpt-oss-20b": {
+   "calls": 5,
+   "transport_errors": 2,
+   "circuit_skips": 0,
+   "completion_tokens": 416,
+   "prompt_tokens_est": 2709,
+   "usd_est": 0.0
+  },
+  "hf:openai/gpt-oss-120b:deepinfra": {
+   "calls": 9,
+   "transport_errors": 0,
+   "circuit_skips": 0,
+   "completion_tokens": 578,
+   "prompt_tokens_est": 6992,
+   "usd_est": 0.00036
+  },
+  "hf:moonshotai/Kimi-K2.7-Code:deepinfra": {
+   "calls": 8,
+   "transport_errors": 0,
+   "circuit_skips": 0,
+   "completion_tokens": 761,
+   "prompt_tokens_est": 6466,
+   "usd_est": 0.00698
+  },
+  "ollama:qwen2.5-coder:7b": {
+   "calls": 5,
+   "transport_errors": 0,
+   "circuit_skips": 0,
+   "completion_tokens": 711,
+   "prompt_tokens_est": 4767,
+   "usd_est": 0.0
+  }
+ },
+ "spend_total_usd_est": 0.0073,
+ "spend_note": "NIM: free-tier credits, no USD. Ollama: local. HF router: priced per Mtok; completion tokens counted from the stream (chars/3.6 estimate), prompt tokens estimated from the rebuilt prompts (+25% per feedback attempt) because early stop closes the stream before the usage chunk.",
+ "baseline": {
+  "source": "evidence/gauntlet-2026-11-16-large/summary.json",
+  "nemotron_h2h_passed": 5,
+  "h2h_families": 6,
+  "nemotron_tokens_total_per_pass_median": 719,
+  "deepseek_gptoss_passed": 0,
+  "rename_solved": false,
+  "crystal_hit_rate": 0.833,
+  "false_accepts_total": 2,
+  "spend": {
+   "nim:deepseek|deepseek-ai/deepseek-v4.1-flash": {
+    "calls": 2,
+    "circuit_open_skipped": 11,
+    "failed_or_timeout": 2,
+    "tokens": 0
+   },
+   "nim:gpt-oss|openai/gpt-oss-20b": {
+    "calls": 2,
+    "circuit_open_skipped": 4,
+    "failed_or_timeout": 2,
+    "tokens": 0
+   },
+   "nim:nemotron|nvidia/nemotron-3.5-lightning-30b-a3b": {
+    "calls": 31,
+    "circuit_open_skipped": 0,
+    "failed_or_timeout": 0,
+    "tokens": 26434
+   },
+   "ollama|granite3.2:2b": {
+    "calls": 18,
+    "circuit_open_skipped": 0,
+    "failed_or_timeout": 0,
+    "tokens": 11809
+   },
+   "ollama|granite3.3:2b": {
+    "calls": 17,
+    "circuit_open_skipped": 0,
+    "failed_or_timeout": 0,
+    "tokens": 10627
+   },
+   "ollama|qwen3:4b": {
+    "calls": 30,
+    "circuit_open_skipped": 0,
+    "failed_or_timeout": 0,
+    "tokens": 25647
+   }
+  }
+ },
+ "scorecard": {
+  "cells": [
+   {
+    "provider": "hf",
+    "model": "moonshotai/Kimi-K2.7-Code:deepinfra",
+    "family": "*",
+    "placement": "cloud",
+    "attempts": 8,
+    "pass_rate": 0.393,
+    "json_rate": 0.89,
+    "tokens_per_accept": 148.7442037528774,
+    "latency_ms_ewma": 7444.9,
+    "spend_usd": 0.002587,
+    "failures": {
+     "verifier_reject": 5
+    },
+    "consecutive_failures": 3,
+    "cooldown_left": 3
+   },
+   {
+    "provider": "hf",
+    "model": "moonshotai/Kimi-K2.7-Code:deepinfra",
+    "family": "composite-refguard",
+    "placement": "cloud",
+    "attempts": 3,
+    "pass_rate": 0.395,
+    "json_rate": 0.796,
+    "tokens_per_accept": 254.0,
+    "latency_ms_ewma": 16499.5,
+    "spend_usd": 0.001377,
+    "failures": {
+     "verifier_reject": 2
+    },
+    "consecutive_failures": 2,
+    "cooldown_left": 3
+   },
+   {
+    "provider": "hf",
+    "model": "moonshotai/Kimi-K2.7-Code:deepinfra",
+    "family": "fix-config-constant",
+    "placement": "cloud",
+    "attempts": 1,
+    "pass_rate": 0.667,
+    "json_rate": 0.667,
+    "tokens_per_accept": 32.0,
+    "latency_ms_ewma": 1606.8,
+    "spend_usd": 0.000109,
+    "failures": {},
+    "consecutive_failures": 0,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "hf",
+    "model": "moonshotai/Kimi-K2.7-Code:deepinfra",
+    "family": "refactor-rename-symbol",
+    "placement": "cloud",
+    "attempts": 4,
+    "pass_rate": 0.339,
+    "json_rate": 0.828,
+    "tokens_per_accept": 156.0,
+    "latency_ms_ewma": 6938.0,
+    "spend_usd": 0.001102,
+    "failures": {
+     "verifier_reject": 3
+    },
+    "consecutive_failures": 1,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "hf",
+    "model": "openai/gpt-oss-120b:deepinfra",
+    "family": "*",
+    "placement": "cloud",
+    "attempts": 9,
+    "pass_rate": 0.446,
+    "json_rate": 0.899,
+    "tokens_per_accept": 59.26922087292759,
+    "latency_ms_ewma": 3635.9,
+    "spend_usd": 9.8e-05,
+    "failures": {
+     "verifier_reject": 5
+    },
+    "consecutive_failures": 3,
+    "cooldown_left": 3
+   },
+   {
+    "provider": "hf",
+    "model": "openai/gpt-oss-120b:deepinfra",
+    "family": "composite-refguard",
+    "placement": "cloud",
+    "attempts": 2,
+    "pass_rate": 0.252,
+    "json_rate": 0.748,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 3690.4,
+    "spend_usd": 2.9e-05,
+    "failures": {
+     "verifier_reject": 2
+    },
+    "consecutive_failures": 2,
+    "cooldown_left": 1
+   },
+   {
+    "provider": "hf",
+    "model": "openai/gpt-oss-120b:deepinfra",
+    "family": "composite",
+    "placement": "cloud",
+    "attempts": 1,
+    "pass_rate": 0.667,
+    "json_rate": 0.667,
+    "tokens_per_accept": 55.0,
+    "latency_ms_ewma": 2429.0,
+    "spend_usd": 9e-06,
+    "failures": {},
+    "consecutive_failures": 0,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "hf",
+    "model": "openai/gpt-oss-120b:deepinfra",
+    "family": "far",
+    "placement": "cloud",
+    "attempts": 1,
+    "pass_rate": 0.667,
+    "json_rate": 0.667,
+    "tokens_per_accept": 118.0,
+    "latency_ms_ewma": 5000.0,
+    "spend_usd": 2e-05,
+    "failures": {},
+    "consecutive_failures": 0,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "hf",
+    "model": "openai/gpt-oss-120b:deepinfra",
+    "family": "fix-config-constant",
+    "placement": "cloud",
+    "attempts": 1,
+    "pass_rate": 0.667,
+    "json_rate": 0.667,
+    "tokens_per_accept": 32.0,
+    "latency_ms_ewma": 1715.2,
+    "spend_usd": 5e-06,
+    "failures": {},
+    "consecutive_failures": 0,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "hf",
+    "model": "openai/gpt-oss-120b:deepinfra",
+    "family": "refactor-rename-symbol",
+    "placement": "cloud",
+    "attempts": 3,
+    "pass_rate": 0.204,
+    "json_rate": 0.796,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 3355.2,
+    "spend_usd": 2.9e-05,
+    "failures": {
+     "verifier_reject": 3
+    },
+    "consecutive_failures": 3,
+    "cooldown_left": 2
+   },
+   {
+    "provider": "hf",
+    "model": "openai/gpt-oss-120b:deepinfra",
+    "family": "toolchain-regenerate",
+    "placement": "cloud",
+    "attempts": 1,
+    "pass_rate": 0.667,
+    "json_rate": 0.667,
+    "tokens_per_accept": 31.0,
+    "latency_ms_ewma": 8018.3,
+    "spend_usd": 5e-06,
+    "failures": {},
+    "consecutive_failures": 0,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "nim",
+    "model": "deepseek-ai/deepseek-v4.1-flash",
+    "family": "*",
+    "placement": "cloud",
+    "attempts": 4,
+    "pass_rate": 0.172,
+    "json_rate": 0.172,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 0.0,
+    "spend_usd": 0.0,
+    "failures": {
+     "transport_error": 4
+    },
+    "consecutive_failures": 4,
+    "cooldown_left": 3
+   },
+   {
+    "provider": "nim",
+    "model": "deepseek-ai/deepseek-v4.1-flash",
+    "family": "composite-refguard",
+    "placement": "cloud",
+    "attempts": 1,
+    "pass_rate": 0.333,
+    "json_rate": 0.333,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 0.0,
+    "spend_usd": 0.0,
+    "failures": {
+     "transport_error": 1
+    },
+    "consecutive_failures": 1,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "nim",
+    "model": "deepseek-ai/deepseek-v4.1-flash",
+    "family": "fix-config-constant",
+    "placement": "cloud",
+    "attempts": 1,
+    "pass_rate": 0.333,
+    "json_rate": 0.333,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 0.0,
+    "spend_usd": 0.0,
+    "failures": {
+     "transport_error": 1
+    },
+    "consecutive_failures": 1,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "nim",
+    "model": "deepseek-ai/deepseek-v4.1-flash",
+    "family": "refactor-rename-symbol",
+    "placement": "cloud",
+    "attempts": 2,
+    "pass_rate": 0.252,
+    "json_rate": 0.252,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 0.0,
+    "spend_usd": 0.0,
+    "failures": {
+     "transport_error": 2
+    },
+    "consecutive_failures": 2,
+    "cooldown_left": 1
+   },
+   {
+    "provider": "nim",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "family": "*",
+    "placement": "cloud",
+    "attempts": 9,
+    "pass_rate": 0.266,
+    "json_rate": 0.899,
+    "tokens_per_accept": 45.266086239544656,
+    "latency_ms_ewma": 1584.7,
+    "spend_usd": 0.0,
+    "failures": {
+     "verifier_reject": 7
+    },
+    "consecutive_failures": 4,
+    "cooldown_left": 3
+   },
+   {
+    "provider": "nim",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "family": "composite-refguard",
+    "placement": "cloud",
+    "attempts": 3,
+    "pass_rate": 0.204,
+    "json_rate": 0.796,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 1802.9,
+    "spend_usd": 0.0,
+    "failures": {
+     "verifier_reject": 3
+    },
+    "consecutive_failures": 3,
+    "cooldown_left": 3
+   },
+   {
+    "provider": "nim",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "family": "fix-config-constant",
+    "placement": "cloud",
+    "attempts": 1,
+    "pass_rate": 0.667,
+    "json_rate": 0.667,
+    "tokens_per_accept": 32.0,
+    "latency_ms_ewma": 971.3,
+    "spend_usd": 0.0,
+    "failures": {},
+    "consecutive_failures": 0,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "nim",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "family": "fix-unhandled-exception",
+    "placement": "cloud",
+    "attempts": 1,
+    "pass_rate": 0.667,
+    "json_rate": 0.667,
+    "tokens_per_accept": 59.0,
+    "latency_ms_ewma": 1634.2,
+    "spend_usd": 0.0,
+    "failures": {},
+    "consecutive_failures": 0,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "nim",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "family": "refactor-rename-symbol",
+    "placement": "cloud",
+    "attempts": 3,
+    "pass_rate": 0.204,
+    "json_rate": 0.796,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 1063.0,
+    "spend_usd": 0.0,
+    "failures": {
+     "verifier_reject": 3
+    },
+    "consecutive_failures": 3,
+    "cooldown_left": 1
+   },
+   {
+    "provider": "nim",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "family": "toolchain-regenerate",
+    "placement": "cloud",
+    "attempts": 1,
+    "pass_rate": 0.333,
+    "json_rate": 0.667,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 1190.3,
+    "spend_usd": 0.0,
+    "failures": {
+     "verifier_reject": 1
+    },
+    "consecutive_failures": 1,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "nim",
+    "model": "openai/gpt-oss-20b",
+    "family": "*",
+    "placement": "cloud",
+    "attempts": 5,
+    "pass_rate": 0.285,
+    "json_rate": 0.58,
+    "tokens_per_accept": 32.0,
+    "latency_ms_ewma": 56754.9,
+    "spend_usd": 0.0,
+    "failures": {
+     "transport_error": 2,
+     "verifier_reject": 2
+    },
+    "consecutive_failures": 3,
+    "cooldown_left": 3
+   },
+   {
+    "provider": "nim",
+    "model": "openai/gpt-oss-20b",
+    "family": "composite-refguard",
+    "placement": "cloud",
+    "attempts": 2,
+    "pass_rate": 0.252,
+    "json_rate": 0.748,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 101642.3,
+    "spend_usd": 0.0,
+    "failures": {
+     "verifier_reject": 2
+    },
+    "consecutive_failures": 2,
+    "cooldown_left": 2
+   },
+   {
+    "provider": "nim",
+    "model": "openai/gpt-oss-20b",
+    "family": "fix-config-constant",
+    "placement": "cloud",
+    "attempts": 1,
+    "pass_rate": 0.667,
+    "json_rate": 0.667,
+    "tokens_per_accept": 32.0,
+    "latency_ms_ewma": 57432.6,
+    "spend_usd": 0.0,
+    "failures": {},
+    "consecutive_failures": 0,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "nim",
+    "model": "openai/gpt-oss-20b",
+    "family": "refactor-rename-symbol",
+    "placement": "cloud",
+    "attempts": 2,
+    "pass_rate": 0.252,
+    "json_rate": 0.252,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 0.0,
+    "spend_usd": 0.0,
+    "failures": {
+     "transport_error": 2
+    },
+    "consecutive_failures": 2,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "ollama",
+    "model": "granite3.3:2b",
+    "family": "*",
+    "placement": "auto",
+    "attempts": 7,
+    "pass_rate": 0.221,
+    "json_rate": 0.88,
+    "tokens_per_accept": 32.0,
+    "latency_ms_ewma": 8381.8,
+    "spend_usd": 0.0,
+    "failures": {
+     "verifier_reject": 6
+    },
+    "consecutive_failures": 5,
+    "cooldown_left": 3
+   },
+   {
+    "provider": "ollama",
+    "model": "granite3.3:2b",
+    "family": "composite-refguard",
+    "placement": "auto",
+    "attempts": 2,
+    "pass_rate": 0.252,
+    "json_rate": 0.748,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 10682.9,
+    "spend_usd": 0.0,
+    "failures": {
+     "verifier_reject": 2
+    },
+    "consecutive_failures": 2,
+    "cooldown_left": 2
+   },
+   {
+    "provider": "ollama",
+    "model": "granite3.3:2b",
+    "family": "fix-config-constant",
+    "placement": "auto",
+    "attempts": 1,
+    "pass_rate": 0.667,
+    "json_rate": 0.667,
+    "tokens_per_accept": 32.0,
+    "latency_ms_ewma": 11162.2,
+    "spend_usd": 0.0,
+    "failures": {},
+    "consecutive_failures": 0,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "ollama",
+    "model": "granite3.3:2b",
+    "family": "fix-unhandled-exception",
+    "placement": "auto",
+    "attempts": 1,
+    "pass_rate": 0.333,
+    "json_rate": 0.667,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 15125.9,
+    "spend_usd": 0.0,
+    "failures": {
+     "verifier_reject": 1
+    },
+    "consecutive_failures": 1,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "ollama",
+    "model": "granite3.3:2b",
+    "family": "refactor-rename-symbol",
+    "placement": "auto",
+    "attempts": 3,
+    "pass_rate": 0.204,
+    "json_rate": 0.796,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 11102.3,
+    "spend_usd": 0.0,
+    "failures": {
+     "verifier_reject": 3
+    },
+    "consecutive_failures": 3,
+    "cooldown_left": 3
+   },
+   {
+    "provider": "ollama",
+    "model": "qwen2.5-coder:7b",
+    "family": "*",
+    "placement": "gpu_full",
+    "attempts": 5,
+    "pass_rate": 0.15,
+    "json_rate": 0.85,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 12178.5,
+    "spend_usd": 0.0,
+    "failures": {
+     "verifier_reject": 5
+    },
+    "consecutive_failures": 5,
+    "cooldown_left": 3
+   },
+   {
+    "provider": "ollama",
+    "model": "qwen2.5-coder:7b",
+    "family": "composite-refguard",
+    "placement": "gpu_full",
+    "attempts": 2,
+    "pass_rate": 0.252,
+    "json_rate": 0.748,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 16710.0,
+    "spend_usd": 0.0,
+    "failures": {
+     "verifier_reject": 2
+    },
+    "consecutive_failures": 2,
+    "cooldown_left": 3
+   },
+   {
+    "provider": "ollama",
+    "model": "qwen2.5-coder:7b",
+    "family": "refactor-rename-symbol",
+    "placement": "gpu_full",
+    "attempts": 3,
+    "pass_rate": 0.204,
+    "json_rate": 0.796,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 9888.2,
+    "spend_usd": 0.0,
+    "failures": {
+     "verifier_reject": 3
+    },
+    "consecutive_failures": 3,
+    "cooldown_left": 3
+   },
+   {
+    "provider": "ollama",
+    "model": "qwen3:4b",
+    "family": "*",
+    "placement": "auto",
+    "attempts": 11,
+    "pass_rate": 0.363,
+    "json_rate": 0.912,
+    "tokens_per_accept": 55.12118582971081,
+    "latency_ms_ewma": 20259.1,
+    "spend_usd": 0.0,
+    "failures": {
+     "verifier_reject": 7
+    },
+    "consecutive_failures": 3,
+    "cooldown_left": 3
+   },
+   {
+    "provider": "ollama",
+    "model": "qwen3:4b",
+    "family": "composite-refguard",
+    "placement": "auto",
+    "attempts": 2,
+    "pass_rate": 0.252,
+    "json_rate": 0.748,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 35244.6,
+    "spend_usd": 0.0,
+    "failures": {
+     "verifier_reject": 2
+    },
+    "consecutive_failures": 2,
+    "cooldown_left": 1
+   },
+   {
+    "provider": "ollama",
+    "model": "qwen3:4b",
+    "family": "fix-config-constant",
+    "placement": "auto",
+    "attempts": 2,
+    "pass_rate": 0.748,
+    "json_rate": 0.748,
+    "tokens_per_accept": 40.52599041782837,
+    "latency_ms_ewma": 16239.2,
+    "spend_usd": 0.0,
+    "failures": {},
+    "consecutive_failures": 0,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "ollama",
+    "model": "qwen3:4b",
+    "family": "fix-logic-operator",
+    "placement": "auto",
+    "attempts": 1,
+    "pass_rate": 0.667,
+    "json_rate": 0.667,
+    "tokens_per_accept": 59.0,
+    "latency_ms_ewma": 9493.5,
+    "spend_usd": 0.0,
+    "failures": {},
+    "consecutive_failures": 0,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "ollama",
+    "model": "qwen3:4b",
+    "family": "fix-off-by-one",
+    "placement": "auto",
+    "attempts": 1,
+    "pass_rate": 0.667,
+    "json_rate": 0.667,
+    "tokens_per_accept": 80.0,
+    "latency_ms_ewma": 13875.1,
+    "spend_usd": 0.0,
+    "failures": {},
+    "consecutive_failures": 0,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "ollama",
+    "model": "qwen3:4b",
+    "family": "fix-unhandled-exception",
+    "placement": "auto",
+    "attempts": 1,
+    "pass_rate": 0.333,
+    "json_rate": 0.667,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 7678.5,
+    "spend_usd": 0.0,
+    "failures": {
+     "verifier_reject": 1
+    },
+    "consecutive_failures": 1,
+    "cooldown_left": 0
+   },
+   {
+    "provider": "ollama",
+    "model": "qwen3:4b",
+    "family": "refactor-rename-symbol",
+    "placement": "auto",
+    "attempts": 3,
+    "pass_rate": 0.204,
+    "json_rate": 0.796,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 25739.0,
+    "spend_usd": 0.0,
+    "failures": {
+     "verifier_reject": 3
+    },
+    "consecutive_failures": 3,
+    "cooldown_left": 3
+   },
+   {
+    "provider": "ollama",
+    "model": "qwen3:4b",
+    "family": "toolchain-regenerate",
+    "placement": "auto",
+    "attempts": 1,
+    "pass_rate": 0.333,
+    "json_rate": 0.667,
+    "tokens_per_accept": null,
+    "latency_ms_ewma": 13279.2,
+    "spend_usd": 0.0,
+    "failures": {
+     "verifier_reject": 1
+    },
+    "consecutive_failures": 1,
+    "cooldown_left": 0
+   }
+  ]
+ },
+ "receipt_chains": [
+  {
+   "valid": true,
+   "count": 80,
+   "errors": [],
+   "path": ".beast/governed-interception/proof-receipts-20261116T081258.jsonl"
+  },
+  {
+   "valid": true,
+   "count": 38,
+   "errors": [],
+   "path": ".beast/governed-interception/proof-receipts-20261116T083341.jsonl"
+  }
+ ],
+ "lifecycle_demo": {
+  "loaded": {
+   "pid": 1623468,
+   "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/beast-worker-36303b4a35.scope",
+   "beast_scope": true,
+   "gpu_used_before_spawn_mib": 8,
+   "gpu_used_loaded_mib": 568,
+   "server_vram_mib": 554
+  },
+  "frozen_at": 1794810747.1612644,
+  "call": {
+   "provider": "llamacpp-owned",
+   "model": "qwen2.5-0.5b",
+   "placement": "gpu_full",
+   "status": "stream_stall",
+   "json_valid": false,
+   "passed": false,
+   "verify_reason": "",
+   "dialect": "openai_json_schema",
+   "early_stop": false,
+   "stop_reason": "ttft_timeout",
+   "tokens_prompt": 0,
+   "tokens_completion": 0,
+   "tokens_estimated": true,
+   "budget_headroom_tokens": 0,
+   "ttft_ms": 0.0,
+   "latency_ms": 60080.8,
+   "spend_usd": 0.0,
+   "error": "",
+   "receipt_id": "gov_56392a33c6057d8330554fd0",
+   "governor_receipt": "gov_b12c29647d1207bd3f2fbb06",
+   "teardown": {
+    "mode": "owned_process",
+    "ok": true,
+    "pid": 1623468,
+    "signal_path": [
+     "pidfd:SIGTERM",
+     "pidfd:SIGKILL",
+     "cgroup.kill"
+    ],
+    "reclaimed": {
+     "fds_closed": 0,
+     "releases": {},
+     "vram_pid_before_mib": 554,
+     "vram_pid_after_mib": 0,
+     "gpu_used_before_mib": 568,
+     "gpu_used_after_mib": 8
+    },
+    "receipt_id": "gov_2a4b0f522f03580602522adc",
+    "elapsed_ms": 3822.4
+   }
+  },
+  "gpu_used_after_teardown_mib": 8,
+  "server_alive_after": false,
+  "receipt_chain": {
+   "valid": true,
+   "count": 3,
+   "errors": []
+  },
+  "teardown_receipt": [
+   {
+    "beast_scope": true,
+    "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/beast-worker-36303b4a35.scope",
+    "created_at": 1794810809.0439458,
+    "elapsed_ms": 3822.0,
+    "handle_id": "proc_9305098417fa",
+    "label": "llama-server:qwen2.5-0.5b",
+    "ok": true,
+    "origin": "spawned",
+    "pid": 1623468,
+    "prev_hash": "sha256:e888378aaf50b7a7cc29a6a347409831fb45498b1ebba5ad53e5f3de47fb9e67",
+    "receipt_hash": "sha256:fe3f3964731138e24ee43e3f4af724dcabd2e2882a5da48d51d32a34b0e0839a",
+    "receipt_id": "gov_2a4b0f522f03580602522adc",
+    "reclaimed": {
+     "fds_closed": 0,
+     "gpu_used_after_mib": 8,
+     "gpu_used_before_mib": 568,
+     "releases": {},
+     "vram_pid_after_mib": 0,
+     "vram_pid_before_mib": 554
+    },
+    "seq": 1,
+    "signal_path": [
+     "pidfd:SIGTERM",
+     "pidfd:SIGKILL",
+     "cgroup.kill"
+    ],
+    "start_time": 14503594,
+    "trigger": "stream_stall",
+    "type": "process_teardown"
+   }
+  ]
+ },
+ "placement": {
+  "placement_results_pass1": {
+   "model": "qwen2.5-coder:7b",
+   "rows": [
+    {
+     "num_gpu": 10,
+     "num_ctx": 2048,
+     "error": "HTTPError: HTTP Error 500: Internal Server Error"
+    },
+    {
+     "num_gpu": 10,
+     "num_ctx": 1024,
+     "error": "HTTPError: HTTP Error 500: Internal Server Error"
+    },
+    {
+     "num_gpu": 6,
+     "num_ctx": 2048,
+     "timed_out": false,
+     "first_token_s": 49.386,
+     "wall_s": 77.34,
+     "load_s": 28.74,
+     "decode_tok_s": 2.76,
+     "eval_count": 77,
+     "prompt_tok_s": 2.67,
+     "prompt_count": 55,
+     "ollama_size_mib": null,
+     "ollama_size_vram_mib": null,
+     "vram_before_mib": 4164,
+     "vram_during_mib": 5607,
+     "vram_peak_seen_mib": 5607,
+     "ram_avail_before_mib": 4998,
+     "ram_avail_during_mib": 4098,
+     "swap_free_during_mib": 6031
+    }
+   ],
+   "host": {
+    "gpu": "RTX 3050 6GB Laptop",
+    "cpu": "Ryzen 5 150 (12 threads)"
+   }
+  },
+  "placement_results_pass2": {
+   "model": "qwen2.5-coder:7b",
+   "rows": [
+    {
+     "num_gpu": 8,
+     "num_ctx": 2048,
+     "error": "HTTPError: HTTP Error 500: Internal Server Error"
+    },
+    {
+     "num_gpu": 0,
+     "num_ctx": 2048,
+     "timed_out": false,
+     "first_token_s": 111.103,
+     "wall_s": 299.94,
+     "load_s": 57.05,
+     "decode_tok_s": 0.42,
+     "eval_count": 77,
+     "prompt_tok_s": 1.02,
+     "prompt_count": 55,
+     "ollama_size_mib": 4721,
+     "ollama_size_vram_mib": 0,
+     "vram_before_mib": 4164,
+     "vram_during_mib": 4164,
+     "vram_peak_seen_mib": 4164,
+     "ram_avail_before_mib": 4799,
+     "ram_avail_during_mib": 875,
+     "swap_free_during_mib": 5203
+    },
+    {
+     "num_gpu": 6,
+     "num_ctx": 1024,
+     "timed_out": false,
+     "first_token_s": 16.034,
+     "wall_s": 28.83,
+     "load_s": 15.19,
+     "decode_tok_s": 6.0,
+     "eval_count": 77,
+     "prompt_tok_s": 77.84,
+     "prompt_count": 55,
+     "ollama_size_mib": 4735,
+     "ollama_size_vram_mib": 1336,
+     "vram_before_mib": 4164,
+     "vram_during_mib": 5597,
+     "vram_peak_seen_mib": 5597,
+     "ram_avail_before_mib": 4768,
+     "ram_avail_during_mib": 4359,
+     "swap_free_during_mib": 5967
+    }
+   ],
+   "host": {
+    "gpu": "RTX 3050 6GB Laptop",
+    "cpu": "Ryzen 5 150 (12 threads)"
+   }
+  },
+  "placement_results_pass3": {
+   "model": "qwen2.5-coder:7b",
+   "rows": [
+    {
+     "num_gpu": 99,
+     "num_ctx": 2048,
+     "timed_out": false,
+     "first_token_s": 9.942,
+     "wall_s": 12.87,
+     "load_s": 9.75,
+     "decode_tok_s": 27.12,
+     "eval_count": 79,
+     "prompt_tok_s": 292.23,
+     "prompt_count": 55,
+     "ollama_size_mib": 4421,
+     "ollama_size_vram_mib": 4421,
+     "vram_before_mib": 8,
+     "vram_during_mib": 4536,
+     "vram_peak_seen_mib": 4536,
+     "ram_avail_before_mib": 11817,
+     "ram_avail_during_mib": 11144,
+     "swap_free_during_mib": 7741
+    },
+    {
+     "num_gpu": 99,
+     "num_ctx": 4096,
+     "timed_out": false,
+     "first_token_s": 4.312,
+     "wall_s": 7.21,
+     "load_s": 4.16,
+     "decode_tok_s": 27.28,
+     "eval_count": 79,
+     "prompt_tok_s": 372.06,
+     "prompt_count": 55,
+     "ollama_size_mib": 4535,
+     "ollama_size_vram_mib": 4535,
+     "vram_before_mib": 8,
+     "vram_during_mib": 4650,
+     "vram_peak_seen_mib": 4650,
+     "ram_avail_before_mib": 11761,
+     "ram_avail_during_mib": 11375,
+     "swap_free_during_mib": 7743
+    },
+    {
+     "num_gpu": 18,
+     "num_ctx": 2048,
+     "timed_out": false,
+     "first_token_s": 5.081,
+     "wall_s": 12.45,
+     "load_s": 4.78,
+     "decode_tok_s": 10.72,
+     "eval_count": 79,
+     "prompt_tok_s": 185.68,
+     "prompt_count": 55,
+     "ollama_size_mib": 4792,
+     "ollama_size_vram_mib": 2947,
+     "vram_before_mib": 8,
+     "vram_during_mib": 3062,
+     "vram_peak_seen_mib": 3062,
+     "ram_avail_before_mib": 11728,
+     "ram_avail_during_mib": 9486,
+     "swap_free_during_mib": 7753
+    },
+    {
+     "num_gpu": 0,
+     "num_ctx": 2048,
+     "timed_out": false,
+     "first_token_s": 10.131,
+     "wall_s": 24.9,
+     "load_s": 8.33,
+     "decode_tok_s": 5.21,
+     "eval_count": 77,
+     "prompt_tok_s": 30.57,
+     "prompt_count": 55,
+     "ollama_size_mib": 4721,
+     "ollama_size_vram_mib": 0,
+     "vram_before_mib": 8,
+     "vram_during_mib": 8,
+     "vram_peak_seen_mib": 8,
+     "ram_avail_before_mib": 11666,
+     "ram_avail_during_mib": 7020,
+     "swap_free_during_mib": 7768
+    },
+    {
+     "num_gpu": 6,
+     "num_ctx": 2048,
+     "timed_out": false,
+     "first_token_s": 6.991,
+     "wall_s": 18.11,
+     "load_s": 6.53,
+     "decode_tok_s": 6.93,
+     "eval_count": 77,
+     "prompt_tok_s": 121.22,
+     "prompt_count": 55,
+     "ollama_size_mib": 4792,
+     "ollama_size_vram_mib": 1346,
+     "vram_before_mib": 8,
+     "vram_during_mib": 1460,
+     "vram_peak_seen_mib": 1460,
+     "ram_avail_before_mib": 11647,
+     "ram_avail_during_mib": 7863,
+     "swap_free_during_mib": 7774
+    }
+   ],
+   "host": {
+    "gpu": "RTX 3050 6GB Laptop",
+    "cpu": "Ryzen 5 150 (12 threads)"
+   }
+  }
+ }
+}

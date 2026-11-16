@@ -13,9 +13,16 @@ from app.kernel.sensorium.contracts import SensorEvent
 from app.kernel.sensorium.event_sequencer import SequencedEvent
 
 VALID_EVENT_VOCABULARY = {
+    # PREC mission event vocabulary: bounded lifecycle custody only.
+    "mission.admitted",
+    "mission.governance",
+    "mission.executed",
+    "mission.crystallized",
+    "mission.failed",
     "socket.open",
     "socket.close",
     "process.spawn",
+    "process.exec",
     "process.exit",
     "network.connect",
     # Physical Sensorium proof experiments.  These remain an explicit,

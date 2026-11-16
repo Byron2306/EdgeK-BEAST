@@ -1,21 +1,37 @@
 (() => {
-  const demoMode = window.BEAST_ENABLE_DEMO === true && (new URLSearchParams(location.search).get('demo') === '1' || new URLSearchParams(location.search).get('capture') === '1');
+  const demoMode = new URLSearchParams(location.search).get('demo') === '1' || new URLSearchParams(location.search).get('capture') === '1';
   let stream = null;
-  let chatStream = null;
-  let chatDemoTimer = null;
   let demoTimer = null;
   let toolingPromise = null;
   let doctorPromise = null;
 
   const terminalHistoryKey = () => `beast.v2.terminal.history:${BeastStore.get().workspace.root || 'workspace'}`;
   const terminalExecutionsKey = () => `beast.v2.terminal.executions:${BeastStore.get().workspace.root || 'workspace'}`;
-  const gatewayUrl = () => BeastRuntime.gatewayUrl || BeastStore.get().connection.gatewayUrl || 'http://127.0.0.1:8101';
+  const gatewayUrl = () => BeastStore.get().connection.gatewayUrl || window.gatewayUrl || 'http://127.0.0.1:8101';
   const root = () => BeastStore.get().workspace.root || '';
   const activeFile = () => BeastStore.get().editor.activePath || BeastStore.get().workspace.selectedPath || '';
   const nowLabel = () => new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
 
+  function timeoutSignal(signal, timeoutMs = 6000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort('timeout'), timeoutMs);
+    if (signal) signal.addEventListener('abort', () => controller.abort(signal.reason), {once:true});
+    return { signal: controller.signal, done: () => clearTimeout(timer) };
+  }
+
   async function fetchJson(path, options = {}) {
-    return await BeastRuntime.request(path, { ...options, timeoutMs: options.timeoutMs || 6000 });
+    const target = new URL(path, gatewayUrl());
+    const t = timeoutSignal(options.signal, options.timeoutMs || 6000);
+    try {
+      const response = await fetch(target, {
+        method: options.method || 'GET',
+        headers: options.body ? {'Content-Type':'application/json'} : undefined,
+        body: options.body ? JSON.stringify(options.body) : undefined,
+        signal: t.signal
+      });
+      if (!response.ok) throw new Error(`${response.status} ${response.statusText}`.trim());
+      return await response.json();
+    } finally { t.done(); }
   }
 
   async function safeGet(path, timeoutMs = 4500) {
@@ -28,35 +44,6 @@
     catch (error) { return {ok:false, error:String(error.message || error)}; }
   }
 
-  async function openGatewayEventStream(url) {
-    const desktop = BeastRuntime?.desktop || window.beastDesktop;
-    if (!desktop?.gatewayStreamStart || !desktop?.onGatewayStreamMessage) return new EventSource(url);
-    const target = new URL(url);
-    const started = await desktop.gatewayStreamStart({
-      path: `${target.pathname}${target.search}`,
-      headers: BeastRuntime?.diagnostics?.().workspaceIdentityDigest ? { 'X-BEAST-Workspace-Identity': BeastRuntime.diagnostics().workspaceIdentityDigest } : {}
-    });
-    if (!started?.ok || !started.id) throw new Error(started?.error || 'Unable to open the terminal chat stream.');
-    const listeners = new Map();
-    const dispatch = (name, event) => (listeners.get(name) || []).forEach(handler => handler(event));
-    const source = {
-      id: started.id,
-      closed: false,
-      onopen: null,
-      onerror: null,
-      addEventListener(name, handler) { if (!listeners.has(name)) listeners.set(name, []); listeners.get(name).push(handler); },
-      close() { if (source.closed) return; source.closed = true; dispose(); desktop.gatewayStreamStop(source.id).catch(() => {}); }
-    };
-    const dispose = desktop.onGatewayStreamMessage(message => {
-      if (!message || message.id !== source.id || source.closed) return;
-      if (message.type === 'open') { source.onopen?.({}); return; }
-      if (message.type === 'event') { dispatch(message.event || 'message', { data: String(message.data || '') }); return; }
-      if (message.type === 'end') { dispatch('end', { message: message.reason || '' }); return; }
-      if (message.type === 'error') source.onerror?.({ message: message.error || 'Terminal chat stream disconnected.' });
-    });
-    return source;
-  }
-
   function loadTerminalState() {
     let history = [];
     let executions = [];
@@ -66,9 +53,7 @@
       history,
       executions,
       lastReceipt: executions[0] || null,
-      cwd: BeastStore.get().terminal.cwd || root() || '',
-      selectedModel: BeastStore.get().terminal.selectedModel || BeastStore.get().models.selectedId || BeastStore.get().models.active || localStorage.getItem('beast.model') || '',
-      selectedProvider: BeastStore.get().terminal.selectedProvider || BeastStore.get().models.provider || localStorage.getItem('beast.provider') || ''
+      cwd: BeastStore.get().terminal.cwd || root() || ''
     });
   }
 
@@ -186,7 +171,7 @@
     if (['warn','require_approval','sandbox/worktree_only'].includes(decision) && !approved) {
       approved=window.confirm(`Safety decision: ${decision}. Execute with an evidence-logged operator override?`);
       if (!approved) return false;
-      override=`Approved from the desktop IDE after ${decision}`;
+      override=`Approved from BEAST Phase 7 after ${decision}`;
     }
     rememberCommand(clean);
     if (demoMode) { simulateTerminal(clean,{...options,approved,override}); return true; }
@@ -247,230 +232,12 @@
   function setCommand(command) { BeastStore.patch('terminal',{command:String(command || '')}); }
   function setCwd(cwd) { BeastStore.patch('terminal',{cwd:String(cwd || '')}); }
   function setTimeoutSeconds(value) { BeastStore.patch('terminal',{timeout:Math.max(5,Math.min(900,Number(value)||120))}); }
-  function setChatPrompt(prompt) { BeastStore.patch('terminal',{chatPrompt:String(prompt || '')}); }
-  function syncModelSelection(modelId='') {
-    const state = BeastStore.get();
-    const selected = state.models.registry.find(row => row.id === modelId)
-      || state.models.registry.find(row => row.id === state.models.selectedId)
-      || state.models.registry.find(row => row.id === state.models.active)
-      || {};
-    const nextModel = String(selected.id || modelId || state.models.selectedId || state.models.active || localStorage.getItem('beast.model') || '');
-    const nextProvider = String(selected.provider || state.models.provider || localStorage.getItem('beast.provider') || '');
-    if (nextModel) localStorage.setItem('beast.model', nextModel);
-    if (nextProvider) localStorage.setItem('beast.provider', nextProvider);
-    BeastStore.patch('models', { selectedId: nextModel || state.models.selectedId, provider: nextProvider || state.models.provider });
-    BeastStore.patch('terminal', { selectedModel: nextModel, selectedProvider: nextProvider });
-    return { model: nextModel, provider: nextProvider, selected };
-  }
   async function copyReceipt() {
     const receipt=BeastStore.get().terminal.lastReceipt;
     if (!receipt) return false;
     await navigator.clipboard?.writeText(JSON.stringify(receipt,null,2));
     BeastStore.addLedger('Terminal execution receipt copied');
     return true;
-  }
-
-  function clearChat() {
-    cancelChat();
-    BeastStore.patch('terminal',{chatOutput:'',chatTrace:[],chatError:'',chatStatus:'idle',chatStreaming:false,chatSessionId:''});
-  }
-
-  function appendChatLine(text) {
-    const chunk = String(text || '');
-    // Whitespace-only chunks are meaningful in a token stream (for example,
-    // the space between two words). Do not silently weld streamed tokens.
-    if (!chunk) return;
-    BeastStore.patch('terminal', { chatOutput: `${BeastStore.get().terminal.chatOutput || ''}${chunk}`.slice(-30000) });
-  }
-
-  function appendChatTrace(kind, text) {
-    const clean=String(text || '').trim();
-    if (!clean) return;
-    const trace=[...(BeastStore.get().terminal.chatTrace || []), {kind:String(kind || 'event'), text:clean, at:Date.now()}].slice(-80);
-    BeastStore.patch('terminal',{chatTrace:trace});
-  }
-
-  function failChat(prompt, model, provider, reason) {
-    if (chatStream) { chatStream.close(); chatStream = null; }
-    if (chatDemoTimer) { clearInterval(chatDemoTimer); chatDemoTimer = null; }
-    appendChatTrace('error', reason || 'Provider unavailable');
-    BeastStore.patch('terminal', {
-      chatOutput: `Unable to start a response from ${provider || 'this provider'}${model ? ` / ${model}` : ''}.\n\n${reason || 'The provider did not return a live response.'}\n\nChoose a ready model and try again.`,
-      chatStatus: 'failed',
-      chatStreaming: false,
-      chatError: String(reason || 'Provider unavailable')
-    });
-    BeastStore.addLedger(`Terminal chat failed: ${reason || 'provider unavailable'}`);
-    BeastMascot.setState('alert');
-  }
-
-  async function startChat(prompt, options = {}) {
-    const clean = String(prompt || BeastStore.get().terminal.chatPrompt || '').trim();
-    if (!clean) throw new Error('Enter a chat prompt before streaming.');
-    const state = BeastStore.get();
-    const sync = syncModelSelection(options.model || state.terminal.selectedModel || state.models.selectedId || state.models.active || '');
-    const model = String(sync.model || '');
-    const provider = String(sync.provider || '');
-    if (!model || !provider) throw new Error('Select a live model and provider before starting chat.');
-    const files = [activeFile()].filter(Boolean).slice(0, 1);
-    BeastStore.patch('terminal', {
-      chatPrompt: clean,
-      chatOutput: '',
-      chatTrace: [],
-      chatStatus: 'creating',
-      chatError: '',
-      chatStreaming: true,
-      chatSessionId: '',
-      selectedModel: model,
-      selectedProvider: provider
-    });
-    BeastMascot.setState('working');
-    try {
-      const session = demoMode ? { ok: true, session_id: `chat-demo-${Date.now().toString(36)}` } : await safePost('/edgek/ide/agent-sessions/create', {
-        root_path: root(),
-        objective: clean,
-        mode: 'chat',
-        provider,
-        model,
-        tools: ['Chat', 'Context', 'Evidence'],
-        files,
-        budget: { tokens: 4000, seconds: 900, cost_usd: 0 }
-      }, 12000);
-      if (!session.ok) throw new Error(session.error || 'Unable to create chat session.');
-      const sessionId = session.data?.session_id || session.data?.id || session.data?.session?.session_id || session.session_id || session.id;
-      if (!sessionId) throw new Error('Chat session returned no session id.');
-      BeastStore.patch('terminal', { chatSessionId: String(sessionId), chatStatus: 'streaming' });
-      if (demoMode) {
-        const demoText = [
-          `[${nowLabel()}] CHAT    model=${model || 'selected'} provider=${provider}\n`,
-          `[${nowLabel()}] PROMPT  ${clean}\n`,
-          `[${nowLabel()}] ANSWER  Local model streaming looks alive.\n`,
-          `[${nowLabel()}] NOTE    This path now uses the visible chat surface.\n`
-        ];
-        let index = 0;
-        chatStream = null;
-        chatDemoTimer = setInterval(() => {
-          if (index >= demoText.length) {
-            clearInterval(chatDemoTimer);
-            chatDemoTimer = null;
-            BeastStore.patch('terminal', { chatStatus: 'complete', chatStreaming: false });
-            BeastStore.addLedger(`Terminal chat complete: ${clean.slice(0, 80)}`);
-            BeastMascot.setState('finished');
-            return;
-          }
-          BeastStore.patch('terminal', {
-            chatOutput: `${BeastStore.get().terminal.chatOutput || ''}${demoText[index]}`
-          });
-          index += 1;
-        }, 180);
-        return { ok: true, session_id: String(sessionId), demo: true };
-      }
-      const params = new URLSearchParams({
-        root_path: root(),
-        prompt: clean,
-        provider,
-        model,
-        max_tokens: String(Number(options.maxTokens || 2000)),
-        context_max_chars_each: String(Number(options.contextMaxCharsEach || 30000))
-      });
-      if (files.length) params.set('context_files', files[0]);
-      const eventSource = await openGatewayEventStream(`${gatewayUrl()}/edgek/ide/agent-sessions/${encodeURIComponent(String(sessionId))}/run-events?${params.toString()}`);
-      chatStream = eventSource;
-      let terminalEventSeen = false;
-      // IDE SSE envelopes carry the event body under `payload`. Accept the
-      // direct shape too so older gateway builds remain compatible.
-      const eventPayload = event => {
-        const parsed = JSON.parse(event.data || '{}');
-        return parsed && typeof parsed.payload === 'object' ? parsed.payload : parsed;
-      };
-      eventSource.onopen = () => {
-        if (chatStream !== eventSource) return;
-        appendChatTrace('connection', `Connected to ${provider}/${model}`);
-      };
-      eventSource.addEventListener('agent_run_started', event => {
-        if (chatStream !== eventSource) return;
-        try {
-          const payload = eventPayload(event);
-          BeastStore.patch('terminal', { chatStatus: 'streaming', selectedModel: String(payload.model || model), selectedProvider: String(payload.provider || provider) });
-          appendChatTrace('request', `Sent prompt to ${payload.provider || provider}/${payload.model || model}`);
-        } catch (_) {}
-      });
-      eventSource.addEventListener('agent_run_stage', event => {
-        if (chatStream !== eventSource) return;
-        try { const payload = eventPayload(event); appendChatTrace('stage', payload.text); } catch (_) {}
-      });
-      eventSource.addEventListener('agent_run_token', event => {
-        if (chatStream !== eventSource) return;
-        try { const payload = eventPayload(event); appendChatLine(payload.text || ''); } catch (_) {}
-      });
-      eventSource.addEventListener('agent_run_tool', event => {
-        if (chatStream !== eventSource) return;
-        try { const payload = eventPayload(event); appendChatTrace('tool', payload.text); } catch (_) {}
-      });
-      eventSource.addEventListener('agent_run_provider_done', event => {
-        if (chatStream !== eventSource) return;
-        try {
-          const payload = eventPayload(event);
-          if (payload.ok) {
-            appendChatTrace('provider', 'Provider completed the response.');
-            return;
-          }
-          failChat(clean, model, provider, payload.error || 'Provider route did not complete.');
-        } catch (_) {}
-      });
-      eventSource.addEventListener('agent_run_needs_operator', event => {
-        if (chatStream !== eventSource) return;
-        try {
-          const payload = eventPayload(event);
-          BeastStore.patch('terminal', { chatStatus: 'operator-needed', chatError: payload.error || 'Operator review required.' });
-          appendChatTrace('review', payload.error || 'Operator review required.');
-        } catch (_) {}
-      });
-      eventSource.addEventListener('agent_run_done', event => {
-        if (chatStream !== eventSource) return;
-        terminalEventSeen = true;
-        eventSource.close(); chatStream = null;
-        try { appendChatTrace('complete', eventPayload(event).sourceplan_status || 'complete'); } catch (_) {}
-        BeastStore.patch('terminal', { chatStatus: 'complete', chatStreaming: false, chatError: '' });
-        BeastStore.addLedger(`Terminal chat complete: ${clean.slice(0, 80)}`);
-        BeastMascot.setState('finished');
-      });
-      eventSource.addEventListener('agent_run_error', event => {
-        if (chatStream !== eventSource) return;
-        terminalEventSeen = true;
-        eventSource.close(); chatStream = null;
-        let error = 'Chat stream failed or closed.';
-        try { const payload = eventPayload(event); error = payload.error || error; } catch (_) {}
-        failChat(clean, model, provider, error);
-      });
-      eventSource.addEventListener('error', () => {
-        // Transport errors are distinct from a normal finite SSE close in the
-        // Electron bridge. Only fail while this is still the active stream.
-        if (terminalEventSeen) return;
-        if (chatStream !== eventSource || !BeastStore.get().terminal.chatStreaming) return;
-        eventSource.close(); chatStream = null;
-        failChat(clean, model, provider, 'Chat stream disconnected');
-      });
-      eventSource.addEventListener('end', () => {
-        // agent_run_done closes the source itself. An end while it remains
-        // active is an incomplete gateway run, not a model readiness error.
-        if (terminalEventSeen) return;
-        if (chatStream !== eventSource || !BeastStore.get().terminal.chatStreaming) return;
-        eventSource.close(); chatStream = null;
-        failChat(clean, model, provider, 'The gateway ended the chat stream before it returned a terminal result.');
-      });
-      return { ok: true, session_id: String(sessionId) };
-    } catch (error) {
-      failChat(clean, model, provider, String(error.message || error));
-      throw error;
-    }
-  }
-
-  function cancelChat() {
-    if (chatStream) { chatStream.close(); chatStream = null; }
-    if (chatDemoTimer) { clearInterval(chatDemoTimer); chatDemoTimer = null; }
-    BeastStore.patch('terminal',{chatStreaming:false,chatStatus:'cancelled'});
-    BeastMascot.setState('idle');
   }
 
   function normalizeTooling(snapshot={},extras={}) {
@@ -480,17 +247,23 @@
     const pluginsPayload=extras.plugins?.data || {};
     const plugins={...(snapshot.plugins || {}), count:(pluginsPayload.plugins || []).length || snapshot.plugins?.count || 0, items:pluginsPayload.plugins || snapshot.plugins?.items || []};
     const environments=Array.isArray(snapshot.environments) ? snapshot.environments : [];
-    const capabilityPayload=extras.capabilities?.data || {};
-    const capabilityFamilies=extras.capabilityFamilies?.data?.families || {};
-    const capabilities=Array.isArray(capabilityPayload.capabilities) ? capabilityPayload.capabilities : [];
-    const actions=extras.actions?.data?.actions || extras.actions?.data?.items || [];
+    const builtinTools=Array.isArray(extras.builtinTools?.data?.tools) ? extras.builtinTools.data.tools : [];
+    const skillItems=Array.isArray(extras.skills?.data) ? extras.skills.data : (extras.skills?.data?.skills || []);
+    const skillCandidates=Array.isArray(extras.skillCandidates?.data?.candidates) ? extras.skillCandidates.data.candidates : [];
+    const skills={
+      state:extras.skillState?.data || {}, items:skillItems, candidates:skillCandidates,
+      capabilityPlane:extras.capabilityPlane?.data || {},
+      count:skillItems.length, candidateCount:skillCandidates.length,
+    };
     return {
       status:snapshot.status || (snapshot.ok===false?'warning':'ready'),
-      source:snapshot.source || (extras.local?'electron':'gateway'), syntax, linting, mcp, plugins, environments,
-      catalog:snapshot.catalog || extras.catalog?.data || {summary:{tools:capabilities.length,actions:actions.length},kinds:capabilityPayload.kinds || {},families:capabilityFamilies},
-      servers:extras.servers?.data?.servers || [], approvals:extras.approvals?.data?.approvals || [],
+      source:snapshot.source || (extras.local?'electron':'gateway'), syntax, linting,
+      mcp:{...mcp,builtin_tools:builtinTools,builtin_tool_count:builtinTools.length}, plugins, environments, skills,
+      catalog:snapshot.catalog || extras.catalog?.data || {},
+      servers:extras.servers?.data?.servers || [], configuredServers:Array.isArray(snapshot.mcp?.configured_servers) ? snapshot.mcp.configured_servers : [], approvals:extras.approvals?.data?.approvals || [],
+      approvalQueueChecked:Boolean(extras.approvals?.ok),
       schemaPins:extras.pins?.data?.schema_pins || [], audit:extras.audit?.data?.events || extras.audit?.data?.entries || [],
-      executions:extras.executions?.data?.executions || [], actions, capabilities,
+      executions:extras.executions?.data?.executions || [], actions:extras.actions?.data?.actions || extras.actions?.data?.items || [],
       raw:{snapshot,extras}
     };
   }
@@ -500,12 +273,12 @@
       status:'ready', source:'demo runtime',
       syntax:{status:'passed',kind:'Python / JS',path:activeFile() || 'src/core/router.py',detail:'No syntax defects detected.'},
       linting:{has_root_lint:true,has_desktop_smoke:true,recommendation:'Run lint and smoke before applying SourcePlan.',scripts:{root:['lint','test'],desktop:['smoke','check'] }},
-      mcp:{status:'healthy',configured:true,registered_servers:4,pending_approvals:1,executions:{executed:18,blocked:2}},
+      mcp:{status:'healthy',configured:true,registered_servers:4,pending_approvals:0,executions:{executed:18,blocked:2}},
       plugins:{status:'healthy',count:6,items:[{name:'Code Graph',risk_class:'low',tools:['graph']},{name:'Profiler',risk_class:'low',tools:['profile']},{name:'Evidence Parser',risk_class:'governed',tools:['parse','verify']}]},
       environments:[{command:'python',version:'Python 3.13.5',ok:true},{command:'node',version:'v24.3.0',ok:true},{command:'npm',version:'11.4.2',ok:true},{command:'git',version:'2.48.1',ok:true}],
       catalog:{summary:{tools:14,tools_installed:12,mcp_runners_available:4,vscode_extensions:1}},
       servers:[{name:'filesystem',status:'ready'},{name:'github',status:'ready'},{name:'postgres',status:'ready'},{name:'code-graph',status:'ready'}],
-      approvals:[{request_id:'MCP-APR-001',status:'pending',tool:'filesystem.write'}],
+      approvals:[], approvalQueueChecked:true,
       schemaPins:[{server:'filesystem',schema:'2026-07'},{server:'code-graph',schema:'v2'}],
       audit:[{time:nowLabel(),label:'MCP broker checked'},{time:'14:28:11',label:'Plugin manifest validated'}],
       executions:[{tool:'code_graph.search',status:'ok'},{tool:'profiler.run',status:'ok'}],
@@ -526,29 +299,38 @@
         return data;
       }
       let snapshot=null;
+      let localSnapshot=null;
       let local=false;
-      if (BeastRuntime.hasDesktop('toolingSnapshot')) {
-        try { snapshot=await BeastRuntime.desktopCall('toolingSnapshot',[root(),activeFile()]); local=true; } catch (_) {}
+      if (window.beastDesktop?.toolingSnapshot) {
+        try { localSnapshot=await window.beastDesktop.toolingSnapshot(root(),activeFile()); local=true; } catch (_) {}
       }
-      if (!snapshot) {
-        const params=new URLSearchParams();
-        if (root()) params.set('root_path',root());
-        if (activeFile()) params.set('active_file',activeFile());
-        const response=await safeGet(`/edgek/ide/tooling-snapshot?${params}`,7000);
-        if (response.ok) snapshot=response.data;
+      const params=new URLSearchParams();
+      if (root()) params.set('root_path',root());
+      if (activeFile()) params.set('active_file',activeFile());
+      const gatewaySnapshot=await safeGet(`/edgek/ide/tooling-snapshot?${params}`,7000);
+      if (gatewaySnapshot.ok) {
+        snapshot={
+          ...(localSnapshot || {}), ...gatewaySnapshot.data,
+          syntax:localSnapshot?.syntax || gatewaySnapshot.data?.syntax || {},
+          linting:{...(localSnapshot?.linting || {}),...(gatewaySnapshot.data?.linting || {})},
+        };
+      } else {
+        snapshot=localSnapshot;
       }
       const extras={local};
       const endpoints={
         mcpState:'/edgek/mcp/state',servers:'/edgek/mcp/servers',pins:'/edgek/mcp/schema-pins?limit=50',
         approvals:'/edgek/mcp/approvals?limit=20',audit:'/edgek/mcp/audit?limit=20',executions:'/edgek/mcp/executions?limit=20',
-        plugins:'/edgek/plugins',actions:'/edgek/ide/actions/manifest',capabilities:'/edgek/capabilities',capabilityFamilies:'/edgek/capabilities/families'
+        builtinTools:'/mcp/tools/list', plugins:'/edgek/plugins',actions:'/edgek/ide/actions/manifest',
+        skillState:'/edgek/skills/state',skills:'/edgek/skills?limit=100',
+        skillCandidates:'/edgek/skills/candidates?limit=100',capabilityPlane:'/edgek/capability-plane/summary?limit=120'
       };
       await Promise.all(Object.entries(endpoints).map(async ([key,path]) => { extras[key]=await safeGet(path,4500); }));
       if (!snapshot) snapshot={ok:false,status:'warning',source:'unavailable'};
       const data=normalizeTooling(snapshot,extras);
       const failures=Object.values(extras).filter(item => item && item.ok===false).length;
       BeastStore.patch('tooling',{...data,loading:false,error:snapshot.ok===false && failures ? `${failures} tooling route(s) unavailable.` : '',updatedAt:Date.now()});
-      BeastStore.addLedger(`Tooling Forge refreshed · ${data.servers.length} MCP servers · ${data.plugins.count || 0} plugins`);
+      BeastStore.addLedger(`Tooling Forge refreshed · ${data.mcp.builtin_tool_count || 0} built-in MCP tools · ${data.servers.length} broker servers · ${data.skills.count || 0} meta skills`);
       return data;
     })().finally(() => { toolingPromise=null; });
     return toolingPromise;
@@ -576,7 +358,7 @@
       BeastStore.transaction(next => { next.tooling.approvals=next.tooling.approvals.map(item => item.request_id===id?{...item,status:decision==='approve'?'approved':'denied'}:item); });
       return {ok:true,demo:true};
     }
-    const result=await safePost(`/edgek/mcp/approvals/${encodeURIComponent(id)}/${decision}`,{reason:`${decision} from desktop IDE`,operator:'beast_desktop'},7000);
+    const result=await safePost(`/edgek/mcp/approvals/${encodeURIComponent(id)}/${decision}`,{reason:`${decision} from BEAST Phase 7`,operator:'beast_desktop'},7000);
     if (!result.ok) throw new Error(result.error);
     await refreshTooling({force:true});
     return result.data;
@@ -598,14 +380,14 @@
   function demoDoctor() {
     const checks=[
       ['Gateway Core','online','127.0.0.1:8101'],['Capabilities','healthy','18 actions'],['Safety Governor','healthy','classification ready'],
-      ['Tooling Snapshot','healthy','syntax + lint + environment'],['MCP Broker','warning','1 approval pending'],['Plugin Registry','healthy','6 installed'],
+      ['Tooling Snapshot','healthy','syntax + lint + environment'],['MCP Broker','healthy','no pending approvals in demo snapshot'],['Plugin Registry','healthy','6 installed'],
       ['Workspace Index','healthy','5 files indexed'],['Evidence Bus','healthy','receipts available']
     ].map(([label,status,detail],index)=>({id:`check-${index}`,label,status,detail,latency:index<2?'12ms':'n/a'}));
     return {
       score:94,status:'Excellent',checks,
       routes:checks.map(item=>({path:item.label,ok:item.status!=='offline',status:item.status,detail:item.detail})),
       system:{summary:{listening_ports:7,processes_total:42,python:'3.13.5',node_manifests:2,vscode_commands:18},ports:{ports:[{proto:'tcp',port:8000,address:'127.0.0.1',process:'uvicorn',pid:4312},{proto:'tcp',port:4000,address:'127.0.0.1',process:'litellm',pid:4401}]},processes:{processes:[{name:'BEAST Gateway',pid:4312,rss_mb:184,status:'healthy'},{name:'LiteLLM',pid:4401,rss_mb:226,status:'healthy'},{name:'Electron',pid:4200,rss_mb:312,status:'healthy'}]}},
-      recommendations:[{tone:'warn',title:'Resolve MCP approval',detail:'One governed tool request is waiting for an operator decision.',action:'Open Tooling'},{tone:'good',title:'System nominal',detail:'No restart or repair action is required.',action:'Refresh'}]
+      recommendations:[{tone:'good',title:'System nominal',detail:'No restart or repair action is required in this demo snapshot.',action:'Refresh'}]
     };
   }
 
@@ -631,15 +413,15 @@
         rootInfo:'/edgek/root-info',snapshot:`/edgek/ide/snapshot?${new URLSearchParams({root_path:root(),objective:'doctor-scan'})}`,
         actions:'/edgek/ide/actions/manifest',tooling:`/edgek/ide/tooling-snapshot?${new URLSearchParams({root_path:root(),active_file:activeFile()})}`,
         system:`/edgek/ide/system-snapshot?${new URLSearchParams({root_path:root(),port_limit:'30',process_limit:'30'})}`,
-        mcp:'/edgek/mcp/state',plugins:'/edgek/plugins'
+        mcp:'/edgek/mcp/state',approvalQueue:'/edgek/mcp/approvals?limit=20',plugins:'/edgek/plugins'
       };
       const results={};
       await Promise.all(Object.entries(endpoints).map(async ([key,path]) => {
         const t=performance.now(); results[key]=await safeGet(path,6500); results[key].latency=`${Math.round(performance.now()-t)}ms`;
       }));
       let localSystem=null;
-      if (!results.system.ok && BeastRuntime.hasDesktop('systemSnapshot')) {
-        try { localSystem=await BeastRuntime.desktopCall('systemSnapshot',[root()]); results.system={ok:true,data:localSystem,latency:'local'}; } catch (_) {}
+      if (!results.system.ok && window.beastDesktop?.systemSnapshot) {
+        try { localSystem=await window.beastDesktop.systemSnapshot(root()); results.system={ok:true,data:localSystem,latency:'local'}; } catch (_) {}
       }
       const checks=[
         makeCheck('gateway','Gateway Core',results.rootInfo,'root contract ready'),
@@ -655,7 +437,12 @@
       const system=results.system.data || localSystem || {};
       const recommendations=[];
       checks.filter(item=>!item.ok).forEach(item=>recommendations.push({tone:'warn',title:`Repair ${item.label}`,detail:item.detail,action:'Inspect'}));
-      const pending=results.mcp.data?.stats?.pending_approvals || results.mcp.data?.pending_approvals || 0;
+      const approvalList=results.approvalQueue.ok
+        ? (Array.isArray(results.approvalQueue.data?.approvals) ? results.approvalQueue.data.approvals : [])
+        : null;
+      const pending=approvalList
+        ? approvalList.filter(item=>!/^(approved|denied|resolved|expired|cancelled)$/i.test(String(item.status||''))).length
+        : Number(results.mcp.data?.stats?.pending_approvals ?? results.mcp.data?.pending_approvals ?? 0);
       if (pending) recommendations.unshift({tone:'warn',title:'Resolve MCP approvals',detail:`${pending} request(s) wait for operator review.`,action:'Open Tooling'});
       if (!recommendations.length) recommendations.push({tone:'good',title:'System nominal',detail:'All diagnostic contracts responded successfully.',action:'Refresh'});
       const data={score,status:score>=90?'Excellent':score>=75?'Operational':score>=50?'Degraded':'Critical',checks,routes:checks,system,recommendations,report:{results,elapsed_ms:Math.round(performance.now()-start),checked_at:new Date().toISOString()}};
@@ -668,11 +455,10 @@
   }
 
   async function restartGateway() {
-    if (!BeastRuntime.hasDesktop('restartGateway')) throw new Error('Gateway restart is available only inside the BEAST Electron shell.');
+    if (!window.beastDesktop?.restartGateway) throw new Error('Gateway restart is available only inside the BEAST Electron shell.');
     if (!window.confirm('Restart the BEAST gateway now? Active streams will be interrupted.')) return null;
     BeastStore.patch('doctor',{loading:true,error:''});
-    const result=await BeastRuntime.desktopCall('restartGateway',[],{required:true});
-    if (!result?.ok || !result?.capabilities?.ok) throw new Error(result?.error || 'Managed gateway did not satisfy the desktop HTTP contract after restart.');
+    const result=await window.beastDesktop.restartGateway();
     await new Promise(resolve=>setTimeout(resolve,900));
     await BeastDesktopBridge.status();
     await refreshDoctor();
@@ -690,7 +476,7 @@
   function destroy() { cancel(false); }
 
   window.BeastTerminalToolingDoctorBridge={
-    loadTerminalState,rememberCommand,classify,execute,cancel,clearOutput,clearHistory,setCommand,setCwd,setTimeoutSeconds,setChatPrompt,syncModelSelection,clearChat,startChat,cancelChat,copyReceipt,
+    loadTerminalState,rememberCommand,classify,execute,cancel,clearOutput,clearHistory,setCommand,setCwd,setTimeoutSeconds,copyReceipt,
     refreshTooling,validatePluginManifest,resolveMcpApproval,runBenchmark,
     refreshDoctor,restartGateway,copyDoctorReport,destroy
   };

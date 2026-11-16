@@ -10,6 +10,8 @@ const { verifyRemoteExtensionRouting } = require('./verify-remote-extension-pari
 
 const root = path.resolve(__dirname, '..');
 const repo = path.resolve(root, '..');
+const projectPython = path.join(repo, '.venv', 'bin', process.platform === 'win32' ? 'python.exe' : 'python');
+const pythonCommand = process.env.BEAST_PYTHON || (fs.existsSync(projectPython) ? projectPython : 'python3');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const rows = [];
 const record = (name, status, detail = '') => rows.push({ name, status, detail });
@@ -493,7 +495,7 @@ async function verifyRemoteAgenticApplyContract() {
     });
     const containerVerify = await taskTestHost.runWorkspaceTask(contractRoot, { id: 'verify-container-agent', target: containerTarget });
 
-    const apply = run('python3', ['-c', `
+    const apply = run(pythonCommand, ['-c', `
 import json
 from app.cli.api import BeastApiClient
 client = BeastApiClient("http://offline", workspace=${JSON.stringify(contractRoot)})
@@ -569,6 +571,9 @@ print(json.dumps({
         containerWrite: containerWrite.ok,
         containerVerify: containerVerify.ok,
         applyOk: apply.ok,
+        applyError: apply.error || '',
+        applyStderr: apply.stderr || '',
+        applyStdout: apply.stdout || '',
         applyPayload,
         taskCounts: taskHistory.counts,
         targetSessions: targetSessions.map(item => ({ kind: item.kind, status: item.status, health: item.health })),
@@ -648,7 +653,7 @@ async def main():
 
 asyncio.run(main())
 `;
-  const result = run('python3', ['-c', code], { cwd: repo, timeout: 120000 });
+  const result = run(pythonCommand, ['-c', code], { cwd: repo, timeout: 120000 });
   let payload = {};
   try { payload = JSON.parse((result.stdout || '').trim().split(/\r?\n/).at(-1) || '{}'); } catch (_) {}
   check(
@@ -709,7 +714,7 @@ run = {
 plan = plan_verification(run)
 print(json.dumps(plan))
 `;
-  const result = run('python3', ['-c', code], { cwd: repo, timeout: 120000 });
+  const result = run(pythonCommand, ['-c', code], { cwd: repo, timeout: 120000 });
   let payload = {};
   try { payload = JSON.parse((result.stdout || '').trim().split(/\r?\n/).at(-1) || '{}'); } catch (_) {}
   check(
@@ -780,8 +785,8 @@ run = {
 }
 print(json.dumps(plan_verification(run)))
 `;
-  const retryResult = run('python3', ['-c', retryCode], { cwd: repo, timeout: 120000 });
-  const degradeResult = run('python3', ['-c', degradeCode], { cwd: repo, timeout: 120000 });
+  const retryResult = run(pythonCommand, ['-c', retryCode], { cwd: repo, timeout: 120000 });
+  const degradeResult = run(pythonCommand, ['-c', degradeCode], { cwd: repo, timeout: 120000 });
   let retryPayload = {};
   let degradePayload = {};
   try { retryPayload = JSON.parse((retryResult.stdout || '').trim().split(/\r?\n/).at(-1) || '{}'); } catch (_) {}
@@ -851,7 +856,7 @@ print(json.dumps({
     "failure_pressure": provider._failure_pressure(run),
 }))
 `;
-  const result = run('python3', ['-c', code], { cwd: repo, timeout: 120000 });
+  const result = run(pythonCommand, ['-c', code], { cwd: repo, timeout: 120000 });
   let payload = {};
   try { payload = JSON.parse((result.stdout || '').trim().split(/\r?\n/).at(-1) || '{}'); } catch (_) {}
   check(

@@ -1,0 +1,866 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="26" skipped="4" tests="519" time="738.569" timestamp="2026-10-10T08:09:08.311105+02:00" hostname="ByronPC"><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_default_matrix_has_450_lane_observations" time="0.001" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_qpccd_counts_only_quality_preserving_call_displacement" time="0.000" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_dry_run_report_has_manifest_without_secret_values" time="0.233" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_runner_writes_dry_run_artifacts" time="0.290" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_reuse_evidence_plane_certification_counts_seeded_channels" time="0.013" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_full_channel_reuse_plane_smoke_populates_all_channels" time="0.011" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_build_report_reuse_plane_smoke_uses_full_channel_certification" time="0.012" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_batching_selects_deterministic_stagger_slice" time="0.110" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_first_live_route_set_uses_requested_providers" time="0.129" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_live_mode_enriches_selected_mega_observations" time="0.117" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_runner_writes_compute_governor_receipts_for_crystallized_rows" time="0.128" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_mega_fingerprint_contains_real_target_test_and_tool_material" time="0.001" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_occurrence_10_mutation_blocks_reuse_and_recovers" time="0.003" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_cross_provider_case_has_publication_critical_outcome_fields" time="0.001" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_mutation_ladder_has_explicit_a_through_d_policy" time="0.004" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_resume_history_restores_active_crystallized_fingerprint" time="0.002"><failure message="KeyError: ('nvidia_nim', 'schema_validation')">tmp_path = PosixPath('/tmp/pytest-of-byron/pytest-12/test_resume_history_restores_a0')
+
+    def test_resume_history_restores_active_crystallized_fingerprint(tmp_path):
+        artifact = tmp_path / "prior"
+        artifact.mkdir()
+        rows = [{
+            "provider": "nvidia_nim",
+            "family": "schema_validation",
+            "occurrence": 5,
+            "lane": "full_beast_compute_governor",
+            "deterministic_reuse": True,
+            "completed": True,
+        }]
+        (artifact / "live_execution.json").write_text(json.dumps({"controlled_observations": rows}))
+    
+        observations, lane_c, active, source = _load_resume_history(str(artifact))
+    
+        assert len(observations) == 1
+&gt;       assert lane_c[("nvidia_nim", "schema_validation")][5]["completed"] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: ('nvidia_nim', 'schema_validation')
+
+tests/benchmarks/test_beast_definitive_mega_test.py:438: KeyError</failure></testcase><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_tiny_llama_crystal_amplification_gauntlet_is_defensive" time="320.554" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_tiny_llama_agentic_orchestrator_gauntlet_externalizes_reasoning" time="0.024" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_tiny_llama_live_schema_repair_turns_weak_json_into_orchestration_contract" time="0.000" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_tiny_llama_e2e_accepts_governed_swarm_approval_gate" time="0.000" /><testcase classname="tests.benchmarks.test_beast_definitive_mega_test" name="test_tiny_llama_opus_case_patch_requires_approval_and_passes" time="0.642" /><testcase classname="tests.benchmarks.test_beast_systems_benchmark" name="test_live_benchmark_entrypoint_loads_secret_vault" time="0.002" /><testcase classname="tests.benchmarks.test_beast_systems_benchmark" name="test_systems_benchmark_exercises_core_subsystems" time="42.046" /><testcase classname="tests.benchmarks.test_beast_systems_benchmark" name="test_live_output_canonicalizer_completes_provider_wiring_intent" time="0.003" /><testcase classname="tests.benchmarks.test_beast_systems_benchmark" name="test_live_output_canonicalizer_appends_missing_resolver" time="0.002" /><testcase classname="tests.benchmarks.test_beast_systems_benchmark" name="test_live_harness_accepts_fake_provider_without_local_nim" time="18.396" /><testcase classname="tests.benchmarks.test_beast_systems_benchmark" name="test_provider_matrix_labels_live_results_and_excludes_local_nim" time="2.362" /><testcase classname="tests.benchmarks.test_beast_systems_benchmark" name="test_live_raw_lane_is_non_beast_source_patch_baseline" time="3.000" /><testcase classname="tests.benchmarks.test_beast_systems_benchmark" name="test_live_ablation_lane_modes_are_distinct" time="0.000" /><testcase classname="tests.benchmarks.test_beast_systems_benchmark" name="test_live_full_beast_local_verifier_repair_is_counted_as_rescue" time="2.303" /><testcase classname="tests.benchmarks.test_beast_systems_benchmark" name="test_live_provider_fitness_counts_verifier_repair_as_rescued" time="2.174" /><testcase classname="tests.benchmarks.test_beast_systems_benchmark" name="test_live_gauntlet_artifacts_are_written" time="2.193" /><testcase classname="tests.benchmarks.test_coding_agent_harness" name="test_coding_agent_harness_reports_beast_advantage" time="0.032" /><testcase classname="tests.benchmarks.test_coding_agent_harness" name="test_provider_contracts_fail_closed_for_unknown_provider" time="0.001" /><testcase classname="tests.benchmarks.test_coding_agent_harness" name="test_completion_harness_verifies_beast_lane_fix" time="0.673" /><testcase classname="tests.benchmarks.test_coding_agent_harness" name="test_completion_harness_raw_can_pass_with_large_budget" time="0.545" /><testcase classname="tests.benchmarks.test_coding_agent_harness" name="test_live_completion_harness_skips_without_endpoint" time="0.003" /><testcase classname="tests.benchmarks.test_coding_agent_harness" name="test_live_completion_harness_applies_provider_json_and_verifies" time="0.568" /><testcase classname="tests.benchmarks.test_comparative_benchmark" name="test_comparative_benchmark_reports_gated_vs_non_gated" time="0.062" /><testcase classname="tests.benchmarks.test_comparative_benchmark" name="test_mega_gauntlet_runs_provider_profiles" time="0.101" /><testcase classname="tests.benchmarks.test_comparative_benchmark" name="test_mega_gauntlet_blocks_semantic_risks" time="0.041" /><testcase classname="tests.benchmarks.test_comparative_benchmark" name="test_mega_gauntlet_reports_cipc_pipeline_metrics" time="0.056" /><testcase classname="tests.benchmarks.test_edge_metrics_benchmark" name="test_edge_metrics_cost_and_tool_laziness_sections_run" time="2.487" /><testcase classname="tests.benchmarks.test_full_live_gauntlet" name="test_full_gauntlet_dry_run_combines_suites" time="0.010" /><testcase classname="tests.benchmarks.test_full_live_gauntlet" name="test_provider_compare_scenario_sizing_env" time="0.000" /><testcase classname="tests.benchmarks.test_full_live_gauntlet" name="test_provider_compare_can_keep_local_nim_scout_only" time="0.000" /><testcase classname="tests.benchmarks.test_gauntlet_v2_surface" name="test_manifest_matches_planned_gauntlet_shape" time="0.000" /><testcase classname="tests.benchmarks.test_gauntlet_v2_surface" name="test_smoke_preset_is_small_and_diagnostic" time="0.000" /><testcase classname="tests.benchmarks.test_gauntlet_v2_surface" name="test_provider_fitness_hard_gates_are_separate_from_score" time="0.000" /><testcase classname="tests.benchmarks.test_gauntlet_v2_surface" name="test_provider_fitness_allows_source_patching_when_gates_pass" time="0.000" /><testcase classname="tests.benchmarks.test_gauntlet_v2_surface" name="test_nim_failure_buckets_keep_infra_and_capability_distinct" time="0.000" /><testcase classname="tests.benchmarks.test_gauntlet_v2_surface" name="test_prepare_artifact_surface_writes_expected_files" time="0.001" /><testcase classname="tests.benchmarks.test_provider_edge_compare" name="test_beast_messages_reduce_telemetry_prompt_shape" time="0.108" /><testcase classname="tests.benchmarks.test_provider_edge_compare" name="test_provider_compare_dry_run_without_env" time="0.103" /><testcase classname="tests.benchmarks.test_public_benchmark_grading_daemon" name="test_public_benchmark_grading_daemon_run_once" time="0.003" /><testcase classname="tests.benchmarks.test_public_benchmark_grading_daemon" name="test_public_benchmark_grading_daemon_run_loop" time="0.003" /><testcase classname="tests.benchmarks.test_public_economic_thesis_harness" name="test_public_economic_thesis_harness_writes_template_and_verdict" time="0.001" /><testcase classname="tests.benchmarks.test_public_economic_thesis_harness" name="test_alpha_packet_filters_to_human_graded_balanced_rows" time="0.000" /><testcase classname="tests.benchmarks.test_xai_omni_gauntlet" name="test_omni_suite_has_24_unique_hidden_test_tasks" time="0.000" /><testcase classname="tests.benchmarks.test_xai_omni_gauntlet" name="test_additional_fixture_repairs_pass_and_broken_states_fail" time="7.656" /><testcase classname="tests.benchmarks.test_xai_omni_gauntlet" name="test_coverage_requires_live_task_and_passing_local_probe" time="0.000" /><testcase classname="tests.benchmarks.test_xai_omni_gauntlet" name="test_omni_runner_rejects_unknown_provider_before_work" time="0.002" /><testcase classname="tests.benchmarks.test_xai_omni_gauntlet" name="test_omni_summary_uses_selected_provider" time="0.001" /><testcase classname="tests.integration.test_full_pipeline" name="test_full_pipeline_cpu_records_real_stage_evidence" time="1.053"><failure message="AssertionError: assert False is True&#10; +  where False = move('kv_b46b52623c8b1ccbac33', &lt;CacheLocation.STORAGE: 'storage'&gt;)&#10; +    where move = &lt;app.kernel.compute.kv_cache_transport.CrossEngineKVCacheTransport object at 0x704f2fc78050&gt;.move&#10; +    and   'kv_b46b52623c8b1ccbac33' = KVCacheBlock(block_id='kv_b46b52623c8b1ccbac33', model='test', tokenizer='test', prompt_prefix_hash='695252f664b93b237...c29a'}, 'inference_artifact_identity_hash': 'sha256:addb3d7445fb467b290b105634323c71aebdea0c33a30ee14e98481b7766c29a'}).block_id&#10; +    and   &lt;CacheLocation.STORAGE: 'storage'&gt; = CacheLocation.STORAGE">tmp_path = PosixPath('/tmp/pytest-of-byron/pytest-12/test_full_pipeline_cpu_records0')
+
+    def test_full_pipeline_cpu_records_real_stage_evidence(tmp_path):
+        repo = tmp_path / "repo"
+        repo.mkdir()
+        _write_repo(repo)
+        storage = DurableInferenceStorage(tmp_path / "credits")
+        node = ComputeForgeNode("integration-node", storage=storage)
+    
+        fingerprint = node.watch_repo(str(repo), target_paths=["app/value.py"])
+        assert fingerprint["targets"]["app/value.py"]["exists"] is True
+    
+        scheduler = DistributedForgeScheduler(tmp_path / "scheduler")
+        scheduler.register_node("integration-node", capabilities=["fingerprint"])
+        scheduler.submit_work("fingerprint", str(repo), priority=1)
+        assigned = scheduler.assign_work("integration-node", max_items=1)
+        assert len(assigned) == 1
+        assert scheduler.report_work_result(
+            assigned[0].schedule_id,
+            "integration-node",
+            True,
+            {"fingerprint_hash": fingerprint["fingerprint_hash"]},
+        ) is True
+        assert scheduler.nodes["integration-node"].total_work_completed == 1
+        assert not list((tmp_path / "scheduler").glob("work_*.json"))
+    
+        engine = CapabilityCrystallizationEngine(storage_path=tmp_path / "crystallization")
+        harness = AblationHarness(repo_root=repo, crystallization_engine=engine)
+        run = harness.run_ablation(
+            candidate_name="schema_validation",
+            task_class="integration",
+            transform_type="deterministic",
+            visible_test_path="tests/test_visible.py",
+            hidden_test_path="tests/test_hidden.py",
+            rollback_test="tests/test_rollback.py",
+        )
+        assert run.behavior_preserved is True
+        assert run.visible_tests_passed == run.visible_tests_total == 1
+        assert run.hidden_tests_passed == run.hidden_tests_total == 1
+        candidate = engine.get_candidate("crystal_schema_validation_integration")
+        assert candidate is not None
+        assert candidate.shadow_runs == 1
+    
+        kv_dir = tmp_path / "kv"
+        kv = CrossEngineKVCacheTransport(max_memory_bytes=1024 * 1024, storage_dir=kv_dir)
+        block = kv.register_block(
+            model="test", tokenizer="test", prompt_prefix="pre", system_prompt="sys",
+            engine=CacheEngine.OLLAMA, location=CacheLocation.CPU, precision="fp16",
+            num_layers=2, num_heads=2, head_dim=32, seq_len=16, size_bytes=512,
+        )
+&gt;       assert kv.move(block.block_id, CacheLocation.STORAGE) is True
+E       AssertionError: assert False is True
+E        +  where False = move('kv_b46b52623c8b1ccbac33', &lt;CacheLocation.STORAGE: 'storage'&gt;)
+E        +    where move = &lt;app.kernel.compute.kv_cache_transport.CrossEngineKVCacheTransport object at 0x704f2fc78050&gt;.move
+E        +    and   'kv_b46b52623c8b1ccbac33' = KVCacheBlock(block_id='kv_b46b52623c8b1ccbac33', model='test', tokenizer='test', prompt_prefix_hash='695252f664b93b237...c29a'}, 'inference_artifact_identity_hash': 'sha256:addb3d7445fb467b290b105634323c71aebdea0c33a30ee14e98481b7766c29a'}).block_id
+E        +    and   &lt;CacheLocation.STORAGE: 'storage'&gt; = CacheLocation.STORAGE
+
+tests/integration/test_full_pipeline.py:77: AssertionError</failure></testcase><testcase classname="tests.phase2.test_governed_promotion" name="test_evaluate_creates_digest_bound_pending_approval" time="0.040" /><testcase classname="tests.phase2.test_governed_promotion" name="test_commit_candidate_requires_human_identity_and_does_not_touch_main" time="0.058" /><testcase classname="tests.phase2.test_governed_promotion" name="test_receipt_becomes_stale_after_mutation_epoch_changes" time="0.040" /><testcase classname="tests.phase2.test_governed_promotion" name="test_approval_from_another_receipt_is_rejected" time="0.044" /><testcase classname="tests.phase2.test_governed_promotion" name="test_blocked_policy_does_not_create_approval" time="0.043" /><testcase classname="tests.phase2.test_governed_promotion" name="test_remote_promotion_creates_target_side_commit_candidate" time="0.031" /><testcase classname="tests.phase2.test_live_remote_promotion_acceptance" name="test_live_docker_target_full_remote_promotion_and_final_apply" time="0.000"><skipped type="pytest.skip" message="set BEAST_LIVE_DOCKER_ACCEPTANCE=1 to run disposable Docker target acceptance">/home/byron/GitHub/EdgeK-BEAST/tests/phase2/test_live_remote_promotion_acceptance.py:126: set BEAST_LIVE_DOCKER_ACCEPTANCE=1 to run disposable Docker target acceptance</skipped></testcase><testcase classname="tests.phase2.test_live_remote_promotion_acceptance" name="test_live_docker_target_planner_driven_multiturn_ci_repair_and_final_apply" time="0.000"><skipped type="pytest.skip" message="set BEAST_LIVE_DOCKER_ACCEPTANCE=1 to run disposable Docker target acceptance">/home/byron/GitHub/EdgeK-BEAST/tests/phase2/test_live_remote_promotion_acceptance.py:210: set BEAST_LIVE_DOCKER_ACCEPTANCE=1 to run disposable Docker target acceptance</skipped></testcase><testcase classname="tests.phase2.test_live_remote_promotion_acceptance" name="test_live_disposable_ssh_target_full_remote_promotion_and_final_apply" time="0.000"><skipped type="pytest.skip" message="set BEAST_LIVE_SSH_DOCKER_ACCEPTANCE=1 to build and run disposable strict-host-key SSH acceptance">/home/byron/GitHub/EdgeK-BEAST/tests/phase2/test_live_remote_promotion_acceptance.py:240: set BEAST_LIVE_SSH_DOCKER_ACCEPTANCE=1 to build and run disposable strict-host-key SSH acceptance</skipped></testcase><testcase classname="tests.phase2.test_live_remote_promotion_acceptance" name="test_live_disposable_ssh_target_planner_driven_multiturn_ci_repair_and_final_apply" time="0.000"><skipped type="pytest.skip" message="set BEAST_LIVE_SSH_DOCKER_ACCEPTANCE=1 to build and run disposable strict-host-key SSH acceptance">/home/byron/GitHub/EdgeK-BEAST/tests/phase2/test_live_remote_promotion_acceptance.py:340: set BEAST_LIVE_SSH_DOCKER_ACCEPTANCE=1 to build and run disposable strict-host-key SSH acceptance</skipped></testcase><testcase classname="tests.phase2.test_verification_repair_cycles" name="test_failed_verification_returns_structured_observation_and_repairs" time="0.290" /><testcase classname="tests.phase2.test_verification_repair_cycles" name="test_mutation_invalidates_old_verification_receipt" time="0.062" /><testcase classname="tests.phase2.test_verification_repair_cycles" name="test_repair_budget_exhaustion_is_terminal" time="0.139" /><testcase classname="tests.phase2.test_worktree_mutation_tools" name="test_worktree_mutation_verification_and_sourceplan" time="0.086" /><testcase classname="tests.phase2.test_worktree_mutation_tools" name="test_mutation_requires_approval_and_worktree" time="0.026" /><testcase classname="tests.phase2.test_worktree_mutation_tools" name="test_worktree_escape_is_rejected" time="0.036" /><testcase classname="tests.phase2.test_worktree_mutation_tools" name="test_existing_file_requires_bounded_replacement" time="0.037" /><testcase classname="tests.phase2.test_worktree_mutation_tools" name="test_remote_worktree_mutation_and_verification_execute_on_target" time="0.039" /><testcase classname="tests.phase3.test_capability_consumption" name="test_apply_and_replay_blocked" time="0.003" /><testcase classname="tests.phase3.test_capability_consumption" name="test_rollback_burns_key" time="0.002" /><testcase classname="tests.phase3.test_capability_consumption" name="test_tamper_blocked" time="0.001" /><testcase classname="tests.phase3.test_compatibility_engine" name="test_exact_is_classification_only" time="0.003" /><testcase classname="tests.phase3.test_compatibility_engine" name="test_adaptable_on_same_task_environment_drift" time="0.002" /><testcase classname="tests.phase3.test_compatibility_engine" name="test_reference_on_different_task_with_score" time="0.006" /><testcase classname="tests.phase3.test_compatibility_engine" name="test_policy_mismatch_rejected" time="0.002" /><testcase classname="tests.phase3.test_compatibility_engine" name="test_revoked_terminal" time="0.002" /><testcase classname="tests.phase3.test_compatibility_engine" name="test_receipt_is_deterministic" time="0.002" /><testcase classname="tests.phase3.test_equivalence_engine" name="test_exact_equivalence_passes" time="0.001" /><testcase classname="tests.phase3.test_equivalence_engine" name="test_exact_mismatch_fails_closed" time="0.000" /><testcase classname="tests.phase3.test_equivalence_engine" name="test_adaptation_passes_only_after_resolved_drift" time="0.000" /><testcase classname="tests.phase3.test_equivalence_engine" name="test_missing_required_check_fails" time="0.000" /><testcase classname="tests.phase3.test_equivalence_engine" name="test_failed_required_check_fails" time="0.000" /><testcase classname="tests.phase3.test_equivalence_engine" name="test_binding_mismatch_fails" time="0.000" /><testcase classname="tests.phase3.test_equivalence_engine" name="test_tamper_fails" time="0.000" /><testcase classname="tests.phase3.test_equivalence_engine" name="test_operator_workspace_touch_fails" time="0.000" /><testcase classname="tests.phase3.test_equivalence_engine" name="test_digest_is_deterministic" time="0.000" /><testcase classname="tests.phase3.test_evidence_crystallization" name="test_crystallizes_promoted_run_and_verifies" time="0.039" /><testcase classname="tests.phase3.test_evidence_crystallization" name="test_crystallization_is_idempotent_per_run" time="0.043" /><testcase classname="tests.phase3.test_evidence_crystallization" name="test_rejects_unpromoted_run" time="0.007" /><testcase classname="tests.phase3.test_evidence_crystallization" name="test_tampered_object_fails_verification" time="0.048" /><testcase classname="tests.phase3.test_evidence_ledger" name="test_created_event_and_chain_verify" time="0.044" /><testcase classname="tests.phase3.test_evidence_ledger" name="test_usage_and_metrics_are_append_only" time="0.056" /><testcase classname="tests.phase3.test_evidence_ledger" name="test_revocation_blocks_future_use_without_mutating_crystal" time="0.053" /><testcase classname="tests.phase3.test_evidence_ledger" name="test_supersession_links_successor" time="0.048" /><testcase classname="tests.phase3.test_evidence_ledger" name="test_tampered_ledger_event_is_detected" time="0.052" /><testcase classname="tests.phase3.test_evidence_retrieval" name="test_ranked_explainable_retrieval" time="0.011" /><testcase classname="tests.phase3.test_evidence_retrieval" name="test_revoked_is_excluded" time="0.008" /><testcase classname="tests.phase3.test_evidence_retrieval" name="test_hard_language_and_policy_filters" time="0.009" /><testcase classname="tests.phase3.test_evidence_retrieval" name="test_deterministic_receipt" time="0.017" /><testcase classname="tests.phase3.test_fingerprint_engine" name="test_crystallization_creates_verified_fingerprint" time="0.046" /><testcase classname="tests.phase3.test_fingerprint_engine" name="test_fingerprint_is_deterministic_for_same_inputs" time="0.048" /><testcase classname="tests.phase3.test_fingerprint_engine" name="test_comparison_explains_dependency_drift" time="0.040" /><testcase classname="tests.phase3.test_fingerprint_engine" name="test_fingerprint_is_immutable_per_crystal" time="0.044" /><testcase classname="tests.phase3.test_operator_approval" name="test_approval_issues_one_use_capability" time="0.001" /><testcase classname="tests.phase3.test_operator_approval" name="test_rejection_issues_no_capability" time="0.000" /><testcase classname="tests.phase3.test_operator_approval" name="test_request_changes_issues_no_capability" time="0.000" /><testcase classname="tests.phase3.test_operator_approval" name="test_tampered_handoff_is_blocked" time="0.000" /><testcase classname="tests.phase3.test_operator_approval" name="test_plan_binding_mismatch_is_blocked" time="0.000" /><testcase classname="tests.phase3.test_operator_approval" name="test_digest_binding_mismatch_is_blocked" time="0.005" /><testcase classname="tests.phase3.test_operator_approval" name="test_review_acknowledgement_required" time="0.000" /><testcase classname="tests.phase3.test_operator_approval" name="test_broad_scope_is_forbidden" time="0.000" /><testcase classname="tests.phase3.test_operator_approval" name="test_receipt_is_deterministic_with_fixed_inputs" time="0.001" /><testcase classname="tests.phase3.test_phase3_closure" name="test_complete_chain_closes" time="0.003" /><testcase classname="tests.phase3.test_phase3_closure" name="test_tampered_receipt_blocks" time="0.002" /><testcase classname="tests.phase3.test_phase3_closure" name="test_parent_binding_break_blocks" time="0.003" /><testcase classname="tests.phase3.test_phase3_closure" name="test_missing_operational_phase_blocks" time="0.002" /><testcase classname="tests.phase3.test_phase3_closure" name="test_regression_failure_blocks" time="0.002" /><testcase classname="tests.phase3.test_phase3_closure" name="test_writes_reproducible_bundle" time="0.003" /><testcase classname="tests.phase3.test_post_apply_gate" name="test_promotion_eligible" time="0.001" /><testcase classname="tests.phase3.test_post_apply_gate" name="test_failed_required_check_blocks" time="0.000" /><testcase classname="tests.phase3.test_post_apply_gate" name="test_tampered_consumption_blocks" time="0.000" /><testcase classname="tests.phase3.test_post_apply_gate" name="test_state_drift_blocks" time="0.000" /><testcase classname="tests.phase3.test_post_apply_gate" name="test_missing_rollback_blocks" time="0.000" /><testcase classname="tests.phase3.test_promotion_closure" name="test_promotes_exact_state" time="0.002" /><testcase classname="tests.phase3.test_promotion_closure" name="test_tampered_eligibility_blocks" time="0.001" /><testcase classname="tests.phase3.test_promotion_closure" name="test_dirty_workspace_blocks" time="0.001" /><testcase classname="tests.phase3.test_promotion_closure" name="test_digest_drift_blocks" time="0.001" /><testcase classname="tests.phase3.test_promotion_closure" name="test_distinct_roots_required" time="0.001" /><testcase classname="tests.phase3.test_sourceplan_handoff" name="test_verified_exact_is_review_ready_not_authorized" time="0.001" /><testcase classname="tests.phase3.test_sourceplan_handoff" name="test_verified_adapted_is_review_ready" time="0.000" /><testcase classname="tests.phase3.test_sourceplan_handoff" name="test_failed_outcome_blocks" time="0.000" /><testcase classname="tests.phase3.test_sourceplan_handoff" name="test_tampered_outcome_blocks" time="0.000" /><testcase classname="tests.phase3.test_sourceplan_handoff" name="test_worktree_mismatch_blocks" time="0.000" /><testcase classname="tests.phase3.test_sourceplan_handoff" name="test_truncated_or_translation_plan_blocks" time="0.000" /><testcase classname="tests.phase3.test_sourceplan_handoff" name="test_non_exact_operation_blocks" time="0.000" /><testcase classname="tests.phase3.test_sourceplan_handoff" name="test_unsafe_path_blocks" time="0.000" /><testcase classname="tests.phase3.test_sourceplan_handoff" name="test_operation_digest_and_receipt_are_deterministic" time="0.001" /><testcase classname="tests.phase4.test_agent_selection_fallback" name="test_advisory_single_code_block_compiles_when_selection_is_exact" time="0.002" /><testcase classname="tests.phase4.test_agent_selection_fallback" name="test_advisory_selection_fallback_rejects_ambiguous_selection" time="0.001" /><testcase classname="tests.phase4.test_phase4_11_durable_approval_cards" name="test_create_persists_complete_restart_safe_card" time="0.007" /><testcase classname="tests.phase4.test_phase4_11_durable_approval_cards" name="test_card_retains_safe_view_not_raw_card_fields" time="0.005" /><testcase classname="tests.phase4.test_phase4_11_durable_approval_cards" name="test_card_is_bound_to_envelope_and_request_digests" time="0.005" /><testcase classname="tests.phase4.test_phase4_11_durable_approval_cards" name="test_tampered_envelope_is_rejected" time="0.003" /><testcase classname="tests.phase4.test_phase4_11_durable_approval_cards" name="test_duplicate_card_is_rejected" time="0.006" /><testcase classname="tests.phase4.test_phase4_11_durable_approval_cards" name="test_bound_decision_updates_card_and_history" time="0.006" /><testcase classname="tests.phase4.test_phase4_11_durable_approval_cards" name="test_wrong_request_digest_cannot_decide_card" time="0.005" /><testcase classname="tests.phase4.test_phase4_11_durable_approval_cards" name="test_terminal_card_cannot_be_decided_twice" time="0.006" /><testcase classname="tests.phase4.test_phase4_11_durable_approval_cards" name="test_event_chain_survives_restart" time="0.010" /><testcase classname="tests.phase4.test_phase4_11_durable_approval_cards" name="test_card_grants_no_execution_authority" time="0.005" /><testcase classname="tests.phase4.test_phase4_12_revocation_policy_admin" name="test_revocation_is_durable_and_restart_safe" time="0.003" /><testcase classname="tests.phase4.test_phase4_12_revocation_policy_admin" name="test_duplicate_revocation_is_idempotent" time="0.003" /><testcase classname="tests.phase4.test_phase4_12_revocation_policy_admin" name="test_revocation_record_cannot_grant_authority" time="0.002" /><testcase classname="tests.phase4.test_phase4_12_revocation_policy_admin" name="test_assert_active_rejects_revoked_capability" time="0.003" /><testcase classname="tests.phase4.test_phase4_12_revocation_policy_admin" name="test_policy_generation_revocation_invalidates_bound_artifacts" time="0.004" /><testcase classname="tests.phase4.test_phase4_12_revocation_policy_admin" name="test_create_and_activate_policy_generation" time="0.003" /><testcase classname="tests.phase4.test_phase4_12_revocation_policy_admin" name="test_new_policy_supersedes_old_without_retroactive_grant" time="0.004" /><testcase classname="tests.phase4.test_phase4_12_revocation_policy_admin" name="test_active_policy_cannot_be_revoked_before_supersession" time="0.003" /><testcase classname="tests.phase4.test_phase4_12_revocation_policy_admin" name="test_revocation_check_receipt_is_deny_only" time="0.002" /><testcase classname="tests.phase4.test_phase4_12_revocation_policy_admin" name="test_unknown_target_type_is_rejected" time="0.002" /><testcase classname="tests.phase4.test_phase4_13_end_to_end_closure" name="test_complete_phase4_chain_closes" time="0.035" /><testcase classname="tests.phase4.test_phase4_13_end_to_end_closure" name="test_closure_receipt_grants_no_authority" time="0.032" /><testcase classname="tests.phase4.test_phase4_13_end_to_end_closure" name="test_tampered_request_fails_closure" time="0.024" /><testcase classname="tests.phase4.test_phase4_13_end_to_end_closure" name="test_tampered_envelope_fails_closure" time="0.028" /><testcase classname="tests.phase4.test_phase4_13_end_to_end_closure" name="test_scope_non_match_fails_closure" time="0.027" /><testcase classname="tests.phase4.test_phase4_13_end_to_end_closure" name="test_capability_tamper_fails_closure" time="0.036" /><testcase classname="tests.phase4.test_phase4_13_end_to_end_closure" name="test_consumption_replay_flag_widening_fails_closure" time="0.037" /><testcase classname="tests.phase4.test_phase4_13_end_to_end_closure" name="test_revoked_capability_fails_closure" time="0.029" /><testcase classname="tests.phase4.test_phase4_13_end_to_end_closure" name="test_card_survives_fresh_store_instance" time="0.034" /><testcase classname="tests.phase4.test_phase4_13_end_to_end_closure" name="test_tampered_closure_receipt_fails_verification" time="0.032" /><testcase classname="tests.phase4.test_phase4_1_approval_contracts" name="test_request_is_deterministic_and_valid" time="0.001" /><testcase classname="tests.phase4.test_phase4_1_approval_contracts" name="test_request_digest_detects_tampering" time="0.001" /><testcase classname="tests.phase4.test_phase4_1_approval_contracts" name="test_approved_decision_is_request_and_policy_bound" time="0.001" /><testcase classname="tests.phase4.test_phase4_1_approval_contracts" name="test_negative_decision_requires_reason_and_no_scope" time="0.001" /><testcase classname="tests.phase4.test_phase4_1_approval_contracts" name="test_edit_and_approve_requires_edited_once_scope" time="0.001" /><testcase classname="tests.phase4.test_phase4_1_approval_contracts" name="test_legal_transition_contract_and_digest" time="0.001" /><testcase classname="tests.phase4.test_phase4_1_approval_contracts" name="test_illegal_transition_fails_closed" time="0.000" /><testcase classname="tests.phase4.test_phase4_1_approval_contracts" name="test_expiry_is_bounded" time="0.000" /><testcase classname="tests.phase4.test_phase4_1_approval_contracts" name="test_missing_identity_fields_fail_closed" time="0.000" /><testcase classname="tests.phase4.test_phase4_2_durable_approval_store" name="test_persists_and_reopens" time="0.003" /><testcase classname="tests.phase4.test_phase4_2_durable_approval_store" name="test_duplicate_id_and_active_run_step_fail_closed" time="0.004" /><testcase classname="tests.phase4.test_phase4_2_durable_approval_store" name="test_decision_and_transition_are_durable" time="0.004" /><testcase classname="tests.phase4.test_phase4_2_durable_approval_store" name="test_event_chain_detects_tamper" time="0.003" /><testcase classname="tests.phase4.test_phase4_2_durable_approval_store" name="test_projection_rebuild_after_loss" time="0.003" /><testcase classname="tests.phase4.test_phase4_2_durable_approval_store" name="test_recovery_returns_exact_suspended_step_without_capability" time="0.004" /><testcase classname="tests.phase4.test_phase4_2_durable_approval_store" name="test_expiry_is_persisted" time="0.004" /><testcase classname="tests.phase4.test_phase4_2_durable_approval_store" name="test_illegal_transition_rolls_back" time="0.003" /><testcase classname="tests.phase4.test_phase4_3_risk_classifier" name="test_guided_safe_local_read_auto_allows" time="0.000" /><testcase classname="tests.phase4.test_phase4_3_risk_classifier" name="test_review_mode_requires_approval_for_safe_read" time="0.000" /><testcase classname="tests.phase4.test_phase4_3_risk_classifier" name="test_sensitive_path_requires_sensitive_approval" time="0.000" /><testcase classname="tests.phase4.test_phase4_3_risk_classifier" name="test_mutation_without_worktree_is_denied" time="0.000" /><testcase classname="tests.phase4.test_phase4_3_risk_classifier" name="test_bounded_autonomy_can_auto_allow_worktree_mutation" time="0.000" /><testcase classname="tests.phase4.test_phase4_3_risk_classifier" name="test_network_egress_requires_approval" time="0.001" /><testcase classname="tests.phase4.test_phase4_3_risk_classifier" name="test_locked_mode_denies_everything" time="0.000" /><testcase classname="tests.phase4.test_phase4_3_risk_classifier" name="test_permanent_policy_deny_wins" time="0.000" /><testcase classname="tests.phase4.test_phase4_3_risk_classifier" name="test_never_model_authorized_is_denied" time="0.000" /><testcase classname="tests.phase4.test_phase4_3_risk_classifier" name="test_digest_is_deterministic_and_tamper_evident" time="0.001" /><testcase classname="tests.phase4.test_phase4_4_rich_approval_envelope" name="test_builds_and_verifies_rich_envelope" time="0.001" /><testcase classname="tests.phase4.test_phase4_4_rich_approval_envelope" name="test_sensitive_arguments_are_redacted_and_bound" time="0.007" /><testcase classname="tests.phase4.test_phase4_4_rich_approval_envelope" name="test_tampered_classification_is_rejected" time="0.001" /><testcase classname="tests.phase4.test_phase4_4_rich_approval_envelope" name="test_auto_allow_does_not_create_envelope" time="0.001" /><testcase classname="tests.phase4.test_phase4_4_rich_approval_envelope" name="test_request_binding_mismatch_is_rejected" time="0.001" /><testcase classname="tests.phase4.test_phase4_4_rich_approval_envelope" name="test_argument_tamper_breaks_verification" time="0.001" /><testcase classname="tests.phase4.test_phase4_4_rich_approval_envelope" name="test_authority_widening_breaks_verification" time="0.001" /><testcase classname="tests.phase4.test_phase4_4_rich_approval_envelope" name="test_envelope_digest_recomputes_from_same_semantics" time="0.001" /><testcase classname="tests.phase4.test_phase4_5_approval_scope_engine" name="test_once_scope_matches_exact_call" time="0.002" /><testcase classname="tests.phase4.test_phase4_5_approval_scope_engine" name="test_equivalent_run_scope_rejects_other_run" time="0.002" /><testcase classname="tests.phase4.test_phase4_5_approval_scope_engine" name="test_resource_widening_is_rejected" time="0.002" /><testcase classname="tests.phase4.test_phase4_5_approval_scope_engine" name="test_high_risk_cannot_receive_reusable_scope" time="0.002" /><testcase classname="tests.phase4.test_phase4_5_approval_scope_engine" name="test_read_only_target_requires_read_only_tool" time="0.002" /><testcase classname="tests.phase4.test_phase4_5_approval_scope_engine" name="test_read_only_target_matches_safe_read" time="0.002" /><testcase classname="tests.phase4.test_phase4_5_approval_scope_engine" name="test_edited_scope_binds_edited_call" time="0.002" /><testcase classname="tests.phase4.test_phase4_5_approval_scope_engine" name="test_tampered_grant_is_denied" time="0.002" /><testcase classname="tests.phase4.test_phase4_5_approval_scope_engine" name="test_scope_grant_never_issues_authority" time="0.002" /><testcase classname="tests.phase4.test_phase4_6_request_bound_capability" name="test_issue_request_bound_capability" time="0.002" /><testcase classname="tests.phase4.test_phase4_6_request_bound_capability" name="test_non_match_cannot_issue" time="0.002" /><testcase classname="tests.phase4.test_phase4_6_request_bound_capability" name="test_tampered_grant_denied" time="0.002" /><testcase classname="tests.phase4.test_phase4_6_request_bound_capability" name="test_request_binding_enforced" time="0.002" /><testcase classname="tests.phase4.test_phase4_6_request_bound_capability" name="test_decision_binding_enforced" time="0.002" /><testcase classname="tests.phase4.test_phase4_6_request_bound_capability" name="test_classification_binding_enforced" time="0.002" /><testcase classname="tests.phase4.test_phase4_6_request_bound_capability" name="test_capability_tamper_detection" time="0.002" /><testcase classname="tests.phase4.test_phase4_6_request_bound_capability" name="test_capability_never_authorizes_execution" time="0.003" /><testcase classname="tests.phase4.test_phase4_7_capability_runtime" name="test_consumes_capability_and_resumes_exact_step" time="0.014" /><testcase classname="tests.phase4.test_phase4_7_capability_runtime" name="test_replay_is_denied_after_durable_consumption" time="0.019" /><testcase classname="tests.phase4.test_phase4_7_capability_runtime" name="test_wrong_suspended_step_is_denied_without_consumption" time="0.010" /><testcase classname="tests.phase4.test_phase4_7_capability_runtime" name="test_request_binding_substitution_is_denied" time="0.014" /><testcase classname="tests.phase4.test_phase4_7_capability_runtime" name="test_expired_capability_is_denied" time="0.010" /><testcase classname="tests.phase4.test_phase4_7_capability_runtime" name="test_tampered_capability_is_denied" time="0.010" /><testcase classname="tests.phase4.test_phase4_7_capability_runtime" name="test_receipt_authority_widening_is_detected" time="0.017" /><testcase classname="tests.phase4.test_phase4_7_capability_runtime" name="test_pending_consumption_survives_store_reopen" time="0.008" /><testcase classname="tests.phase5.test_phase5_10_verification_console" name="test_canonical_verification_projection" time="0.014" /><testcase classname="tests.phase5.test_phase5_10_verification_console" name="test_verification_fields_are_operator_reviewable" time="0.010" /><testcase classname="tests.phase5.test_phase5_10_verification_console" name="test_reuse_requires_visible_equivalence_proof" time="0.010" /><testcase classname="tests.phase5.test_phase5_10_verification_console" name="test_failed_promotion_relevant_check_blocks_readiness" time="0.016" /><testcase classname="tests.phase5.test_phase5_10_verification_console" name="test_category_filter" time="0.012" /><testcase classname="tests.phase5.test_phase5_10_verification_console" name="test_status_filter" time="0.010" /><testcase classname="tests.phase5.test_phase5_10_verification_console" name="test_query_filter" time="0.014" /><testcase classname="tests.phase5.test_phase5_10_verification_console" name="test_invalid_filters_fail_closed" time="0.005" /><testcase classname="tests.phase5.test_phase5_10_verification_console" name="test_unknown_run_denied" time="0.002" /><testcase classname="tests.phase5.test_phase5_10_verification_console" name="test_tamper_detection_and_read_only_authority" time="0.011" /><testcase classname="tests.phase5.test_phase5_1_console_view_model" name="test_builds_complete_canonical_snapshot" time="0.015" /><testcase classname="tests.phase5.test_phase5_1_console_view_model" name="test_snapshot_is_deterministic_across_fresh_view_model_instance" time="0.018" /><testcase classname="tests.phase5.test_phase5_1_console_view_model" name="test_snapshot_digest_detects_tampering" time="0.015" /><testcase classname="tests.phase5.test_phase5_1_console_view_model" name="test_unknown_run_fails_closed" time="0.002" /><testcase classname="tests.phase5.test_phase5_1_console_view_model" name="test_context_suggestions_are_not_implicitly_accepted" time="0.009" /><testcase classname="tests.phase5.test_phase5_1_console_view_model" name="test_timeline_chain_is_reported_and_verified" time="0.015" /><testcase classname="tests.phase5.test_phase5_1_console_view_model" name="test_no_hidden_conversation_reconstruction_is_claimed" time="0.012" /><testcase classname="tests.phase5.test_phase5_1_console_view_model" name="test_sourceplan_and_promotion_authority_remain_separate" time="0.016" /><testcase classname="tests.phase5.test_phase5_2_event_projection" name="test_projects_ordered_canonical_events" time="0.008" /><testcase classname="tests.phase5.test_phase5_2_event_projection" name="test_synchronization_is_idempotent_and_suppresses_duplicates" time="0.009" /><testcase classname="tests.phase5.test_phase5_2_event_projection" name="test_projection_is_restart_stable" time="0.014" /><testcase classname="tests.phase5.test_phase5_2_event_projection" name="test_cursor_pagination_has_no_duplicates_or_gaps" time="0.009" /><testcase classname="tests.phase5.test_phase5_2_event_projection" name="test_cursor_is_bound_to_run" time="0.010" /><testcase classname="tests.phase5.test_phase5_2_event_projection" name="test_compact_and_expanded_views_share_identity" time="0.009" /><testcase classname="tests.phase5.test_phase5_2_event_projection" name="test_page_digest_detects_tampering" time="0.012" /><testcase classname="tests.phase5.test_phase5_2_event_projection" name="test_console_snapshot_consumes_projection" time="0.012" /><testcase classname="tests.phase5.test_phase5_2_event_projection" name="test_new_source_event_appends_without_rewriting_existing_projection" time="0.010" /><testcase classname="tests.phase5.test_phase5_2_event_projection" name="test_unknown_run_fails_closed" time="0.007" /><testcase classname="tests.phase5.test_phase5_3_mode_contract" name="test_contracts_match_phase5_semantics" time="0.003" /><testcase classname="tests.phase5.test_phase5_3_mode_contract" name="test_ask_to_edit_is_durable_and_updates_run" time="0.011" /><testcase classname="tests.phase5.test_phase5_3_mode_contract" name="test_review_to_agent_requires_explicit_conversion" time="0.006" /><testcase classname="tests.phase5.test_phase5_3_mode_contract" name="test_review_to_agent_with_confirmation_passes" time="0.013" /><testcase classname="tests.phase5.test_phase5_3_mode_contract" name="test_agent_cannot_jump_directly_to_edit" time="0.006" /><testcase classname="tests.phase5.test_phase5_3_mode_contract" name="test_same_mode_transition_rejected" time="0.007" /><testcase classname="tests.phase5.test_phase5_3_mode_contract" name="test_operator_and_reason_required" time="0.006" /><testcase classname="tests.phase5.test_phase5_3_mode_contract" name="test_active_tool_blocks_read_only_transition" time="0.011" /><testcase classname="tests.phase5.test_phase5_3_mode_contract" name="test_dirty_agent_requires_sourceplan_before_review" time="0.007" /><testcase classname="tests.phase5.test_phase5_3_mode_contract" name="test_transition_receipt_grants_no_execution_authority" time="0.010" /><testcase classname="tests.phase5.test_phase5_4_objective_plan" name="test_initial_revision_is_durable_and_verifiable" time="0.014" /><testcase classname="tests.phase5.test_phase5_4_objective_plan" name="test_requires_measurable_success_criteria" time="0.006" /><testcase classname="tests.phase5.test_phase5_4_objective_plan" name="test_requires_plan_steps" time="0.006" /><testcase classname="tests.phase5.test_phase5_4_objective_plan" name="test_material_objective_expansion_requires_confirmation" time="0.015" /><testcase classname="tests.phase5.test_phase5_4_objective_plan" name="test_confirmed_expansion_is_recorded_but_grants_no_authority" time="0.014" /><testcase classname="tests.phase5.test_phase5_4_objective_plan" name="test_only_one_active_step_allowed" time="0.006" /><testcase classname="tests.phase5.test_phase5_4_objective_plan" name="test_advance_completes_exact_step_and_activates_next" time="0.016" /><testcase classname="tests.phase5.test_phase5_4_objective_plan" name="test_history_is_versioned_and_chained" time="0.012" /><testcase classname="tests.phase5.test_phase5_4_objective_plan" name="test_console_uses_durable_objective_and_plan" time="0.020" /><testcase classname="tests.phase5.test_phase5_4_objective_plan" name="test_tampered_revision_fails_verification" time="0.010" /><testcase classname="tests.phase5.test_phase5_5_context_manifest" name="test_suggestion_remains_unselected" time="0.007" /><testcase classname="tests.phase5.test_phase5_5_context_manifest" name="test_manual_item_is_explicitly_accepted" time="0.010" /><testcase classname="tests.phase5.test_phase5_5_context_manifest" name="test_accept_then_admit" time="0.011" /><testcase classname="tests.phase5.test_phase5_5_context_manifest" name="test_cannot_admit_unaccepted_suggestion" time="0.007" /><testcase classname="tests.phase5.test_phase5_5_context_manifest" name="test_sensitive_context_requires_redaction" time="0.010" /><testcase classname="tests.phase5.test_phase5_5_context_manifest" name="test_local_only_blocks_external_provider" time="0.007" /><testcase classname="tests.phase5.test_phase5_5_context_manifest" name="test_restart_restores_same_manifest" time="0.009" /><testcase classname="tests.phase5.test_phase5_5_context_manifest" name="test_content_hash_is_bound_and_item_verifies" time="0.007" /><testcase classname="tests.phase5.test_phase5_5_context_manifest" name="test_manifest_counts_and_tokens" time="0.011" /><testcase classname="tests.phase5.test_phase5_5_context_manifest" name="test_console_prefers_durable_manifest" time="0.013" /><testcase classname="tests.phase5.test_phase5_6_context_manifest_console" name="test_console_projects_operator_cards" time="0.012" /><testcase classname="tests.phase5.test_phase5_6_context_manifest_console" name="test_suggestion_is_visibly_unselected" time="0.010" /><testcase classname="tests.phase5.test_phase5_6_context_manifest_console" name="test_acceptance_and_admission_remain_distinct" time="0.009" /><testcase classname="tests.phase5.test_phase5_6_context_manifest_console" name="test_sensitive_card_exposes_redaction_warning" time="0.013" /><testcase classname="tests.phase5.test_phase5_6_context_manifest_console" name="test_source_reference_includes_line_range" time="0.010" /><testcase classname="tests.phase5.test_phase5_6_context_manifest_console" name="test_console_filters_by_status_privacy_visibility_and_query" time="0.015" /><testcase classname="tests.phase5.test_phase5_6_context_manifest_console" name="test_token_summary_distinguishes_selected_from_total" time="0.009" /><testcase classname="tests.phase5.test_phase5_6_context_manifest_console" name="test_projection_is_restart_stable_and_verifiable" time="0.011" /><testcase classname="tests.phase5.test_phase5_6_context_manifest_console" name="test_projection_tampering_is_detected" time="0.013" /><testcase classname="tests.phase5.test_phase5_6_context_manifest_console" name="test_console_never_grants_admission_or_execution" time="0.009" /><testcase classname="tests.phase5.test_phase5_6_context_manifest_console" name="test_frontend_contains_context_manifest_workspace" time="0.007" /><testcase classname="tests.phase5.test_phase5_7_live_run_timeline_console" name="test_builds_grouped_operator_timeline" time="0.008" /><testcase classname="tests.phase5.test_phase5_7_live_run_timeline_console" name="test_category_severity_step_and_query_filters" time="0.015" /><testcase classname="tests.phase5.test_phase5_7_live_run_timeline_console" name="test_event_cards_are_expandable_and_evidence_bound" time="0.008" /><testcase classname="tests.phase5.test_phase5_7_live_run_timeline_console" name="test_cursor_refresh_is_reconnect_safe" time="0.009" /><testcase classname="tests.phase5.test_phase5_7_live_run_timeline_console" name="test_restart_projection_is_stable" time="0.015" /><testcase classname="tests.phase5.test_phase5_7_live_run_timeline_console" name="test_tampering_is_detected" time="0.014" /><testcase classname="tests.phase5.test_phase5_7_live_run_timeline_console" name="test_invalid_filters_fail_closed" time="0.010" /><testcase classname="tests.phase5.test_phase5_7_live_run_timeline_console" name="test_unknown_run_fails_closed" time="0.003" /><testcase classname="tests.phase5.test_phase5_7_live_run_timeline_console" name="test_console_grants_no_authority" time="0.014" /><testcase classname="tests.phase5.test_phase5_7_live_run_timeline_console" name="test_frontend_contains_live_timeline_workspace" time="0.002" /><testcase classname="tests.phase5.test_phase5_8_tool_approval_cards" name="test_empty_console_is_valid" time="0.012" /><testcase classname="tests.phase5.test_phase5_8_tool_approval_cards" name="test_unknown_run_denied" time="0.006" /><testcase classname="tests.phase5.test_phase5_8_tool_approval_cards" name="test_invalid_status_denied" time="0.009" /><testcase classname="tests.phase5.test_phase5_8_tool_approval_cards" name="test_read_only_authority" time="0.008" /><testcase classname="tests.phase5.test_phase5_8_tool_approval_cards" name="test_tamper_detection" time="0.008" /><testcase classname="tests.phase5.test_phase5_8_tool_approval_cards" name="test_status_filter_empty" time="0.015" /><testcase classname="tests.phase5.test_phase5_8_tool_approval_cards" name="test_query_filter_empty" time="0.008" /><testcase classname="tests.phase5.test_phase5_8_tool_approval_cards" name="test_valid_actions_are_bounded" time="0.000" /><testcase classname="tests.phase5.test_phase5_8_tool_approval_cards" name="test_terminal_card_has_no_actions" time="0.000" /><testcase classname="tests.phase5.test_phase5_8_tool_approval_cards" name="test_frontend_panel_present" time="0.001" /><testcase classname="tests.phase5.test_phase5_9_worktree_diff_console" name="test_modified_file_and_exact_diff" time="0.037" /><testcase classname="tests.phase5.test_phase5_9_worktree_diff_console" name="test_untracked_file_is_reviewable" time="0.038" /><testcase classname="tests.phase5.test_phase5_9_worktree_diff_console" name="test_prohibited_path_blocks_promotion_readiness" time="0.040" /><testcase classname="tests.phase5.test_phase5_9_worktree_diff_console" name="test_stale_base_blocks_promotion" time="0.040" /><testcase classname="tests.phase5.test_phase5_9_worktree_diff_console" name="test_filter_by_change_type" time="0.033" /><testcase classname="tests.phase5.test_phase5_9_worktree_diff_console" name="test_query_filter" time="0.034" /><testcase classname="tests.phase5.test_phase5_9_worktree_diff_console" name="test_invalid_change_type_denied" time="0.018" /><testcase classname="tests.phase5.test_phase5_9_worktree_diff_console" name="test_unknown_run_denied" time="0.006" /><testcase classname="tests.phase5.test_phase5_9_worktree_diff_console" name="test_tamper_detection_and_read_only_authority" time="0.039" /><testcase classname="tests.phase5.test_phase5_9_worktree_diff_console" name="test_frontend_panel_present" time="0.001" /><testcase classname="tests.proof.test_nim_planner_provider" name="test_nim_planner_provider_parses_streamed_action" time="0.002" /><testcase classname="tests.proof.test_nim_planner_provider" name="test_nim_planner_provider_requires_key" time="0.001" /><testcase classname="tests.proof.test_nim_planner_provider" name="test_control_plane_defaults_to_fast_instruct_model" time="0.000" /><testcase classname="tests.proof.test_nim_planner_provider" name="test_nim_planner_provider_requests_structured_outputs_by_default" time="0.000" /><testcase classname="tests.proof.test_nim_planner_provider" name="test_nim_planner_provider_can_add_legacy_guided_json" time="0.000" /><testcase classname="tests.proof.test_ollama_planner_provider" name="test_ollama_provider_injects_run_scoped_approval" time="0.002"><failure message="app.kernel.agents.planner_provider.PlannerDecisionError: Ollama model 'test' is not installed at http://127.0.0.1:11434; available: no models reported. Run `ollama pull test` or choose one of the listed models.">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x704f324bc360&gt;
+
+    def test_ollama_provider_injects_run_scoped_approval(monkeypatch):
+        monkeypatch.setattr(
+            OllamaPlannerProvider,
+            "_request_json",
+            lambda self, path, payload, timeout: {"response": '{"decision_type":"tool","tool_id":"worktree.bind","arguments":{"objective":"x"}}'},
+        )
+        provider = OllamaPlannerProvider(model="test", default_approval_id="approved-once")
+&gt;       decision = asyncio.run(provider.next_decision("prompt", run={}, turn=1))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/proof/test_ollama_planner_provider.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.13/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.13/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.13/asyncio/base_events.py:725: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+app/kernel/agents/ollama_planner_provider.py:183: in next_decision
+    await self._preflight()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;app.kernel.agents.ollama_planner_provider.OllamaPlannerProvider object at 0x704f2ff23380&gt;
+
+    async def _preflight(self) -&gt; None:
+        if self._preflight_ok:
+            return
+        timeout = max(1.0, float(os.environ.get("BEAST_OLLAMA_PREFLIGHT_TIMEOUT", "4")))
+        try:
+            payload = await asyncio.to_thread(self._request_json, "/api/tags", None, timeout)
+        except OSError as exc:
+            if self.route_dampener is not None:
+                self.last_usage["route"] = self._route_event("incorrect")
+            raise PlannerDecisionError(
+                f"Ollama config preflight failed for {self.base_url}: {exc}. "
+                "Check BEAST_OLLAMA_BASE_URL/OLLAMA_HOST and confirm the native Ollama /api/tags endpoint is reachable."
+            ) from exc
+        models = [str(item.get("name") or "") for item in payload.get("models", []) if isinstance(item, dict)]
+        if self.model not in models:
+            if self.route_dampener is not None:
+                self.last_usage["route"] = self._route_event("incorrect")
+            preview = ", ".join(models[:8]) or "no models reported"
+&gt;           raise PlannerDecisionError(
+                f"Ollama model {self.model!r} is not installed at {self.base_url}; available: {preview}. "
+                f"Run `ollama pull {self.model}` or choose one of the listed models."
+            )
+E           app.kernel.agents.planner_provider.PlannerDecisionError: Ollama model 'test' is not installed at http://127.0.0.1:11434; available: no models reported. Run `ollama pull test` or choose one of the listed models.
+
+app/kernel/agents/ollama_planner_provider.py:171: PlannerDecisionError</failure></testcase><testcase classname="tests.proof.test_ollama_planner_provider" name="test_native_prompt_split_keeps_contract_stable" time="0.000" /><testcase classname="tests.proof.test_ollama_planner_provider" name="test_native_planner_path_sends_only_turn_suffix" time="0.014"><failure message="app.kernel.agents.planner_provider.PlannerDecisionError: Ollama model 'test' is not installed at http://127.0.0.1:11434; available: qwen2.5:0.5b, qwen2.5-coder:1.5b. Run `ollama pull test` or choose one of the listed models.">def test_native_planner_path_sends_only_turn_suffix():
+        manager = _Manager()
+        provider = OllamaPlannerProvider(model="test", forge_kv_manager=manager)
+&gt;       decision = asyncio.run(provider.next_decision("CONTRACT\nOBJECTIVE: x\nTURN: 2/8\nOBSERVATIONS: []", run={}, turn=2))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/proof/test_ollama_planner_provider.py:62: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.13/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.13/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.13/asyncio/base_events.py:725: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+app/kernel/agents/ollama_planner_provider.py:183: in next_decision
+    await self._preflight()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;app.kernel.agents.ollama_planner_provider.OllamaPlannerProvider object at 0x704f2fcb1810&gt;
+
+    async def _preflight(self) -&gt; None:
+        if self._preflight_ok:
+            return
+        timeout = max(1.0, float(os.environ.get("BEAST_OLLAMA_PREFLIGHT_TIMEOUT", "4")))
+        try:
+            payload = await asyncio.to_thread(self._request_json, "/api/tags", None, timeout)
+        except OSError as exc:
+            if self.route_dampener is not None:
+                self.last_usage["route"] = self._route_event("incorrect")
+            raise PlannerDecisionError(
+                f"Ollama config preflight failed for {self.base_url}: {exc}. "
+                "Check BEAST_OLLAMA_BASE_URL/OLLAMA_HOST and confirm the native Ollama /api/tags endpoint is reachable."
+            ) from exc
+        models = [str(item.get("name") or "") for item in payload.get("models", []) if isinstance(item, dict)]
+        if self.model not in models:
+            if self.route_dampener is not None:
+                self.last_usage["route"] = self._route_event("incorrect")
+            preview = ", ".join(models[:8]) or "no models reported"
+&gt;           raise PlannerDecisionError(
+                f"Ollama model {self.model!r} is not installed at {self.base_url}; available: {preview}. "
+                f"Run `ollama pull {self.model}` or choose one of the listed models."
+            )
+E           app.kernel.agents.planner_provider.PlannerDecisionError: Ollama model 'test' is not installed at http://127.0.0.1:11434; available: qwen2.5:0.5b, qwen2.5-coder:1.5b. Run `ollama pull test` or choose one of the listed models.
+
+app/kernel/agents/ollama_planner_provider.py:171: PlannerDecisionError</failure></testcase><testcase classname="tests.proof.test_ollama_planner_provider" name="test_warm_model_does_not_receive_suffix_only" time="0.002"><failure message="app.kernel.agents.planner_provider.PlannerDecisionError: Ollama model 'test' is not installed at http://127.0.0.1:11434; available: no models reported. Run `ollama pull test` or choose one of the listed models.">def test_warm_model_does_not_receive_suffix_only():
+        provider = OllamaPlannerProvider(model="test", forge_kv_manager=_WarmOnlyManager(), timeout_seconds=10, max_retries=0)
+        provider._request_json = lambda path, payload, timeout: {"response": '{"decision_type":"complete","summary":"fallback"}'}
+&gt;       decision = asyncio.run(provider.next_decision("CONTRACT\nTURN: 2/8", run={}, turn=2))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/proof/test_ollama_planner_provider.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.13/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.13/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.13/asyncio/base_events.py:725: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+app/kernel/agents/ollama_planner_provider.py:183: in next_decision
+    await self._preflight()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;app.kernel.agents.ollama_planner_provider.OllamaPlannerProvider object at 0x704f2fcb2ad0&gt;
+
+    async def _preflight(self) -&gt; None:
+        if self._preflight_ok:
+            return
+        timeout = max(1.0, float(os.environ.get("BEAST_OLLAMA_PREFLIGHT_TIMEOUT", "4")))
+        try:
+            payload = await asyncio.to_thread(self._request_json, "/api/tags", None, timeout)
+        except OSError as exc:
+            if self.route_dampener is not None:
+                self.last_usage["route"] = self._route_event("incorrect")
+            raise PlannerDecisionError(
+                f"Ollama config preflight failed for {self.base_url}: {exc}. "
+                "Check BEAST_OLLAMA_BASE_URL/OLLAMA_HOST and confirm the native Ollama /api/tags endpoint is reachable."
+            ) from exc
+        models = [str(item.get("name") or "") for item in payload.get("models", []) if isinstance(item, dict)]
+        if self.model not in models:
+            if self.route_dampener is not None:
+                self.last_usage["route"] = self._route_event("incorrect")
+            preview = ", ".join(models[:8]) or "no models reported"
+&gt;           raise PlannerDecisionError(
+                f"Ollama model {self.model!r} is not installed at {self.base_url}; available: {preview}. "
+                f"Run `ollama pull {self.model}` or choose one of the listed models."
+            )
+E           app.kernel.agents.planner_provider.PlannerDecisionError: Ollama model 'test' is not installed at http://127.0.0.1:11434; available: no models reported. Run `ollama pull test` or choose one of the listed models.
+
+app/kernel/agents/ollama_planner_provider.py:171: PlannerDecisionError</failure></testcase><testcase classname="tests.proof.test_ollama_planner_provider" name="test_invalid_native_context_falls_back_to_direct_generate" time="0.002"><failure message="app.kernel.agents.planner_provider.PlannerDecisionError: Ollama model 'test' is not installed at http://127.0.0.1:11434; available: no models reported. Run `ollama pull test` or choose one of the listed models.">def test_invalid_native_context_falls_back_to_direct_generate():
+        manager = _InvalidNativeManager()
+        provider = OllamaPlannerProvider(model="test", forge_kv_manager=manager, timeout_seconds=10, max_retries=0)
+        provider._request_json = lambda path, payload, timeout: {"response": '{"decision_type":"complete","summary":"direct generate"}'}
+&gt;       decision = asyncio.run(provider.next_decision("CONTRACT\nTURN: 2/8", run={}, turn=2))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/proof/test_ollama_planner_provider.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.13/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.13/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.13/asyncio/base_events.py:725: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+app/kernel/agents/ollama_planner_provider.py:183: in next_decision
+    await self._preflight()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;app.kernel.agents.ollama_planner_provider.OllamaPlannerProvider object at 0x704f2fc79e00&gt;
+
+    async def _preflight(self) -&gt; None:
+        if self._preflight_ok:
+            return
+        timeout = max(1.0, float(os.environ.get("BEAST_OLLAMA_PREFLIGHT_TIMEOUT", "4")))
+        try:
+            payload = await asyncio.to_thread(self._request_json, "/api/tags", None, timeout)
+        except OSError as exc:
+            if self.route_dampener is not None:
+                self.last_usage["route"] = self._route_event("incorrect")
+            raise PlannerDecisionError(
+                f"Ollama config preflight failed for {self.base_url}: {exc}. "
+                "Check BEAST_OLLAMA_BASE_URL/OLLAMA_HOST and confirm the native Ollama /api/tags endpoint is reachable."
+            ) from exc
+        models = [str(item.get("name") or "") for item in payload.get("models", []) if isinstance(item, dict)]
+        if self.model not in models:
+            if self.route_dampener is not None:
+                self.last_usage["route"] = self._route_event("incorrect")
+            preview = ", ".join(models[:8]) or "no models reported"
+&gt;           raise PlannerDecisionError(
+                f"Ollama model {self.model!r} is not installed at {self.base_url}; available: {preview}. "
+                f"Run `ollama pull {self.model}` or choose one of the listed models."
+            )
+E           app.kernel.agents.planner_provider.PlannerDecisionError: Ollama model 'test' is not installed at http://127.0.0.1:11434; available: no models reported. Run `ollama pull test` or choose one of the listed models.
+
+app/kernel/agents/ollama_planner_provider.py:171: PlannerDecisionError</failure></testcase><testcase classname="tests.proof.test_pgec_450_protocol" name="test_frozen_matrix_has_exactly_450_cells" time="0.001" /><testcase classname="tests.proof.test_pgec_450_protocol" name="test_ollama_is_primary_route_and_nim_is_control" time="0.000" /><testcase classname="tests.proof.test_pgec_450_protocol" name="test_false_reuse_is_zero_redline" time="0.000" /><testcase classname="tests.proof.test_pgec_450_protocol" name="test_protocol_forbids_post_hoc_bad_result_exclusion" time="0.000" /><testcase classname="tests.routes.test_agent_run_execution" name="test_post_launch_owns_execution_and_legacy_replay" time="8.209"><failure message="AssertionError: run did not reach {'completed'}; last={'beast_object_type': 'beast_agent_run', 'version': '2.0', 'run_id': 'analysis-1df680e4-5c2e2427d64e', 'session_id': 'analysis-1df680e4', 'objective': 'Explain this workspace', 'mode': 'analysis', 'provider': '', 'model': '', 'state': 'cancelled', 'root_path': '/tmp/pytest-of-byron/pytest-12/test_post_launch_owns_executio0', 'request': {'approval_timeout_seconds': 30, 'execution_target': 'local', 'prompt': 'Explain this workspace', 'simulate': True, 'transport': 'durable_agent_run_v2', 'workspace_root': '/tmp/pytest-of-byron/pytest-12/test_post_launch_owns_executio0'}, 'checkpoint': {'event_type': 'agent.run.cancelled', 'legacy_type': 'agent_run_done', 'payload_keys': ['cancel_reason', 'chars', 'ok', 'run_id', 'session', 'session_id', 'sourceplan_status'], 'sequence': 10}, 'budget': {'cost_usd': 0.0, 'seconds': 0, 'tokens': 0}, 'cancel_requested': False, 'cancel_reason': '', 'last_sequence': 10, 'head_hash': 'sha256:f5b26cc13bdaafcd9a5ee959245256bdd794384435ca6cbc2206754aa558c0c7', 'error': '', 'created_at': 1791612962.5148022, 'updated_at': 1791612962.561985, 'execution': {'active': False, 'task_name': '', 'done': True}}">tmp_path = PosixPath('/tmp/pytest-of-byron/pytest-12/test_post_launch_owns_executio0')
+
+    def test_post_launch_owns_execution_and_legacy_replay(tmp_path):
+        client = TestClient(app_for(tmp_path))
+        session = client.post("/edgek/ide/agent-sessions/create", json={
+            "root_path": str(tmp_path),
+            "objective": "Explain this workspace",
+            "mode": "analysis",
+        }).json()["session"]
+    
+        created = client.post("/edgek/agent-runs", json={
+            "root_path": str(tmp_path),
+            "session_id": session["session_id"],
+            "objective": "Explain this workspace",
+            "mode": "analysis",
+            "launch": True,
+            "request": {
+                "transport": "durable_agent_run_v2",
+                "prompt": "Explain this workspace",
+                "simulate": True,
+                "approval_timeout_seconds": 30,
+            },
+        })
+        assert created.status_code == 200
+        payload = created.json()
+        assert payload["execution"]["active"] is True
+        run_id = payload["run"]["run_id"]
+    
+&gt;       run = wait_for_state(client, tmp_path, run_id, {"completed"})
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/routes/test_agent_run_execution.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = &lt;starlette.testclient.TestClient object at 0x704f2ff22510&gt;
+root = PosixPath('/tmp/pytest-of-byron/pytest-12/test_post_launch_owns_executio0')
+run_id = 'analysis-1df680e4-5c2e2427d64e', states = {'completed'}, timeout = 8.0
+
+    def wait_for_state(client: TestClient, root: Path, run_id: str, states: set[str], timeout: float = 8.0):
+        deadline = time.monotonic() + timeout
+        last = {}
+        while time.monotonic() &lt; deadline:
+            last = client.get(f"/edgek/agent-runs/{run_id}", params={"root_path": str(root)}).json()["run"]
+            if str(last.get("state")) in states:
+                return last
+            time.sleep(0.05)
+&gt;       raise AssertionError(f"run did not reach {states}; last={last}")
+E       AssertionError: run did not reach {'completed'}; last={'beast_object_type': 'beast_agent_run', 'version': '2.0', 'run_id': 'analysis-1df680e4-5c2e2427d64e', 'session_id': 'analysis-1df680e4', 'objective': 'Explain this workspace', 'mode': 'analysis', 'provider': '', 'model': '', 'state': 'cancelled', 'root_path': '/tmp/pytest-of-byron/pytest-12/test_post_launch_owns_executio0', 'request': {'approval_timeout_seconds': 30, 'execution_target': 'local', 'prompt': 'Explain this workspace', 'simulate': True, 'transport': 'durable_agent_run_v2', 'workspace_root': '/tmp/pytest-of-byron/pytest-12/test_post_launch_owns_executio0'}, 'checkpoint': {'event_type': 'agent.run.cancelled', 'legacy_type': 'agent_run_done', 'payload_keys': ['cancel_reason', 'chars', 'ok', 'run_id', 'session', 'session_id', 'sourceplan_status'], 'sequence': 10}, 'budget': {'cost_usd': 0.0, 'seconds': 0, 'tokens': 0}, 'cancel_requested': False, 'cancel_reason': '', 'last_sequence': 10, 'head_hash': 'sha256:f5b26cc13bdaafcd9a5ee959245256bdd794384435ca6cbc2206754aa558c0c7', 'error': '', 'created_at': 1791612962.5148022, 'updated_at': 1791612962.561985, 'execution': {'active': False, 'task_name': '', 'done': True}}
+
+tests/routes/test_agent_run_execution.py:55: AssertionError</failure></testcase><testcase classname="tests.routes.test_agent_run_execution" name="test_durable_approval_pauses_worker_and_resumes_same_run" time="8.451"><failure message="AssertionError: run did not reach {'waiting_for_approval'}; last={'beast_object_type': 'beast_agent_run', 'version': '2.0', 'run_id': 'analysis-43a7889d-d606045e194e', 'session_id': 'analysis-43a7889d', 'objective': 'Inspect sample', 'mode': 'analysis', 'provider': '', 'model': '', 'state': 'cancelled', 'root_path': '/tmp/pytest-of-byron/pytest-12/test_durable_approval_pauses_w0', 'request': {'approval_timeout_seconds': 30, 'context_files': ['sample.py'], 'execution_target': 'local', 'prompt': 'Inspect sample', 'simulate': True, 'workspace_root': '/tmp/pytest-of-byron/pytest-12/test_durable_approval_pauses_w0'}, 'checkpoint': {'event_type': 'agent.run.cancelled', 'legacy_type': 'agent_run_done', 'payload_keys': ['cancel_reason', 'chars', 'ok', 'run_id', 'session', 'session_id', 'sourceplan_status'], 'sequence': 14}, 'budget': {'cost_usd': 0.0, 'seconds': 0, 'tokens': 0}, 'cancel_requested': False, 'cancel_reason': '', 'last_sequence': 14, 'head_hash': 'sha256:6c788caab3a287cb5b300ebd8e50d1a928f07153524a41bb2410d406769b27c0', 'error': '', 'created_at': 1791612970.9702976, 'updated_at': 1791612971.028594, 'execution': {'active': False, 'task_name': '', 'done': True}}">tmp_path = PosixPath('/tmp/pytest-of-byron/pytest-12/test_durable_approval_pauses_w0')
+
+    def test_durable_approval_pauses_worker_and_resumes_same_run(tmp_path):
+        (tmp_path / "sample.py").write_text("def example():\n    return 1\n", encoding="utf-8")
+        client = TestClient(app_for(tmp_path))
+        session = client.post("/edgek/ide/agent-sessions/create", json={
+            "root_path": str(tmp_path),
+            "objective": "Inspect sample",
+            "mode": "analysis",
+            "files": ["sample.py"],
+        }).json()["session"]
+        created = client.post("/edgek/agent-runs", json={
+            "root_path": str(tmp_path),
+            "session_id": session["session_id"],
+            "objective": "Inspect sample",
+            "mode": "analysis",
+            "launch": True,
+            "request": {
+                "prompt": "Inspect sample",
+                "context_files": ["sample.py"],
+                "simulate": True,
+                "approval_timeout_seconds": 30,
+            },
+        }).json()
+        run_id = created["run"]["run_id"]
+&gt;       waiting = wait_for_state(client, tmp_path, run_id, {"waiting_for_approval"})
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/routes/test_agent_run_execution.py:130: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = &lt;starlette.testclient.TestClient object at 0x704f2fc347d0&gt;
+root = PosixPath('/tmp/pytest-of-byron/pytest-12/test_durable_approval_pauses_w0')
+run_id = 'analysis-43a7889d-d606045e194e', states = {'waiting_for_approval'}
+timeout = 8.0
+
+    def wait_for_state(client: TestClient, root: Path, run_id: str, states: set[str], timeout: float = 8.0):
+        deadline = time.monotonic() + timeout
+        last = {}
+        while time.monotonic() &lt; deadline:
+            last = client.get(f"/edgek/agent-runs/{run_id}", params={"root_path": str(root)}).json()["run"]
+            if str(last.get("state")) in states:
+                return last
+            time.sleep(0.05)
+&gt;       raise AssertionError(f"run did not reach {states}; last={last}")
+E       AssertionError: run did not reach {'waiting_for_approval'}; last={'beast_object_type': 'beast_agent_run', 'version': '2.0', 'run_id': 'analysis-43a7889d-d606045e194e', 'session_id': 'analysis-43a7889d', 'objective': 'Inspect sample', 'mode': 'analysis', 'provider': '', 'model': '', 'state': 'cancelled', 'root_path': '/tmp/pytest-of-byron/pytest-12/test_durable_approval_pauses_w0', 'request': {'approval_timeout_seconds': 30, 'context_files': ['sample.py'], 'execution_target': 'local', 'prompt': 'Inspect sample', 'simulate': True, 'workspace_root': '/tmp/pytest-of-byron/pytest-12/test_durable_approval_pauses_w0'}, 'checkpoint': {'event_type': 'agent.run.cancelled', 'legacy_type': 'agent_run_done', 'payload_keys': ['cancel_reason', 'chars', 'ok', 'run_id', 'session', 'session_id', 'sourceplan_status'], 'sequence': 14}, 'budget': {'cost_usd': 0.0, 'seconds': 0, 'tokens': 0}, 'cancel_requested': False, 'cancel_reason': '', 'last_sequence': 14, 'head_hash': 'sha256:6c788caab3a287cb5b300ebd8e50d1a928f07153524a41bb2410d406769b27c0', 'error': '', 'created_at': 1791612970.9702976, 'updated_at': 1791612971.028594, 'execution': {'active': False, 'task_name': '', 'done': True}}
+
+tests/routes/test_agent_run_execution.py:55: AssertionError</failure></testcase><testcase classname="tests.routes.test_agent_run_execution" name="test_resume_relaunches_persisted_request" time="8.223"><failure message="AssertionError: run did not reach {'completed'}; last={'beast_object_type': 'beast_agent_run', 'version': '2.0', 'run_id': 'analysis-df84c689-3c970c2d6ac7', 'session_id': 'analysis-df84c689', 'objective': 'Resume me', 'mode': 'analysis', 'provider': '', 'model': '', 'state': 'cancelled', 'root_path': '/tmp/pytest-of-byron/pytest-12/test_resume_relaunches_persist0', 'request': {'approval_timeout_seconds': 30, 'execution_target': 'local', 'prompt': 'Resume me', 'simulate': True, 'workspace_root': '/tmp/pytest-of-byron/pytest-12/test_resume_relaunches_persist0'}, 'checkpoint': {'event_type': 'agent.run.cancelled', 'legacy_type': 'agent_run_done', 'payload_keys': ['cancel_reason', 'chars', 'ok', 'run_id', 'session', 'session_id', 'sourceplan_status'], 'sequence': 11}, 'budget': {'cost_usd': 0.0, 'seconds': 0, 'tokens': 0}, 'cancel_requested': False, 'cancel_reason': '', 'last_sequence': 11, 'head_hash': 'sha256:1b8802ac3349b3c46ff38c380c539714eed341c494e9a6b1fcb029dc8a5bf683', 'error': '', 'created_at': 1791612979.2027423, 'updated_at': 1791612979.2589836, 'execution': {'active': False, 'task_name': '', 'done': True}}">tmp_path = PosixPath('/tmp/pytest-of-byron/pytest-12/test_resume_relaunches_persist0')
+
+    def test_resume_relaunches_persisted_request(tmp_path):
+        client = TestClient(app_for(tmp_path))
+        session = client.post("/edgek/ide/agent-sessions/create", json={
+            "root_path": str(tmp_path),
+            "objective": "Resume me",
+            "mode": "analysis",
+        }).json()["session"]
+        created = client.post("/edgek/agent-runs", json={
+            "root_path": str(tmp_path),
+            "session_id": session["session_id"],
+            "objective": "Resume me",
+            "mode": "analysis",
+            "launch": False,
+            "request": {"prompt": "Resume me", "simulate": True, "approval_timeout_seconds": 30},
+        }).json()
+        run_id = created["run"]["run_id"]
+        assert created["run"]["state"] == "created"
+        assert created["execution"]["active"] is False
+    
+        resumed = client.post(f"/edgek/agent-runs/{run_id}/resume", json={"root_path": str(tmp_path)})
+        assert resumed.status_code == 200
+        assert resumed.json()["execution"]["active"] is True
+&gt;       assert wait_for_state(client, tmp_path, run_id, {"completed"})["state"] == "completed"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/routes/test_agent_run_execution.py:172: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = &lt;starlette.testclient.TestClient object at 0x704d45078050&gt;
+root = PosixPath('/tmp/pytest-of-byron/pytest-12/test_resume_relaunches_persist0')
+run_id = 'analysis-df84c689-3c970c2d6ac7', states = {'completed'}, timeout = 8.0
+
+    def wait_for_state(client: TestClient, root: Path, run_id: str, states: set[str], timeout: float = 8.0):
+        deadline = time.monotonic() + timeout
+        last = {}
+        while time.monotonic() &lt; deadline:
+            last = client.get(f"/edgek/agent-runs/{run_id}", params={"root_path": str(root)}).json()["run"]
+            if str(last.get("state")) in states:
+                return last
+            time.sleep(0.05)
+&gt;       raise AssertionError(f"run did not reach {states}; last={last}")
+E       AssertionError: run did not reach {'completed'}; last={'beast_object_type': 'beast_agent_run', 'version': '2.0', 'run_id': 'analysis-df84c689-3c970c2d6ac7', 'session_id': 'analysis-df84c689', 'objective': 'Resume me', 'mode': 'analysis', 'provider': '', 'model': '', 'state': 'cancelled', 'root_path': '/tmp/pytest-of-byron/pytest-12/test_resume_relaunches_persist0', 'request': {'approval_timeout_seconds': 30, 'execution_target': 'local', 'prompt': 'Resume me', 'simulate': True, 'workspace_root': '/tmp/pytest-of-byron/pytest-12/test_resume_relaunches_persist0'}, 'checkpoint': {'event_type': 'agent.run.cancelled', 'legacy_type': 'agent_run_done', 'payload_keys': ['cancel_reason', 'chars', 'ok', 'run_id', 'session', 'session_id', 'sourceplan_status'], 'sequence': 11}, 'budget': {'cost_usd': 0.0, 'seconds': 0, 'tokens': 0}, 'cancel_requested': False, 'cancel_reason': '', 'last_sequence': 11, 'head_hash': 'sha256:1b8802ac3349b3c46ff38c380c539714eed341c494e9a6b1fcb029dc8a5bf683', 'error': '', 'created_at': 1791612979.2027423, 'updated_at': 1791612979.2589836, 'execution': {'active': False, 'task_name': '', 'done': True}}
+
+tests/routes/test_agent_run_execution.py:55: AssertionError</failure></testcase><testcase classname="tests.routes.test_agent_run_execution" name="test_resume_preserves_planner_execution_path" time="0.207" /><testcase classname="tests.routes.test_agent_run_execution" name="test_run_detail_auto_recovers_runtime_restarted_pause" time="0.203" /><testcase classname="tests.routes.test_agent_run_execution" name="test_verification_console_auto_recovers_runtime_restarted_pause" time="0.255" /><testcase classname="tests.routes.test_agent_run_routes" name="test_agent_run_crud_replay_cancel_and_resume" time="0.188" /><testcase classname="tests.routes.test_agent_run_routes" name="test_legacy_simulation_is_recorded_as_durable_run" time="0.268" /><testcase classname="tests.routes.test_agent_run_routes" name="test_planner_routes_execute_and_expose_checkpoint" time="0.557" /><testcase classname="tests.routes.test_agent_run_routes" name="test_nim_typed_planner_does_not_select_ollama_route" time="0.000" /><testcase classname="tests.routes.test_agent_run_routes" name="test_agent_run_create_accepts_workspace_root_and_task_aliases" time="0.190" /><testcase classname="tests.routes.test_agent_run_routes" name="test_agent_run_planner_execute_accepts_workspace_root_alias" time="0.181" /><testcase classname="tests.routes.test_agent_run_routes" name="test_agent_run_events_accept_workspace_root_query_alias" time="0.154" /><testcase classname="tests.routes.test_agent_tool_runtime" name="test_default_tool_registry_is_typed_and_read_only" time="0.005" /><testcase classname="tests.routes.test_agent_tool_runtime" name="test_read_range_emits_structured_observation" time="0.009" /><testcase classname="tests.routes.test_agent_tool_runtime" name="test_workspace_index_extracts_symbols_and_nim_context" time="0.009" /><testcase classname="tests.routes.test_agent_tool_runtime" name="test_remote_workspace_index_preserves_deep_symbol_shape" time="0.007" /><testcase classname="tests.routes.test_agent_tool_runtime" name="test_tool_path_escape_is_rejected_and_recorded" time="0.008" /><testcase classname="tests.routes.test_agent_tool_runtime" name="test_unknown_arguments_are_rejected_before_execution" time="0.008" /><testcase classname="tests.routes.test_agent_tool_runtime" name="test_search_is_bounded_and_excludes_beast_state" time="0.009" /><testcase classname="tests.routes.test_ide_route_decomposition" name="test_ide_router_is_a_small_composition_root" time="0.000" /><testcase classname="tests.routes.test_ide_route_decomposition" name="test_ide_route_families_exist_and_are_bounded" time="0.001"><failure message="assert 1028 &lt; 900&#10; +  where 1028 = len(['&quot;&quot;&quot;Shared state and pure helpers for the IDE route family.', '', 'This module owns framework-independent behaviour t...e modules receive one explicit', '``IdeRouteContext`` instead of depending on a 4,000-line lexical scope.', '&quot;&quot;&quot;', ...])&#10; +    where ['&quot;&quot;&quot;Shared state and pure helpers for the IDE route family.', '', 'This module owns framework-independent behaviour t...e modules receive one explicit', '``IdeRouteContext`` instead of depending on a 4,000-line lexical scope.', '&quot;&quot;&quot;', ...] = &lt;built-in method splitlines of str object at 0x13f1cdf0&gt;()&#10; +      where &lt;built-in method splitlines of str object at 0x13f1cdf0&gt; = '&quot;&quot;&quot;Shared state and pure helpers for the IDE route family.\n\nThis module owns framework-independent behaviour that w...lt, context=context, task_id=task_id, approved=approved, operator_override=operator_override)\n        return result\n'.splitlines&#10; +        where '&quot;&quot;&quot;Shared state and pure helpers for the IDE route family.\n\nThis module owns framework-independent behaviour that w...lt, context=context, task_id=task_id, approved=approved, operator_override=operator_override)\n        return result\n' = read_text(encoding='utf-8')&#10; +          where read_text = PosixPath('app/routes/ide_context.py').read_text&#10; +            where PosixPath('app/routes/ide_context.py') = Path('app/routes/ide_context.py')">def test_ide_route_families_exist_and_are_bounded():
+        expected = {
+            "overview.py",
+            "mission.py",
+            "system.py",
+            "learning.py",
+            "actions.py",
+            "agent_sessions.py",
+            "agent_run_stream.py",
+            "agent_runs.py",
+            "editor_sourceplans.py",
+            "worktrees.py",
+        }
+        directory = Path("app/routes/ide_routes")
+        assert expected.issubset({path.name for path in directory.glob("*.py")})
+        assert Path("app/routes/ide_context.py").exists()
+&gt;       assert len(Path("app/routes/ide_context.py").read_text(encoding="utf-8").splitlines()) &lt; 900
+E       assert 1028 &lt; 900
+E        +  where 1028 = len(['"""Shared state and pure helpers for the IDE route family.', '', 'This module owns framework-independent behaviour t...e modules receive one explicit', '``IdeRouteContext`` instead of depending on a 4,000-line lexical scope.', '"""', ...])
+E        +    where ['"""Shared state and pure helpers for the IDE route family.', '', 'This module owns framework-independent behaviour t...e modules receive one explicit', '``IdeRouteContext`` instead of depending on a 4,000-line lexical scope.', '"""', ...] = &lt;built-in method splitlines of str object at 0x13f1cdf0&gt;()
+E        +      where &lt;built-in method splitlines of str object at 0x13f1cdf0&gt; = '"""Shared state and pure helpers for the IDE route family.\n\nThis module owns framework-independent behaviour that w...lt, context=context, task_id=task_id, approved=approved, operator_override=operator_override)\n        return result\n'.splitlines
+E        +        where '"""Shared state and pure helpers for the IDE route family.\n\nThis module owns framework-independent behaviour that w...lt, context=context, task_id=task_id, approved=approved, operator_override=operator_override)\n        return result\n' = read_text(encoding='utf-8')
+E        +          where read_text = PosixPath('app/routes/ide_context.py').read_text
+E        +            where PosixPath('app/routes/ide_context.py') = Path('app/routes/ide_context.py')
+
+tests/routes/test_ide_route_decomposition.py:123: AssertionError</failure></testcase><testcase classname="tests.routes.test_ide_route_decomposition" name="test_ide_route_contract_preserves_legacy_and_adds_agent_run_v2" time="0.073"><failure message="AssertionError: assert [('GET', '/ed...search'), ...] == [('GET', '/ed...search'), ...]&#10;  &#10;  At index 45 diff: ('GET', '/edgek/agent-runs/{run_id}/console', 'edgek_agent_run_console') != ('GET', '/edgek/agent-runs/{run_id}/events', 'edgek_agent_run_events')&#10;  Left contains 74 more items, first extra item: ('GET', '/edgek/agent-runs/{run_id}/tools', 'edgek_agent_run_tools')&#10;  Use -v to get more diff">def test_ide_route_contract_preserves_legacy_and_adds_agent_run_v2():
+        router = build_ide_router(".", code_cortex_router=DummyCodeCortex())
+&gt;       assert _contract(router) == EXPECTED_ROUTE_CONTRACT
+E       AssertionError: assert [('GET', '/ed...search'), ...] == [('GET', '/ed...search'), ...]
+E         
+E         At index 45 diff: ('GET', '/edgek/agent-runs/{run_id}/console', 'edgek_agent_run_console') != ('GET', '/edgek/agent-runs/{run_id}/events', 'edgek_agent_run_events')
+E         Left contains 74 more items, first extra item: ('GET', '/edgek/agent-runs/{run_id}/tools', 'edgek_agent_run_tools')
+E         Use -v to get more diff
+
+tests/routes/test_ide_route_decomposition.py:128: AssertionError</failure></testcase><testcase classname="tests.routes.test_ide_route_decomposition" name="test_decomposed_routes_match_original_live_read_responses" time="0.001" /><testcase classname="tests.routes.test_ide_support_common" name="test_pair_programmer_limits_are_route_specific" time="0.000" /><testcase classname="tests.routes.test_ide_support_common" name="test_extract_json_object_accepts_fenced_object_and_list" time="0.000" /><testcase classname="tests.routes.test_ide_support_common" name="test_safe_relative_rejects_workspace_escape" time="0.001" /><testcase classname="tests.routes.test_ide_support_common" name="test_bounded_workspace_files_prunes_generated_directories" time="0.001" /><testcase classname="tests.routes.test_ide_support_common" name="test_installer_backup_directories_are_ignored" time="0.000" /><testcase classname="tests.routes.test_ide_support_common" name="test_ide_event_envelope_is_sse_compatible" time="0.000" /><testcase classname="tests.routes.test_ide_support_common" name="test_ide_route_context_resolves_default_and_override_roots" time="0.001" /><testcase classname="tests.routes.test_ide_support_common" name="test_action_ir_retry_prompt_includes_anchors_and_rules" time="0.001" /><testcase classname="tests.routes.test_ide_support_common" name="test_incomplete_function_replacement_is_rejected" time="0.001" /><testcase classname="tests.routes.test_ide_support_common" name="test_route_registrars_preserve_system_and_worktree_paths" time="0.007" /><testcase classname="tests.routes.test_ide_support_common" name="test_agent_session_registrar_preserves_session_paths" time="0.005" /><testcase classname="tests.test_accelerator_stack" name="test_lmcache_health_and_metrics_contract" time="0.001" /><testcase classname="tests.test_accelerator_stack" name="test_accelerator_adapter_is_explicit_opt_in" time="0.001" /><testcase classname="tests.test_accelerator_stack" name="test_kv_stack_config_is_mp_lmcache_and_sha256_prefix_cache" time="0.002" /><testcase classname="tests.test_adaptive_inference" name="test_budget_check_detects_token_violations" time="0.000" /><testcase classname="tests.test_adaptive_inference" name="test_budget_check_detects_cost_violation" time="0.000" /><testcase classname="tests.test_adaptive_inference" name="test_budget_check_fails_closed_for_zero_cloud_calls_and_unknown_cost" time="0.000" /><testcase classname="tests.test_adaptive_inference" name="test_adaptive_routing_requires_approval_on_budget_violation" time="0.000" /><testcase classname="tests.test_adaptive_inference" name="test_adaptive_routing_requires_approval_on_high_risk" time="0.000" /><testcase classname="tests.test_adaptive_inference" name="test_adaptive_routing_escalates_on_ambiguity" time="0.000" /><testcase classname="tests.test_adaptive_inference" name="test_adaptive_routing_defaults_to_cloud_inference" time="0.000" /><testcase classname="tests.test_adaptive_inference" name="test_governor_adaptive_routing_helper" time="0.005" /><testcase classname="tests.test_adaptive_inference" name="test_phase4_local_route_executes_dedicated_local_adapter" time="0.012" /><testcase classname="tests.test_adaptive_inference" name="test_phase4_approval_audit_persists_request_and_resume" time="0.014" /><testcase classname="tests.test_adaptive_inference" name="test_compute_interceptor_emits_provider_and_approval_outcomes" time="0.020" /><testcase classname="tests.test_adaptive_inference" name="test_phase3_counterfactual_crystals_resolve_when_rejected_route_runs" time="0.023" /><testcase classname="tests.test_adaptive_inference" name="test_phase4_compute_escrow_reserves_settles_and_refunds" time="0.017" /><testcase classname="tests.test_agent_planner_runtime" name="test_planner_executes_tools_and_completes" time="0.049" /><testcase classname="tests.test_agent_planner_runtime" name="test_planner_turn_budget_is_terminal" time="0.042" /><testcase classname="tests.test_agent_planner_runtime" name="test_budget_edge_autofinalizes_after_verify_and_sourceplan" time="0.322" /><testcase classname="tests.test_agent_planner_runtime" name="test_agent_mode_bootstraps_a_bounded_inspection_before_model_completion" time="0.047" /><testcase classname="tests.test_agent_planner_runtime" name="test_planner_failed_tool_becomes_observation" time="0.032" /><testcase classname="tests.test_agent_planner_runtime" name="test_decision_contract_rejects_prose_and_invalid_shape" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_decision_contract_accepts_action_alias" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_decision_contract_normalizes_small_model_tool_aliases" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_decision_contract_normalizes_params_and_end_line_for_read_range" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_decision_contract_normalizes_descriptive_action_enum" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_planner_observation_projection_drops_large_payloads" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_planner_prompt_includes_ide_semantic_context" time="0.022" /><testcase classname="tests.test_agent_planner_runtime" name="test_compact_observation_preserves_semantic_diagnostics_and_refactor" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_phase1_planning_integration_seeds_durable_objective_plan" time="0.067" /><testcase classname="tests.test_agent_planner_runtime" name="test_phase1_planning_integration_progresses_with_observations" time="0.172"><failure message="AssertionError: assert {'inspect': '...pending', ...} == {'inspect': '...mpleted', ...}&#10;  &#10;  Omitting 1 identical items, use -vv to show&#10;  Differing items:&#10;  {'handoff': 'pending'} != {'handoff': 'completed'}&#10;  {'mutate': 'pending'} != {'mutate': 'completed'}&#10;  {'bind': 'active'} != {'bind': 'completed'}&#10;  {'verify': 'pending'} != {'verify': 'completed'}&#10;  Use -v to get more diff">tmp_path = PosixPath('/tmp/pytest-of-byron/pytest-12/test_phase1_planning_integrati1')
+
+    def test_phase1_planning_integration_progresses_with_observations(tmp_path):
+        engine, run_id, approval_id = _repo_run(tmp_path)
+        provider = ScriptedPlannerProvider([
+            {"decision_type": "tool", "tool_id": "workspace.list", "arguments": {}},
+            {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "repair VALUE"}},
+            {"decision_type": "tool", "tool_id": "worktree.replace_exact", "approval_id": approval_id, "arguments": {"path": "answer.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2"}},
+            {"decision_type": "complete", "summary": "completed before verify"},
+            {"decision_type": "complete", "summary": "completed before sourceplan"},
+            {"decision_type": "complete", "summary": "VALUE repaired and verified."},
+        ])
+        asyncio.run(AgentPlannerRuntime(engine, provider, max_turns=6).run(run_id))
+        current = ObjectivePlanWorkspace(engine.workspace_root).current(run_id)
+        statuses = {step["step_id"]: step["status"] for step in current["plan"]["steps"]}
+&gt;       assert statuses == {
+            "inspect": "completed",
+            "bind": "completed",
+            "mutate": "completed",
+            "verify": "completed",
+            "handoff": "completed",
+        }
+E       AssertionError: assert {'inspect': '...pending', ...} == {'inspect': '...mpleted', ...}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Differing items:
+E         {'handoff': 'pending'} != {'handoff': 'completed'}
+E         {'mutate': 'pending'} != {'mutate': 'completed'}
+E         {'bind': 'active'} != {'bind': 'completed'}
+E         {'verify': 'pending'} != {'verify': 'completed'}
+E         Use -v to get more diff
+
+tests/test_agent_planner_runtime.py:363: AssertionError</failure></testcase><testcase classname="tests.test_agent_planner_runtime" name="test_phase2_planning_integration_marks_repair_scope_after_failed_verify" time="0.188"><failure message="AssertionError: assert 'handoff' == 'mutate'&#10;  &#10;  - mutate&#10;  + handoff">tmp_path = PosixPath('/tmp/pytest-of-byron/pytest-12/test_phase2_planning_integrati0')
+
+    def test_phase2_planning_integration_marks_repair_scope_after_failed_verify(tmp_path):
+        engine, run_id, approval_id = _repo_run(tmp_path)
+        provider = ScriptedPlannerProvider([
+            {"decision_type": "tool", "tool_id": "workspace.list", "arguments": {}},
+            {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "repair VALUE"}},
+            {"decision_type": "tool", "tool_id": "worktree.replace_exact", "approval_id": approval_id, "arguments": {"path": "answer.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2\nbroken = "}},
+            {"decision_type": "tool", "tool_id": "worktree.verify", "approval_id": approval_id, "arguments": {"command": ["python", "-m", "py_compile", "answer.py"]}},
+            {"decision_type": "complete", "summary": "too early after failed verify"},
+        ])
+        asyncio.run(AgentPlannerRuntime(engine, provider, max_turns=4, max_repair_cycles=2).run(run_id))
+        current = ObjectivePlanWorkspace(engine.workspace_root).current(run_id)
+        mutate = next(step for step in current["plan"]["steps"] if step["step_id"] == "mutate")
+        verify = next(step for step in current["plan"]["steps"] if step["step_id"] == "verify")
+&gt;       assert current["plan"]["active_step_id"] == "mutate"
+E       AssertionError: assert 'handoff' == 'mutate'
+E         
+E         - mutate
+E         + handoff
+
+tests/test_agent_planner_runtime.py:389: AssertionError</failure></testcase><testcase classname="tests.test_agent_planner_runtime" name="test_phase3_planning_integration_records_latency_on_plan_steps" time="0.194"><failure message="AssertionError: assert 'workspace.read_range' == 'workspace.list'&#10;  &#10;  - workspace.list&#10;  + workspace.read_range">tmp_path = PosixPath('/tmp/pytest-of-byron/pytest-12/test_phase3_planning_integrati0')
+
+    def test_phase3_planning_integration_records_latency_on_plan_steps(tmp_path):
+        engine, run_id, approval_id = _repo_run(tmp_path)
+        provider = ScriptedPlannerProvider([
+            {"decision_type": "tool", "tool_id": "workspace.list", "arguments": {}},
+            {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "repair VALUE"}},
+            {"decision_type": "tool", "tool_id": "worktree.replace_exact", "approval_id": approval_id, "arguments": {"path": "answer.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2"}},
+            {"decision_type": "complete", "summary": "completed before verify"},
+            {"decision_type": "complete", "summary": "completed before sourceplan"},
+            {"decision_type": "complete", "summary": "VALUE repaired and verified."},
+        ])
+        asyncio.run(AgentPlannerRuntime(engine, provider, max_turns=6).run(run_id))
+        current = ObjectivePlanWorkspace(engine.workspace_root).current(run_id)
+        inspect = next(step for step in current["plan"]["steps"] if step["step_id"] == "inspect")
+        bind = next(step for step in current["plan"]["steps"] if step["step_id"] == "bind")
+        verify = next(step for step in current["plan"]["steps"] if step["step_id"] == "verify")
+        assert inspect["telemetry"]["planner_turns"] &gt;= 1
+        assert inspect["telemetry"]["tool_calls"] &gt;= 1
+&gt;       assert inspect["telemetry"]["last_tool_id"] == "workspace.list"
+E       AssertionError: assert 'workspace.read_range' == 'workspace.list'
+E         
+E         - workspace.list
+E         + workspace.read_range
+
+tests/test_agent_planner_runtime.py:415: AssertionError</failure></testcase><testcase classname="tests.test_agent_planner_runtime" name="test_phase4_planning_integration_records_route_on_active_step" time="0.072" /><testcase classname="tests.test_agent_planner_runtime" name="test_phase5_planning_integration_records_resume_continuity" time="0.046"><failure message="KeyError: 'continuity'">tmp_path = PosixPath('/tmp/pytest-of-byron/pytest-12/test_phase5_planning_integrati0')
+
+    def test_phase5_planning_integration_records_resume_continuity(tmp_path):
+        engine, run_id, approval_id = _repo_run(tmp_path)
+        runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]), max_turns=1)
+        runtime.planning_integrations.ensure_phase1_plan(run_id, engine.store.get_run(run_id))
+        runtime.planning_integrations.sync_phase1_progress(run_id, {"tool_id": "workspace.list", "status": "completed"})
+        engine.merge_checkpoint(run_id, {
+            "planner": {
+                "run_id": run_id,
+                "turn": 1,
+                "max_turns": 2,
+                "status": "running",
+                "last_decision": {"decision_type": "tool", "tool_id": "worktree.bind", "arguments": {"objective": "repair VALUE"}},
+                "observations": [{"tool_id": "workspace.list", "status": "completed", "result": {}}],
+                "final_summary": "",
+                "blocker": "",
+                "repair_cycles": 0,
+                "max_repair_cycles": 2,
+                "verification_failures": [],
+            }
+        })
+        engine.store.transition(run_id, "paused")
+        engine.resume(run_id)
+        resumed = asyncio.run(runtime.run(run_id))
+        current = ObjectivePlanWorkspace(engine.workspace_root).current(run_id)
+        bind = next(step for step in current["plan"]["steps"] if step["step_id"] == "bind")
+&gt;       continuity = bind["telemetry"]["continuity"]
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'continuity'
+
+tests/test_agent_planner_runtime.py:461: KeyError</failure></testcase><testcase classname="tests.test_agent_planner_runtime" name="test_phase5_planning_integration_preserves_repair_context_on_resume" time="0.059" /><testcase classname="tests.test_agent_planner_runtime" name="test_phase6_planning_integration_blocks_active_step_while_waiting_for_approval" time="0.045" /><testcase classname="tests.test_agent_planner_runtime" name="test_phase6_planning_integration_reactivates_exact_step_after_approval_resume" time="0.043" /><testcase classname="tests.test_agent_planner_runtime" name="test_phase7_planning_integration_records_sourceplan_handoff_ready" time="0.169"><failure message="KeyError: 'handoff'">tmp_path = PosixPath('/tmp/pytest-of-byron/pytest-12/test_phase7_planning_integrati0')
+
+    def test_phase7_planning_integration_records_sourceplan_handoff_ready(tmp_path):
+        engine, run_id, approval_id = _repo_run(tmp_path)
+        provider = ScriptedPlannerProvider([
+            {"decision_type": "tool", "tool_id": "workspace.list", "arguments": {}},
+            {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "repair VALUE"}},
+            {"decision_type": "tool", "tool_id": "worktree.replace_exact", "approval_id": approval_id, "arguments": {"path": "answer.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2"}},
+            {"decision_type": "complete", "summary": "completed before verify"},
+            {"decision_type": "complete", "summary": "completed before sourceplan"},
+            {"decision_type": "complete", "summary": "VALUE repaired and verified."},
+        ])
+        asyncio.run(AgentPlannerRuntime(engine, provider, max_turns=6).run(run_id))
+        current = ObjectivePlanWorkspace(engine.workspace_root).current(run_id)
+        handoff = next(step for step in current["plan"]["steps"] if step["step_id"] == "handoff")
+&gt;       handoff_state = handoff["telemetry"]["handoff"]
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'handoff'
+
+tests/test_agent_planner_runtime.py:605: KeyError</failure></testcase><testcase classname="tests.test_agent_planner_runtime" name="test_phase7_planning_integration_records_promotion_eligibility_and_commit" time="0.173"><failure message="assert None is not None">tmp_path = PosixPath('/tmp/pytest-of-byron/pytest-12/test_phase7_planning_integrati1')
+
+    def test_phase7_planning_integration_records_promotion_eligibility_and_commit(tmp_path):
+        engine, run_id, approval_id = _repo_run(tmp_path)
+        provider = ScriptedPlannerProvider([
+            {"decision_type": "tool", "tool_id": "workspace.list", "arguments": {}},
+            {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "repair VALUE"}},
+            {"decision_type": "tool", "tool_id": "worktree.replace_exact", "approval_id": approval_id, "arguments": {"path": "answer.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2"}},
+            {"decision_type": "complete", "summary": "completed before verify"},
+            {"decision_type": "complete", "summary": "completed before sourceplan"},
+            {"decision_type": "complete", "summary": "VALUE repaired and verified."},
+        ])
+        asyncio.run(AgentPlannerRuntime(engine, provider, max_turns=6).run(run_id))
+        promotion = __import__("app.kernel.agents.promotion_engine", fromlist=["PromotionEngine"]).PromotionEngine(engine.workspace_root)
+        run = engine.store.get_run(run_id)
+        checkpoint = dict(run["checkpoint"])
+        sourceplan = dict(checkpoint.get("sourceplan") or {})
+        sourceplan["requires_operator_translation"] = False
+        checkpoint["sourceplan"] = sourceplan
+        engine.checkpoint(run_id, checkpoint)
+        evaluated = promotion.evaluate(run_id, requested_by="operator")
+        approval = evaluated["approval"]
+&gt;       assert approval is not None
+E       assert None is not None
+
+tests/test_agent_planner_runtime.py:634: AssertionError</failure></testcase><testcase classname="tests.test_agent_planner_runtime" name="test_ollama_provider_uses_shorter_timeout_for_repair_turns" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_ollama_provider_uses_shorter_timeout_for_followup_turns_without_repairs" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_nim_provider_uses_shorter_timeout_for_repair_turns" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_nim_provider_uses_shorter_timeout_for_followup_turns_without_repairs" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_nim_provider_uses_shorter_timeout_for_late_turns" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_ollama_provider_exposes_route_and_timeout_usage_on_success" time="0.002"><failure message="app.kernel.agents.planner_provider.PlannerDecisionError: Ollama model 'qwen2.5:0.5b' is not installed at http://127.0.0.1:11434; available: no models reported. Run `ollama pull qwen2.5:0.5b` or choose one of the listed models.">def test_ollama_provider_exposes_route_and_timeout_usage_on_success():
+        class StubOllama(OllamaPlannerProvider):
+            def _prepare_sensorium(self, run: dict[str, Any]) -&gt; None:
+                self._runtime_before = None
+    
+            def _finish_sensorium(self) -&gt; None:
+                return
+    
+            def _govern_request(self, prompt: str, *, run: dict[str, Any], turn: int) -&gt; None:
+                return
+    
+            def _apply_pressure_budget(self, *, reuse_mode: str = "cold") -&gt; None:
+                self._pressure_decision = None
+    
+            def _request_json(self, path: str, payload: dict[str, Any], timeout: float) -&gt; dict[str, Any]:
+                self._seen_timeout = timeout
+                return {"response": "{\"decision_type\":\"complete\",\"summary\":\"done\"}", "total_duration": 5_000_000}
+    
+        provider = StubOllama(model="qwen2.5:0.5b", timeout_seconds=30, max_retries=0)
+        run = {"checkpoint": {"planner": {"observations": [{"tool_id": "workspace.list", "status": "completed"}]}}}
+&gt;       decision = asyncio.run(provider.next_decision("prompt", run=run, turn=2))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_agent_planner_runtime.py:741: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.13/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.13/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.13/asyncio/base_events.py:725: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+app/kernel/agents/ollama_planner_provider.py:183: in next_decision
+    await self._preflight()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;tests.test_agent_planner_runtime.test_ollama_provider_exposes_route_and_timeout_usage_on_success.&lt;locals&gt;.StubOllama object at 0x704f2ff230e0&gt;
+
+    async def _preflight(self) -&gt; None:
+        if self._preflight_ok:
+            return
+        timeout = max(1.0, float(os.environ.get("BEAST_OLLAMA_PREFLIGHT_TIMEOUT", "4")))
+        try:
+            payload = await asyncio.to_thread(self._request_json, "/api/tags", None, timeout)
+        except OSError as exc:
+            if self.route_dampener is not None:
+                self.last_usage["route"] = self._route_event("incorrect")
+            raise PlannerDecisionError(
+                f"Ollama config preflight failed for {self.base_url}: {exc}. "
+                "Check BEAST_OLLAMA_BASE_URL/OLLAMA_HOST and confirm the native Ollama /api/tags endpoint is reachable."
+            ) from exc
+        models = [str(item.get("name") or "") for item in payload.get("models", []) if isinstance(item, dict)]
+        if self.model not in models:
+            if self.route_dampener is not None:
+                self.last_usage["route"] = self._route_event("incorrect")
+            preview = ", ".join(models[:8]) or "no models reported"
+&gt;           raise PlannerDecisionError(
+                f"Ollama model {self.model!r} is not installed at {self.base_url}; available: {preview}. "
+                f"Run `ollama pull {self.model}` or choose one of the listed models."
+            )
+E           app.kernel.agents.planner_provider.PlannerDecisionError: Ollama model 'qwen2.5:0.5b' is not installed at http://127.0.0.1:11434; available: no models reported. Run `ollama pull qwen2.5:0.5b` or choose one of the listed models.
+
+app/kernel/agents/ollama_planner_provider.py:171: PlannerDecisionError</failure></testcase><testcase classname="tests.test_agent_planner_runtime" name="test_ollama_provider_honors_persistent_bad_route_memory" time="0.001" /><testcase classname="tests.test_agent_planner_runtime" name="test_nim_provider_honors_persistent_bad_route_memory" time="0.001" /><testcase classname="tests.test_agent_planner_runtime" name="test_sticky_fallback_planner_provider_becomes_heuristic_only_after_repeated_timeouts" time="0.001" /><testcase classname="tests.test_agent_planner_runtime" name="test_sticky_fallback_planner_provider_becomes_heuristic_only_after_repeated_slow_successes" time="0.001" /><testcase classname="tests.test_agent_planner_runtime" name="test_sticky_fallback_does_not_mask_non_mutating_provider_failure" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_local_ollama_repair_prompt_elides_older_observations" time="0.173"><failure message="assert 'LATEST FAILURE:' in 'BEAST ACTION PLANNER. Controller only.\nReturn ONE JSON object on ONE line. No markdown, prose, arrays, comments, or ...&quot;active&quot;,&quot;step_id&quot;:&quot;handoff&quot;,&quot;success_criteria&quot;:[],&quot;title&quot;:&quot;Prepare SourcePlan handoff from verified worktree diff&quot;}]}'">tmp_path = PosixPath('/tmp/pytest-of-byron/pytest-12/test_local_ollama_repair_promp0')
+
+    def test_local_ollama_repair_prompt_elides_older_observations(tmp_path):
+        engine, run_id, approval_id = _repo_run(tmp_path)
+        provider = ScriptedPlannerProvider([
+            {"decision_type": "tool", "tool_id": "workspace.list", "arguments": {}},
+            {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "repair VALUE"}},
+            {"decision_type": "tool", "tool_id": "worktree.replace_exact", "approval_id": approval_id, "arguments": {"path": "answer.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2\nbroken = "}},
+            {"decision_type": "tool", "tool_id": "worktree.verify", "approval_id": approval_id, "arguments": {"command": ["python", "-m", "py_compile", "answer.py"]}},
+        ])
+        asyncio.run(AgentPlannerRuntime(engine, provider, max_turns=4, max_repair_cycles=2).run(run_id))
+        runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]))
+        run = engine.store.get_run(run_id)
+        run["provider"] = "ollama"
+        run["checkpoint"]["planner"]["observations"].insert(0, {
+            "tool_id": "workspace.search_text",
+            "status": "completed",
+            "result": {"matches": [{"path": "answer.py"}]},
+        })
+        prompt = runtime._prompt(run, runtime._load_state(run_id))
+&gt;       assert "LATEST FAILURE:" in prompt
+E       assert 'LATEST FAILURE:' in 'BEAST ACTION PLANNER. Controller only.\nReturn ONE JSON object on ONE line. No markdown, prose, arrays, comments, or ..."active","step_id":"handoff","success_criteria":[],"title":"Prepare SourcePlan handoff from verified worktree diff"}]}'
+
+tests/test_agent_planner_runtime.py:858: AssertionError</failure></testcase><testcase classname="tests.test_agent_planner_runtime" name="test_nim_repair_prompt_elides_older_observations" time="0.174"><failure message="assert 'LATEST FAILURE:' in 'BEAST ACTION PLANNER. Controller only.\nReturn ONE JSON object on ONE line. No markdown, prose, arrays, comments, or ...&quot;active&quot;,&quot;step_id&quot;:&quot;handoff&quot;,&quot;success_criteria&quot;:[],&quot;title&quot;:&quot;Prepare SourcePlan handoff from verified worktree diff&quot;}]}'">tmp_path = PosixPath('/tmp/pytest-of-byron/pytest-12/test_nim_repair_prompt_elides_0')
+
+    def test_nim_repair_prompt_elides_older_observations(tmp_path):
+        engine, run_id, approval_id = _repo_run(tmp_path)
+        provider = ScriptedPlannerProvider([
+            {"decision_type": "tool", "tool_id": "workspace.list", "arguments": {}},
+            {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "repair VALUE"}},
+            {"decision_type": "tool", "tool_id": "worktree.replace_exact", "approval_id": approval_id, "arguments": {"path": "answer.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2\nbroken = "}},
+            {"decision_type": "tool", "tool_id": "worktree.verify", "approval_id": approval_id, "arguments": {"command": ["python", "-m", "py_compile", "answer.py"]}},
+        ])
+        asyncio.run(AgentPlannerRuntime(engine, provider, max_turns=4, max_repair_cycles=2).run(run_id))
+        runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]))
+        run = engine.store.get_run(run_id)
+        run["provider"] = "nvidia_nim"
+        run["checkpoint"]["planner"]["observations"].insert(0, {
+            "tool_id": "workspace.search_text",
+            "status": "completed",
+            "result": {"matches": [{"path": "answer.py"}]},
+        })
+        prompt = runtime._prompt(run, runtime._load_state(run_id))
+&gt;       assert "LATEST FAILURE:" in prompt
+E       assert 'LATEST FAILURE:' in 'BEAST ACTION PLANNER. Controller only.\nReturn ONE JSON object on ONE line. No markdown, prose, arrays, comments, or ..."active","step_id":"handoff","success_criteria":[],"title":"Prepare SourcePlan handoff from verified worktree diff"}]}'
+
+tests/test_agent_planner_runtime.py:881: AssertionError</failure></testcase><testcase classname="tests.test_agent_planner_runtime" name="test_compact_provider_late_turn_prompt_shrinks_observations_and_budget" time="0.126" /><testcase classname="tests.test_agent_planner_runtime" name="test_planner_provider_fallback_switches_after_primary_failure" time="0.001" /><testcase classname="tests.test_agent_planner_runtime" name="test_capability_scored_provider_escalates_hard_edit_to_stronger_route" time="0.001" /><testcase classname="tests.test_agent_planner_runtime" name="test_capability_scored_provider_treats_semantic_risk_as_hard_edit_signal" time="0.001" /><testcase classname="tests.test_agent_planner_runtime" name="test_chat_timeout_promotes_partial_stream_to_completion" time="0.117" /><testcase classname="tests.test_agent_planner_runtime" name="test_mutating_timeout_salvages_partial_structured_decision" time="0.286" /><testcase classname="tests.test_agent_planner_runtime" name="test_timeout_salvages_partial_structured_decision_from_wrapped_provider" time="0.338" /><testcase classname="tests.test_agent_planner_runtime" name="test_invalid_placeholder_mutation_retries_before_tool_execution" time="0.165" /><testcase classname="tests.test_agent_planner_runtime" name="test_invalid_placeholder_mutation_blocks_if_retry_stays_invalid" time="0.046" /><testcase classname="tests.test_agent_planner_runtime" name="test_invalid_placeholder_retry_rejects_malformed_read_recovery" time="0.043" /><testcase classname="tests.test_agent_planner_runtime" name="test_invalid_placeholder_retry_rejects_wrong_file_mutation_recovery" time="0.045" /><testcase classname="tests.test_agent_planner_runtime" name="test_mutating_timeout_heuristic_block_retries_strong_provider" time="0.135" /><testcase classname="tests.test_agent_planner_runtime" name="test_capability_scored_provider_degrades_failed_route_mid_run" time="0.001" /><testcase classname="tests.test_agent_planner_runtime" name="test_provider_quality_ledger_tunes_capability_scores" time="0.004" /><testcase classname="tests.test_agent_planner_runtime" name="test_heuristic_planner_fast_paths_workspace_then_bind_then_verify" time="0.046" /><testcase classname="tests.test_agent_planner_runtime" name="test_large_real_repo_endurance_touches_20_files_and_hands_off_sourceplan" time="0.901"><failure message="AssertionError: assert 'budget_exhausted' == 'completed'&#10;  &#10;  - completed&#10;  + budget_exhausted">tmp_path = PosixPath('/tmp/pytest-of-byron/pytest-12/test_large_real_repo_endurance0')
+
+    def test_large_real_repo_endurance_touches_20_files_and_hands_off_sourceplan(tmp_path):
+        import subprocess
+    
+        root = tmp_path / "bigrepo"
+        root.mkdir()
+        subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+        subprocess.run(["git", "config", "user.email", "beast@example.test"], cwd=root, check=True)
+        subprocess.run(["git", "config", "user.name", "BEAST Test"], cwd=root, check=True)
+        (root / "README.md").write_text("# Big Repo\n", encoding="utf-8")
+        for package in ("api", "worker", "ui", "shared"):
+            (root / "packages" / package).mkdir(parents=True)
+            (root / "packages" / package / "__init__.py").write_text("", encoding="utf-8")
+        subprocess.run(["git", "add", "."], cwd=root, check=True)
+        subprocess.run(["git", "commit", "-qm", "initial"], cwd=root, check=True)
+        engine = AgentRunEngine(root)
+        paths = [f"packages/pkg_{index % 5}/module_{index}.py" for index in range(22)]
+        run_id = engine.create_run(
+            session_id="session-large-endurance",
+            objective="Large real-repo endurance: touch 20+ files across package boundaries and verify",
+            mode="agent",
+            provider="simulated",
+            model="planner-test",
+            request={"context_files": paths[:8], "monorepo": True, "long_horizon": True},
+        )["run_id"]
+        approval_id = "large-mutation"
+        engine.store.create_approval(run_id, {"request_id": approval_id, "capabilities": [{"id": "worktree_mutation"}, {"id": "run_isolated_verifier"}]})
+        engine.store.resolve_approval(run_id, approval_id, {"approved": True, "scope": "run"})
+        decisions = [
+            {"decision_type": "tool", "tool_id": "workspace.index", "arguments": {"limit": 2000, "include_symbols": True}},
+            {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "large endurance", "risk": "high"}},
+        ]
+        for index, file_path in enumerate(paths):
+            decisions.append({
+                "decision_type": "tool",
+                "tool_id": "worktree.write_file",
+                "approval_id": approval_id,
+                "arguments": {"path": file_path, "content": f"VALUE_{index} = {index}\n\ndef compute():\n    return VALUE_{index}\n"},
+            })
+        decisions.extend([
+            {"decision_type": "tool", "tool_id": "worktree.verify", "approval_id": approval_id, "arguments": {"command": ["python", "-m", "py_compile", *paths]}},
+            {"decision_type": "tool", "tool_id": "worktree.sourceplan_draft", "approval_id": approval_id, "arguments": {}},
+            {"decision_type": "complete", "summary": "Large repo endurance mutation verified and handed off."},
+        ])
+        final = asyncio.run(AgentPlannerRuntime(engine, ScriptedPlannerProvider(decisions), max_turns=32, observation_limit=50).run(run_id))
+&gt;       assert final["state"] == "completed"
+E       AssertionError: assert 'budget_exhausted' == 'completed'
+E         
+E         - completed
+E         + budget_exhausted
+
+tests/test_agent_planner_runtime.py:1475: AssertionError</failure></testcase><testcase classname="tests.test_agent_planner_runtime" name="test_heuristic_planner_defers_non_retryable_failed_verify_to_model_route" time="0.001" /><testcase classname="tests.test_agent_planner_runtime" name="test_heuristic_planner_completes_after_verified_sourceplan_handoff" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_heuristic_planner_blocks_cleanly_when_no_deterministic_step_exists" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_verification_planner_prefers_focused_pytest_for_changed_tests" time="0.000"><failure message="AssertionError: assert ['python3', '...gent_loop.py'] == ['python', '-...gent_loop.py']&#10;  &#10;  At index 0 diff: 'python3' != 'python'&#10;  Use -v to get more diff">def test_verification_planner_prefers_focused_pytest_for_changed_tests():
+        run = {
+            "request": {
+                "execution_target": "container",
+                "execution_target_payload": {"kind": "container", "sessionId": "ctr-1", "label": "devcontainer"},
+                "test_catalog": {"tests": [{"id": "python:pytest", "framework": "pytest", "command": "python3 -m pytest"}]},
+            },
+            "checkpoint": {
+                "planner": {
+                    "observations": [
+                        {"tool_id": "worktree.replace_exact", "status": "completed", "result": {"path": "tests/test_agent_loop.py"}},
+                    ],
+                },
+            },
+        }
+        plan = plan_verification(run)
+&gt;       assert plan["command"] == ["python", "-m", "pytest", "-q", "tests/test_agent_loop.py"]
+E       AssertionError: assert ['python3', '...gent_loop.py'] == ['python', '-...gent_loop.py']
+E         
+E         At index 0 diff: 'python3' != 'python'
+E         Use -v to get more diff
+
+tests/test_agent_planner_runtime.py:1557: AssertionError</failure></testcase><testcase classname="tests.test_agent_planner_runtime" name="test_verification_planner_uses_workspace_index_related_pytest_for_source_change" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_verification_planner_uses_workspace_index_related_vitest_for_typescript_source_change" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_verification_planner_prefers_changed_jest_test_file_over_typescript_compile" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_verification_planner_keeps_source_python_on_compile_gate" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_verification_planner_selects_go_package_tests_for_changed_source" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_verification_planner_selects_cargo_for_changed_rust_crate" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_verification_planner_selects_maven_related_tests_for_java_source" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_verification_planner_selects_dotnet_project_gate" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_verification_planner_selects_playwright_spec_before_unit_runner" time="0.000" /><testcase classname="tests.test_agent_planner_runtime" name="test_long_horizon_planning_seed_adds_architecture_and_test_map_steps" time="0.011" /><testcase classname="tests.test_agent_planner_runtime" name="test_edit_prompt_includes_target_aware_verification_hint" time="0.024"><failure message="assert '&quot;command&quot;:[&quot;python&quot;,&quot;-m&quot;,&quot;pytest&quot;,&quot;-q&quot;,&quot;tests/test_agent_loop.py&quot;]' in 'BEAST ACTION PLANNER. Controller only.\nReturn ONE JSON object on ONE line. No markdown, prose, arrays, comments, or ...&quot;:{&quot;code_actions&quot;:0,&quot;diagnostics&quot;:0,&quot;import_edges&quot;:0,&quot;references&quot;:0,&quot;symbols&quot;:0},&quot;top_references&quot;:[],&quot;top_symbols&quot;:[]}'">tmp_path = PosixPath('/tmp/pytest-of-byron/pytest-12/test_edit_prompt_includes_targ0')
+
+    def test_edit_prompt_includes_target_aware_verification_hint(tmp_path):
+        engine, run_id, approval_id = _repo_run(tmp_path)
+        engine.merge_checkpoint(run_id, {
+            "planner": {
+                "observations": [
+                    {"tool_id": "workspace.list", "status": "completed", "result": {}},
+                    {"tool_id": "worktree.bind", "status": "completed", "result": {}},
+                    {"tool_id": "worktree.replace_exact", "status": "completed", "result": {"path": "tests/test_agent_loop.py"}},
+                ],
+            },
+        })
+        run = engine.store.get_run(run_id)
+        run["request"]["execution_target"] = "ssh"
+        run["request"]["execution_target_payload"] = {"kind": "ssh", "sessionId": "ssh-1", "host": "devbox"}
+        run["request"]["test_catalog"] = {"tests": [{"id": "python:pytest", "framework": "pytest"}]}
+        runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]))
+        prompt = runtime._prompt(run, runtime._load_state(run_id))
+        assert "EXECUTION TARGET: ssh" in prompt
+        assert "VERIFICATION HINT:" in prompt
+&gt;       assert '"command":["python","-m","pytest","-q","tests/test_agent_loop.py"]' in prompt
+E       assert '"command":["python","-m","pytest","-q","tests/test_agent_loop.py"]' in 'BEAST ACTION PLANNER. Controller only.\nReturn ONE JSON object on ONE line. No markdown, prose, arrays, comments, or ...":{"code_actions":0,"diagnostics":0,"import_edges":0,"references":0,"symbols":0},"top_references":[],"top_symbols":[]}'
+
+tests/test_agent_planner_runtime.py:1795: AssertionError</failure></testcase><testcase classname="tests.test_agent_planner_runtime" name="test_edit_prompt_exposes_required_phase_transition" time="0.007" /><testcase classname="tests.test_agent_planner_runtime" name="test_agent_phase_enforcement_inserts_worktree_bind_after_initial_inspection" time="0.093" /><testcase classname="tests.test_agent_planner_runtime" name="test_agent_phase_enforcement_runs_default_verify_and_sourceplan_after_mutation" time="0.173"><failure message="AssertionError: assert 'budget_exhausted' == 'completed'&#10;  &#10;  - completed&#10;  + budget_exhausted">tmp_path = PosixPath('/tmp/pytest-of-byron/pytest-12/test_agent_phase_enforcement_r0')
+
+    def test_agent_phase_enforcement_runs_default_verify_and_sourceplan_after_mutation(tmp_path):
+        engine, run_id, approval_id = _repo_run(tmp_path)
+        provider = ScriptedPlannerProvider([
+            {"decision_type": "tool", "tool_id": "workspace.index", "arguments": {"limit": 1200, "include_symbols": True}},
+            {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "repair VALUE"}},
+            {"decision_type": "tool", "tool_id": "worktree.replace_exact", "approval_id": approval_id, "arguments": {"path": "answer.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2"}},
+            {"decision_type": "complete", "summary": "completed before verify"},
+            {"decision_type": "complete", "summary": "completed before sourceplan"},
+            {"decision_type": "complete", "summary": "VALUE repaired and verified."},
+        ])
+        final = asyncio.run(AgentPlannerRuntime(engine, provider, max_turns=6).run(run_id))
+        planner = final["checkpoint"]["planner"]
+&gt;       assert final["state"] == "completed"
+E       AssertionError: assert 'budget_exhausted' == 'completed'
+E         
+E         - completed
+E         + budget_exhausted
+
+tests/test_agent_planner_runtime.py:1844: AssertionError</failure></testcase><testcase classname="tests.test_agent_planner_runtime" name="test_failed_verification_records_analysis_and_target_paths" time="0.177"><failure message="assert 0 == 1">tmp_path = PosixPath('/tmp/pytest-of-byron/pytest-12/test_failed_verification_recor0')
+
+    def test_failed_verification_records_analysis_and_target_paths(tmp_path):
+        engine, run_id, approval_id = _repo_run(tmp_path)
+        provider = ScriptedPlannerProvider([
+            {"decision_type": "tool", "tool_id": "workspace.index", "arguments": {"limit": 1200, "include_symbols": True}},
+            {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "repair VALUE"}},
+            {"decision_type": "tool", "tool_id": "worktree.replace_exact", "approval_id": approval_id, "arguments": {"path": "answer.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2\nbroken = "}},
+            {"decision_type": "tool", "tool_id": "worktree.verify", "approval_id": approval_id, "arguments": {"command": ["python", "-m", "py_compile", "answer.py"]}},
+            {"decision_type": "complete", "summary": "should not matter"},
+        ])
+        final = asyncio.run(AgentPlannerRuntime(engine, provider, max_turns=4, max_repair_cycles=2).run(run_id))
+        planner = final["checkpoint"]["planner"]
+        assert final["state"] == "budget_exhausted"
+&gt;       assert planner["repair_cycles"] == 1
+E       assert 0 == 1
+
+tests/test_agent_planner_runtime.py:1872: AssertionError</failure></testcase><testcase classname="tests.test_agent_planner_runtime" name="test_prompt_surfaces_structured_repair_contract_after_failed_verify" time="0.175"><failure message="assert 'repair the latest verifier failure with one bounded edit in answer.py' in 'BEAST ACTION PLANNER. Controller only.\nReturn ONE JSON object on ONE line. No markdown, prose, arrays, comments, or ...&quot;active&quot;,&quot;step_id&quot;:&quot;handoff&quot;,&quot;success_criteria&quot;:[],&quot;title&quot;:&quot;Prepare SourcePlan handoff from verified worktree diff&quot;}]}'">tmp_path = PosixPath('/tmp/pytest-of-byron/pytest-12/test_prompt_surfaces_structure0')
+
+    def test_prompt_surfaces_structured_repair_contract_after_failed_verify(tmp_path):
+        engine, run_id, approval_id = _repo_run(tmp_path)
+        provider = ScriptedPlannerProvider([
+            {"decision_type": "tool", "tool_id": "workspace.list", "arguments": {}},
+            {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "repair VALUE"}},
+            {"decision_type": "tool", "tool_id": "worktree.replace_exact", "approval_id": approval_id, "arguments": {"path": "answer.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2\nbroken = "}},
+            {"decision_type": "tool", "tool_id": "worktree.verify", "approval_id": approval_id, "arguments": {"command": ["python", "-m", "py_compile", "answer.py"]}},
+            {"decision_type": "complete", "summary": "too early after failure"},
+        ])
+        asyncio.run(AgentPlannerRuntime(engine, provider, max_turns=4, max_repair_cycles=2).run(run_id))
+        runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]))
+        state = runtime._load_state(run_id)
+        prompt = runtime._prompt(engine.store.get_run(run_id), state)
+&gt;       assert "repair the latest verifier failure with one bounded edit in answer.py" in prompt
+E       assert 'repair the latest verifier failure with one bounded edit in answer.py' in 'BEAST ACTION PLANNER. Controller only.\nReturn ONE JSON object on ONE line. No markdown, prose, arrays, comments, or ..."active","step_id":"handoff","success_criteria":[],"title":"Prepare SourcePlan handoff from verified worktree diff"}]}'
+
+tests/test_agent_planner_runtime.py:1894: AssertionError</failure></testcase><testcase classname="tests.test_agent_planner_runtime" name="test_mutating_heuristic_block_after_bind_retries_strong_provider" time="0.209" /><testcase classname="tests.test_agent_planner_runtime" name="test_first_mutation_retry_prompt_includes_exact_file_context" time="0.037" /><testcase classname="tests.test_agent_planner_runtime" name="test_first_mutation_retry_unwraps_sticky_provider_primary" time="0.025" /><testcase classname="tests.test_agent_planner_runtime" name="test_blocked_fallback_salvages_partial_decision_from_wrapped_primary" time="0.122" /><testcase classname="tests.test_agent_planner_runtime" name="test_blocked_fallback_salvages_partial_decision_from_recent_model_delta" time="0.130" /><testcase classname="tests.test_agent_planner_runtime" name="test_post_bind_duplicate_read_retries_strong_provider" time="0.167" /><testcase classname="tests.test_agent_planner_runtime" name="test_post_bind_duplicate_read_failure_blocks_further_read_loops" time="0.046" /><testcase classname="tests.test_agent_planner_runtime" name="test_post_bind_prompt_hides_read_tools_after_file_inspection" time="0.021" /><testcase classname="tests.test_agent_planner_runtime" name="test_required_phase_enforces_targeted_read_after_bind_when_no_file_contents_seen" time="0.019" /><testcase classname="tests.test_agent_planner_runtime" name="test_required_phase_skips_targeted_read_after_bind_once_file_contents_seen" time="0.024" /><testcase classname="tests.test_agent_planner_runtime" name="test_planner_prompt_keeps_workspace_inventory_narrow" time="0.008" /><testcase classname="tests.test_agent_run_store" name="test_agent_run_store_hash_chain_and_replay" time="0.005" /><testcase classname="tests.test_agent_run_store" name="test_agent_run_store_detects_tampering" time="0.004" /><testcase classname="tests.test_agent_run_store" name="test_agent_run_approval_is_durable" time="0.005" /><testcase classname="tests.test_agent_run_store" name="test_legacy_sse_projection_updates_run_state" time="0.014" /><testcase classname="tests.test_agent_run_store" name="test_legacy_sse_projection_adapts_canonical_planner_events" time="0.006" /><testcase classname="tests.test_agent_run_store" name="test_agent_tool_runtime_emits_execution_target_payload" time="0.007" /><testcase classname="tests.test_agent_run_store" name="test_agent_workspace_read_range_uses_remote_target" time="0.007" /><testcase classname="tests.test_agent_run_store" name="test_agent_workspace_search_text_uses_remote_target" time="0.011" /><testcase classname="tests.test_agent_run_store" name="test_agent_run_cancel_interrupts_registered_task" time="0.009" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_agent_scheduler_prefers_local_lanes_and_records_summary" time="0.031" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_agent_scheduler_escalates_for_low_confidence_implementation" time="0.027" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_agent_scheduler_binds_pressure_to_resource_execution" time="0.027" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_agent_scheduler_uses_legacy_route_inputs_as_advisory_signals" time="0.025" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_sourceplan_scorecard_carries_agent_scheduler_plan" time="0.048" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_mission_cockpit_summary_aggregates_cards" time="0.018" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_mcp_exposes_scheduler_and_cockpit_in_readonly" time="0.067" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_workspace_files_route_falls_back_to_local_candidates_for_desktop_ide" time="0.006" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_modular_cockpit_router_serves_mission_lattice_replay_endpoint" time="0.048" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_modular_sourceplan_compute_workspace_commons_routes_are_mounted" time="0.119" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_workspace_context_interactive_deadline_preserves_selected_scope" time="0.254" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_ide_snapshot_is_phase_one_vscode_shell_contract" time="0.038" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_ide_event_stream_emits_phase_two_event_contract" time="0.057" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_ide_related_context_contract_classifies_related_files" time="0.006" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_ide_sourceplan_from_editor_compiles_governed_draft" time="0.018" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_ide_sourceplan_from_editor_rejects_stale_buffer" time="0.011" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_ide_sourceplan_from_selection_compiles_targeted_hunk" time="0.014" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_ide_agent_session_detail_update_and_sourceplan_flow" time="0.019" /><testcase classname="tests.test_agent_scheduler_mission_cockpit" name="test_ide_agent_session_run_events_stream_and_persist_output" time="0.105" /><testcase time="0.001" /></testsuite></testsuites>

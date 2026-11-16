@@ -1,0 +1,111 @@
+{
+ "deepseek-ai/deepseek-v3.1": {
+  "status": 200,
+  "input": {
+   "top_p": {
+    "type": "number",
+    "default": 1,
+    "description": "Top-p (nucleus) sampling"
+   },
+   "prompt": {
+    "type": "string",
+    "default": "Why are you better than Deepseek v3?",
+    "description": "Prompt"
+   },
+   "thinking": {
+    "default": "None",
+    "description": "Reasoning effort level for DeepSeek models. Use 'medium' for enhanced reasoning or leave as None for default behavior."
+   },
+   "max_tokens": {
+    "type": "integer",
+    "default": 1024,
+    "description": "The maximum number of tokens the model should generate as output."
+   },
+   "temperature": {
+    "type": "number",
+    "default": 0.1,
+    "description": "The value used to modulate the next token probabilities."
+   },
+   "presence_penalty": {
+    "type": "number",
+    "default": 0,
+    "description": "Presence penalty"
+   },
+   "frequency_penalty": {
+    "type": "number",
+    "default": 0,
+    "description": "Frequency penalty"
+   }
+  }
+ },
+ "openai/gpt-oss-120b": {
+  "status": 200,
+  "input": {
+   "top_p": {
+    "type": "number",
+    "default": 1,
+    "description": "Top-p (nucleus) sampling"
+   },
+   "prompt": {
+    "type": "string",
+    "default": "",
+    "description": "Prompt"
+   },
+   "max_tokens": {
+    "type": "integer",
+    "default": 2048,
+    "description": "The maximum number of tokens the model should generate as output."
+   },
+   "temperature": {
+    "type": "number",
+    "default": 0.1,
+    "description": "The value used to modulate the next token probabilities."
+   },
+   "presence_penalty": {
+    "type": "number",
+    "default": 0,
+    "description": "Presence penalty"
+   },
+   "frequency_penalty": {
+    "type": "number",
+    "default": 0,
+    "description": "Frequency penalty"
+   }
+  }
+ },
+ "qwen/qwen3-235b-a22b-instruct-2507": {
+  "status": 200,
+  "input": {
+   "top_p": {
+    "type": "number",
+    "default": 1,
+    "description": "Top-p (nucleus) sampling"
+   },
+   "prompt": {
+    "type": "string",
+    "default": "",
+    "description": "Prompt"
+   },
+   "max_tokens": {
+    "type": "integer",
+    "default": 1024,
+    "description": "The maximum number of tokens the model should generate as output."
+   },
+   "temperature": {
+    "type": "number",
+    "default": 0.1,
+    "description": "The value used to modulate the next token probabilities."
+   },
+   "presence_penalty": {
+    "type": "number",
+    "default": 0,
+    "description": "Presence penalty"
+   },
+   "frequency_penalty": {
+    "type": "number",
+    "default": 0,
+    "description": "Frequency penalty"
+   }
+  }
+ }
+}

@@ -141,7 +141,10 @@ function normalizeExecutionTarget(target={}, fallbackRoot='') {
     const host=safeRemoteHost(target.host);
     const remoteRoot=safeRemotePath(target.remoteRoot || target.path || target.root || fallbackRoot,'~');
     if (!host || !remoteRoot) throw new Error('SSH protocol target requires a verified host and safe remote root.');
-    return {kind,host,remoteRoot,transport:'ssh-stdio'};
+    const remotePython=String(target.remotePython||'').trim();
+    if(remotePython && (!/^\/[A-Za-z0-9._+\/-]{1,1023}$/.test(remotePython) || remotePython.split('/').includes('..')))
+      throw new Error('SSH remote Python must be a safe absolute path.');
+    return {kind,host,remoteRoot,remotePython,transport:'ssh-stdio'};
   }
   if (kind==='container') {
     const containerId=safeContainerId(target.containerId || target.id || target.name);
@@ -160,7 +163,8 @@ function remoteEntryArgs(entry) {
 
 function targetCommand(entry, root, target) {
   if (target.kind==='ssh') {
-    const args=[entry.command,...remoteEntryArgs(entry)].map(shellQuote).join(' ');
+    const program=entry.id==='debugpy' && target.remotePython ? target.remotePython : entry.command;
+    const args=[program,...remoteEntryArgs(entry)].map(shellQuote).join(' ');
     return {
       command:'ssh',
       args:['-o','BatchMode=yes','-o','ConnectTimeout=7','-o','ServerAliveInterval=20','-o','ServerAliveCountMax=2','-o','StrictHostKeyChecking=yes',target.host,`cd ${shellQuote(target.remoteRoot)} && exec ${args}`],

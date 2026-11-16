@@ -1,0 +1,505 @@
+{
+  "inventory": {
+    "default_id": "auto",
+    "default_label": "Auto (BEAST governed)",
+    "count": 38,
+    "providers_present": [
+      "fal_llm",
+      "fireworks",
+      "hf",
+      "hyperbolic",
+      "nim",
+      "ollama",
+      "replicate",
+      "sambanova",
+      "tgi"
+    ],
+    "families": [
+      "gauntlet"
+    ],
+    "family_leaders": {
+      "gauntlet": {
+        "provider": "nim",
+        "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "pass_rate": 0.6667
+      }
+    },
+    "live": {
+      "tgi": {
+        "up": true,
+        "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ"
+      },
+      "ollama": {
+        "up": true,
+        "models": [
+          "granite3.2:2b",
+          "granite3.3:2b",
+          "qwen2.5-coder:7b",
+          "qwen3:4b"
+        ]
+      }
+    },
+    "lanes": [
+      {
+        "id": "auto",
+        "provider": "beast",
+        "model": "auto",
+        "label": "Auto (BEAST governed)",
+        "live": null,
+        "governed_auto": true,
+        "best_for": [
+          "gauntlet"
+        ],
+        "key_env_name_only": null
+      },
+      {
+        "id": "tgi::Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+        "provider": "tgi",
+        "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+        "label": "Qwen2.5-Coder-3B-Instruct-AWQ \u00b7 tgi",
+        "live": true,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": null
+      },
+      {
+        "id": "ollama::qwen2.5-coder:7b",
+        "provider": "ollama",
+        "model": "qwen2.5-coder:7b",
+        "label": "qwen2.5-coder:7b \u00b7 ollama",
+        "live": true,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": null
+      },
+      {
+        "id": "ollama::qwen3:4b",
+        "provider": "ollama",
+        "model": "qwen3:4b",
+        "label": "qwen3:4b \u00b7 ollama",
+        "live": true,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": null
+      },
+      {
+        "id": "ollama::granite3.2:2b",
+        "provider": "ollama",
+        "model": "granite3.2:2b",
+        "label": "granite3.2:2b \u00b7 ollama",
+        "live": true,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": null
+      },
+      {
+        "id": "ollama::granite3.3:2b",
+        "provider": "ollama",
+        "model": "granite3.3:2b",
+        "label": "granite3.3:2b \u00b7 ollama",
+        "live": true,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": null
+      },
+      {
+        "id": "nim::nvidia/nemotron-3.5-lightning-30b-a3b",
+        "provider": "nim",
+        "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "label": "nemotron-3.5-lightning-30b-a3b \u00b7 nim",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [
+          "gauntlet"
+        ],
+        "key_env_name_only": "NVIDIA_API_KEY"
+      },
+      {
+        "id": "nim::deepseek-ai/deepseek-v4.1-flash",
+        "provider": "nim",
+        "model": "deepseek-ai/deepseek-v4.1-flash",
+        "label": "deepseek-v4.1-flash \u00b7 nim",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "NVIDIA_API_KEY"
+      },
+      {
+        "id": "nim::openai/gpt-oss-20b",
+        "provider": "nim",
+        "model": "openai/gpt-oss-20b",
+        "label": "gpt-oss-20b \u00b7 nim",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "NVIDIA_API_KEY"
+      },
+      {
+        "id": "hf::moonshotai/Kimi-K2.7-Code:deepinfra",
+        "provider": "hf",
+        "model": "moonshotai/Kimi-K2.7-Code:deepinfra",
+        "label": "Kimi-K2.7-Code:deepinfra \u00b7 hf",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "HF_TOKEN"
+      },
+      {
+        "id": "hf::moonshotai/Kimi-K2.7-Code:featherless-ai",
+        "provider": "hf",
+        "model": "moonshotai/Kimi-K2.7-Code:featherless-ai",
+        "label": "Kimi-K2.7-Code:featherless-ai \u00b7 hf",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "HF_TOKEN"
+      },
+      {
+        "id": "hf::moonshotai/Kimi-K2.7-Code:novita",
+        "provider": "hf",
+        "model": "moonshotai/Kimi-K2.7-Code:novita",
+        "label": "Kimi-K2.7-Code:novita \u00b7 hf",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "HF_TOKEN"
+      },
+      {
+        "id": "hf::deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+        "provider": "hf",
+        "model": "deepseek-ai/DeepSeek-V4.1-Flash:deepinfra",
+        "label": "DeepSeek-V4.1-Flash:deepinfra \u00b7 hf",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "HF_TOKEN"
+      },
+      {
+        "id": "hf::deepseek-ai/DeepSeek-V4.1-Flash:baseten",
+        "provider": "hf",
+        "model": "deepseek-ai/DeepSeek-V4.1-Flash:baseten",
+        "label": "DeepSeek-V4.1-Flash:baseten \u00b7 hf",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "HF_TOKEN"
+      },
+      {
+        "id": "hf::deepseek-ai/DeepSeek-V4.1-Flash:novita",
+        "provider": "hf",
+        "model": "deepseek-ai/DeepSeek-V4.1-Flash:novita",
+        "label": "DeepSeek-V4.1-Flash:novita \u00b7 hf",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "HF_TOKEN"
+      },
+      {
+        "id": "hf::Qwen/Qwen3.8-27B:cerebras",
+        "provider": "hf",
+        "model": "Qwen/Qwen3.8-27B:cerebras",
+        "label": "Qwen3.8-27B:cerebras \u00b7 hf",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "HF_TOKEN"
+      },
+      {
+        "id": "hf::Qwen/Qwen3.8-27B:deepinfra",
+        "provider": "hf",
+        "model": "Qwen/Qwen3.8-27B:deepinfra",
+        "label": "Qwen3.8-27B:deepinfra \u00b7 hf",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "HF_TOKEN"
+      },
+      {
+        "id": "hf::Qwen/Qwen3.8-27B:nscale",
+        "provider": "hf",
+        "model": "Qwen/Qwen3.8-27B:nscale",
+        "label": "Qwen3.8-27B:nscale \u00b7 hf",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "HF_TOKEN"
+      },
+      {
+        "id": "hf::zai-org/GLM-5.3-Flash:zai-org",
+        "provider": "hf",
+        "model": "zai-org/GLM-5.3-Flash:zai-org",
+        "label": "GLM-5.3-Flash:zai-org \u00b7 hf",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "HF_TOKEN"
+      },
+      {
+        "id": "hf::zai-org/GLM-5.3-Flash:deepinfra",
+        "provider": "hf",
+        "model": "zai-org/GLM-5.3-Flash:deepinfra",
+        "label": "GLM-5.3-Flash:deepinfra \u00b7 hf",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "HF_TOKEN"
+      },
+      {
+        "id": "hf::zai-org/GLM-5.3-Flash:novita",
+        "provider": "hf",
+        "model": "zai-org/GLM-5.3-Flash:novita",
+        "label": "GLM-5.3-Flash:novita \u00b7 hf",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "HF_TOKEN"
+      },
+      {
+        "id": "hf::openai/gpt-oss-120b:groq",
+        "provider": "hf",
+        "model": "openai/gpt-oss-120b:groq",
+        "label": "gpt-oss-120b:groq \u00b7 hf",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "HF_TOKEN"
+      },
+      {
+        "id": "hf::openai/gpt-oss-120b:cerebras",
+        "provider": "hf",
+        "model": "openai/gpt-oss-120b:cerebras",
+        "label": "gpt-oss-120b:cerebras \u00b7 hf",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "HF_TOKEN"
+      },
+      {
+        "id": "hf::openai/gpt-oss-120b:deepinfra",
+        "provider": "hf",
+        "model": "openai/gpt-oss-120b:deepinfra",
+        "label": "gpt-oss-120b:deepinfra \u00b7 hf",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "HF_TOKEN"
+      },
+      {
+        "id": "fireworks::accounts/fireworks/models/kimi-k3",
+        "provider": "fireworks",
+        "model": "accounts/fireworks/models/kimi-k3",
+        "label": "kimi-k3 \u00b7 fireworks",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "FIREWORKS_API_KEY"
+      },
+      {
+        "id": "fireworks::accounts/fireworks/models/deepseek-v4p1-flash",
+        "provider": "fireworks",
+        "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+        "label": "deepseek-v4p1-flash \u00b7 fireworks",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "FIREWORKS_API_KEY"
+      },
+      {
+        "id": "fireworks::accounts/fireworks/models/gpt-oss-120b",
+        "provider": "fireworks",
+        "model": "accounts/fireworks/models/gpt-oss-120b",
+        "label": "gpt-oss-120b \u00b7 fireworks",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "FIREWORKS_API_KEY"
+      },
+      {
+        "id": "fireworks::accounts/fireworks/models/glm-5p3-flash",
+        "provider": "fireworks",
+        "model": "accounts/fireworks/models/glm-5p3-flash",
+        "label": "glm-5p3-flash \u00b7 fireworks",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "FIREWORKS_API_KEY"
+      },
+      {
+        "id": "sambanova::gpt-oss-120b",
+        "provider": "sambanova",
+        "model": "gpt-oss-120b",
+        "label": "gpt-oss-120b \u00b7 sambanova",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "SAMBANOVA_API_KEY"
+      },
+      {
+        "id": "sambanova::MiniMax-M3.1-Flash",
+        "provider": "sambanova",
+        "model": "MiniMax-M3.1-Flash",
+        "label": "MiniMax-M3.1-Flash \u00b7 sambanova",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "SAMBANOVA_API_KEY"
+      },
+      {
+        "id": "sambanova::Meta-Llama-3.3-70B-Instruct",
+        "provider": "sambanova",
+        "model": "Meta-Llama-3.3-70B-Instruct",
+        "label": "Meta-Llama-3.3-70B-Instruct \u00b7 sambanova",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "SAMBANOVA_API_KEY"
+      },
+      {
+        "id": "hyperbolic::glm-5.3-flash",
+        "provider": "hyperbolic",
+        "model": "glm-5.3-flash",
+        "label": "glm-5.3-flash \u00b7 hyperbolic",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "HYPERBOLIC_API_KEY"
+      },
+      {
+        "id": "hyperbolic::kimi-k3",
+        "provider": "hyperbolic",
+        "model": "kimi-k3",
+        "label": "kimi-k3 \u00b7 hyperbolic",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "HYPERBOLIC_API_KEY"
+      },
+      {
+        "id": "hyperbolic::glm-5.3",
+        "provider": "hyperbolic",
+        "model": "glm-5.3",
+        "label": "glm-5.3 \u00b7 hyperbolic",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "HYPERBOLIC_API_KEY"
+      },
+      {
+        "id": "replicate::openai/gpt-oss-120b",
+        "provider": "replicate",
+        "model": "openai/gpt-oss-120b",
+        "label": "gpt-oss-120b \u00b7 replicate",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "REPLICATE_API_TOKEN"
+      },
+      {
+        "id": "replicate::deepseek-ai/deepseek-v3.1",
+        "provider": "replicate",
+        "model": "deepseek-ai/deepseek-v3.1",
+        "label": "deepseek-v3.1 \u00b7 replicate",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "REPLICATE_API_TOKEN"
+      },
+      {
+        "id": "replicate::qwen/qwen3-235b-a22b-instruct-2507",
+        "provider": "replicate",
+        "model": "qwen/qwen3-235b-a22b-instruct-2507",
+        "label": "qwen3-235b-a22b-instruct-2507 \u00b7 replicate",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "REPLICATE_API_TOKEN"
+      },
+      {
+        "id": "fal_llm::openai/gpt-oss-120b",
+        "provider": "fal_llm",
+        "model": "openai/gpt-oss-120b",
+        "label": "gpt-oss-120b \u00b7 fal_llm",
+        "live": null,
+        "governed_auto": false,
+        "best_for": [],
+        "key_env_name_only": "FAL_KEY"
+      }
+    ],
+    "secret_leak_markers": []
+  },
+  "resolve_auto": {
+    "ok": true,
+    "requested": {
+      "id": "auto",
+      "provider": "beast",
+      "model": "auto",
+      "auto": true,
+      "family": "rename"
+    },
+    "resolved": {
+      "id": "nim::nvidia/nemotron-3.5-lightning-30b-a3b",
+      "provider": "nim",
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "placement": "cloud",
+      "kind": "nim",
+      "via": "capability_router",
+      "family": "rename",
+      "score": {
+        "key": "nim|nvidia/nemotron-3.5-lightning-30b-a3b|rename|cloud",
+        "value": 0.740077,
+        "quality": 0.555556,
+        "cost": 0.021525,
+        "explore_bonus": 0.206047,
+        "demoted": false,
+        "source": "aggregate",
+        "pass_rate": 0.6667,
+        "json_rate": 0.6667,
+        "attempts": 1.0
+      }
+    },
+    "called": false,
+    "call_status": "",
+    "error": "",
+    "spend_usd": 0.0
+  },
+  "call": {
+    "ok": true,
+    "requested": {
+      "id": "tgi::Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+      "provider": "tgi",
+      "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+      "auto": false,
+      "family": "smoke-ide-route"
+    },
+    "resolved": {
+      "id": "tgi::tgi",
+      "provider": "tgi",
+      "model": "tgi",
+      "placement": "gpu_full",
+      "kind": "tgi",
+      "via": "explicit_pin",
+      "family": "smoke-ide-route",
+      "score": {
+        "key": "tgi|tgi|smoke-ide-route|gpu_full",
+        "value": 0.531157,
+        "quality": 0.375,
+        "cost": 0.135237,
+        "explore_bonus": 0.291394,
+        "demoted": false,
+        "source": "prior",
+        "pass_rate": 0.5,
+        "json_rate": 0.5,
+        "attempts": 0.0
+      }
+    },
+    "called": true,
+    "called_provider": "tgi",
+    "called_model": "tgi",
+    "matches_resolved": true,
+    "call_status": "ok",
+    "accepted": true,
+    "spend_usd": 0.0,
+    "latency_ms": 596.0,
+    "error": ""
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "_proposal": "Merge this category into /usr/lib/arda/src/arda_os/backend/services/arda_harmony_addendum.json (ARDA's own policy file) BEFORE adding the consumer cgroup to the measured set. Under ARDA_MODE_SCOPED_STRICT every exec inside a measured cgroup must be in the manifest; these are the executables agents run in the consumer cgroup. Review/extend before use. Not applied by BEAST.",
+  "beast_consumer": {
+    "severity": "OPERATIONAL",
+    "reason": "BEAST consumer cgroup (agents/IDE). Without these, agents launched in beast-consumer.service cannot exec under scoped-strict enforcement.",
+    "binaries": [
+      "/usr/bin/tmux", "/usr/bin/bash", "/usr/bin/sh", "/usr/bin/dash", "/usr/bin/env",
+      "/usr/bin/python3.13", "/usr/bin/git", "/usr/bin/rg", "/usr/bin/ssh",
+      "/usr/bin/code",
+      "/home/byron/.nvm/versions/node/v24.22.2/bin/node",
+      "/home/byron/.local/bin/codex", "/home/byron/.local/bin/claude"
+    ]
+  }
+}

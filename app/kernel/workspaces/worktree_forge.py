@@ -244,7 +244,25 @@ class WorktreeForge:
             if not rel or rel.startswith(".git/"):
                 continue
             old = self._git(["show", f"{base_ref}:{rel}"], cwd=cwd, timeout=10.0)
-            new = self._git(["show", f"HEAD:{rel}"], cwd=cwd, timeout=10.0)
+            # HEAD may still be the original base: mutations are uncommitted.
+            # Bind the review operation to actual candidate bytes, never HEAD.
+            rel_path = Path(rel)
+            candidate_file = (cwd / rel_path).resolve()
+            safe_candidate = (not rel_path.is_absolute() and ".." not in rel_path.parts
+                              and candidate_file.is_relative_to(cwd.resolve()))
+            if not safe_candidate:
+                notes.append({"path": rel, "reason": "unsafe candidate path"})
+                continue
+            if candidate_file.is_file() and not candidate_file.is_symlink():
+                raw = candidate_file.read_bytes()
+                try:
+                    candidate_text = raw.decode("utf-8")
+                except UnicodeDecodeError:
+                    notes.append({"path": rel, "reason": "non-UTF8 candidate requires operator translation"})
+                    continue
+                new = WorktreeCommandResult(True, ["candidate-read", rel], stdout=candidate_text)
+            else:
+                new = WorktreeCommandResult(False, ["candidate-read", rel], stderr="candidate file absent", returncode=1)
             op_id = f"worktree_{len(operations) + 1:03d}"
             if old.ok and new.ok and old.stdout != new.stdout:
                 if len(old.stdout) > 50000 or len(new.stdout) > 50000:

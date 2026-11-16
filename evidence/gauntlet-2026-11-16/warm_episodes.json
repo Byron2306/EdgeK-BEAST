@@ -1,0 +1,410 @@
+[
+  {
+    "governor": {
+      "outcome": "admit",
+      "receipt_id": "gov_2a4d7f2f8048eec100baa913"
+    },
+    "match": {
+      "features": {
+        "scalar_types_match": true,
+        "single_literal_equality_failure": true,
+        "single_python_target": true,
+        "unique_module_constant_equals_actual": true,
+        "unittest_verify": true
+      },
+      "matcher": "beast.gauntlet.applicability_matcher.v1 (local, deterministic, nominates only)",
+      "observed_failure": "s_contract (test_ingest_contract.Contract.test_batch_size_matches_contract)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16/work/warm-ingest-warm/repo/test_ingest_contract.py\", line 7, in test_batch_size_matches_contract\n    self.assertEqual(BATCH_SIZE, 250)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: 100 != 250\n\n----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nFAILED (failures=1)",
+      "similarity": 1.0
+    },
+    "model_calls": [],
+    "passed": true,
+    "postcondition": {
+      "checks": {
+        "returncode": true,
+        "tests_run": true
+      },
+      "passed": true,
+      "returncode": 0,
+      "target_sha256": "sha256:54fe41c63382d33fb6c36b747a7a706bf3cc14274f0339013e63d123495571e4",
+      "tests_run": 2,
+      "verify_ms": 45.129
+    },
+    "replay": {
+      "edit": {
+        "new_text": "BATCH_SIZE = 250",
+        "old_text": "BATCH_SIZE = 100"
+      },
+      "model_calls": 0,
+      "ok": true,
+      "tool_calls": 5,
+      "trace": [
+        {
+          "index": 0,
+          "ms": 0.069,
+          "opcode": "worktree.inspect",
+          "sha256": "sha256:ec5bd4342c13194c0a6ab59eb7676ef24534a3bf7dce5410b639cde85ec79ab0",
+          "tool_id": "workspace.read_range"
+        },
+        {
+          "index": 1,
+          "ms": 0.531,
+          "opcode": "worktree.bind",
+          "tool_id": "worktree.bind"
+        },
+        {
+          "expect": "fail",
+          "index": 2,
+          "ms": 46.438,
+          "opcode": "worktree.verify",
+          "returncode": 1,
+          "tests_run": 2,
+          "tool_id": "worktree.verify"
+        },
+        {
+          "edit": {
+            "new_text": "BATCH_SIZE = 250",
+            "old_text": "BATCH_SIZE = 100"
+          },
+          "index": 3,
+          "ms": 0.081,
+          "opcode": "repair.resolve_constant",
+          "tool_id": ""
+        },
+        {
+          "index": 4,
+          "ms": 0.242,
+          "opcode": "worktree.replace_exact",
+          "tool_id": "worktree.replace_exact"
+        },
+        {
+          "expect": "pass",
+          "index": 5,
+          "ms": 40.035,
+          "opcode": "worktree.verify",
+          "returncode": 0,
+          "tests_run": 2,
+          "tool_id": "worktree.verify"
+        },
+        {
+          "index": 6,
+          "ms": 0.002,
+          "opcode": "crystal.complete",
+          "tool_id": ""
+        }
+      ],
+      "wall_ms": 87.436
+    },
+    "route": {
+      "band": "exact",
+      "beast_object_type": "beast_route_decision",
+      "crystal_id": "coding-crystal:4720e3bdaa55dd552f88cdad",
+      "demotion_signal": "",
+      "digest": "sha256:cfef90d197452cca8306b1dd601d7643550d108a8bf1a5118f26d9872791e2c2",
+      "envelope_digest": "sha256:2edae81cd934058610abea980902841713743520e5f21f2f8a1fd1ae2e94e0aa",
+      "execution_granted": false,
+      "fingerprint_compatible": true,
+      "proposal_only": true,
+      "reasons": [
+        "similarity>=0.95 with exact fingerprints: zero-call crystal proposal"
+      ],
+      "route": "crystal_replay",
+      "similarity": 1.0,
+      "specialist_ref": "",
+      "verifier": "d6_activation_gates_and_verify_command",
+      "version": "d9.1"
+    },
+    "task": "warm-ingest",
+    "tokens_total": 0,
+    "wall_ms": 188.429
+  },
+  {
+    "governor": {
+      "outcome": "admit",
+      "receipt_id": "gov_9390f5459501eb560e06f0d8"
+    },
+    "match": {
+      "features": {
+        "scalar_types_match": true,
+        "single_literal_equality_failure": true,
+        "single_python_target": true,
+        "unique_module_constant_equals_actual": true,
+        "unittest_verify": true
+      },
+      "matcher": "beast.gauntlet.applicability_matcher.v1 (local, deterministic, nominates only)",
+      "observed_failure": ".Contract.test_max_emails_per_hour_matches_contract)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16/work/warm-notify-warm/repo/test_notify_contract.py\", line 7, in test_max_emails_per_hour_matches_contract\n    self.assertEqual(MAX_EMAILS_PER_HOUR, 60)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 50 != 60\n\n----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nFAILED (failures=1)",
+      "similarity": 1.0
+    },
+    "model_calls": [],
+    "passed": true,
+    "postcondition": {
+      "checks": {
+        "returncode": true,
+        "tests_run": true
+      },
+      "passed": true,
+      "returncode": 0,
+      "target_sha256": "sha256:39baaba96b12b09cb406ac77227b59327b472670b94179f9fa7686eaf60df81b",
+      "tests_run": 2,
+      "verify_ms": 45.738
+    },
+    "replay": {
+      "edit": {
+        "new_text": "MAX_EMAILS_PER_HOUR = 60",
+        "old_text": "MAX_EMAILS_PER_HOUR = 50"
+      },
+      "model_calls": 0,
+      "ok": true,
+      "tool_calls": 5,
+      "trace": [
+        {
+          "index": 0,
+          "ms": 0.081,
+          "opcode": "worktree.inspect",
+          "sha256": "sha256:5eb24e36f405c0764801e9b190307a924d229d4549cee39b82ae389dd011a75f",
+          "tool_id": "workspace.read_range"
+        },
+        {
+          "index": 1,
+          "ms": 0.513,
+          "opcode": "worktree.bind",
+          "tool_id": "worktree.bind"
+        },
+        {
+          "expect": "fail",
+          "index": 2,
+          "ms": 46.653,
+          "opcode": "worktree.verify",
+          "returncode": 1,
+          "tests_run": 2,
+          "tool_id": "worktree.verify"
+        },
+        {
+          "edit": {
+            "new_text": "MAX_EMAILS_PER_HOUR = 60",
+            "old_text": "MAX_EMAILS_PER_HOUR = 50"
+          },
+          "index": 3,
+          "ms": 0.084,
+          "opcode": "repair.resolve_constant",
+          "tool_id": ""
+        },
+        {
+          "index": 4,
+          "ms": 0.238,
+          "opcode": "worktree.replace_exact",
+          "tool_id": "worktree.replace_exact"
+        },
+        {
+          "expect": "pass",
+          "index": 5,
+          "ms": 42.622,
+          "opcode": "worktree.verify",
+          "returncode": 0,
+          "tests_run": 2,
+          "tool_id": "worktree.verify"
+        },
+        {
+          "index": 6,
+          "ms": 0.002,
+          "opcode": "crystal.complete",
+          "tool_id": ""
+        }
+      ],
+      "wall_ms": 90.233
+    },
+    "route": {
+      "band": "exact",
+      "beast_object_type": "beast_route_decision",
+      "crystal_id": "coding-crystal:4720e3bdaa55dd552f88cdad",
+      "demotion_signal": "",
+      "digest": "sha256:cfef90d197452cca8306b1dd601d7643550d108a8bf1a5118f26d9872791e2c2",
+      "envelope_digest": "sha256:2edae81cd934058610abea980902841713743520e5f21f2f8a1fd1ae2e94e0aa",
+      "execution_granted": false,
+      "fingerprint_compatible": true,
+      "proposal_only": true,
+      "reasons": [
+        "similarity>=0.95 with exact fingerprints: zero-call crystal proposal"
+      ],
+      "route": "crystal_replay",
+      "similarity": 1.0,
+      "specialist_ref": "",
+      "verifier": "d6_activation_gates_and_verify_command",
+      "version": "d9.1"
+    },
+    "task": "warm-notify",
+    "tokens_total": 0,
+    "wall_ms": 193.612
+  },
+  {
+    "match": {
+      "features": {
+        "scalar_types_match": true,
+        "single_literal_equality_failure": true,
+        "single_python_target": true,
+        "unique_module_constant_equals_actual": false,
+        "unittest_verify": true
+      },
+      "matcher": "beast.gauntlet.applicability_matcher.v1 (local, deterministic, nominates only)",
+      "observed_failure": "test_vat_is_15_percent (test_pricing_contract.Contract.test_vat_is_15_percent)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16/work/near-miss-pricing-warm/repo/test_pricing_contract.py\", line 7, in test_vat_is_15_percent\n    self.assertEqual(vat(100), 15.0)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^\nAssertionError: 14.0 != 15.0\n\n----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nFAILED (failures=1)",
+      "similarity": 0.88
+    },
+    "model_calls": [
+      {
+        "latency_ms": 125845.017,
+        "model": "qwen3:4b",
+        "provider": "ollama",
+        "tokens_total": 1339
+      },
+      {
+        "latency_ms": 6132.273,
+        "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "provider": "nvidia_nim",
+        "tokens_total": 1169
+      }
+    ],
+    "passed": true,
+    "provider": {
+      "check": {
+        "applied": true,
+        "output_tail": "..\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK",
+        "passed": true,
+        "returncode": 0,
+        "tests_run": 2,
+        "verify_ms": 53.335
+      },
+      "governor": {
+        "outcome": "admit",
+        "receipt_id": "gov_9ad6b836eb496cc73f085433"
+      },
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "tokens_total": 1169
+    },
+    "route": {
+      "band": "structural",
+      "beast_object_type": "beast_route_decision",
+      "crystal_id": "coding-crystal:4720e3bdaa55dd552f88cdad",
+      "demotion_signal": "",
+      "digest": "sha256:50c1f0f8bf836c01f3efcfff7576ae4f1e3ec587d096f28a53e5c4c79909d876",
+      "envelope_digest": "sha256:2edae81cd934058610abea980902841713743520e5f21f2f8a1fd1ae2e94e0aa",
+      "execution_granted": false,
+      "fingerprint_compatible": true,
+      "proposal_only": true,
+      "reasons": [
+        "structural match: local specialist adapter proposal (adapter cannot execute)"
+      ],
+      "route": "local_specialist_adapter",
+      "similarity": 0.88,
+      "specialist_ref": "ollama://qwen3:4b",
+      "verifier": "hidden_tests_and_policy",
+      "version": "d9.1"
+    },
+    "specialist": {
+      "checks": [
+        {
+          "check": {
+            "applied": false,
+            "passed": false,
+            "reason": "edit_not_exact_unique"
+          },
+          "edit": null
+        }
+      ],
+      "dispatched": false,
+      "reason": "verifier_failed:edit_not_exact_unique",
+      "receipt": {
+        "execution_granted": false,
+        "gates": [
+          {
+            "gate": "quality_cascade",
+            "passed": true,
+            "reason": "operator:gauntlet-2026-11-16:unittest-verifier-is-the-gate"
+          },
+          {
+            "gate": "output_governor",
+            "passed": true,
+            "reason": "output_governor_passed"
+          },
+          {
+            "gate": "verifier",
+            "passed": false,
+            "reason": "edit_not_exact_unique"
+          }
+        ],
+        "generated": true,
+        "governor_outcome": "admit",
+        "governor_receipt": "gov_737e8b54edfc7a9e9a1bfb1a",
+        "installed_models": [
+          "qwen3:4b",
+          "granite3.2:2b",
+          "granite3.3:2b"
+        ],
+        "model": "qwen3:4b",
+        "model_resolution": "exact_specialist",
+        "outcome": "provider_fallback",
+        "proposal_only": true,
+        "route": "local_specialist_adapter"
+      }
+    },
+    "task": "near-miss-pricing",
+    "tokens_total": 2508,
+    "wall_ms": 132186.357
+  },
+  {
+    "match": {
+      "features": {
+        "scalar_types_match": false,
+        "single_literal_equality_failure": false,
+        "single_python_target": true,
+        "unique_module_constant_equals_actual": false,
+        "unittest_verify": true
+      },
+      "matcher": "beast.gauntlet.applicability_matcher.v1 (local, deterministic, nominates only)",
+      "observed_failure": "5/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16/work/far-parser-warm/repo/test_parser_contract.py\", line 10, in test_zero_denominator_is_none\n    self.assertIsNone(ratio('1/0'))\n                      ~~~~~^^^^^^^\n  File \"/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16/work/far-parser-warm/repo/parser/ratio.py\", line 6, in ratio\n    return int(num) / int(den)\n           ~~~~~~~~~^~~~~~~~~~\nZeroDivisionError: division by zero\n\n----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nFAILED (errors=1)",
+      "similarity": 0.38
+    },
+    "model_calls": [
+      {
+        "latency_ms": 13508.968,
+        "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "provider": "nvidia_nim",
+        "tokens_total": 2393
+      }
+    ],
+    "passed": false,
+    "provider": {
+      "check": {
+        "applied": false,
+        "passed": false,
+        "reason": "edit_not_exact_unique"
+      },
+      "governor": {
+        "outcome": "admit",
+        "receipt_id": "gov_14b44382bcf43ec08d8efbc0"
+      },
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "tokens_total": 2393
+    },
+    "route": {
+      "band": "insufficient",
+      "beast_object_type": "beast_route_decision",
+      "crystal_id": "coding-crystal:4720e3bdaa55dd552f88cdad",
+      "demotion_signal": "",
+      "digest": "sha256:990d341d9e5876b637416d1a99c080bca0f1f4ed4984f2031fa16921858d5cc2",
+      "envelope_digest": "sha256:2edae81cd934058610abea980902841713743520e5f21f2f8a1fd1ae2e94e0aa",
+      "execution_granted": false,
+      "fingerprint_compatible": true,
+      "proposal_only": true,
+      "reasons": [
+        "similarity<0.80: provider fallback"
+      ],
+      "route": "provider_fallback",
+      "similarity": 0.38,
+      "specialist_ref": "",
+      "verifier": "action_ir_full_verification",
+      "version": "d9.1"
+    },
+    "task": "far-parser",
+    "tokens_total": 2393,
+    "wall_ms": 13569.246
+  }
+]

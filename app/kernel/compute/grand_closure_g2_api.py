@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import asdict
 from typing import Any, Callable, Mapping
 from .grand_closure_g2 import G2LiveComposition
 from .residual_compute_governor import ResidualComputeRequest
@@ -14,7 +15,10 @@ def create_g2_router(composition: G2LiveComposition, decode_request: Callable[[M
     @router.get("/grand-closure/reachability")
     def reachability():
         receipt = composition.reachability()
-        return {"receipt_digest": receipt.receipt_digest, **receipt.__dict__}
+        return {
+            **asdict(receipt),
+            "receipt_digest": receipt.receipt_digest,
+        }
 
     @router.post("/residual-decisions/live")
     def run_live(body: Mapping[str, Any]):

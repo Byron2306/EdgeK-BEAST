@@ -8,6 +8,7 @@ policy surface, not a hidden billing/context bypass.
 """
 
 from __future__ import annotations
+from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 
 import hashlib
 import json
@@ -221,6 +222,24 @@ server {{
     proxy_read_timeout 300s;
     proxy_send_timeout 300s;
     proxy_connect_timeout 30s;
+
+    # heal/doctor probe: nginx is healthy only when it actually fronts BEAST
+    location = /health {{
+        proxy_pass http://edgek_beast_backend/health;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $host;
+    }}
+
+    location /proxy/ {{
+        proxy_pass http://edgek_beast_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_buffering off;
+        proxy_set_header X-EdgeK-Gateway "beast";
+    }}
 
     location /edgek/ {{
         proxy_pass http://edgek_beast_backend;
@@ -469,8 +488,8 @@ server {{
                     detail = {"reason": "missing ping_url"}
                 else:
                     try:
-                        response = httpx.post(
-                            row["ping_url"],
+                        response = _egress.post(
+                            httpx, "deployment_keepalive", row["ping_url"],
                             json={
                                 "provider": row["provider"],
                                 "model": row["model"],
@@ -516,6 +535,9 @@ server {{
         nginx_path = output / "nginx.edgek.conf"
         litellm_path.write_text(self.generate_litellm_yaml(), encoding="utf-8")
         nginx_path.write_text(self.generate_nginx_config(), encoding="utf-8")
+        # :80 site for the system nginx (Debian default_server stays the catch-all; this one answers localhost/127.0.0.1)
+        (output / "nginx.edgek.80.conf").write_text(
+            self.generate_nginx_config(listen_port=80, server_name="localhost 127.0.0.1"), encoding="utf-8")
         return {"litellm_config": str(litellm_path), "nginx_config": str(nginx_path)}
 
     def apply_nginx_config(

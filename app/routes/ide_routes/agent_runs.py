@@ -38,11 +38,13 @@ from app.kernel.operations_console.context_console import ContextManifestConsole
 from app.kernel.agents.ollama_planner_provider import OllamaPlannerProvider
 from app.kernel.agents.nim_planner_provider import NIMPlannerProvider
 from app.kernel.compute.crystal_reuse_gateway import CrystalReuseGateway
+from app.kernel.compute.nim_picker import HOSTED_NEMOTRON_BASE_URL, HOSTED_NEMOTRON_MODEL
 from app.kernel.local.ollama_kv_manager import OllamaKVManager
 from app.kernel.agents.planner_provider import CallbackPlannerProvider, CapabilityScoredPlannerProvider, FallbackPlannerProvider, HeuristicPlannerProvider, ScriptedPlannerProvider
 from app.kernel.agents.provider_quality import ProviderQualityLedger
 from app.kernel.agents.planner_resilience import build_resilient_nim_provider, build_resilient_ollama_provider
 from app.kernel.agents.planner_runtime import AgentPlannerRuntime
+from app.kernel.compute.coding_crystal_runtime import planner_runtime_extras
 from app.kernel.agents.promotion_engine import PromotionEngine
 from app.kernel.evidence.evidence_builder import EvidenceBuilder
 from app.kernel.evidence.evidence_store import EvidenceStore
@@ -63,6 +65,7 @@ from app.kernel.agents.run_worker import AGENT_RUN_WORKERS
 from app.kernel.workspaces.agent_session_store import AgentSessionStore
 from app.cli.api import BeastApiClient
 from app.routes.ide_context import IdeRouteContext
+from app.routes.ide_routes.zero_desktop_review import AUDIT, register_zero_review
 
 
 def _legacy_execution_params(run: dict[str, Any]) -> list[tuple[str, str]]:
@@ -203,6 +206,9 @@ def _normalized_execution_request(payload: dict[str, Any], request_payload: dict
         or session.get("execution_target")
         or "local"
     ).strip() or "local"
+    execution_target = execution_target.lower()
+    if execution_target not in {"local", "ssh", "container"}:
+        raise HTTPException(status_code=400, detail="unsupported AgentRun execution target")
     request["execution_target"] = execution_target
     target_payload = (
         payload.get("execution_target_payload")
@@ -213,8 +219,19 @@ def _normalized_execution_request(payload: dict[str, Any], request_payload: dict
         if isinstance(session.get("execution_target_payload"), dict)
         else {}
     )
-    if target_payload:
+    if execution_target != "local":
+        if not target_payload or str(target_payload.get("kind") or "").lower() != execution_target:
+            raise HTTPException(status_code=400, detail="remote AgentRun requires matching destination identity")
+        # Ensure all remote actions have a concrete destination; '~' is not a
+        # stable workspace root when quoted and must not become local fallback.
+        remote_root = str(target_payload.get("remoteRoot") or target_payload.get("workspaceFolder") or "")
+        if not remote_root.startswith("/") or ".." in remote_root.split("/"):
+            raise HTTPException(status_code=400, detail="remote AgentRun requires absolute workspace root")
         request["execution_target_payload"] = dict(target_payload)
+    elif target_payload and str(target_payload.get("kind") or "local").lower() != "local":
+        raise HTTPException(status_code=400, detail="local AgentRun cannot carry a remote destination")
+    else:
+        request.pop("execution_target_payload", None)
     return request
 
 
@@ -268,7 +285,18 @@ async def _execute_planner_run(
     run = engine.store.get_run(run_id)
     if not run:
         return
-    if scripted_decisions is not None:
+    run_request = run.get("request") if isinstance(run.get("request"), dict) else {}
+    if run_request.get("zero_review_contract") == AUDIT:
+        # This phone lane must not use desktop's configurable provider cascade
+        # or accept a scripted/tool decision instead of a grounded review.
+        provider = OllamaPlannerProvider(
+            model=str(run["model"]),
+            base_url="http://127.0.0.1:11434",
+            engine="ollama",
+            on_token=lambda text: engine.emit(run_id, "agent.model.delta", {"text": str(text)}),
+            timeout_seconds=float(os.environ.get("BEAST_OLLAMA_PLANNER_TIMEOUT", "30")),
+        )
+    elif scripted_decisions is not None:
         provider = ScriptedPlannerProvider(scripted_decisions)
     elif _prefer_direct_ollama_planner(run):
         approvals = engine.store.list_approvals(run_id)
@@ -285,7 +313,11 @@ async def _execute_planner_run(
             execution_gateway=execution_gateway,
             compute_governor=compute_governor,
             pressure_controller=pressure_controller,
-            forge_kv_manager=OllamaKVManager(ollama_url=base_url or "http://127.0.0.1:11434"),
+            forge_kv_manager=(
+                None
+                if str(run.get("mode") or "").lower() in {"ask", "chat", "analysis"}
+                else OllamaKVManager(ollama_url=base_url or "http://127.0.0.1:11434")
+            ),
             route_dampener=route_dampener,
             route_id=f"ollama:{str(run.get('model') or '').strip() or 'default'}",
             on_token=lambda text: engine.emit(run_id, "agent.model.delta", {"text": str(text)}),
@@ -341,6 +373,19 @@ async def _execute_planner_run(
             )
         else:
             provider = local_route
+    elif (
+        run.get("provider") == "nvidia_nim"
+        and run.get("model") == HOSTED_NEMOTRON_MODEL
+        and run_request.get("read_only_file_review") is True
+        and run.get("mode") == "analysis"
+    ):
+        # Keep the explicitly selected hosted review on the same endpoint as
+        # the picker probe. No provider substitution or request URL override.
+        provider = NIMPlannerProvider(
+            model=HOSTED_NEMOTRON_MODEL,
+            base_url=HOSTED_NEMOTRON_BASE_URL,
+            on_token=lambda text: engine.emit(run_id, "agent.model.delta", {"text": str(text)}),
+        )
     elif str(run.get("provider") or "").strip().lower() in {"nvidia_nim", "nim", "local_nim"}:
         request = run.get("request") if isinstance(run.get("request"), dict) else {}
         route_dampener = _nim_route_dampener(root)
@@ -388,6 +433,8 @@ async def _execute_planner_run(
         context_packet_builder=context_packet_builder,
         execution_gateway=execution_gateway,
         compute_governor=compute_governor,
+        # Reviewed coding crystals: empty unless BEAST_CODING_CRYSTALS=1 and the ARDA runtime key is sound.
+        **planner_runtime_extras(root),
     )
     try:
         await runtime.run(run_id)
@@ -467,6 +514,25 @@ def _launch_for_run(
 def register_agent_runs_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[str, Any] | None:
     _root = ctx._root
     _request_base_url = ctx._request_base_url
+
+    def _supports_zero_review() -> bool:
+        if not (callable(getattr(AgentPlannerRuntime, "_finish_file_review", None))
+                and getattr(OllamaPlannerProvider, "supports_native_file_review", False) is True):
+            return False
+        try:
+            from app.kernel.agents.file_review import review_paths
+        except ImportError:
+            return False
+        probe = {"mode": "analysis", "request": {
+            "read_only_file_review": True, "context_files": ["example.py"],
+        }}
+        return review_paths(probe) == ("example.py",)
+
+    register_zero_review(
+        router, AgentRunEngine, AgentSessionStore,
+        lambda app, root, run: _launch_for_run(app, root, run, ctx=ctx),
+        supported=_supports_zero_review,
+    )
 
     def _root_candidates(*values: Any) -> list[Path]:
         candidates: list[Path] = []
@@ -585,6 +651,49 @@ def register_agent_runs_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[
         run, execution = _maybe_auto_recover(request.app, engine, run, auto_recover=auto_recover)
         run["execution"] = execution
         return {"ok": True, "run": run}
+
+    @router.get("/edgek/agent-runs/{run_id}/memory-evidence")
+    async def edgek_agent_run_memory_evidence(run_id: str, root_path: str = None):
+        """Read-only, provenance-checked L4 reassessment projection; never an approval."""
+        import sqlite3
+
+        engine, run = _resolve_run_engine(run_id, root_path)
+        chain = engine.store.verify_chain(run_id)
+        if not chain.get("ok") or not chain.get("head_matches"):
+            raise HTTPException(status_code=409, detail="AgentRun source chain invalid")
+        result = {"ok": True, "run_id": run_id, "historical_state": str(run.get("state") or ""),
+                  "authority": "advisory_only_no_promotion", "memory": None}
+        db = Path(__file__).resolve().parents[2] / "data" / "forensic_l4.db"
+        if not db.is_file():
+            return result
+        source_prefix = f"agentrun://{run_id}/events/"
+        try:
+            with sqlite3.connect(f"file:{db}?mode=ro", uri=True, timeout=3) as conn:
+                rows = conn.execute(
+                    "SELECT event_id,event_kind,layer,source_uri,status,redaction_status "
+                    "FROM forensic_events WHERE source_uri LIKE ? AND event_kind = ? "
+                    "ORDER BY sequence_id DESC LIMIT 20",
+                    (source_prefix + "%", "agentrun_reassessment_review_candidate"),
+                ).fetchall()
+        except sqlite3.Error:
+            raise HTTPException(status_code=503, detail="L4 memory unavailable")
+        for event_id, kind, layer, uri, status, redaction in rows:
+            suffix = str(uri)[len(source_prefix):] if str(uri).startswith(source_prefix) else ""
+            if not suffix.isdecimal() or layer != "L4" or redaction != "metadata_only" or status != "verified_review_candidate_not_promoted":
+                continue
+            sequence = int(suffix)
+            events = engine.store.events(run_id, after=sequence-1, limit=1)
+            if len(events) != 1 or int(events[0].get("sequence", -1)) != sequence:
+                continue
+            source = events[0]
+            if source.get("event_type") != "agent.reassessment.review_candidate_verified":
+                continue
+            result["memory"] = {"event_id": event_id, "event_kind": kind,
+                "source_uri": uri, "source_event_hash": source.get("event_hash"),
+                "source_sequence": sequence, "status": status,
+                "redaction_status": redaction, "retrieval": "L4_sqlite_read_only"}
+            break
+        return result
 
     @router.get("/edgek/agent-runs/{run_id}/console")
     async def edgek_agent_run_console(run_id: str, request: Request, root_path: str = None, auto_recover: bool = Query(default=False)):

@@ -1,0 +1,161 @@
+{
+  "bus_peer_death_observed": true,
+  "cgroup_path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/beast-mission-isolation-proof.service/beast.slice/beast-heldout-io-live",
+  "cleanup_confirmed": true,
+  "clone3_supported": true,
+  "controllers": [
+    "cpu",
+    "memory",
+    "pids",
+    "io"
+  ],
+  "delegation": {
+    "available_controllers": [
+      "cpu",
+      "io",
+      "memory",
+      "pids"
+    ],
+    "capsule_created": true,
+    "enabled_controllers": [
+      "cpu",
+      "io",
+      "memory",
+      "pids"
+    ],
+    "full_controller_delegation": true,
+    "mission_id": "beast-heldout-io-live",
+    "parent_path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/beast-mission-isolation-proof.service",
+    "parent_populated": false,
+    "reason": "delegated_controllers_ready",
+    "receipt_digest": "sha256:34b26ac4fd5bbad599d227c0532edce68bc5ed64a2dd80713f0504f52f0db86b",
+    "requested_controllers": [
+      "cpu",
+      "io",
+      "memory",
+      "pids"
+    ]
+  },
+  "descendant_containment": true,
+  "descriptor_cleanup": true,
+  "fault_receipts": {
+    "bus_peer_death": {
+      "exit_code": 0,
+      "member_gone": true,
+      "receipt_digest": "sha256:030afaa58e1aeea04193308f1b3298178d310252b92aa099a57ae72dd57ec67f",
+      "worker_evidence": {
+        "beast_object_type": "mission_fault_evidence",
+        "fault": "bus_peer_death",
+        "pid": 9863,
+        "verified": true
+      }
+    },
+    "descendant": {
+      "exit_code": 0,
+      "member_gone": true,
+      "receipt_digest": "sha256:5d787af16a02cfe024e480bc19610b963f6df00ce9730ba0c356e6e2f1cd99f4",
+      "worker_evidence": {
+        "beast_object_type": "mission_fault_evidence",
+        "fault": "descendant_containment",
+        "pid": 9900,
+        "verified": true
+      }
+    },
+    "oom": {
+      "exit_code": 137,
+      "member_gone": true,
+      "receipt_digest": "sha256:9a7eca209c49e20f4b526be83a0e0a174db0b15ff987079bfca38f9ada939569",
+      "worker_evidence": {}
+    },
+    "rollback": {
+      "exit_code": 0,
+      "member_gone": true,
+      "receipt_digest": "sha256:03c367075d1557b8cc0d8e8eb7622fde58d7a59ab0582bf5ecf25040d804f451",
+      "worker_evidence": {
+        "beast_object_type": "mission_fault_evidence",
+        "fault": "rollback",
+        "pid": 9871,
+        "verified": true
+      }
+    },
+    "timeout": {
+      "exit_code": 142,
+      "member_gone": true,
+      "receipt_digest": "sha256:7dca285937c44677d7674bfe9ca53822e7a72782cc46d60040bf54e9203d5ecc",
+      "worker_evidence": {}
+    }
+  },
+  "final_events": {
+    "frozen": 0,
+    "populated": 0
+  },
+  "freeze_observed": true,
+  "full_isolation_proven": true,
+  "host_available_controllers": [
+    "cpu",
+    "io",
+    "memory",
+    "pids"
+  ],
+  "initial_events": {
+    "frozen": 0,
+    "populated": 0
+  },
+  "limits_observed": {
+    "cpu.max": "50000 100000",
+    "io.max": "259:0 rbps=10485760 wbps=10485760 riops=max wiops=max",
+    "memory.max": "33554432",
+    "memory.oom.group": "1",
+    "memory.swap.max": "0",
+    "pids.max": "16"
+  },
+  "limits_requested": {
+    "cpu.max": "50000 100000",
+    "io.max": "259:0 rbps=10485760 wbps=10485760",
+    "memory.max": "33554432",
+    "memory.oom.group": "1",
+    "memory.swap.max": "0",
+    "pids.max": "16"
+  },
+  "mission_id": "beast-heldout-io-live",
+  "namespace_receipt_digest": "sha256:811281b221d3a84e52eb5139384850682cf21bf9250dabad05f64a8ecebed7bd",
+  "no_orphans": true,
+  "oom_observed": true,
+  "placement_boundary": "clone3_into_cgroup",
+  "populated_zero_observed": true,
+  "pressure": {
+    "cpu": "some avg10=0.00 avg60=0.00 avg300=0.00 total=0\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+    "io": "some avg10=0.00 avg60=0.00 avg300=0.00 total=0\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+    "memory": "some avg10=0.00 avg60=0.00 avg300=0.00 total=0\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0"
+  },
+  "receipt_digest": "sha256:bbd6822be24d72d411685b85834071d861d37fa2b8f7de2109a90c127b486afc",
+  "resource_stats": {
+    "cpu.stat": {
+      "burst_usec": 0,
+      "nice_usec": 0,
+      "nr_bursts": 0,
+      "nr_periods": 7,
+      "nr_throttled": 0,
+      "system_usec": 27324,
+      "throttled_usec": 0,
+      "usage_usec": 27324,
+      "user_usec": 0
+    },
+    "io.stat": {
+      "rows": 1
+    },
+    "memory.events": {
+      "high": 0,
+      "low": 0,
+      "max": 35,
+      "oom": 1,
+      "oom_group_kill": 1,
+      "oom_kill": 2
+    },
+    "pids.events": {
+      "max": 0
+    }
+  },
+  "rollback_observed": true,
+  "timeout_observed": true
+}

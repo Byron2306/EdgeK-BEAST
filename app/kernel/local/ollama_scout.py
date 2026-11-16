@@ -6,6 +6,7 @@ builder. The scout never executes risky tools directly.
 """
 
 from __future__ import annotations
+from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 
 import hashlib
 import json
@@ -79,7 +80,7 @@ class OllamaScout:
         self.data_dir = Path(data_dir) if data_dir else Path(__file__).resolve().parents[2] / "data"
         scout = self.policies.get("ollama_scout", {})
         self.base_url = os.environ.get("OLLAMA_BASE_URL", scout.get("base_url", "http://127.0.0.1:11434")).rstrip("/")
-        self.default_model = os.environ.get("OLLAMA_SCOUT_MODEL", scout.get("default_model", "qwen2.5:0.5b"))
+        self.default_model = os.environ.get("OLLAMA_SCOUT_MODEL", scout.get("default_model", "qwen3:4b"))
         self.max_prompt_chars = int(os.environ.get("OLLAMA_SCOUT_MAX_PROMPT_CHARS", scout.get("max_prompt_chars", 9000)))
         self.max_chunk_chars = int(os.environ.get("OLLAMA_SCOUT_MAX_CHUNK_CHARS", scout.get("max_chunk_chars", 420)))
         self.max_exact_chars = int(os.environ.get("OLLAMA_SCOUT_MAX_EXACT_CHARS", scout.get("max_exact_chars", 520)))
@@ -646,7 +647,7 @@ class OllamaScout:
             "options": {"temperature": 0, "num_ctx": self.num_ctx, "num_predict": 128},
         }
         try:
-            response = httpx.post(
+            response = _egress.post(httpx, "ollama_scout", 
                 f"{self.base_url}/api/chat",
                 json=payload,
                 timeout=max(0.01, float(timeout_seconds or self.timeout_seconds)),

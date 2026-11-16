@@ -12,6 +12,21 @@ spine, but runs as a local desktop application similar in shape to VS Code:
   agent sessions, and worktree missions;
 - all writes still go through BEAST governance rather than direct file mutation.
 
+The Electron app currently uses the Phase 9.1.5 renderer from
+`../BEAST_Phase9_1_5_Unique_Hacker_Type` as its UI baseline. Its page and
+referenced styles/scripts are mirrored under `renderer/` so the packaged app
+loads the same layout. Routes added in the later desktop release (including
+IDE Compatibility, Compute Fabric, Commons, Testing, Reality Matrix and
+Systems Atlas) remain available in this shell. Page data loads as each route
+is opened instead of issuing requests for every page during startup. The
+restored pages use the bundled Phase 9.1.5 page frames, route icons, local
+typefaces, and route-specific layouts so dense operational data remains
+readable without replacing the original shell.
+
+The animated matrix background is off by default to keep the desktop responsive;
+select the matrix-grid atmosphere in Settings to enable it. Canvas visualizers
+are throttled and pause while the window is hidden.
+
 ## Development
 
 ```bash

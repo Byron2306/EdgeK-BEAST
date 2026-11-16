@@ -1,0 +1,1405 @@
+{
+ "tgi_alone_tool": [
+  {
+   "task": "ren-h1",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 15.66,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:'fetch_user' is not a top-level def/class/assignment in users/core.py",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 700,
+     "tokens_completion": 56,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 712,
+     "ttft_ms": 14206.8,
+     "latency_ms": 15644.9,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_c9fbcc7071d619e12e8635b5",
+     "governor_receipt": "gov_c4fe0a2f9fa4e2f85c743005",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:'fetch_user' is not a top-level def/class/assignment in users/core.py",
+     "files_changed": 0
+    }
+   ]
+  },
+  {
+   "task": "ren-h2",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.73,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:'make_report' is not a top-level def/class/assignment in reports/core.py",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 710,
+     "tokens_completion": 59,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 709,
+     "ttft_ms": 333.8,
+     "latency_ms": 1716.3,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_70858d30ba1de38316ccd882",
+     "governor_receipt": "gov_0e8ba9c798764d105ac3c3e3",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:'make_report' is not a top-level def/class/assignment in reports/core.py",
+     "files_changed": 0
+    }
+   ]
+  },
+  {
+   "task": "ren-h3",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 7.74,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "runaway",
+     "json_valid": false,
+     "passed": false,
+     "verify_reason": "",
+     "dialect": "tgi_json_object",
+     "early_stop": false,
+     "stop_reason": "runaway_output",
+     "tokens_prompt": 708,
+     "tokens_completion": 412,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 0,
+     "ttft_ms": 179.6,
+     "latency_ms": 7731.2,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_e7240e207029efe525eeae98",
+     "governor_receipt": "gov_9b484630568c0f748af5c9a0",
+     "teardown": {
+      "mode": "connection_closed"
+     }
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": []
+  },
+  {
+   "task": "ren-w1",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.67,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:edit_not_applicable:edit old_text is not unique in target",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 703,
+     "tokens_completion": 59,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 709,
+     "ttft_ms": 189.5,
+     "latency_ms": 1662.1,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_924fe7175f48e60e3aad799b",
+     "governor_receipt": "gov_03467b6aa0dd930870cee0b0",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:edit_not_applicable:edit old_text is not unique in target",
+     "files_changed": 0
+    }
+   ]
+  },
+  {
+   "task": "ren-w2",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.6,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:'dump_json' is not a top-level def/class/assignment in exporter/core.py",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 711,
+     "tokens_completion": 58,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 710,
+     "ttft_ms": 182.5,
+     "latency_ms": 1587.4,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_71a22b511c104cdf52f5bcf0",
+     "governor_receipt": "gov_05ef3b65a5f9d699a91bb149",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:'dump_json' is not a top-level def/class/assignment in exporter/core.py",
+     "files_changed": 0
+    }
+   ]
+  },
+  {
+   "task": "ren-near",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.59,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:'calc_total' is not a top-level def/class/assignment in totals/core.py",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 721,
+     "tokens_completion": 59,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 709,
+     "ttft_ms": 190.7,
+     "latency_ms": 1576.4,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_3c817087d31ca87dbd4f4a31",
+     "governor_receipt": "gov_e47ab6ca797bc5a3bcfa4b0d",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:'calc_total' is not a top-level def/class/assignment in totals/core.py",
+     "files_changed": 0
+    }
+   ]
+  },
+  {
+   "task": "refguard-h1",
+   "family": "composite-refguard",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.77,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:'calc_grade_mean' is not a top-level def/class/assignment in grades/core.py",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 938,
+     "tokens_completion": 64,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 704,
+     "ttft_ms": 312.9,
+     "latency_ms": 1759.3,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_10aaa73a8c918d0fcb310fd1",
+     "governor_receipt": "gov_a9c01566497cd006f8aad107",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:'calc_grade_mean' is not a top-level def/class/assignment in grades/core.py",
+     "files_changed": 0
+    }
+   ]
+  },
+  {
+   "task": "refguard-h2",
+   "family": "composite-refguard",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.8,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:parse_error:parser error: error at 8:0: expected INDENT",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 931,
+     "tokens_completion": 61,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 707,
+     "ttft_ms": 297.2,
+     "latency_ms": 1796.2,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_760bcc703b1054a20eef1d62",
+     "governor_receipt": "gov_a345aa844647df015b4ab7bd",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:parse_error:parser error: error at 8:0: expected INDENT",
+     "files_changed": 0
+    }
+   ]
+  },
+  {
+   "task": "refguard-h3",
+   "family": "composite-refguard",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.85,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:parse_error:parser error: error at 8:0: expected INDENT",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 939,
+     "tokens_completion": 64,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 704,
+     "ttft_ms": 293.6,
+     "latency_ms": 1844.3,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_525363c5037126e0c4d70d7f",
+     "governor_receipt": "gov_22631e6fd66b8af2f42d2269",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:parse_error:parser error: error at 8:0: expected INDENT",
+     "files_changed": 0
+    }
+   ]
+  },
+  {
+   "task": "refguard-w1",
+   "family": "composite-refguard",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.83,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:parse_error:parser error: error at 8:0: expected INDENT",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 946,
+     "tokens_completion": 64,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 704,
+     "ttft_ms": 296.9,
+     "latency_ms": 1822.9,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_f5544210b073f3344d041d45",
+     "governor_receipt": "gov_d65cee8a8052c25995df8477",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:parse_error:parser error: error at 8:0: expected INDENT",
+     "files_changed": 0
+    }
+   ]
+  },
+  {
+   "task": "fresh-refguard-6bb5",
+   "family": "fresh-lattice2",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.9,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:'calc_latency_mean' is not a top-level def/class/assignment in metrics6bb5/core.py",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 980,
+     "tokens_completion": 69,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 699,
+     "ttft_ms": 311.2,
+     "latency_ms": 1888.0,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_b2f9bda26f07bb8d68939d4d",
+     "governor_receipt": "gov_9d9a725e5135d2cf92f54676",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:'calc_latency_mean' is not a top-level def/class/assignment in metrics6bb5/core.py",
+     "files_changed": 0
+    }
+   ]
+  },
+  {
+   "task": "fresh-refop-6bb5",
+   "family": "fresh-lattice2-diff",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.93,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:'calc_latency_net' is not a top-level def/class/assignment in tally6bb5/core.py",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 867,
+     "tokens_completion": 67,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 701,
+     "ttft_ms": 291.0,
+     "latency_ms": 1922.2,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_b4cdf506e4d5a6224886e725",
+     "governor_receipt": "gov_c72e3fdea1373014fd8b55fa",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:'calc_latency_net' is not a top-level def/class/assignment in tally6bb5/core.py",
+     "files_changed": 0
+    }
+   ]
+  },
+  {
+   "task": "fresh-rename-6bb5",
+   "family": "fresh-single2",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.78,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:'get_latency_total' is not a top-level def/class/assignment in books6bb5/core.py",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 735,
+     "tokens_completion": 68,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 700,
+     "ttft_ms": 184.3,
+     "latency_ms": 1767.4,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_8e1e8a3f3bbcdafd4a6b00f2",
+     "governor_receipt": "gov_ad399f8d676fbc11e0b8bd49",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:'get_latency_total' is not a top-level def/class/assignment in books6bb5/core.py",
+     "files_changed": 0
+    }
+   ]
+  }
+ ],
+ "chain_tool": [
+  {
+   "task": "ren-h1",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 8.33,
+   "spend_usd": 0.000204,
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 2,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:'fetch_user' is not a top-level def/class/assignment in users/core.py",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 698,
+     "tokens_completion": 56,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 712,
+     "ttft_ms": 76.5,
+     "latency_ms": 1433.2,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_297775b1c5826d6c702697a2",
+     "governor_receipt": "gov_a8111e30d8f5af1c2e176c1e",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "placement": "cloud",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 852,
+     "tokens_completion": 152,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 1896,
+     "ttft_ms": 4477.4,
+     "latency_ms": 5185.8,
+     "spend_usd": 0.000204,
+     "error": "",
+     "receipt_id": "gov_34db1e7a050e53c27b2ca467",
+     "governor_receipt": "gov_52ae1fd8a66f846b9c813777",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [],
+    "edits": [
+     {
+      "path": "users/core.py",
+      "old_text": "def fetch_user(items):",
+      "new_text": "def load_user(items):"
+     },
+     {
+      "path": "users/cli.py",
+      "old_text": "    return core.fetch_user(items)",
+      "new_text": "    return core.load_user(items)"
+     },
+     {
+      "path": "users/report.py",
+      "old_text": "from users.core import fetch_user, format_money",
+      "new_text": "from users.core import load_user, format_money"
+     },
+     {
+      "path": "users/report.py",
+      "old_text": "    return format_money(fetch_user(items))",
+      "new_text": "    return format_money(load_user(items))"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:'fetch_user' is not a top-level def/class/assignment in users/core.py",
+     "files_changed": 0
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ]
+  },
+  {
+   "task": "ren-h2",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 7.36,
+   "spend_usd": 0.00021,
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 2,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:'make_report' is not a top-level def/class/assignment in reports/core.py",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 708,
+     "tokens_completion": 59,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 709,
+     "ttft_ms": 107.2,
+     "latency_ms": 1493.1,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_04b49d6680e8874fe635e401",
+     "governor_receipt": "gov_bd6f8eac62a4757589f71ffc",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "placement": "cloud",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 868,
+     "tokens_completion": 160,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 1888,
+     "ttft_ms": 3501.8,
+     "latency_ms": 4210.0,
+     "spend_usd": 0.00021,
+     "error": "",
+     "receipt_id": "gov_1a1c08366fa80d8b13c83c4f",
+     "governor_receipt": "gov_67fbc1a0cf5a1933742506ff",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [],
+    "edits": [
+     {
+      "path": "reports/core.py",
+      "old_text": "def make_report(items):",
+      "new_text": "def build_report(items):"
+     },
+     {
+      "path": "reports/cli.py",
+      "old_text": "    return core.make_report(items)",
+      "new_text": "    return core.build_report(items)"
+     },
+     {
+      "path": "reports/report.py",
+      "old_text": "from reports.core import make_report, format_money",
+      "new_text": "from reports.core import build_report, format_money"
+     },
+     {
+      "path": "reports/report.py",
+      "old_text": "    return format_money(make_report(items))",
+      "new_text": "    return format_money(build_report(items))"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:'make_report' is not a top-level def/class/assignment in reports/core.py",
+     "files_changed": 0
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ]
+  },
+  {
+   "task": "ren-h3",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 10.73,
+   "spend_usd": 0.00012,
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 2,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "runaway",
+     "json_valid": false,
+     "passed": false,
+     "verify_reason": "",
+     "dialect": "tgi_json_object",
+     "early_stop": false,
+     "stop_reason": "runaway_output",
+     "tokens_prompt": 706,
+     "tokens_completion": 412,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 0,
+     "ttft_ms": 107.2,
+     "latency_ms": 7615.3,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_7ea87d189dd137b83c4fd86b",
+     "governor_receipt": "gov_662788d1a24e0720781bc504",
+     "teardown": {
+      "mode": "connection_closed"
+     }
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "placement": "cloud",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 706,
+     "tokens_completion": 29,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 2019,
+     "ttft_ms": 1542.0,
+     "latency_ms": 1628.8,
+     "spend_usd": 0.00012,
+     "error": "",
+     "receipt_id": "gov_a33306ef5f001a2eb55a7935",
+     "governor_receipt": "gov_43f4a6e48663d3ea4627791a",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "parse_cfg",
+      "file": "configs/core.py",
+      "new_name": "parse_config"
+     }
+    ],
+    "edits": []
+   },
+   "verdicts": [
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ]
+  },
+  {
+   "task": "ren-w1",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 4.82,
+   "spend_usd": 0.000142,
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 2,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:edit_not_applicable:edit old_text is not unique in target",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 701,
+     "tokens_completion": 59,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 709,
+     "ttft_ms": 111.7,
+     "latency_ms": 1573.1,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_2ad9fca826a5488b08994345",
+     "governor_receipt": "gov_b04e7996d3bd1a0aa3000471",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "placement": "cloud",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 851,
+     "tokens_completion": 29,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 2019,
+     "ttft_ms": 1629.3,
+     "latency_ms": 1648.3,
+     "spend_usd": 0.000142,
+     "error": "",
+     "receipt_id": "gov_02c4a395eca2028ccedc8c4d",
+     "governor_receipt": "gov_ab5d85953481c71bc76e03c1",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "send_mail",
+      "file": "mailer/core.py",
+      "new_name": "send_email"
+     }
+    ],
+    "edits": []
+   },
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:edit_not_applicable:edit old_text is not unique in target",
+     "files_changed": 0
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ]
+  },
+  {
+   "task": "ren-w2",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 7.87,
+   "spend_usd": 0.000209,
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 2,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:'dump_json' is not a top-level def/class/assignment in exporter/core.py",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 709,
+     "tokens_completion": 58,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 710,
+     "ttft_ms": 110.8,
+     "latency_ms": 1542.1,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_84ce722f7fb125115debb1e5",
+     "governor_receipt": "gov_fa669c8aec73d93f551cf9c2",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "placement": "cloud",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 866,
+     "tokens_completion": 158,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 1890,
+     "ttft_ms": 4253.1,
+     "latency_ms": 4906.1,
+     "spend_usd": 0.000209,
+     "error": "",
+     "receipt_id": "gov_4e2644930c84c55e3c64e7be",
+     "governor_receipt": "gov_187d78a445c0db3e4e11f3ed",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [],
+    "edits": [
+     {
+      "path": "exporter/core.py",
+      "old_text": "def dump_json(items):",
+      "new_text": "def write_json(items):"
+     },
+     {
+      "path": "exporter/cli.py",
+      "old_text": "    return core.dump_json(items)",
+      "new_text": "    return core.write_json(items)"
+     },
+     {
+      "path": "exporter/report.py",
+      "old_text": "from exporter.core import dump_json, format_money",
+      "new_text": "from exporter.core import write_json, format_money"
+     },
+     {
+      "path": "exporter/report.py",
+      "old_text": "    return format_money(dump_json(items))",
+      "new_text": "    return format_money(write_json(items))"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:'dump_json' is not a top-level def/class/assignment in exporter/core.py",
+     "files_changed": 0
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ]
+  },
+  {
+   "task": "ren-near",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 9.61,
+   "spend_usd": 0.000209,
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 2,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:'calc_total' is not a top-level def/class/assignment in totals/core.py",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 719,
+     "tokens_completion": 59,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 709,
+     "ttft_ms": 109.2,
+     "latency_ms": 1472.4,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_2c425f0c840cc19341a99bf0",
+     "governor_receipt": "gov_1a754b685b56ec9b809ad553",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "placement": "cloud",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 877,
+     "tokens_completion": 154,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 1894,
+     "ttft_ms": 5933.0,
+     "latency_ms": 6589.9,
+     "spend_usd": 0.000209,
+     "error": "",
+     "receipt_id": "gov_d771e6b2690d6fe20e53cb37",
+     "governor_receipt": "gov_1b5ff483da1ba0abb67282e9",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [],
+    "edits": [
+     {
+      "path": "totals/core.py",
+      "old_text": "def calc_total(items):",
+      "new_text": "def compute_total(items):"
+     },
+     {
+      "path": "totals/cli.py",
+      "old_text": "return core.calc_total(items)",
+      "new_text": "return core.compute_total(items)"
+     },
+     {
+      "path": "totals/report.py",
+      "old_text": "from totals.core import calc_total, format_money",
+      "new_text": "from totals.core import compute_total, format_money"
+     },
+     {
+      "path": "totals/report.py",
+      "old_text": "return format_money(calc_total(items))",
+      "new_text": "return format_money(compute_total(items))"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:'calc_total' is not a top-level def/class/assignment in totals/core.py",
+     "files_changed": 0
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ]
+  }
+ ]
+}

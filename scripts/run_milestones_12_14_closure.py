@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 """Generate live paired economics and a sovereign local Commons federation drill."""
 from __future__ import annotations
+try:  # closure-2026-11-16: governed egress shim
+    from app.kernel.compute import governed_egress as _egress
+except ModuleNotFoundError:  # run as a script: repo root not on sys.path yet
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
+    from app.kernel.compute import governed_egress as _egress
 
 import argparse
 import base64
@@ -43,7 +51,7 @@ def provider_call(url: str, model: str, prompt: str) -> dict:
         headers={"Content-Type": "application/json"},
         data=json.dumps({"model": model, "prompt": prompt, "stream": False,
                          "options": {"temperature": 0, "seed": 17, "num_predict": 32}}).encode())
-    with urllib.request.urlopen(request, timeout=120) as response:
+    with _egress.urlopen("run_milestones_12_14_closure", request, timeout=120) as response:
         result = json.loads(response.read())
     if not result.get("done"):
         raise RuntimeError("provider did not complete")

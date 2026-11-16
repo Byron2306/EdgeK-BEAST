@@ -1,0 +1,92 @@
+{
+  "scope": "local-lab-configuration-test-only",
+  "no_jobs_executed": true,
+  "no_spaces_launched": true,
+  "signed_space_validated": true,
+  "tampered_space_rejected": true,
+  "signed_node_validated": true,
+  "tampered_and_unsigned_nodes_rejected": true,
+  "witness_signature_verified": true,
+  "incomplete_tpm_evidence_rejected": true,
+  "snapshot": {
+    "version": "1.1",
+    "mode": "enterprise",
+    "artifact_registry": {
+      "count": 0,
+      "signature_required": true,
+      "signature_verifier_configured": true,
+      "replay_verified": true
+    },
+    "artifact_vault": {
+      "objects": 1,
+      "bytes": 206,
+      "max_artifact_bytes": 10737418240
+    },
+    "chunk_store": {
+      "chunks": 1,
+      "bytes": 206,
+      "chunk_size": 65536
+    },
+    "dataset_river": {
+      "privacy_labels": [
+        "internal",
+        "private",
+        "public",
+        "restricted"
+      ],
+      "lineage_required": true,
+      "lazy_streaming": true
+    },
+    "job_choir": {
+      "attestation_required": true,
+      "attestation_verifier_configured": true,
+      "signed_witnesses": true
+    },
+    "tpm_attestation": {
+      "challenge_ledger": {
+        "issued": 0,
+        "consumed": 0,
+        "expired": 0,
+        "superseded": 0
+      },
+      "pcr_bank": "sha256",
+      "pcrs": [
+        0,
+        2,
+        4,
+        7,
+        10,
+        14
+      ],
+      "ak_activation_required": true,
+      "event_log_replay_required": true,
+      "windows_supported_by_contract": true,
+      "submission_verifier_live": true
+    },
+    "route_damping": {
+      "routes": {},
+      "suppress_at": 1000.0,
+      "half_life_seconds": 300.0
+    },
+    "space_forge": {
+      "authority_required": true,
+      "appraisal_required": true,
+      "signature_verifier_configured": true,
+      "appraisal_verifier_configured": true,
+      "port_broker": "in_process"
+    },
+    "evidence": {
+      "control_graph_nodes": 0,
+      "sensorium_connected": false
+    },
+    "remote_imports": {
+      "quarantined": 1,
+      "local_reproduction_required": true
+    },
+    "admission": {
+      "fail_closed": true,
+      "ready": true
+    },
+    "status": "ready"
+  }
+}

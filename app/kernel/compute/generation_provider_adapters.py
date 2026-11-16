@@ -1,4 +1,5 @@
 from __future__ import annotations
+from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 
 import base64
 import hashlib
@@ -197,7 +198,7 @@ class GeminiChatGenerationProvider(GenerationProviderAdapter):
             ]
         }
         with _client(self.client, timeout=float(os.environ.get("GEMINI_TIMEOUT_SECONDS", "60"))) as client:
-            response = client.post(
+            response = _egress.post(client, "generation_provider_adapters", 
                 base_url.rstrip("/") + "/v1beta/" + model_path + ":generateContent",
                 headers={"x-goog-api-key": api_key, "Content-Type": "application/json"},
                 json=payload,
@@ -268,7 +269,7 @@ class HuggingFaceImageGenerationProvider(GenerationProviderAdapter):
             api_name = "huggingface_hub.InferenceClient.text_to_image"
         else:
             with _client(self.client, timeout=float(os.environ.get("HF_IMAGE_TIMEOUT_SECONDS", "120"))) as client:
-                response = client.post(
+                response = _egress.post(client, "generation_provider_adapters", 
                     _hf_image_url(base_url, model),
                     headers={
                         "Authorization": "Bearer " + api_key,

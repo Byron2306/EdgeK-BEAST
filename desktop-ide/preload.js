@@ -2,6 +2,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('beastDesktop', {
   status: options => ipcRenderer.invoke('beast:status', options || {}),
+  listOllamaModels: () => ipcRenderer.invoke('beast:ollama-models'),
   listFiles: (workspace, limit) => ipcRenderer.invoke('beast:list-files', workspace, limit),
   readFile: (workspace, path, maxChars) => ipcRenderer.invoke('beast:read-file', workspace, path, maxChars),
   createEditorDocument: payload => ipcRenderer.invoke('beast:editor-document-create', payload),

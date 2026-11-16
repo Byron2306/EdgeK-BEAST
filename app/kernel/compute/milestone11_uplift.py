@@ -4,6 +4,7 @@ The experiment proves an uplift of the frozen ``model + BEAST`` system.  It
 does not claim that unchanged model weights learned the residual operation.
 """
 from __future__ import annotations
+from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 
 import hashlib
 import json
@@ -72,7 +73,7 @@ class OllamaNativeAdapter:
                            "options": {"temperature": 0, "seed": seed, "num_predict": 96}}).encode()
         req = urllib.request.Request(self.endpoint + "/api/generate", data=body,
                                      headers={"Content-Type": "application/json"})
-        with urllib.request.urlopen(req, timeout=90) as response:
+        with _egress.urlopen("milestone11_uplift", req, timeout=90) as response:
             result = json.loads(response.read())
         return str(result.get("response") or ""), int(result.get("prompt_eval_count") or 0), int(result.get("eval_count") or 0)
 
@@ -89,7 +90,7 @@ class OllamaOpenAIAdapter:
                            "stream": False, "temperature": 0, "seed": seed, "max_tokens": 96}).encode()
         req = urllib.request.Request(self.endpoint + "/v1/chat/completions", data=body,
                                      headers={"Content-Type": "application/json"})
-        with urllib.request.urlopen(req, timeout=90) as response:
+        with _egress.urlopen("milestone11_uplift", req, timeout=90) as response:
             result = json.loads(response.read())
         usage = result.get("usage") or {}
         text = result["choices"][0]["message"]["content"]

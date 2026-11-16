@@ -1,0 +1,63 @@
+[
+ {
+  "candidate": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+  "tasks": 13,
+  "accepted": 12,
+  "first_attempt_pass": 8,
+  "calls": 18,
+  "json_valid": 18,
+  "early_stops": 18,
+  "lat_p50_ms": 2049,
+  "lat_max_ms": 2636,
+  "spend_usd": 0.00618,
+  "failed": [
+   "far-1"
+  ]
+ },
+ {
+  "candidate": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+  "tasks": 13,
+  "accepted": 12,
+  "first_attempt_pass": 8,
+  "calls": 18,
+  "json_valid": 17,
+  "early_stops": 17,
+  "lat_p50_ms": 2558,
+  "lat_max_ms": 14015,
+  "spend_usd": 0.00371,
+  "failed": [
+   "far-1"
+  ]
+ },
+ {
+  "candidate": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+  "tasks": 13,
+  "accepted": 13,
+  "first_attempt_pass": 10,
+  "calls": 16,
+  "json_valid": 16,
+  "early_stops": 16,
+  "lat_p50_ms": 6553,
+  "lat_max_ms": 23878,
+  "spend_usd": 0.01262,
+  "failed": []
+ },
+ {
+  "candidate": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+  "tasks": 13,
+  "accepted": 9,
+  "first_attempt_pass": 8,
+  "calls": 18,
+  "json_valid": 18,
+  "early_stops": 18,
+  "lat_p50_ms": 3555,
+  "lat_max_ms": 21069,
+  "spend_usd": 0.00076,
+  "failed": [
+   "ren-h1",
+   "ren-h2",
+   "refguard-h1",
+   "refguard-h2"
+  ]
+ }
+]

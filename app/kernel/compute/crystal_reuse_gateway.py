@@ -122,6 +122,7 @@ class CrystalReuseGateway:
         trace_ledger: Optional[LocalTraceLedger] = None,
         eval_gate: Optional[LocalEvalGate] = None,
         route_optimizer: Optional[LocalRouteOptimizer] = None,
+        semantic_verifier: Optional[Callable[[CrystalReuseRequest, RuntimeReplayResult], bool]] = None,
     ) -> None:
         self.storage = storage or DurableInferenceStorage()
         self.kv_transport = kv_transport or CrossEngineKVCacheTransport()
@@ -147,6 +148,9 @@ class CrystalReuseGateway:
         self.trace_ledger = trace_ledger
         self.eval_gate = eval_gate or LocalEvalGate()
         self.route_optimizer = route_optimizer
+        # D9 (IEI v0.9 §7.12.1, Table 15): a semantic hit only nominates. It may be served solely when it is in the
+        # exact band (>= 0.95) *and* an injected verifier passes; otherwise it is recorded as a proposal.
+        self.semantic_verifier = semantic_verifier
 
     def decide(self, request: CrystalReuseRequest, *, seal_decision: bool = True) -> CrystalReuseDecision:
         started = time.perf_counter()
@@ -164,8 +168,11 @@ class CrystalReuseGateway:
             return self._decision_from_replay(request, replay, started, seal_decision=seal_decision)
 
         semantic = self._semantic_lookup(request)
+        proposal = None
         if semantic is not None and semantic.confidence >= self.reuse_threshold:
-            return self._decision_from_replay(request, semantic, started, source="semantic_cache", seal_decision=seal_decision)
+            if self._semantic_verified(request, semantic):
+                return self._decision_from_replay(request, semantic, started, source="semantic_cache", seal_decision=seal_decision)
+            proposal = semantic
 
         kv_block = self._lookup_kv_block(request)
         if kv_block is not None:
@@ -180,7 +187,7 @@ class CrystalReuseGateway:
             )
             return self._decision_from_replay(request, replay, started, source="kv_transport", seal_decision=seal_decision)
 
-        return self._execute_local_cpu_decision(request, started, seal_decision=seal_decision)
+        return self._execute_local_cpu_decision(request, started, seal_decision=seal_decision, proposal=proposal)
 
     def record_execution_response(
         self,
@@ -470,6 +477,7 @@ class CrystalReuseGateway:
             "version": CRYSTAL_GATEWAY_VERSION,
             "reuse_threshold": self.reuse_threshold,
             "storage": self.storage.get_metrics(),
+            "credits": self.storage.list_credit_summaries(limit=40),
             "kv_transport": self.kv_transport.get_stats(),
             "integration_health": self.integration_health(probe=probe_integrations, timeout_seconds=probe_timeout_seconds),
             "local_capability_health": self.local_capability_health(),
@@ -485,6 +493,16 @@ class CrystalReuseGateway:
                 "governed_cloud_escalation",
             ],
         }
+
+    def _semantic_verified(self, request: CrystalReuseRequest, replay: RuntimeReplayResult) -> bool:
+        from app.kernel.compute.adaptive_router import classify_band
+
+        if self.semantic_verifier is None or classify_band(replay.confidence) != "exact":
+            return False
+        try:
+            return self.semantic_verifier(request, replay) is True
+        except Exception:
+            return False  # fail closed: a crashing verifier never authorizes reuse
 
     def _semantic_lookup(self, request: CrystalReuseRequest) -> Optional[RuntimeReplayResult]:
         if self.semantic_matcher is None:
@@ -549,14 +567,24 @@ class CrystalReuseGateway:
         self._record_trace(final.decision_id, "crystal_reuse_decision", final.to_dict())
         return final
 
-    def _execute_local_cpu_decision(self, request: CrystalReuseRequest, started: float, *, seal_decision: bool) -> CrystalReuseDecision:
-        payload = {"request": request.to_dict(), "reuse": None}
+    def _execute_local_cpu_decision(self, request: CrystalReuseRequest, started: float, *, seal_decision: bool,
+                                    proposal: Optional[RuntimeReplayResult] = None) -> CrystalReuseDecision:
+        payload: Dict[str, Any] = {"request": request.to_dict(), "reuse": None}
+        reason = "no_reusable_crystal_found"
+        if proposal is not None:
+            from app.kernel.compute.adaptive_router import AdaptiveRouter
+
+            route = AdaptiveRouter().route(similarity=proposal.confidence,
+                                           reasons=("semantic hit is a nomination; verifier did not pass",))
+            payload["semantic_proposal"] = {k: v for k, v in proposal.to_dict().items() if k != "payload"}
+            payload["route_decision"] = route.to_dict()
+            reason = "semantic_hit_requires_verifier_pass"
         decision = CrystalReuseDecision(
             decision_id=self._decision_id("execute_local_cpu", request, payload),
             action="execute_local_cpu",
             source="local_execution_gateway",
             confidence=0.0,
-            reason="no_reusable_crystal_found",
+            reason=reason,
             payload=payload,
             telemetry=self._telemetry("execute_local_cpu", "local_execution_gateway", started),
         )

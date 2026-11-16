@@ -1,0 +1,1723 @@
+[
+ {
+  "task": "const-h1",
+  "family": "fix-config-constant",
+  "source_files": 2,
+  "wall_s": 1.13,
+  "accepted": true,
+  "accepted_by": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 1,
+  "calls": [
+   {
+    "provider": "tgi",
+    "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+    "placement": "gpu_full",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "tgi_json_object",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 525,
+    "tokens_completion": 29,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 739,
+    "ttft_ms": 64.2,
+    "latency_ms": 932.7,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_5eacf74763f7cbdbfeaed3a1",
+    "governor_receipt": "gov_6a365767a2728e438f87afcd",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "nim:nvidia/nemotron-3.5-lightning-30b-a3b@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ]
+ },
+ {
+  "task": "op-h1",
+  "family": "fix-logic-operator",
+  "source_files": 2,
+  "wall_s": 2.48,
+  "accepted": true,
+  "accepted_by": "nim:nvidia/nemotron-3.5-lightning-30b-a3b@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 2,
+  "calls": [
+   {
+    "provider": "tgi",
+    "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+    "placement": "gpu_full",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "tgi_json_object",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 531,
+    "tokens_completion": 40,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 728,
+    "ttft_ms": 48.6,
+    "latency_ms": 969.6,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_0ee09f57139034bae0d0961c",
+    "governor_receipt": "gov_edd98117171f0f2a527d0daf",
+    "teardown": {}
+   },
+   {
+    "provider": "nim",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 824,
+    "tokens_completion": 49,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1999,
+    "ttft_ms": 1258.6,
+    "latency_ms": 1261.3,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_01848aec7810ce93fb9ea8c1",
+    "governor_receipt": "gov_5949c5c1cc3a17ba47c89fdc",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "nim:nvidia/nemotron-3.5-lightning-30b-a3b@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ]
+ },
+ {
+  "task": "obo-h1",
+  "family": "fix-off-by-one",
+  "source_files": 2,
+  "wall_s": 2.6,
+  "accepted": true,
+  "accepted_by": "nim:nvidia/nemotron-3.5-lightning-30b-a3b@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 2,
+  "calls": [
+   {
+    "provider": "tgi",
+    "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+    "placement": "gpu_full",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "tgi_json_object",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 573,
+    "tokens_completion": 37,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 731,
+    "ttft_ms": 54.9,
+    "latency_ms": 1093.8,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_e9bb544a3d1f1de0ee1b28ac",
+    "governor_receipt": "gov_3367e32cc7c155e0293eabf3",
+    "teardown": {}
+   },
+   {
+    "provider": "nim",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 863,
+    "tokens_completion": 47,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 2001,
+    "ttft_ms": 1256.5,
+    "latency_ms": 1259.4,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_fa2cedd59f9914af54f88e48",
+    "governor_receipt": "gov_f4026fccb4e142c055e1ebef",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "nim:nvidia/nemotron-3.5-lightning-30b-a3b@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ]
+ },
+ {
+  "task": "exc-h1",
+  "family": "fix-unhandled-exception",
+  "source_files": 2,
+  "wall_s": 4.31,
+  "accepted": true,
+  "accepted_by": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 3,
+  "calls": [
+   {
+    "provider": "tgi",
+    "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+    "placement": "gpu_full",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "tgi_json_object",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 573,
+    "tokens_completion": 31,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 737,
+    "ttft_ms": 51.6,
+    "latency_ms": 886.9,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_d55eab46fcd64eb5c4cc2fad",
+    "governor_receipt": "gov_445c55197b4a302ca82564aa",
+    "teardown": {}
+   },
+   {
+    "provider": "nim",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 857,
+    "tokens_completion": 41,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 2007,
+    "ttft_ms": 1195.8,
+    "latency_ms": 1198.4,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_491efa6e3224a256a68fc3a2",
+    "governor_receipt": "gov_3c51facae502a4d5bd18f16c",
+    "teardown": {}
+   },
+   {
+    "provider": "hf",
+    "model": "openai/gpt-oss-120b:deepinfra",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1151,
+    "tokens_completion": 59,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 4037,
+    "ttft_ms": 884.4,
+    "latency_ms": 1913.2,
+    "spend_usd": 5.3e-05,
+    "error": "",
+    "receipt_id": "gov_5d4c04e947ab5517c5164436",
+    "governor_receipt": "gov_20e26b7e5e793c1000fdfae0",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "nim:nvidia/nemotron-3.5-lightning-30b-a3b@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ]
+ },
+ {
+  "task": "ren-h1",
+  "family": "refactor-rename-symbol",
+  "source_files": 4,
+  "wall_s": 25.78,
+  "accepted": false,
+  "accepted_by": "",
+  "avoided": false,
+  "reason": "all_candidates_failed",
+  "model_calls": 4,
+  "calls": [
+   {
+    "provider": "tgi",
+    "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+    "placement": "gpu_full",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "tgi_json_object",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 660,
+    "tokens_completion": 31,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 737,
+    "ttft_ms": 51.7,
+    "latency_ms": 869.3,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_2da0607fd58a804b18a9a10d",
+    "governor_receipt": "gov_ae7d55d86b4b1ecb294d01ae",
+    "teardown": {}
+   },
+   {
+    "provider": "nim",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 944,
+    "tokens_completion": 114,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1934,
+    "ttft_ms": 5533.5,
+    "latency_ms": 5535.7,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_f512a3aed7c256e4a9a221d9",
+    "governor_receipt": "gov_8b67ef5e8271be4db289eca7",
+    "teardown": {}
+   },
+   {
+    "provider": "hf",
+    "model": "openai/gpt-oss-120b:deepinfra",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "edit_not_applicable:edit old_text is not unique in target",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1311,
+    "tokens_completion": 53,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 4043,
+    "ttft_ms": 3556.1,
+    "latency_ms": 4574.5,
+    "spend_usd": 5.8e-05,
+    "error": "",
+    "receipt_id": "gov_daa1a7665fb60d7690c91b04",
+    "governor_receipt": "gov_5086966603027942811633a5",
+    "teardown": {}
+   },
+   {
+    "provider": "hf",
+    "model": "moonshotai/Kimi-K2.7-Code:deepinfra",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "hidden_check_failed",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1425,
+    "tokens_completion": 143,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1905,
+    "ttft_ms": 13509.8,
+    "latency_ms": 14434.0,
+    "spend_usd": 0.001455,
+    "error": "",
+    "receipt_id": "gov_01671f1b16c697af65cac105",
+    "governor_receipt": "gov_bd3cdd4de7d464de369ea938",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "nim:nvidia/nemotron-3.5-lightning-30b-a3b@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 2,
+    "had_feedback": true
+   },
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "edit_not_applicable:edit old_text is not unique in target",
+    "files_changed": 0,
+    "had_feedback": false
+   },
+   {
+    "passed": false,
+    "visible_passed": true,
+    "hidden_passed": false,
+    "reason": "hidden_check_failed",
+    "files_changed": 2,
+    "had_feedback": true
+   }
+  ]
+ },
+ {
+  "task": "ren-h2",
+  "family": "refactor-rename-symbol",
+  "source_files": 4,
+  "wall_s": 10.02,
+  "accepted": true,
+  "accepted_by": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 4,
+  "calls": [
+   {
+    "provider": "tgi",
+    "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+    "placement": "gpu_full",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "tgi_json_object",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 670,
+    "tokens_completion": 33,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 735,
+    "ttft_ms": 73.7,
+    "latency_ms": 915.7,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_4d12ce98abe32e3a99425022",
+    "governor_receipt": "gov_ee50d7cc0113980f0c3245ba",
+    "teardown": {}
+   },
+   {
+    "provider": "nim",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 956,
+    "tokens_completion": 120,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1928,
+    "ttft_ms": 1298.9,
+    "latency_ms": 1302.0,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_ea3a18a7589e1df866cef750",
+    "governor_receipt": "gov_1c5d91a8b7448c468565ed5b",
+    "teardown": {}
+   },
+   {
+    "provider": "hf",
+    "model": "openai/gpt-oss-120b:deepinfra",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "hidden_check_failed",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1330,
+    "tokens_completion": 62,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 4034,
+    "ttft_ms": 2269.3,
+    "latency_ms": 3258.0,
+    "spend_usd": 6e-05,
+    "error": "",
+    "receipt_id": "gov_29c80787a5aca13358738b89",
+    "governor_receipt": "gov_1a939b341c2c86e24e78ebd7",
+    "teardown": {}
+   },
+   {
+    "provider": "hf",
+    "model": "moonshotai/Kimi-K2.7-Code:deepinfra",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1472,
+    "tokens_completion": 156,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1892,
+    "ttft_ms": 3204.2,
+    "latency_ms": 3928.6,
+    "spend_usd": 0.001531,
+    "error": "",
+    "receipt_id": "gov_4c2e86b89933d3e669581185",
+    "governor_receipt": "gov_898fbe6baad66ebfcc4ff871",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "nim:nvidia/nemotron-3.5-lightning-30b-a3b@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 2,
+    "had_feedback": true
+   },
+   {
+    "passed": false,
+    "visible_passed": true,
+    "hidden_passed": false,
+    "reason": "hidden_check_failed",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 3,
+    "had_feedback": false
+   }
+  ]
+ },
+ {
+  "task": "tool-h1",
+  "family": "toolchain-regenerate",
+  "source_files": 5,
+  "wall_s": 4.72,
+  "accepted": true,
+  "accepted_by": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 3,
+  "calls": [
+   {
+    "provider": "tgi",
+    "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+    "placement": "gpu_full",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "tgi_json_object",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 744,
+    "tokens_completion": 50,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 718,
+    "ttft_ms": 80.4,
+    "latency_ms": 1337.7,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_977b30990afaa2d1e7a37c14",
+    "governor_receipt": "gov_1ba096edee9438691b8d5dba",
+    "teardown": {}
+   },
+   {
+    "provider": "nim",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "edit_not_applicable:edits limited to existing regular .py files",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1047,
+    "tokens_completion": 86,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1962,
+    "ttft_ms": 1368.3,
+    "latency_ms": 1371.3,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_fcddb402a1b8ce6e70285c7f",
+    "governor_receipt": "gov_74113435d9905e01c2698955",
+    "teardown": {}
+   },
+   {
+    "provider": "hf",
+    "model": "openai/gpt-oss-120b:deepinfra",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1195,
+    "tokens_completion": 31,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 4065,
+    "ttft_ms": 1040.6,
+    "latency_ms": 1653.9,
+    "spend_usd": 4.9e-05,
+    "error": "",
+    "receipt_id": "gov_cb2c3670216265363de60ebe",
+    "governor_receipt": "gov_a27fc535926c5f2ceb33e5f3",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "nim:nvidia/nemotron-3.5-lightning-30b-a3b@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "edit_not_applicable:edits limited to existing regular .py files",
+    "files_changed": 0,
+    "had_feedback": false
+   },
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ]
+ },
+ {
+  "task": "refguard-h1",
+  "family": "composite-refguard",
+  "source_files": 5,
+  "wall_s": 23.04,
+  "accepted": true,
+  "accepted_by": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 4,
+  "calls": [
+   {
+    "provider": "tgi",
+    "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+    "placement": "gpu_full",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "tgi_json_object",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 886,
+    "tokens_completion": 70,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 698,
+    "ttft_ms": 71.9,
+    "latency_ms": 1697.7,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_02d4f71267a3474a0ba2e270",
+    "governor_receipt": "gov_5f1b9e1f68a8cab93e15e2ba",
+    "teardown": {}
+   },
+   {
+    "provider": "nim",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1209,
+    "tokens_completion": 196,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1852,
+    "ttft_ms": 2589.8,
+    "latency_ms": 2593.7,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_f14817ea0a23adb9c3e75708",
+    "governor_receipt": "gov_323ba5fda392ca3d12b1070e",
+    "teardown": {}
+   },
+   {
+    "provider": "hf",
+    "model": "openai/gpt-oss-120b:deepinfra",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "edit_not_applicable:edit old_text is not unique in target",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1658,
+    "tokens_completion": 68,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 4028,
+    "ttft_ms": 1745.4,
+    "latency_ms": 2833.5,
+    "spend_usd": 7.3e-05,
+    "error": "",
+    "receipt_id": "gov_74da16569c477b8207cb65ba",
+    "governor_receipt": "gov_172af45a1d2d14f51f807c2a",
+    "teardown": {}
+   },
+   {
+    "provider": "hf",
+    "model": "moonshotai/Kimi-K2.7-Code:deepinfra",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1787,
+    "tokens_completion": 268,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1780,
+    "ttft_ms": 14353.5,
+    "latency_ms": 15489.5,
+    "spend_usd": 0.002126,
+    "error": "",
+    "receipt_id": "gov_a7c9101bcab4ed2575183fe2",
+    "governor_receipt": "gov_9a02373eb2c1ac15bdf2f34a",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "nim:nvidia/nemotron-3.5-lightning-30b-a3b@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 2,
+    "had_feedback": true
+   },
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 3,
+    "had_feedback": true
+   },
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "edit_not_applicable:edit old_text is not unique in target",
+    "files_changed": 0,
+    "had_feedback": false
+   },
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 4,
+    "had_feedback": false
+   }
+  ]
+ },
+ {
+  "task": "dual-h1",
+  "family": "composite",
+  "source_files": 2,
+  "wall_s": 7.47,
+  "accepted": true,
+  "accepted_by": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 4,
+  "calls": [
+   {
+    "provider": "tgi",
+    "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+    "placement": "gpu_full",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "tgi_json_object",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 711,
+    "tokens_completion": 28,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 740,
+    "ttft_ms": 83.3,
+    "latency_ms": 983.1,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_f13490414ecc267302c86726",
+    "governor_receipt": "gov_771d4bae3d584a380f35ecc2",
+    "teardown": {}
+   },
+   {
+    "provider": "nim",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 991,
+    "tokens_completion": 38,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 2010,
+    "ttft_ms": 1047.2,
+    "latency_ms": 1051.0,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_462d13d527c47b24c3c34212",
+    "governor_receipt": "gov_9e98695292d97a30fa66a938",
+    "teardown": {}
+   },
+   {
+    "provider": "hf",
+    "model": "openai/gpt-oss-120b:deepinfra",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1252,
+    "tokens_completion": 28,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 4068,
+    "ttft_ms": 1268.1,
+    "latency_ms": 1778.9,
+    "spend_usd": 5.1e-05,
+    "error": "",
+    "receipt_id": "gov_da5a1a5d8cb002b7397d11d7",
+    "governor_receipt": "gov_c2bae93f47431be60f6d0547",
+    "teardown": {}
+   },
+   {
+    "provider": "hf",
+    "model": "moonshotai/Kimi-K2.7-Code:deepinfra",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1533,
+    "tokens_completion": 58,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1990,
+    "ttft_ms": 2825.5,
+    "latency_ms": 3159.3,
+    "spend_usd": 0.00124,
+    "error": "",
+    "receipt_id": "gov_023201637357556410f25d68",
+    "governor_receipt": "gov_0f35940b53ddecb6b4b1310d",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "nim:nvidia/nemotron-3.5-lightning-30b-a3b@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ]
+ },
+ {
+  "task": "far-1",
+  "family": "far",
+  "source_files": 2,
+  "wall_s": 30.43,
+  "accepted": true,
+  "accepted_by": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 4,
+  "calls": [
+   {
+    "provider": "tgi",
+    "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+    "placement": "gpu_full",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "tgi_json_object",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 578,
+    "tokens_completion": 30,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 738,
+    "ttft_ms": 66.5,
+    "latency_ms": 978.1,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_76a85d195fb22ca657487dd4",
+    "governor_receipt": "gov_4acd09eb00cf761536155ea9",
+    "teardown": {}
+   },
+   {
+    "provider": "nim",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "edit_not_applicable:edit old_text is not unique in target",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 861,
+    "tokens_completion": 42,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 2006,
+    "ttft_ms": 1122.6,
+    "latency_ms": 1129.6,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_31f86d1206ceb34a0cdaf7aa",
+    "governor_receipt": "gov_74f7931e0fa98d6e8e43fa9c",
+    "teardown": {}
+   },
+   {
+    "provider": "hf",
+    "model": "openai/gpt-oss-120b:deepinfra",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "hidden_check_failed",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 964,
+    "tokens_completion": 53,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 4043,
+    "ttft_ms": 1153.2,
+    "latency_ms": 2026.0,
+    "spend_usd": 4.5e-05,
+    "error": "",
+    "receipt_id": "gov_be72049519863b1f7e1b1d29",
+    "governor_receipt": "gov_9de3fe733b7ad3b445ced252",
+    "teardown": {}
+   },
+   {
+    "provider": "hf",
+    "model": "moonshotai/Kimi-K2.7-Code:deepinfra",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1098,
+    "tokens_completion": 53,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1995,
+    "ttft_ms": 25366.4,
+    "latency_ms": 25795.3,
+    "spend_usd": 0.000927,
+    "error": "",
+    "receipt_id": "gov_6fa93323fb3cc390d6337a69",
+    "governor_receipt": "gov_eb667abd8a5d6c261d20a3a0",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "nim:nvidia/nemotron-3.5-lightning-30b-a3b@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "edit_not_applicable:edit old_text is not unique in target",
+    "files_changed": 0,
+    "had_feedback": false
+   },
+   {
+    "passed": false,
+    "visible_passed": true,
+    "hidden_passed": false,
+    "reason": "hidden_check_failed",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ]
+ },
+ {
+  "task": "const-h2",
+  "family": "fix-config-constant",
+  "source_files": 2,
+  "wall_s": 1.26,
+  "accepted": true,
+  "accepted_by": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 1,
+  "calls": [
+   {
+    "provider": "tgi",
+    "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+    "placement": "gpu_full",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "tgi_json_object",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 531,
+    "tokens_completion": 32,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 736,
+    "ttft_ms": 68.9,
+    "latency_ms": 1069.7,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_1b6d633537ea66a9ea8a760f",
+    "governor_receipt": "gov_c3b2777ca4289cc7737a06d0",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "nim:nvidia/nemotron-3.5-lightning-30b-a3b@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ]
+ },
+ {
+  "task": "ren-h3",
+  "family": "refactor-rename-symbol",
+  "source_files": 4,
+  "wall_s": 26.99,
+  "accepted": false,
+  "accepted_by": "",
+  "avoided": false,
+  "reason": "all_candidates_failed",
+  "model_calls": 4,
+  "calls": [
+   {
+    "provider": "tgi",
+    "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+    "placement": "gpu_full",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "tgi_json_object",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 668,
+    "tokens_completion": 76,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 692,
+    "ttft_ms": 53.6,
+    "latency_ms": 1718.7,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_2fc7057bdd2b217cb735dd1a",
+    "governor_receipt": "gov_7a2e4fa9ddc68575f226b714",
+    "teardown": {}
+   },
+   {
+    "provider": "nim",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "edit_not_applicable:edits limited to existing regular .py files",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 997,
+    "tokens_completion": 114,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1934,
+    "ttft_ms": 1310.3,
+    "latency_ms": 1313.5,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_49aceaacb74edc165e7fce96",
+    "governor_receipt": "gov_bfe09c1e39947c161f02798e",
+    "teardown": {}
+   },
+   {
+    "provider": "hf",
+    "model": "openai/gpt-oss-120b:deepinfra",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "edit_not_applicable:edit old_text is not unique in target",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1174,
+    "tokens_completion": 110,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 3986,
+    "ttft_ms": 12116.7,
+    "latency_ms": 15418.9,
+    "spend_usd": 6.2e-05,
+    "error": "",
+    "receipt_id": "gov_66f1a12e5a7959793c3095b6",
+    "governor_receipt": "gov_267799827a20952870df032c",
+    "teardown": {}
+   },
+   {
+    "provider": "hf",
+    "model": "moonshotai/Kimi-K2.7-Code:deepinfra",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "hidden_check_failed",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1344,
+    "tokens_completion": 53,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1995,
+    "ttft_ms": 7753.9,
+    "latency_ms": 8214.2,
+    "spend_usd": 0.001094,
+    "error": "",
+    "receipt_id": "gov_a57e1eda03988e7453d63f59",
+    "governor_receipt": "gov_1522651e67d9651bff9cbb5c",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "nim:nvidia/nemotron-3.5-lightning-30b-a3b@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 2,
+    "had_feedback": true
+   },
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "edit_not_applicable:edits limited to existing regular .py files",
+    "files_changed": 0,
+    "had_feedback": false
+   },
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "edit_not_applicable:edit old_text is not unique in target",
+    "files_changed": 0,
+    "had_feedback": false
+   },
+   {
+    "passed": false,
+    "visible_passed": true,
+    "hidden_passed": false,
+    "reason": "hidden_check_failed",
+    "files_changed": 1,
+    "had_feedback": true
+   }
+  ]
+ },
+ {
+  "task": "refguard-h2",
+  "family": "composite-refguard",
+  "source_files": 5,
+  "wall_s": 18.38,
+  "accepted": true,
+  "accepted_by": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 4,
+  "calls": [
+   {
+    "provider": "tgi",
+    "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+    "placement": "gpu_full",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "tgi_json_object",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 879,
+    "tokens_completion": 65,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 703,
+    "ttft_ms": 74.2,
+    "latency_ms": 1597.9,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_d6285dc76d765d4310698e63",
+    "governor_receipt": "gov_5de6b7c6ec35f61b68444f72",
+    "teardown": {}
+   },
+   {
+    "provider": "nim",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1196,
+    "tokens_completion": 102,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1946,
+    "ttft_ms": 1378.4,
+    "latency_ms": 1381.4,
+    "spend_usd": 0.0,
+    "error": "",
+    "receipt_id": "gov_eef384d7022e696d7fd7f869",
+    "governor_receipt": "gov_836176199e61108e5a44a340",
+    "teardown": {}
+   },
+   {
+    "provider": "hf",
+    "model": "openai/gpt-oss-120b:deepinfra",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "hidden_check_failed",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1552,
+    "tokens_completion": 71,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 4025,
+    "ttft_ms": 9457.1,
+    "latency_ms": 10728.9,
+    "spend_usd": 6.9e-05,
+    "error": "",
+    "receipt_id": "gov_8d176b0129becd91d883877b",
+    "governor_receipt": "gov_66c996497080605c4228ff00",
+    "teardown": {}
+   },
+   {
+    "provider": "hf",
+    "model": "moonshotai/Kimi-K2.7-Code:deepinfra",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1703,
+    "tokens_completion": 254,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1794,
+    "ttft_ms": 2756.3,
+    "latency_ms": 4092.1,
+    "spend_usd": 0.002022,
+    "error": "",
+    "receipt_id": "gov_9a66644600bb34a28566ef2b",
+    "governor_receipt": "gov_14e9b82341b5b4d0c3b1505d",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "nim:nvidia/nemotron-3.5-lightning-30b-a3b@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:openai/gpt-oss-120b:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 2,
+    "had_feedback": true
+   },
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 2,
+    "had_feedback": true
+   },
+   {
+    "passed": false,
+    "visible_passed": true,
+    "hidden_passed": false,
+    "reason": "hidden_check_failed",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 4,
+    "had_feedback": false
+   }
+  ]
+ }
+]

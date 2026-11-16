@@ -15,6 +15,13 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from app.kernel.compute.resource_executor import ResourceExecutor, WorkloadProfile
 from app.kernel.compute.interference_buckets import classify as classify_interference
+from app.kernel.compute.adaptive_router import router_enabled
+
+
+def _route_nominates_replay(decision: Any) -> bool:
+    return (isinstance(decision, dict) and decision.get("route") == "crystal_replay"
+            and decision.get("band") == "exact" and decision.get("fingerprint_compatible") is True
+            and decision.get("proposal_only") is True and decision.get("execution_granted") is False)
 
 
 @dataclass(frozen=True)
@@ -82,6 +89,7 @@ class AgentScheduler:
         memory_pressure: float = 0.0,
         io_pressure: float = 0.0,
         trust: str = "verified",
+        route_decision: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         route_inputs = route_inputs if isinstance(route_inputs, dict) else self.collect_route_inputs(
             objective=objective,
@@ -94,7 +102,15 @@ class AgentScheduler:
         reasons: List[str] = []
         phase_key = str(phase or "").lower()
         risk_key = str(risk or "").lower()
-        if crystal_match:
+        if router_enabled():
+            # D9 (IEI v0.9 §7.12.1): only a proposal-only crystal_replay RouteDecision nominates the replay lane;
+            # a bare crystal_match claim does not. The lane still runs under D6 verifiers.
+            if _route_nominates_replay(route_decision):
+                selected.append("crystal_replay")
+                reasons.append("adaptive router nominated a fingerprint-compatible crystal proposal")
+            elif crystal_match:
+                reasons.append("crystal_match ignored: no crystal_replay RouteDecision")
+        elif crystal_match:
             selected.append("crystal_replay")
             reasons.append("crystal replay candidate available")
         if ((route_inputs.get("adaptive_dispatcher") or {}) if isinstance(route_inputs.get("adaptive_dispatcher"), dict) else {}).get("local_specialist_available"):
@@ -157,6 +173,8 @@ class AgentScheduler:
             "resource_profile": resource_profile.__dict__,
             "interference": interference.__dict__,
         }
+        if isinstance(route_decision, dict):
+            receipt["route_decision"] = route_decision
         self.record(receipt)
         return {
             "beast_object_type": "beast_agent_schedule_plan",

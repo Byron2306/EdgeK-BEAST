@@ -1,0 +1,138 @@
+/* BEAST_LAYOUT_LOADED_FIX_20261016: Loaded AFTER every restored stylesheet. */
+.beast-workspace-page .cortex-layout.has-agent-panel {
+  display:grid !important;
+  height:min(72vh,760px) !important;
+  max-height:min(72vh,760px) !important;
+  min-height:0 !important;
+  min-width:0 !important;
+  grid-template-rows:minmax(0,1fr) !important;
+  align-items:stretch !important;
+  gap:12px !important;
+  overflow:hidden !important;
+}
+.beast-workspace-page .cortex-layout.has-agent-panel > .cortex-explorer,
+.beast-workspace-page .cortex-layout.has-agent-panel > .cortex-editor,
+.beast-workspace-page .cortex-layout.has-agent-panel > .cortex-agent-panel {
+  grid-row:1 !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  height:100% !important;
+  max-height:100% !important;
+  overflow:hidden !important;
+}
+.beast-workspace-page .cortex-layout.has-agent-panel > .cortex-explorer {grid-column:1 !important;}
+.beast-workspace-page .cortex-layout.has-agent-panel > .cortex-editor {grid-column:2 !important;}
+.beast-workspace-page .cortex-layout.has-agent-panel > .cortex-agent-panel {grid-column:3 !important;}
+.beast-workspace-page .cortex-layout.has-agent-panel:not(.agent-open) {
+  grid-template-columns:minmax(160px,240px) minmax(0,1fr) !important;
+}
+.beast-workspace-page .cortex-layout.has-agent-panel:not(.agent-open) > .cortex-agent-panel {display:none !important;}
+.beast-workspace-page .cortex-layout.has-agent-panel.agent-open:not(.beast-agent-compact):not(.ai-focus) {
+  grid-template-columns:minmax(180px,220px) minmax(0,1fr) minmax(300px,360px) !important;
+}
+.beast-workspace-page .cortex-layout.has-agent-panel.agent-open:is(.beast-agent-compact,.ai-focus) {
+  grid-template-columns:minmax(0,1fr) minmax(300px,42%) !important;
+}
+.beast-workspace-page .cortex-layout.has-agent-panel.agent-open:is(.beast-agent-compact,.ai-focus) > .cortex-explorer {display:none !important;}
+.beast-workspace-page .cortex-layout.has-agent-panel.agent-open:is(.beast-agent-compact,.ai-focus) > .cortex-editor {grid-column:1 !important;}
+.beast-workspace-page .cortex-layout.has-agent-panel.agent-open:is(.beast-agent-compact,.ai-focus) > .cortex-agent-panel {grid-column:2 !important;}
+/* The injected resizer must not become an implicit second grid row. */
+.beast-workspace-page .cortex-layout.has-agent-panel > .beast-panel-resizer {display:none !important;}
+.beast-workspace-page .cortex-layout.has-agent-panel .cortex-explorer {display:flex;flex-direction:column;}
+.beast-workspace-page .cortex-layout.has-agent-panel.agent-open:is(.beast-agent-compact,.ai-focus) > .cortex-explorer {display:none !important;}
+.beast-workspace-page .cortex-layout.has-agent-panel [data-explorer-body] {
+  flex:1 1 auto;min-height:0;overflow:auto !important;
+}
+.beast-workspace-page .cortex-layout.has-agent-panel > .cortex-agent-panel:not(.hidden) {
+  display:flex !important;flex-direction:column;gap:7px;
+  overflow-y:auto !important;overflow-x:hidden !important;
+  overscroll-behavior:contain;
+}
+.beast-workspace-page .cortex-layout.has-agent-panel > .cortex-agent-panel.hidden {display:none !important;}
+.beast-workspace-page .cortex-agent-panel > * {flex-shrink:0;min-width:0;max-width:100%;}
+.beast-workspace-page .cortex-agent-panel [data-ai-messages] {
+  flex:1 0 60px;min-height:60px;overflow-y:auto !important;
+}
+.beast-workspace-page .cortex-agent-panel .cortex-ai-context-body {max-height:140px;overflow:auto;}
+.beast-workspace-page .cortex-agent-panel [data-ai-prompt] {min-height:68px;max-height:110px;resize:vertical;}
+@media(max-width:700px) {
+  .beast-workspace-page .cortex-layout.has-agent-panel.agent-open {grid-template-columns:minmax(0,1fr) !important;}
+  .beast-workspace-page .cortex-layout.has-agent-panel.agent-open > .cortex-explorer,
+  .beast-workspace-page .cortex-layout.has-agent-panel.agent-open > .cortex-editor {display:none !important;}
+  .beast-workspace-page .cortex-layout.has-agent-panel.agent-open > .cortex-agent-panel {grid-column:1 !important;}
+}
+
+/* BEAST R3.18: REAL Agent Coder viewport ownership (not legacy .cortex-ai-panel).
+   Source: restored Pair Programmer panel + last-loaded workspace layout authority.
+   Scope: workspace with real .has-agent-panel only. No run/state changes. */
+@media (min-width: 701px) {
+  /* The focused cockpit must remain readable alongside Monaco. */
+  .beast-workspace-page .cortex-layout.has-agent-panel.agent-open.ai-focus {
+    grid-template-columns: minmax(0, .82fr) minmax(480px, 1.18fr) !important;
+  }
+  .beast-workspace-page .cortex-layout.has-agent-panel.agent-open.beast-agent-compact:not(.ai-focus) {
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 48%) !important;
+  }
+}
+/* Single scroll owner: message timeline. Panel itself MUST NOT scroll. */
+.beast-workspace-page .cortex-layout.has-agent-panel > .cortex-agent-panel:not(.hidden) {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  gap: 6px !important;
+}
+.beast-workspace-page .cortex-layout.has-agent-panel .cortex-agent-panel > * {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  flex-shrink: 0 !important;
+}
+.beast-workspace-page .cortex-layout.has-agent-panel .cortex-agent-panel [data-ai-messages] {
+  flex: 1 1 0 !important;
+  min-height: 120px !important;
+  max-height: none !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+}
+/* Tool rows stay in the conversation flow; expansion never takes ownership of
+   the entire pane. The message stream remains the only main scroller. */
+.beast-workspace-page .cortex-agent-panel .cortex-ai-trace > div {
+  max-height: min(260px, 35vh) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+.beast-workspace-page .cortex-agent-panel .cortex-agent-message,
+.beast-workspace-page .cortex-agent-panel .cortex-ai-proposal {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.beast-workspace-page .cortex-agent-panel .cortex-ai-message-body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+/* Keep the composer below conversation without clipping or moving to the page. */
+.beast-workspace-page .cortex-agent-panel [data-ai-prompt] {
+  box-sizing: border-box;
+  min-height: 62px !important;
+  max-height: 96px !important;
+  flex: 0 0 auto !important;
+}
+.beast-workspace-page .cortex-agent-panel .cortex-agent-actions {
+  flex: 0 0 auto !important;
+  max-height: 92px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+/* Compact optional status surfaces, without hiding any run evidence. */
+.beast-workspace-page .cortex-agent-panel .cortex-ai-context-body { max-height: 88px !important; overflow-y: auto; }
+.beast-workspace-page .cortex-agent-panel .cortex-ai-cockpit { gap: 2px !important; padding: 4px 7px !important; margin: 0 !important; }
+.beast-workspace-page .cortex-agent-panel .cortex-ai-mode-description { min-height: 0 !important; }
+@media (max-width: 700px) {
+  .beast-workspace-page .cortex-layout.has-agent-panel > .cortex-agent-panel:not(.hidden) {
+    min-height: 500px !important;
+  }
+}

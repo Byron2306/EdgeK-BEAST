@@ -21,6 +21,10 @@ class ToolEffect(str, Enum):
     PROMOTION = "promotion"
 
 
+def is_read_only_run(run: dict[str, Any]) -> bool:
+    return str(run.get("mode") or "").strip().lower() in {"analysis", "chat", "ask"}
+
+
 ToolHandler = Callable[[dict[str, Any], "ToolExecutionContext"], Awaitable[dict[str, Any]]]
 
 

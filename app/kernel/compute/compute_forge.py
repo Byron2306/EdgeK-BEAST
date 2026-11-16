@@ -519,9 +519,11 @@ class ComputeForgeNode:
             "candidate_name": candidate_name,
             "task_class": task_class,
             "transform_type": transform_type,
-            "hidden_test_pass": True,
-            "rollback_pass": True,
-            "behavior_preserved": True,
+            "hidden_test_pass": None,
+            "rollback_pass": None,
+            "behavior_preserved": None,
+            "verification_status": "unverified",
+            "verification_reason": "no_executed_checks_or_attested_receipts",
             "timestamp": self.profile.last_activity_at,
         }
         self._credits_earned.append(verification)

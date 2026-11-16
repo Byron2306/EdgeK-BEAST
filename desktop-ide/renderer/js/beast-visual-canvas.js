@@ -60,11 +60,8 @@
     if (!canvas || canvas.dataset.visualMounted === 'true') return () => {};
     canvas.dataset.visualMounted='true';
     const host=canvas.parentElement;
-    let raf=0, resizeRaf=0, disposed=false, last=performance.now();
-    const observer=new ResizeObserver(() => {
-      cancelAnimationFrame(resizeRaf);
-      resizeRaf=requestAnimationFrame(() => { resizeRaf=0; if(!disposed) fitCanvas(canvas); });
-    }); observer.observe(host);
+    let raf=0, disposed=false, last=performance.now();
+    const observer=new ResizeObserver(() => fitCanvas(canvas)); observer.observe(host);
 
     function routeFrame(now) {
       if (disposed) return;
@@ -119,7 +116,7 @@
 
     const frame = mode==='route'?routeFrame:mode==='orbit'?orbitFrame:memoryFrame;
     frame(last);
-    const disposer=()=>{disposed=true;cancelAnimationFrame(raf);cancelAnimationFrame(resizeRaf);observer.disconnect();canvas.dataset.visualMounted='false';active.delete(disposer);};
+    const disposer=()=>{disposed=true;cancelAnimationFrame(raf);observer.disconnect();canvas.dataset.visualMounted='false';active.delete(disposer);};
     active.add(disposer);return disposer;
   }
 

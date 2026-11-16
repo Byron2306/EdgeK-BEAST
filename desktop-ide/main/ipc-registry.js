@@ -52,6 +52,21 @@ function registerIpcHandlers({
     return listener(event, ...args);
   });
 
+  // Read-only loopback inventory. No inference, model pulls or mutation.
+  handle('beast:ollama-models', async () => {
+    const http = require('node:http');
+    return await new Promise(resolve => {
+      const req = http.get({hostname:'127.0.0.1',port:11434,path:'/api/tags',timeout:4000}, res => {
+        if (res.statusCode !== 200) { res.resume(); resolve({ok:false,error:`Ollama HTTP ${res.statusCode}`}); return; }
+        let body='';
+        res.setEncoding('utf8');
+        res.on('data', chunk => { body += chunk; if (body.length > 1048576) req.destroy(new Error('Ollama inventory too large')); });
+        res.on('end', () => { try { const data=JSON.parse(body); resolve({ok:Array.isArray(data.models),models:Array.isArray(data.models)?data.models:[],error:Array.isArray(data.models)?'':'Invalid Ollama inventory'}); } catch (_) { resolve({ok:false,error:'Invalid Ollama JSON'}); } });
+      });
+      req.on('timeout', () => req.destroy(new Error('Ollama inventory timeout')));
+      req.on('error', error => resolve({ok:false,error:String(error.message || error)}));
+    });
+  });
   handle('beast:workspace-trust-get', async (_event, payload) => workspaceTrustHost.snapshot(payload?.workspaceRoot));
   handle('beast:workspace-trust-set', async (_event, payload) => workspaceTrustHost.setMode(payload || {}));
   const settingsProfileHost = createSettingsProfileHost({ workspaceRoot: () => workspaceStateHost.getActiveWorkspaceRoot() || repoRoot });

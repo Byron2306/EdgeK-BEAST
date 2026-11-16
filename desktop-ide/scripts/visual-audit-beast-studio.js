@@ -101,6 +101,12 @@ function quickFiles(root, limit = 80) {
 }
 
 function registerIpc() {
+  const workspaceDebugPath = path.join(outDir, 'workspace-debug.jsonl');
+  ipcMain.handle('beast:workspace-debug-log', async (_event, payload = {}) => {
+    fs.appendFileSync(workspaceDebugPath, `${JSON.stringify(payload)}\n`);
+    return { ok: true, path: workspaceDebugPath };
+  });
+  ipcMain.handle('beast:workspace-debug-path', async () => ({ ok: true, path: workspaceDebugPath }));
   let protocolSequence=0;
   let zoomLevel=0;
   const editorDocuments = new Map();

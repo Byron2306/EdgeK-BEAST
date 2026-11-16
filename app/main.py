@@ -124,6 +124,7 @@ from app.kernel.compute.crystal_reuse_gateway import CrystalReuseDecision, Cryst
 from app.kernel.compute.integration_harness import BeastHarnessRequest, BeastIntegrationHarness
 from app.kernel.compute.integration_acceptance import CrystalIntegrationAcceptanceHarness
 from app.kernel.compute.nim_live_probe import NvidiaNIMLiveProbe
+from app.kernel.compute.nim_picker import verify_hosted_nemotron
 from app.kernel.compute.public_benchmark_grading_daemon import PublicBenchmarkGradingDaemon
 from app.kernel.compute.local_execution_gateway import LocalExecutionGateway
 from app.kernel.compute.ollama_pressure_controller import OllamaPressureController
@@ -504,6 +505,20 @@ trust_domain_controller = TrustDomainController()
 _active_workspace_identity = discover_workspace_identity(_control_root, workspace_uuid=stable_workspace_uuid(_control_root))
 _control_manifest = load_byron_manifest(_control_root)
 workspace_identity_guard = WorkspaceIdentityGuard(_active_workspace_identity, mode=os.environ.get("BEAST_WORKSPACE_IDENTITY_MODE", "audit"))
+# Local enterprise configuration survives gateway and desktop restarts.
+_enterprise_config_path = beast_state_root / "remote-commons-lab" / "trust-commons" / "enterprise-config.json"
+try:
+    _enterprise_config = json.loads(_enterprise_config_path.read_text(encoding="utf-8"))
+except FileNotFoundError:
+    _enterprise_config = {}
+for _setting in (
+    "BEAST_COMMONS_TRUST_STORE", "BEAST_ARDA_APPRAISAL_PUBLIC_KEY",
+    "BEAST_ARDA_APPRAISAL_PRIVATE_KEY", "BEAST_ARDA_APPRAISAL_KEY_ID",
+    "BEAST_COMMONS_WITNESS_PRIVATE_KEY", "BEAST_COMMONS_WITNESS_AUTHORITY",
+):
+    if _enterprise_config.get(_setting) and not os.environ.get(_setting):
+        os.environ[_setting] = str(_enterprise_config[_setting])
+
 _arda_appraisal_key_path = os.environ.get("BEAST_ARDA_APPRAISAL_PUBLIC_KEY", "").strip()
 _arda_appraisal_private_key_path = os.environ.get("BEAST_ARDA_APPRAISAL_PRIVATE_KEY", "").strip()
 _remote_commons_signer = None
@@ -545,11 +560,25 @@ if _arda_appraisal_private_key_path:
         policy_generation=os.environ.get("BEAST_POLICY_GENERATION", "beast-policy:local-tpm-v1"),
         key_id=os.environ.get("BEAST_ARDA_APPRAISAL_KEY_ID", "arda-local-appraisal-v1"),
     )
+_commons_witness_signer = None
+_commons_witness_key_path = os.environ.get("BEAST_COMMONS_WITNESS_PRIVATE_KEY", "").strip()
+_commons_witness_authority = os.environ.get("BEAST_COMMONS_WITNESS_AUTHORITY", "").strip()
+if _commons_witness_key_path:
+    if not _commons_witness_authority:
+        raise RuntimeError("Commons witness signing requires an explicit authority")
+    _commons_witness_signer = serialization.load_pem_private_key(
+        Path(_commons_witness_key_path).expanduser().read_bytes(), password=None,
+    )
+    if not isinstance(_commons_witness_signer, Ed25519PrivateKey):
+        raise RuntimeError("Commons witness signing key must be Ed25519")
+
 commons_enterprise_plane = CommonsEnterprisePlane(
     beast_state_root / "commons-enterprise",
     signature_verifier=_commons_trust_store.verify if _commons_trust_store else None,
     appraisal_verifier=_arda_appraisal_verifier,
     node_attestation_verifier=_arda_node_attestation_verifier,
+    witness_signer=_commons_witness_signer,
+    witness_authority=_commons_witness_authority,
     tpm_appraisal_issuer=_arda_tpm_appraisal_issuer,
 )
 _remote_commons_client_key = (
@@ -573,6 +602,13 @@ _remote_commons_lattice_trust = (
 _remote_commons_allowed_hosts = os.environ.get("BEAST_COMMONS_REMOTE_ALLOWED_HOSTS", "").strip()
 if not _remote_commons_allowed_hosts:
     _remote_commons_allowed_hosts = ",".join(str(item) for item in (_remote_commons_client_config.get("allowed_hosts") or ()))
+try:  # Phase 3 D3.3: signed Docker custody records, default off (BEAST_COMMONS_CUSTODY_SIGNING_KEY)
+    from app.kernel.commons.docker_custody import attestor_from_environment as _custody_from_env
+
+    _commons_custody_attestor = _custody_from_env()
+except Exception as _custody_error:  # misconfigured custody never blocks the gateway; health shows no custody
+    logger.warning("Commons custody attestor disabled: %s", type(_custody_error).__name__)
+    _commons_custody_attestor = None
 remote_commons_gateway = RemoteCommonsGateway(
     RemoteCommonsRegistry(beast_state_root / "commons-remote" / "nodes.sqlite3"),
     CommonsEgressGate(
@@ -586,6 +622,7 @@ remote_commons_gateway = RemoteCommonsGateway(
     arda_public_key=_arda_appraisal_verifier.public_key if _arda_appraisal_verifier else None,
     lattice_trust_store=_remote_commons_lattice_trust,
     discovery_catalog=CommonsDiscoveryCatalog(beast_state_root / "commons-remote" / "discovery.sqlite3"),
+    custody=_commons_custody_attestor,
 )
 
 # The Electron renderer has a null origin when loaded from file://. Keep the
@@ -1004,141 +1041,6 @@ async def edgek_control_plane_commons_validate_space(payload: Dict[str, Any] = N
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
-def _require_local_commons_operator(request: Request) -> None:
-    host = str(request.client.host if request.client else "")
-    if host not in {"127.0.0.1", "::1", "localhost", "testclient"}:
-        raise HTTPException(status_code=403, detail="remote Commons management is restricted to the local BEAST operator boundary")
-
-
-@app.get("/edgek/control-plane/commons/remote")
-async def edgek_control_plane_commons_remote_snapshot():
-    return remote_commons_gateway.snapshot()
-
-
-@app.get("/edgek/control-plane/commons/remote/discovery")
-async def edgek_control_plane_commons_remote_discovery_snapshot():
-    if remote_commons_gateway.discovery_catalog is None:
-        raise HTTPException(status_code=503, detail="Commons discovery catalog is not configured")
-    return remote_commons_gateway.discovery_catalog.snapshot()
-
-
-@app.post("/edgek/control-plane/commons/remote/discovery")
-async def edgek_control_plane_commons_remote_discover_nodes(request: Request, payload: Dict[str, Any] = None):
-    _require_local_commons_operator(request)
-    payload = payload or {}
-    origins = payload.get("origins") or []
-    if isinstance(origins, str):
-        origins = [origins]
-    if not isinstance(origins, list) or not origins or len(origins) > 50:
-        raise HTTPException(status_code=422, detail="origins must contain 1 to 50 endpoint origins")
-    try:
-        return await remote_commons_gateway.discover_origins(
-            tuple(str(item) for item in origins),
-            source=str(payload.get("source") or "well_known"),
-            auto_register=bool(payload.get("auto_register", True)),
-        )
-    except (PermissionError, ValueError, TypeError) as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-
-
-@app.post("/edgek/control-plane/commons/remote/nodes", status_code=201)
-async def edgek_control_plane_commons_remote_register_node(request: Request, payload: Dict[str, Any] = None):
-    _require_local_commons_operator(request)
-    payload = payload or {}
-    try:
-        node = remote_commons_gateway.register(
-            node_id=str(payload.get("node_id") or ""),
-            endpoint=str(payload.get("endpoint") or ""),
-            node_public_key=str(payload.get("node_public_key") or ""),
-            expected_workload_digest=str(payload.get("expected_workload_digest") or ""),
-            require_arda=bool(payload.get("require_arda", False)),
-            trust_policy=str(payload.get("trust_policy") or "lattice"),
-            expected_policy_generation=str(payload.get("expected_policy_generation") or ""),
-        )
-        return {"status": "registered", "node": node, "next": "probe"}
-    except PermissionError as exc:
-        raise HTTPException(status_code=403, detail=str(exc)) from exc
-    except (TypeError, ValueError) as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-
-
-@app.post("/edgek/control-plane/commons/remote/nodes/{node_id}/probe")
-async def edgek_control_plane_commons_remote_probe_node(node_id: str, request: Request):
-    _require_local_commons_operator(request)
-    try:
-        result = await remote_commons_gateway.probe(node_id)
-    except LookupError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    if not result.get("ok"):
-        raise HTTPException(status_code=424, detail=result)
-    return result
-
-
-@app.get("/edgek/control-plane/commons/remote/nodes/{node_id}/buckets")
-async def edgek_control_plane_commons_remote_list_buckets(node_id: str):
-    try:
-        return await remote_commons_gateway.list_buckets(node_id)
-    except LookupError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    except PermissionError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
-    except Exception as exc:
-        raise HTTPException(status_code=502, detail=str(exc)) from exc
-
-
-@app.post("/edgek/control-plane/commons/remote/nodes/{node_id}/buckets", status_code=201)
-async def edgek_control_plane_commons_remote_create_bucket(node_id: str, request: Request, payload: Dict[str, Any] = None):
-    _require_local_commons_operator(request)
-    try:
-        return await remote_commons_gateway.create_bucket(node_id, payload or {})
-    except LookupError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    except PermissionError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
-    except Exception as exc:
-        raise HTTPException(status_code=502, detail=str(exc)) from exc
-
-
-@app.get("/edgek/control-plane/commons/remote/nodes/{node_id}/buckets/{owner}/{name}/revisions")
-async def edgek_control_plane_commons_remote_list_revisions(node_id: str, owner: str, name: str):
-    try:
-        return await remote_commons_gateway.list_revisions(node_id, owner=owner, name=name)
-    except LookupError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    except PermissionError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
-    except Exception as exc:
-        raise HTTPException(status_code=502, detail=str(exc)) from exc
-
-
-@app.post("/edgek/control-plane/commons/remote/nodes/{node_id}/buckets/{owner}/{name}/revisions/{revision}/import")
-async def edgek_control_plane_commons_remote_import_revision(node_id: str, owner: str, name: str, revision: str, request: Request):
-    _require_local_commons_operator(request)
-    try:
-        remote, blobs = await remote_commons_gateway.pull_revision(
-            node_id, owner=owner, name=name, revision=revision,
-        )
-        admission, evidence = commons_enterprise_plane.admit_remote_revision(
-            node_id,
-            remote,
-            blobs,
-            workspace_id=request.headers.get("x-beast-workspace-identity", ""),
-        )
-        return {
-            "status": "quarantined_hypothesis",
-            "admission": admission,
-            "evidence_node_id": evidence.node_id,
-            "next": "run node-local held-out reproduction before promotion",
-        }
-    except LookupError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    except PermissionError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
-    except (TypeError, ValueError) as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-    except Exception as exc:
-        raise HTTPException(status_code=502, detail=str(exc)) from exc
-
 @app.get("/edgek/control-plane/tool-buckets")
 async def edgek_control_plane_tool_buckets(phase: str = "Observe", risk: str = "low"):
     tools = [{"name": "workspace.read", "bucket": "Observe"}, {"name": "sourceplan.verify", "bucket": "Verify"}, {"name": "sourceplan.apply", "bucket": "Modify"}, {"name": "provider.call", "bucket": "Connect"}, {"name": "terminal.execute", "bucket": "Execute"}, {"name": "policy.admin", "bucket": "Administer"}]
@@ -1175,6 +1077,7 @@ async def edgek_control_plane_desktop_compatibility():
         "/edgek/agent-runs/{run_id}/events",
     )
     registered={getattr(route,"path","") for route in app.routes}
+    registered.update(app.openapi().get("paths", {}))
     checks={path:path in registered for path in required}
     return {"contract":"beast-desktop-enterprise-v1","status":"ready" if all(checks.values()) else "incomplete","checks":checks,"gateway":{"hostname":"beast.test","upstream":control_service_registry.services["beast"].upstream,"registry_digest":control_service_registry.digest()},"workspace_identity_digest":_active_workspace_identity.digest()}
 
@@ -1471,6 +1374,13 @@ async def edgek_providers_state():
     """Return provider integration readiness without exposing secrets."""
     import os
     registry = provider_registry.records(include_disabled=True)
+    def credentials_ready(record):
+        alternatives = (record.metadata or {}).get("env_alternatives") or []
+        alternative_names = {name for group in alternatives for name in group}
+        direct = [name for name in record.env if name not in alternative_names]
+        return all(bool(os.environ.get(name)) for name in direct) and all(
+            any(bool(os.environ.get(name)) for name in group) for group in alternatives
+        )
     return {
         "providers": {
             record.provider_id: {
@@ -1483,10 +1393,7 @@ async def edgek_providers_state():
             }
             for record in registry
         },
-        "credentials": {
-            provider: bool(os.environ.get(env_name))
-            for provider, env_name in PROVIDER_ENV.items()
-        },
+        "credentials": {record.provider_id: credentials_ready(record) for record in registry},
         "runtime_urls": {
             "hf_inference_base_url": os.environ.get("HF_INFERENCE_BASE_URL", "https://router.huggingface.co/v1"),
             "tgi_base_url": os.environ.get("TGI_BASE_URL", "http://127.0.0.1:3000"),
@@ -1494,6 +1401,21 @@ async def edgek_providers_state():
             "gemini_base_url": os.environ.get("GEMINI_BASE_URL", "https://generativelanguage.googleapis.com"),
         },
     }
+
+
+@app.get("/edgek/ide/model-inventory")
+async def edgek_ide_model_inventory():
+    """Return selectable governed lanes for the IDE. Keys are never included."""
+    from app.kernel.compute.ide_model_inventory import build_inventory
+    return build_inventory()
+
+
+@app.post("/edgek/ide/model-route")
+async def edgek_ide_model_route(payload: Dict[str, Any] = None):
+    """Resolve Auto or an explicit lane through the governed client; optional cheap local call."""
+    from app.kernel.compute.ide_model_inventory import resolve_and_optionally_call
+    return await resolve_and_optionally_call(payload or {})
+
 
 @app.post("/edgek/agent-passport/workload-certificate")
 async def edgek_agent_passport_workload_certificate(payload: Dict[str, Any] = None):
@@ -1556,6 +1478,40 @@ async def edgek_provider_secret_route_status(provider_id: str):
         "status": status,
         "claim_boundary": "Secret readiness is evaluated for the selected route, not every possible cloud provider.",
     }
+
+@app.post("/edgek/providers/secrets/set")
+async def edgek_provider_secret_set(payload: Dict[str, Any]):
+    """Store one selected provider secret in the local redacted vault."""
+    payload = payload or {}
+    provider_id = str(payload.get("provider_id") or "").lower().replace("-", "_")
+    env_name = str(payload.get("env_name") or "").strip()
+    value = payload.get("value")
+    records = {record.provider_id: record for record in provider_registry.records(include_disabled=True)}
+    record = records.get(provider_id)
+    if not record:
+        raise HTTPException(status_code=404, detail="provider not found")
+    if env_name not in record.env:
+        raise HTTPException(status_code=400, detail="environment name is not accepted by this provider")
+    try:
+        result = secret_vault.set_secret(env_name, str(value or ""))
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    # Never return the submitted value; route readiness is the only useful UI signal.
+    result["provider_id"] = provider_id
+    return result
+
+@app.post("/edgek/providers/nvidia-nim/verify-picker-model")
+async def edgek_verify_nim_picker_model(payload: Dict[str, Any] = None):
+    """Verify the exact hosted picker model without sending workspace content."""
+    if (payload or {}).get("confirm_live") is not True:
+        raise HTTPException(status_code=400, detail="confirm_live=true is required")
+    record = next((item for item in provider_registry.records(include_disabled=True)
+                   if item.provider_id == "nvidia_nim"), None)
+    if not record or not record.enabled:
+        raise HTTPException(status_code=409, detail="Hosted NVIDIA NIM is disabled")
+    async with httpx.AsyncClient(timeout=18.0) as client:
+        return await verify_hosted_nemotron(client, os.environ.get("NVIDIA_API_KEY", "").strip())
+
 
 @app.post("/edgek/providers/nvidia-nim/live-smoke")
 async def edgek_nvidia_nim_live_smoke(payload: Dict[str, Any] = None):
@@ -4960,6 +4916,14 @@ async def edgek_crystal_lattice_state():
     return crystal_lattice_ledger.state()
 
 
+@app.get("/edgek/crystal-lattice/spine")
+async def edgek_crystal_lattice_spine():
+    """Read-only Lattice Spine view: admitted/demoted crystals, composites and their witnessed edges."""
+    from app.kernel.compute.crystal_lattice_spine import spine_state
+
+    return spine_state(Path(__file__).resolve().parents[1])
+
+
 @app.post("/edgek/crystal-lattice/checkpoint")
 async def edgek_crystal_lattice_checkpoint(payload: Dict[str, Any] = None):
     """Append the latest vector/matrix lattice heads to the append-only ledger."""
@@ -6137,8 +6101,16 @@ def _dedupe_routes_keep_first() -> None:
     seen = set()
     deduped = []
     for route in app.router.routes:
+        path = getattr(route, "path", None)
+
+        # FastAPI 0.143 represents included routers as deferred objects.
+        # They have no concrete path. Preserve each registration.
+        if path is None:
+            deduped.append(route)
+            continue
+
         methods = tuple(sorted(getattr(route, "methods", []) or []))
-        key = (getattr(route, "path", ""), methods)
+        key = (path, methods)
         if key in seen:
             continue
         seen.add(key)

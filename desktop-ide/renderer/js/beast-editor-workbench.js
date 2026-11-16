@@ -68,7 +68,7 @@
       window.BeastStore?.patch?.('editor', { owner: 'workbench-fallback' });
       return;
     }
-    const editor = api.editor.create(host, {theme:'beast-phase2',automaticLayout:true,minimap:{enabled:true,side:'right',showSlider:'mouseover',renderCharacters:false},fontSize:13,fontFamily:'JetBrains Mono, Cascadia Code, monospace',lineNumbers:'on',scrollBeyondLastLine:false,wordWrap:'off',glyphMargin:true,padding:{top:9,bottom:10},cursorBlinking:'phase',bracketPairColorization:{enabled:true},guides:{bracketPairs:true,indentation:true}});
+    const editor = api.editor.create(host, {theme:'beast-phase2',automaticLayout:true,minimap:{enabled:true,side:'right',size:'proportional',maxColumn:80,showSlider:'mouseover',renderCharacters:false},fontSize:14,lineHeight:22,letterSpacing:0.3,fontFamily:'JetBrains Mono, Cascadia Code, monospace',fontLigatures:true,lineNumbers:'on',scrollBeyondLastLine:false,wordWrap:'off',renderLineHighlight:'all',glyphMargin:true,padding:{top:9,bottom:10},cursorBlinking:'phase',bracketPairColorization:{enabled:true},guides:{bracketPairs:true,indentation:true}});
     api.editor.setTheme('beast-phase2');
     editors.set(groupId, editor);
     editor.setModel(model);

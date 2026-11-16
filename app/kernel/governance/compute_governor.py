@@ -40,6 +40,7 @@ class ComputeGovernor:
         reuse_engine: VerifiedReuseEngine = None,
         adaptive_controller: AdaptiveInferenceController = None,
         engine_fabric: InferenceEngineFabric = None,
+        spine: Any = None,
     ) -> None:
         configured = mode if mode is not None else os.environ.get("BEAST_COMPUTE_GOVERNOR_MODE", "shadow")
         allowed_modes = {"shadow", "phase2_shadow", "phase2_enforce", "phase3_enforce", "phase4_enforce"}
@@ -48,6 +49,7 @@ class ComputeGovernor:
         else:
             self.mode = configured
         self.allowlist = allowlist or Phase2Allowlist()
+        self.spine = spine  # Compute Governor spine (governor_spine.ComputeGovernorSpine); built lazily
         self.reuse_engine = reuse_engine or VerifiedReuseEngine()
         self.adaptive_controller = adaptive_controller or AdaptiveInferenceController()
         self.engine_fabric = engine_fabric or InferenceEngineFabric()
@@ -158,7 +160,19 @@ class ComputeGovernor:
             budgets=budgets, created_at=created_at, plan_hash=plan_hash,
         )
 
-    def evaluate(self, plan: ComputePlan) -> ComputeGateDecision:
+    def _spine_admission(self, plan: ComputePlan, *, ambiguous: bool, quality_cascade: Optional[Dict[str, Any]]):
+        from app.kernel.governance.governor_spine import ComputeGovernorSpine, Episode, Proposal, unified_limits
+
+        if self.spine is None:
+            self.spine = ComputeGovernorSpine()  # in-memory receipts; enforcement from BEAST_GOVERNOR_ENFORCE
+        episode = Episode(run_id=plan.plan_id, limits=unified_limits(plan.budgets))
+        proposal = Proposal(kind="cloud", provider=plan.provider, ambiguous=ambiguous,
+                            quality_cascade=quality_cascade,
+                            estimate={"cloud_calls": 1.0,
+                                      "tokens_total": float(plan.estimated_input_tokens + plan.requested_output_tokens)})
+        return self.spine.admit(episode, proposal)
+
+    def evaluate(self, plan: ComputePlan, quality_cascade: Optional[Dict[str, Any]] = None) -> ComputeGateDecision:
         avoidable = list(plan.deterministic_candidates)
         if plan.reuse_candidates:
             avoidable.append("possible_verified_reuse")
@@ -238,13 +252,20 @@ class ComputeGovernor:
                     f"{recommended_decision}, but shadow mode preserves provider execution."
                 )
 
+        # Compute Governor spine is the arbiter: allowed derives from admit when enforcement is on; in
+        # shadow mode the admission is computed and receipted but never suppresses (IEI Table 3 redline).
+        admission = self._spine_admission(plan, ambiguous=ambiguous, quality_cascade=quality_cascade)
+        allowed = admission.permits()
+        if not allowed:
+            decision, enforced, selected_rung = admission.gate_decision(), True, "escalate"
+            reason = f"Compute Governor spine {admission.outcome}: {', '.join(admission.reasons)}"
         return ComputeGateDecision(
             gate_id="cgate_" + uuid.uuid4().hex[:20],
             plan_id=plan.plan_id,
             mode=self.mode,
             decision=decision,
             candidate_decision=candidate_decision,
-            allowed=True,
+            allowed=allowed,
             enforced=enforced,
             confidence=confidence,
             ambiguous=ambiguous,
@@ -254,6 +275,7 @@ class ComputeGovernor:
             reason=reason,
             predicted_avoidable_work=avoidable,
             created_at=self._now(),
+            governor=admission.to_dict(),
         )
 
     def route_adaptively(

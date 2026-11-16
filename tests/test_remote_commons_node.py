@@ -50,6 +50,8 @@ async def test_remote_commons_bucket_blob_revision_and_signed_receipt(tmp_path):
         node_response = await client.get("/v1/node")
         node_document = node_response.json()
         descriptor = node_document["descriptor"]
+        subject = {key: descriptor[key] for key in ("node_id", "workload_digest", "node_public_key", "protocol", "capabilities", "maximum_authority")}
+        assert descriptor["attestation_subject_digest"] == sha256_bytes(canonical_json(subject))
         node_key.public_key().verify(
             base64.b64decode(node_document["node_signature"]),
             canonical_json(descriptor),
@@ -194,10 +196,14 @@ async def test_remote_commons_ml_kem_challenge_confirms_decapsulation_without_se
         arda_appraisal={},
     ))
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://commons") as client:
+        initial_descriptor = (await client.get("/v1/node")).json()["descriptor"]
         key_response = await client.get("/v1/ml-kem/key")
         assert key_response.status_code == 200
         key_payload = key_response.json()
         document = key_payload["document"]
+        final_descriptor = (await client.get("/v1/node")).json()["descriptor"]
+        assert final_descriptor["attestation_subject_digest"] == initial_descriptor["attestation_subject_digest"]
+        assert final_descriptor["ml_kem_public_key_digest"] == document["public_key_digest"]
         assert document["algorithm"] == "ML-KEM-768"
         assert document["secret_exported"] is False
         node_key.public_key().verify(

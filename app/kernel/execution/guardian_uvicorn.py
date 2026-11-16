@@ -183,6 +183,39 @@ def build_guardian_client_from_environment(
     }
 
 
+def topology_expectations(service_id: str, environment: Mapping[str, str] | None = None) -> dict[str, Any]:
+    """Port and registry digest the topology contract assigns to ``service_id`` (Phase 3 Task 3).
+
+    Sources default to the repository's registry, lab manifest and Compose file; ``BEAST_GUARDIAN_SERVICE_REGISTRY``,
+    ``BEAST_GUARDIAN_LAB_MANIFEST``, ``BEAST_GUARDIAN_COMPOSE_BASE`` and ``BEAST_GUARDIAN_COMPOSE_OVERRIDE`` select a
+    lab profile (e.g. a spare-port registry). Drift or a non-Guardian service fails closed.
+    """
+    from app.kernel.networking.fabric_topology import FabricTopology, TopologyDriftError
+
+    env = os.environ if environment is None else environment
+    root = Path(__file__).resolve().parents[3]
+
+    def path(name: str, default: Path | None) -> Path | None:
+        raw = str(env.get(name) or "").strip()
+        return Path(os.path.expandvars(raw)).expanduser() if raw else default
+
+    try:
+        contract = FabricTopology.load(
+            services_path=path("BEAST_GUARDIAN_SERVICE_REGISTRY", root / ".byron" / "services.yaml"),
+            lab_manifest_path=path("BEAST_GUARDIAN_LAB_MANIFEST",
+                                   root / ".beast" / "remote-commons-lab" / "manifest.json"),
+            compose_base_path=path("BEAST_GUARDIAN_COMPOSE_BASE", root / "docker-compose.commons-lab.yml"),
+            compose_override_path=path("BEAST_GUARDIAN_COMPOSE_OVERRIDE", None),
+        ).guardian_bindings()
+    except TopologyDriftError as exc:
+        raise GuardianStartupError(f"Guardian consumer refuses to start on topology drift: {exc.findings}") from exc
+    if service_id not in contract["services"]:
+        raise GuardianStartupError(f"{service_id} is not a Guardian-owned service in the topology contract")
+    return {"expected_port": int(contract["services"][service_id]["port"]),
+            "expected_registry_digest": contract["registry_digest"],
+            "topology_digest": contract["topology_digest"]}
+
+
 def recover_named_listener(
     client: SocketGuardianClient,
     *,
@@ -190,6 +223,8 @@ def recover_named_listener(
     workspace_id: str,
     policy_generation: str,
     appraisal_ref: str,
+    expected_port: int | None = None,
+    expected_registry_digest: str = "",
 ):
     candidates = [
         lease for lease in client.snapshot()
@@ -210,6 +245,12 @@ def recover_named_listener(
     lease = candidates[0]
     if lease.protocol != "TCP":
         raise GuardianStartupError("ASGI HTTP startup requires a Guardian-owned TCP listener")
+    if expected_port is not None and int(lease.port) != int(expected_port):
+        raise GuardianStartupError(
+            f"Guardian lease port {lease.port} for {service_id} disagrees with the topology contract ({expected_port})"
+        )
+    if expected_registry_digest and lease.registry_digest != expected_registry_digest:
+        raise GuardianStartupError("Guardian lease registry digest disagrees with the topology contract")
     recovered, held, receipt = client.recover(
         lease.lease_id,
         workspace_id=workspace_id,
@@ -277,12 +318,15 @@ def run_uvicorn_with_guardian(
 
     import uvicorn
 
+    expected_port = binding.get("expected_port")
     lease, held, receipt = recover_named_listener(
         client,
         service_id=service_id,
         workspace_id=str(binding["workspace_id"]),
         policy_generation=str(binding["policy_generation"]),
         appraisal_ref=str(binding["appraisal_ref"]),
+        expected_port=int(expected_port) if expected_port not in (None, "") else None,
+        expected_registry_digest=str(binding.get("expected_registry_digest") or ""),
     )
     os.environ["BEAST_ACTIVE_SERVICE_ID"] = service_id
     os.environ["BEAST_ACTIVE_PORT_LEASE_ID"] = lease.lease_id
@@ -347,6 +391,8 @@ def run_uvicorn_from_environment(
     log_level: str = "warning",
 ) -> None:
     client, binding = build_guardian_client_from_environment()
+    if str(os.environ.get("BEAST_GUARDIAN_TOPOLOGY_CHECK") or "1").strip() != "0":
+        binding = {**binding, **topology_expectations(service_id)}  # Task 3: lease must match the contract
     timeout = float(os.environ.get("BEAST_GUARDIAN_STARTUP_TIMEOUT") or 20.0)
     deadline = time.monotonic() + max(0.0, timeout)
     while True:

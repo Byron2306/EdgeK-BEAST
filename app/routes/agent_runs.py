@@ -41,6 +41,7 @@ from app.kernel.local.ollama_kv_manager import OllamaKVManager
 from app.kernel.agents.planner_provider import CallbackPlannerProvider, FallbackPlannerProvider, ScriptedPlannerProvider
 from app.kernel.agents.planner_resilience import build_resilient_nim_provider, build_resilient_ollama_provider
 from app.kernel.agents.planner_runtime import AgentPlannerRuntime
+from app.kernel.compute.coding_crystal_runtime import planner_runtime_extras
 from app.kernel.agents.promotion_engine import PromotionEngine
 from app.kernel.evidence.evidence_builder import EvidenceBuilder
 from app.kernel.evidence.evidence_store import EvidenceStore
@@ -296,7 +297,8 @@ async def _execute_planner_run(
             return "".join(parts)
 
         provider = CallbackPlannerProvider(_next)
-    runtime = AgentPlannerRuntime(engine, provider, max_turns=max_turns)
+    # Reviewed coding crystals: empty unless BEAST_CODING_CRYSTALS=1 and the ARDA runtime key is sound.
+    runtime = AgentPlannerRuntime(engine, provider, max_turns=max_turns, **planner_runtime_extras(root))
     try:
         await runtime.run(run_id)
     except asyncio.CancelledError:

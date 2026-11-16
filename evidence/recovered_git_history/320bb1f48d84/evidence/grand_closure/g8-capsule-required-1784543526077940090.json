@@ -1,0 +1,78 @@
+{
+  "authority": "policy_and_enforcement_only",
+  "cases": [
+    {
+      "capsule_attempted": true,
+      "capsule_verified": true,
+      "expected": "capsule_success",
+      "fallback_used": false,
+      "legacy_executed": false,
+      "name": "lawful_capsule_success",
+      "observed": "capsule_success",
+      "passed": true,
+      "physical_effects": 1,
+      "receipt_digest": "sha256:38f29037555aac4a4dfede2244a8c3c50c227c163dbcc3204f61a30713fd71ae",
+      "task_class": "read_only_repo_inspection"
+    },
+    {
+      "capsule_attempted": true,
+      "capsule_verified": false,
+      "expected": "capsule_required_refusal",
+      "fallback_used": false,
+      "legacy_executed": false,
+      "name": "missing_capsule_refused",
+      "observed": "capsule_required_refusal",
+      "passed": true,
+      "physical_effects": 0,
+      "receipt_digest": "sha256:37fd5e9854b1a794ac5f076293057a4f5ce6bd1c360c5f9e72eadd282abbd908",
+      "task_class": "read_only_repo_inspection"
+    },
+    {
+      "capsule_attempted": true,
+      "capsule_verified": false,
+      "expected": "capsule_required_refusal",
+      "fallback_used": false,
+      "legacy_executed": false,
+      "name": "unverified_capsule_refused",
+      "observed": "capsule_required_refusal",
+      "passed": true,
+      "physical_effects": 0,
+      "receipt_digest": "sha256:cfc0c2894b44e789f840cc967f4342c0d6f87362601f3321f570da2ff58e89fc",
+      "task_class": "read_only_repo_inspection"
+    },
+    {
+      "capsule_attempted": false,
+      "capsule_verified": false,
+      "expected": "outside_canary",
+      "fallback_used": false,
+      "legacy_executed": true,
+      "name": "unrelated_class_unchanged",
+      "observed": "outside_canary",
+      "passed": true,
+      "physical_effects": 0,
+      "receipt_digest": "sha256:dfdd3c8e5e93a5489eda6bff7b4b295e7ee539f56abb54a9df98fbc7609558cb",
+      "task_class": "bounded_formatting"
+    }
+  ],
+  "closure_digest": "sha256:b3cf431ad587ea017c14fa3bbe452dd09e042a798c43142c9f513c8549b28a5d",
+  "enforced_task_class": "read_only_repo_inspection",
+  "event_count": 2,
+  "lawful_capsule_success": true,
+  "legacy_fallback_prohibited": true,
+  "missing_capsule_refused": true,
+  "promotion": {
+    "enforced_mode": "capsule_required",
+    "fallback_allowed": false,
+    "operator_approval_digest": "sha256:10de7a747e6546a209def32c966683441aff11a90963ff485ff9592caa8b671d",
+    "policy_digest": "sha256:dfe48c225d78a05680adb5af86534144266535f6dcc797ccf925cb9c931872db",
+    "previous_mode": "capsule_primary",
+    "promoted_at_ns": 1784543526077625055,
+    "promotion_digest": "sha256:a10864d4ca2be1fdc311b7631dd11e55665b9b3a1b4d45540b2d11276b1c29d6",
+    "rollback_mode": "capsule_primary",
+    "task_class": "read_only_repo_inspection"
+  },
+  "raw_payload_retained": false,
+  "status": "closed",
+  "unrelated_class_unchanged": true,
+  "unverified_capsule_refused": true
+}

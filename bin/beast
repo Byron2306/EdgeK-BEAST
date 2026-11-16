@@ -73,6 +73,13 @@ def _bootstrap_tui_runtime() -> None:
 
 _bootstrap_tui_runtime()
 
+# A symlinked CLI must not import project modules from a random PATH Python.
+# Resolve the runtime before ServiceFactory's eager imports, including doctor.
+if len(sys.argv) > 1 and sys.argv[1] not in {"--help", "-h", "gateway", "commons-gateway", "mcp-http", "crystal-proof", "ui"}:
+    project_python = ROOT / ".venv" / "bin" / "python"
+    if project_python.is_file() and Path(sys.prefix).absolute() != (ROOT / ".venv").absolute():
+        os.execve(str(project_python), [str(project_python), str(BEAST), *sys.argv[1:]], os.environ.copy())
+
 # Server commands import ``app.main`` (or ``app.commons_main``), which owns
 # service construction.  Initialising the factory here as well can contend
 # with the gateway's durable stores before Uvicorn has started, leaving a
@@ -80,7 +87,8 @@ _bootstrap_tui_runtime()
 # commands that need it, but let server processes initialise once in-app.
 _command_name = sys.argv[1] if len(sys.argv) > 1 else ""
 _lightweight_verify = _command_name == "verify" and len(sys.argv) > 2 and sys.argv[2] == "release-contract"
-if _command_name not in {"crystal-proof", "gateway", "commons-gateway", "mcp-http"} and not _lightweight_verify:
+_help_requested = any(arg in {"-h", "--help"} for arg in sys.argv[1:])
+if not _help_requested and _command_name not in {"crystal-proof", "gateway", "commons-gateway", "mcp-http"} and not _lightweight_verify:
     with contextlib.redirect_stdout(sys.stderr):
         from app.kernel.compute.factory import ServiceFactory
         ServiceFactory.initialize()
@@ -368,6 +376,13 @@ def spawn_daemon(name: str, command: list[str], pid_file: Path, log_file: Path, 
 def start_ollama_daemon(host: str = "127.0.0.1:11434") -> Dict[str, Any]:
     if url_ready(f"http://{host}/api/tags"):
         return {"service": "ollama", "status": "already_running", "base_url": f"http://{host}"}
+    from app.kernel.execution.heal_guard import ollama_is_system_service
+
+    system = ollama_is_system_service()
+    if system["system"]:
+        # Never spawn a second `ollama serve` next to the system service (it would fight it for the port and the GPU).
+        return {"service": "ollama", "status": "system_service_not_started", "base_url": f"http://{host}",
+                "unit_state": system["unit_state"], "operator_command": system["operator_command"]}
     command = ["ollama", "serve"]
     env = os.environ.copy()
     env.setdefault("OLLAMA_HOST", host)
@@ -836,10 +851,9 @@ def command_ide(args: argparse.Namespace) -> Dict[str, Any]:
     """Launch the Electron IDE with the same workspace and gateway contract."""
     workspace = Path(args.workspace or os.environ.get("BEAST_WORKSPACE") or ROOT).resolve()
     desktop = ROOT / "desktop-ide"
-    electron = desktop / "node_modules" / ".bin" / "electron"
     if not desktop.is_dir():
         return {"command": "ide", "ok": False, "error": f"Desktop IDE directory is missing: {desktop}"}
-    command = [str(electron), "."] if electron.exists() else ["npm", "start", "--"]
+    command = ["npm", "start"]
     preferred_gateway = getattr(args, "gateway_url", "") or os.environ.get("BEAST_DESKTOP_GATEWAY", "")
     gateway = discover_desktop_gateway(preferred_gateway)
     gateway_host, gateway_port = parse_host_port(gateway, registry_service_port("beast", 8102))
@@ -851,7 +865,7 @@ def command_ide(args: argparse.Namespace) -> Dict[str, Any]:
             litellm_port=registry_service_port("litellm", 4000),
             nginx_port=registry_service_port("reverse_proxy", 80),
             ollama_host=os.environ.get("OLLAMA_HOST", "127.0.0.1:11434"),
-            dry_run="false",
+            dry_run="true",  # beast ide only *reports* stack health; it never restarts or kills anything
             restart_all="false",
             kill_address_pids="false",
         ))
@@ -889,8 +903,14 @@ def stack_checks(host: str, gateway_port: int, mcp_port: int, litellm_port: int,
         "mcp_http": {"ok": url_ready(f"http://{host}:{mcp_port}/mcp/health", timeout=2.0)},
         "litellm": {"ok": url_ready(f"http://127.0.0.1:{litellm_port}/v1/models", timeout=2.0)},
         "ollama": {"ok": url_ready(f"http://{ollama_host}/api/tags", timeout=2.0)},
-        "nginx": {"ok": url_ready(f"http://127.0.0.1:{nginx_port}/health", timeout=2.0), "path": f"http://127.0.0.1:{nginx_port}/health"},
+        "nginx": _nginx_check(nginx_port),
     }
+
+
+def _nginx_check(port: int) -> Dict[str, Any]:
+    from app.kernel.execution.heal_guard import nginx_check
+
+    return nginx_check(port)
 
 
 def _atomic_json(path: Path, payload: Dict[str, Any]) -> None:
@@ -904,12 +924,17 @@ def _atomic_json(path: Path, payload: Dict[str, Any]) -> None:
 
 
 def command_heal(args: argparse.Namespace) -> Dict[str, Any]:
-    """Probe the local stack and recover BEAST services.
+    """Probe the local stack and recover BEAST-managed services -- SELECTIVE by default.
 
-    By default this is a real reset button: kill listeners on the configured
-    service ports, clear stale pid files, and restart the whole local stack.
-    Pass --restart-all false for the older selective recovery behavior.
+    Default: only BEAST-managed (pid-file) services that fail their probe are restarted; nothing is killed by port.
+    ``--restart-all true`` (explicit) also restarts healthy BEAST-managed services; ``--kill-address-pids true``
+    (explicit) additionally kills *unprotected* listeners on the configured ports.  Whatever the flags, heal never
+    stops, kills or restarts: 8101 (live gateway), 8131 (lab units), ARDA, seraph, the system Ollama service, docker /
+    system.slice / foreign-uid processes (``app.kernel.execution.heal_guard``); for those it reports the operator
+    command instead.  nginx is checked on :80 (``/health`` must be served by BEAST's generated config).
     """
+    from app.kernel.execution import heal_guard as guard
+
     host = str(args.host)
     gateway_port = int(args.gateway_port)
     mcp_port = int(args.mcp_port)
@@ -918,97 +943,104 @@ def command_heal(args: argparse.Namespace) -> Dict[str, Any]:
     ollama_host = str(args.ollama_host)
     ollama_listen_host, ollama_port = parse_host_port(ollama_host, 11434)
     dry_run = bool_value(getattr(args, "dry_run", "false"))
-    restart_all = bool_value(getattr(args, "restart_all", "true"))
-    kill_address_pids = bool_value(getattr(args, "kill_address_pids", "true"))
+    restart_all = bool_value(getattr(args, "restart_all", "false"))
+    kill_address_pids = bool_value(getattr(args, "kill_address_pids", "false"))
+    protected = guard.protected_ports()
     before = stack_checks(host, gateway_port, mcp_port, litellm_port, nginx_port, ollama_host)
+    ollama_sys = guard.ollama_is_system_service()
     actions: list[Dict[str, Any]] = []
 
-    def stop_known_managed() -> None:
-        for service, pid_name in (
-            ("gateway", "gateway.pid"),
-            ("mcp_http", "mcp-http.pid"),
-            ("litellm", "litellm.pid"),
-            ("ollama", "ollama.pid"),
-        ):
-            if dry_run:
-                actions.append({"service": service, "status": "would_stop_managed", "pid_file": str(run_dir() / pid_name)})
-            else:
-                actions.append(stop_managed_process(run_dir() / pid_name, service))
+    def operator(service: str, reason: str, command: str) -> Dict[str, Any]:
+        return {"service": service, "status": "protected_not_touched", "reason": reason, "operator_command": command}
 
-    def kill_known_addresses() -> None:
-        for service, listen_host, port in (
-            ("gateway", host, gateway_port),
-            ("mcp_http", host, mcp_port),
-            ("litellm", "127.0.0.1", litellm_port),
-            ("nginx", "127.0.0.1", nginx_port),
-            ("ollama", ollama_listen_host, ollama_port),
-        ):
-            actions.append(kill_listeners_on_port(service, listen_host, port, dry_run=dry_run))
+    gateway_cmd = (f"# BEAST gateway on :{gateway_port} is operator-owned; restart it yourself, e.g.\n"
+                   f"cd {ROOT} && .venv/bin/python -m uvicorn app.main:app --host {host} --port {gateway_port}")
 
-    def start_everything() -> None:
+    def guarded_stop(pid_name: str, service: str, port: int) -> Dict[str, Any]:
+        running, pid = pid_running(run_dir() / pid_name, service)
+        if running and pid is not None:
+            is_protected, reason = guard.pid_protection(pid, port=port)
+            if is_protected:
+                return {"service": service, "status": "protected_not_touched", "pid": pid, "reason": reason}
         if dry_run:
-            for service in ("ollama", "litellm", "gateway", "mcp_http", "nginx"):
-                actions.append({"service": service, "status": "would_restart"})
-            return
-        actions.append(start_ollama_daemon(ollama_host))
-        actions.append(start_litellm_daemon(litellm_port))
-        actions.append(start_gateway_daemon(host, gateway_port))
-        actions.append(start_mcp_http_daemon(host, mcp_port))
-        actions.append(ensure_nginx(nginx_port, apply=True))
+            return {"service": service, "status": "would_stop_managed" if running else "not_running", "pid": pid}
+        return stop_managed_process(run_dir() / pid_name, service)
 
-    if restart_all:
-        stop_known_managed()
+    def guarded_kill(service: str, listen_host: str, port: int) -> Dict[str, Any]:
+        pids = listening_pids_on_port(port)
+        allowed, refused = guard.filter_killable(pids, port=port)
+        payload: Dict[str, Any] = {"service": service, "address": f"{listen_host}:{int(port)}", "port": int(port),
+                                   "pids": allowed, "protected": refused}
+        if dry_run:
+            return {**payload, "status": "would_kill" if allowed else "nothing_killable"}
+        if not allowed:
+            return {**payload, "status": "nothing_killable"}
+        return {**payload, "status": "killed_address_pids", "kill": kill_pids(allowed)}
+
+    def needs(name: str) -> bool:
+        return restart_all or not before.get(name, {}).get("ok")
+
+    # -- Ollama: system service -> never started/stopped here ------------------------------------------------------------
+    if ollama_sys["system"] or ollama_port in protected:
+        if not before.get("ollama", {}).get("ok"):
+            actions.append(operator("ollama", "system_ollama_service", ollama_sys["operator_command"]))
+    elif needs("ollama"):
+        actions.append({"service": "ollama", "status": "would_restart"} if dry_run else start_ollama_daemon(ollama_host))
+
+    # -- LiteLLM / MCP HTTP: BEAST-managed, restart only when unhealthy (or --restart-all) ---------------------------------
+    for name, pid_name, port, starter in (("litellm", "litellm.pid", litellm_port, lambda: start_litellm_daemon(litellm_port)),
+                                         ("mcp_http", "mcp-http.pid", mcp_port, lambda: start_mcp_http_daemon(host, mcp_port))):
+        if port in protected:
+            if not before.get(name, {}).get("ok"):
+                actions.append(operator(name, f"protected_port:{port}", f"# restart {name} on :{port} yourself"))
+            continue
+        if not needs(name):
+            continue
+        stop = guarded_stop(pid_name, name, port)
+        if stop.get("status") == "protected_not_touched":
+            actions.append(stop)
+            continue
         if kill_address_pids:
-            kill_known_addresses()
-        start_everything()
-        after = before if dry_run else stack_checks(host, gateway_port, mcp_port, litellm_port, nginx_port, ollama_host)
-        ready = all(item.get("ok") for item in after.values())
-        payload = {
-            "command": "heal",
-            "mode": "full_restart",
-            "status": "dry_run" if dry_run else "healed" if ready else "attention",
-            "before": before,
-            "actions": actions,
-            "after": after,
-            "changed": bool(actions),
-            "timestamp": time.time(),
-        }
-        if not dry_run:
-            _atomic_json(run_dir() / "heal-report.json", payload)
-        return payload
+            actions.append(guarded_kill(name, "127.0.0.1" if name == "litellm" else host, port))
+        actions.append(stop)
+        actions.append({"service": name, "status": "would_restart", "healthy_before": bool(before.get(name, {}).get("ok"))}
+                       if dry_run else starter())
 
-    def recover(name: str, starter: Any, pid_name: Optional[str] = None) -> None:
-        if before.get(name, {}).get("ok"):
-            return
-        if dry_run:
-            actions.append({"service": name, "status": "would_restart"})
-            return
-        if pid_name:
-            actions.append(stop_managed_process(run_dir() / pid_name, name))
-        actions.append(starter())
-
-    recover("ollama", lambda: start_ollama_daemon(ollama_host), "ollama.pid")
-    recover("litellm", lambda: start_litellm_daemon(litellm_port), "litellm.pid")
-    gateway_failed = any(not before.get(name, {}).get("ok") for name in ("gateway", "proxy", "mcp_gateway"))
-    if gateway_failed:
-        if dry_run:
-            actions.append({"service": "gateway", "status": "would_restart"})
+    # -- gateway: 8101 is the live operator gateway -> report only ----------------------------------------------------------
+    gateway_failed = any(not before.get(n, {}).get("ok") for n in ("gateway", "proxy", "mcp_gateway"))
+    if gateway_port in protected:
+        if gateway_failed:
+            actions.append(operator("gateway", f"protected_port:{gateway_port}", gateway_cmd))
+    elif gateway_failed or restart_all:
+        stop = guarded_stop("gateway.pid", "gateway", gateway_port)
+        if stop.get("status") == "protected_not_touched":
+            actions.append(stop)
         else:
-            actions.append(stop_managed_process(run_dir() / "gateway.pid", "gateway"))
-            actions.append(start_gateway_daemon(host, gateway_port))
-    recover("mcp_http", lambda: start_mcp_http_daemon(host, mcp_port), "mcp-http.pid")
-    if not before.get("nginx", {}).get("ok"):
-        actions.append({"service": "nginx", "status": "would_repair"} if dry_run else ensure_nginx(nginx_port, apply=True))
+            if kill_address_pids:
+                actions.append(guarded_kill("gateway", host, gateway_port))
+            actions.append(stop)
+            actions.append({"service": "gateway", "status": "would_restart"} if dry_run else start_gateway_daemon(host, gateway_port))
+
+    # -- nginx on :80: system nginx; generate the BEAST config, never reload without privileges ----------------------------
+    nginx = before.get("nginx", {})
+    if not nginx.get("ok"):
+        gen = ensure_nginx(nginx_port, apply=False) if not dry_run else {"service": "nginx", "status": "would_generate_config"}
+        actions.append({**gen, "service": "nginx", "diagnosis": nginx.get("diagnosis"),
+                        "operator_command": nginx.get("operator_command")})
 
     after = before if dry_run else stack_checks(host, gateway_port, mcp_port, litellm_port, nginx_port, ollama_host)
     ready = all(item.get("ok") for item in after.values())
     payload = {
         "command": "heal",
+        "mode": "full_restart" if restart_all else "selective",
         "status": "dry_run" if dry_run else "healed" if ready else "attention",
+        "protected_ports": sorted(protected),
+        "ollama_system_service": ollama_sys,
         "before": before,
         "actions": actions,
         "after": after,
-        "changed": bool(actions),
+        "operator_commands": [a["operator_command"] for a in actions if a.get("operator_command")],
+        "changed": any(a.get("status") not in {"protected_not_touched", "not_running", "nothing_killable"} for a in actions) and not dry_run,
         "timestamp": time.time(),
     }
     if not dry_run:
@@ -1030,7 +1062,7 @@ def command_start(args: argparse.Namespace) -> Dict[str, Any]:
         gateway_port=getattr(args, "gateway_port", 8101),
         mcp_port=getattr(args, "mcp_port", 8765),
         litellm_port=getattr(args, "litellm_port", 4000),
-        nginx_port=getattr(args, "nginx_port", 8080),
+        nginx_port=getattr(args, "nginx_port", 80),
         ollama_host=getattr(args, "ollama_host", "127.0.0.1:11434"),
         nginx=getattr(args, "nginx", "true"),
         refresh_surfaces=getattr(args, "refresh_surfaces", "true"),
@@ -2300,24 +2332,24 @@ def build_parser() -> argparse.ArgumentParser:
     up_parser.add_argument("--gateway-port", type=int, default=8101)
     up_parser.add_argument("--mcp-port", type=int, default=8765)
     up_parser.add_argument("--litellm-port", type=int, default=4000)
-    up_parser.add_argument("--nginx-port", type=int, default=8080)
+    up_parser.add_argument("--nginx-port", type=int, default=80)
     up_parser.add_argument("--ollama-host", default="127.0.0.1:11434")
     up_parser.add_argument("--nginx", default="true", help="true/false; test and start/reload installed nginx")
     up_parser.add_argument("--refresh-surfaces", default="true", help="true/false; refresh MCP/plugin/extension integration files")
     up_parser.add_argument("--install-vscode-extension", default="false", help="true/false; install latest local VSIX with code --install-extension")
     up_parser.add_argument("--force-gateway", default="false", help="true/false; stop managed gateway before starting")
 
-    heal_parser = subparsers.add_parser("heal", help="Kill configured listeners and restart BEAST services")
+    heal_parser = subparsers.add_parser("heal", help="Selectively recover unhealthy BEAST-managed services (never 8101/8131/ARDA/seraph/system Ollama)")
     heal_parser.set_defaults(handler=command_heal)
     heal_parser.add_argument("--host", default="127.0.0.1")
     heal_parser.add_argument("--gateway-port", type=int, default=8101)
     heal_parser.add_argument("--mcp-port", type=int, default=8765)
     heal_parser.add_argument("--litellm-port", type=int, default=4000)
-    heal_parser.add_argument("--nginx-port", type=int, default=8080)
+    heal_parser.add_argument("--nginx-port", type=int, default=80)
     heal_parser.add_argument("--ollama-host", default="127.0.0.1:11434")
     heal_parser.add_argument("--dry-run", default="false", help="true/false; report recovery actions without changing processes")
-    heal_parser.add_argument("--restart-all", default="true", help="true/false; restart the whole stack instead of only unhealthy services")
-    heal_parser.add_argument("--kill-address-pids", default="true", help="true/false; kill any process listening on configured service ports before restart")
+    heal_parser.add_argument("--restart-all", default="false", help="true/false (explicit, destructive): also restart healthy BEAST-managed services")
+    heal_parser.add_argument("--kill-address-pids", default="false", help="true/false (explicit, destructive): kill unprotected listeners on configured ports before restart")
 
     start_parser = subparsers.add_parser("start", help="One-command BEAST startup: configure intelligence, refresh clients/plugins, and start services")
     start_parser.set_defaults(handler=command_start)
@@ -2325,7 +2357,7 @@ def build_parser() -> argparse.ArgumentParser:
     start_parser.add_argument("--gateway-port", type=int, default=8101)
     start_parser.add_argument("--mcp-port", type=int, default=8765)
     start_parser.add_argument("--litellm-port", type=int, default=4000)
-    start_parser.add_argument("--nginx-port", type=int, default=8080)
+    start_parser.add_argument("--nginx-port", type=int, default=80)
     start_parser.add_argument("--ollama-host", default="127.0.0.1:11434")
     start_parser.add_argument("--nginx", default="true", help="true/false")
     start_parser.add_argument("--refresh-surfaces", default="true", help="true/false")

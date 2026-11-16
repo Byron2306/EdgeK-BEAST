@@ -27,6 +27,9 @@ class RuntimeAdmission:
     reason: str
     timeout_seconds: int
     retry_after_seconds: Optional[int] = None
+    # Compute Governor spine: PSI pressure only shrinks the budget (1.0 = full budget), never refuses alone.
+    pressure_factor: float = 1.0
+    pressure_reason: str = ""
 
 
 class RuntimeGovernor:
@@ -96,12 +99,16 @@ class RuntimeGovernor:
         session_id: str = "default",
         metadata: Optional[Dict[str, Any]] = None
     ) -> RuntimeAdmission:
+        pressure_factor, pressure_reason = 1.0, ""
         if self.psi_governor is not None:
+            from app.kernel.governance.governor_spine import pressure_factor as governor_pressure_factor
+
             lane = str((metadata or {}).get("lane", "background"))
-            pressure = self.psi_governor.decide(lane, self.psi_governor.sample())
-            if not pressure.admitted:
-                return RuntimeAdmission(False, str(uuid.uuid4()), provider,
-                                        f"PSI admission: {pressure.reason}", 1, 5)
+            samples = self.psi_governor.sample()
+            pressure_factor = governor_pressure_factor(lane, samples, self.psi_governor)
+            if pressure_factor < 1.0:
+                decision = self.psi_governor.decide(lane, samples)
+                pressure_reason = f"PSI pressure shrinks budget: {decision.reason} (x{pressure_factor:g})"
         self.sweep_stale_attempts()
         attempt_id = str(uuid.uuid4())
         runtime_config = self._runtime_config(provider)
@@ -170,8 +177,10 @@ class RuntimeGovernor:
             allowed=True,
             attempt_id=attempt_id,
             provider=provider,
-            reason="Runtime admission granted",
+            reason="Runtime admission granted" + (f"; {pressure_reason}" if pressure_reason else ""),
             timeout_seconds=timeout_seconds,
+            pressure_factor=pressure_factor,
+            pressure_reason=pressure_reason,
         )
 
     def complete_execution(

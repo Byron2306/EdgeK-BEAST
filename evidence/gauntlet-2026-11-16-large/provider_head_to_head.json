@@ -1,0 +1,1097 @@
+{
+  "fix-config-constant": {
+    "deepseek": {
+      "attempts": [
+        {
+          "check": {
+            "applied": false,
+            "passed": false,
+            "reason": "no_parseable_edit"
+          },
+          "edits": null
+        }
+      ],
+      "budget": {
+        "model_turns": 0.0,
+        "tokens_completion": 0.0,
+        "tokens_estimated_turns": 0.0,
+        "tokens_prompt": 0.0,
+        "tokens_total": 0.0,
+        "tool_calls": 5.0,
+        "tool_calls_crystal": 0.0,
+        "tool_calls_model": 0.0,
+        "tool_calls_runtime": 5.0,
+        "tool_failures": 0.0,
+        "wall_ms": 75548.241
+      },
+      "calls": [
+        {
+          "billable": "unknown",
+          "failed": true,
+          "governor": "gov_153284b3a5fbc65025a12739",
+          "latency_ms": 75486.853,
+          "model": "deepseek-ai/deepseek-v4.1-flash",
+          "provider": "nim:deepseek",
+          "status": "ReadTimeout",
+          "tokens_total": 0
+        }
+      ],
+      "edits": null,
+      "independent": null,
+      "latency_ms": 75486.853,
+      "model": "deepseek-ai/deepseek-v4.1-flash",
+      "passed": false,
+      "provider": "deepseek",
+      "reasoning_tokens": 0,
+      "tokens_total": 0,
+      "wall_ms": 75548.241,
+      "worktree": ""
+    },
+    "gpt-oss": {
+      "attempts": [
+        {
+          "check": {
+            "applied": false,
+            "passed": false,
+            "reason": "no_parseable_edit"
+          },
+          "edits": null
+        }
+      ],
+      "budget": {
+        "model_turns": 0.0,
+        "tokens_completion": 0.0,
+        "tokens_estimated_turns": 0.0,
+        "tokens_prompt": 0.0,
+        "tokens_total": 0.0,
+        "tool_calls": 5.0,
+        "tool_calls_crystal": 0.0,
+        "tool_calls_model": 0.0,
+        "tool_calls_runtime": 5.0,
+        "tool_failures": 0.0,
+        "wall_ms": 90577.1
+      },
+      "calls": [
+        {
+          "billable": "unknown",
+          "failed": true,
+          "governor": "gov_b838d890c48ea999cbc3bde7",
+          "latency_ms": 90484.848,
+          "model": "openai/gpt-oss-20b",
+          "provider": "nim:gpt-oss",
+          "status": "ReadTimeout",
+          "tokens_total": 0
+        }
+      ],
+      "edits": null,
+      "independent": null,
+      "latency_ms": 90484.848,
+      "model": "openai/gpt-oss-20b",
+      "passed": false,
+      "provider": "gpt-oss",
+      "reasoning_tokens": 0,
+      "tokens_total": 0,
+      "wall_ms": 90577.1,
+      "worktree": ""
+    },
+    "nemotron": {
+      "attempts": [
+        {
+          "check": {
+            "applied": true,
+            "changed": [
+              "billing/config.py"
+            ],
+            "passed": true,
+            "reason": "",
+            "returncode": 0,
+            "tests_run": 2,
+            "verify_ms": 57.332
+          },
+          "edits": [
+            {
+              "new_text": "INVOICE_RETRY_LIMIT = 5",
+              "old_text": "INVOICE_RETRY_LIMIT = 3",
+              "path": "billing/config.py"
+            }
+          ]
+        }
+      ],
+      "budget": {
+        "model_turns": 1.0,
+        "tokens_completion": 46.0,
+        "tokens_estimated_turns": 0.0,
+        "tokens_prompt": 601.0,
+        "tokens_total": 647.0,
+        "tool_calls": 5.0,
+        "tool_calls_crystal": 0.0,
+        "tool_calls_model": 1.0,
+        "tool_calls_runtime": 4.0,
+        "tool_failures": 0.0,
+        "wall_ms": 1430.961
+      },
+      "calls": [
+        {
+          "billable": true,
+          "failed": false,
+          "finish_reason": "stop",
+          "governor": "gov_50db81155dc076fa4eed8b69",
+          "latency_ms": 1216.625,
+          "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "provider": "nim:nemotron",
+          "reasoning_budget_exhausted": false,
+          "reasoning_in_content": false,
+          "response_sha256": "sha256:508325a1420bdceefd67be3d63aa3ec01ef28923183d15304834d2de7aadcb81",
+          "status": 200,
+          "tokens_completion": 46,
+          "tokens_prompt": 601,
+          "tokens_reasoning": 0,
+          "tokens_total": 647
+        }
+      ],
+      "edits": [
+        {
+          "new_text": "INVOICE_RETRY_LIMIT = 5",
+          "old_text": "INVOICE_RETRY_LIMIT = 3",
+          "path": "billing/config.py"
+        }
+      ],
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:0dd2f6ed029b0a07c3c117c50a2875d3728bcae6d5f4fbb30618cb27f0317867",
+        "visible_rc": 0
+      },
+      "latency_ms": 1216.625,
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "passed": true,
+      "provider": "nemotron",
+      "reasoning_tokens": 0,
+      "tokens_total": 647,
+      "wall_ms": 1430.961,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/const-cold-h2h-nemotron/wt"
+    }
+  },
+  "fix-logic-operator": {
+    "deepseek": {
+      "attempts": [
+        {
+          "check": {
+            "applied": false,
+            "passed": false,
+            "reason": "no_parseable_edit"
+          },
+          "edits": null
+        }
+      ],
+      "budget": {
+        "model_turns": 0.0,
+        "tokens_completion": 0.0,
+        "tokens_estimated_turns": 0.0,
+        "tokens_prompt": 0.0,
+        "tokens_total": 0.0,
+        "tool_calls": 5.0,
+        "tool_calls_crystal": 0.0,
+        "tool_calls_model": 0.0,
+        "tool_calls_runtime": 5.0,
+        "tool_failures": 0.0,
+        "wall_ms": 75520.898
+      },
+      "calls": [
+        {
+          "billable": "unknown",
+          "failed": true,
+          "governor": "gov_b5d86e4e9c7a96a8f1374bcc",
+          "latency_ms": 75469.246,
+          "model": "deepseek-ai/deepseek-v4.1-flash",
+          "provider": "nim:deepseek",
+          "status": "ReadTimeout",
+          "tokens_total": 0
+        }
+      ],
+      "edits": null,
+      "independent": null,
+      "latency_ms": 75469.246,
+      "model": "deepseek-ai/deepseek-v4.1-flash",
+      "passed": false,
+      "provider": "deepseek",
+      "reasoning_tokens": 0,
+      "tokens_total": 0,
+      "wall_ms": 75520.898,
+      "worktree": ""
+    },
+    "gpt-oss": {
+      "attempts": [
+        {
+          "check": {
+            "applied": false,
+            "passed": false,
+            "reason": "no_parseable_edit"
+          },
+          "edits": null
+        }
+      ],
+      "budget": {
+        "model_turns": 0.0,
+        "tokens_completion": 0.0,
+        "tokens_estimated_turns": 0.0,
+        "tokens_prompt": 0.0,
+        "tokens_total": 0.0,
+        "tool_calls": 5.0,
+        "tool_calls_crystal": 0.0,
+        "tool_calls_model": 0.0,
+        "tool_calls_runtime": 5.0,
+        "tool_failures": 0.0,
+        "wall_ms": 90594.924
+      },
+      "calls": [
+        {
+          "billable": "unknown",
+          "failed": true,
+          "governor": "gov_df2863e36c2ad15fc8d0611c",
+          "latency_ms": 90489.578,
+          "model": "openai/gpt-oss-20b",
+          "provider": "nim:gpt-oss",
+          "status": "ReadTimeout",
+          "tokens_total": 0
+        }
+      ],
+      "edits": null,
+      "independent": null,
+      "latency_ms": 90489.578,
+      "model": "openai/gpt-oss-20b",
+      "passed": false,
+      "provider": "gpt-oss",
+      "reasoning_tokens": 0,
+      "tokens_total": 0,
+      "wall_ms": 90594.924,
+      "worktree": ""
+    },
+    "nemotron": {
+      "attempts": [
+        {
+          "check": {
+            "applied": true,
+            "changed": [
+              "fees/core.py"
+            ],
+            "passed": true,
+            "reason": "",
+            "returncode": 0,
+            "tests_run": 2,
+            "verify_ms": 46.444
+          },
+          "edits": [
+            {
+              "new_text": "return gross - fee",
+              "old_text": "return gross + fee",
+              "path": "fees/core.py"
+            }
+          ]
+        }
+      ],
+      "budget": {
+        "model_turns": 1.0,
+        "tokens_completion": 36.0,
+        "tokens_estimated_turns": 0.0,
+        "tokens_prompt": 607.0,
+        "tokens_total": 643.0,
+        "tool_calls": 5.0,
+        "tool_calls_crystal": 0.0,
+        "tool_calls_model": 1.0,
+        "tool_calls_runtime": 4.0,
+        "tool_failures": 0.0,
+        "wall_ms": 1250.476
+      },
+      "calls": [
+        {
+          "billable": true,
+          "failed": false,
+          "finish_reason": "stop",
+          "governor": "gov_1b85a13fb40a472cea9ee772",
+          "latency_ms": 1147.35,
+          "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "provider": "nim:nemotron",
+          "reasoning_budget_exhausted": false,
+          "reasoning_in_content": false,
+          "response_sha256": "sha256:9cc2cbd749c78fb5c36e315cf80c70b0230b4d5887eb9438ab57f6ee6aa57582",
+          "status": 200,
+          "tokens_completion": 36,
+          "tokens_prompt": 607,
+          "tokens_reasoning": 0,
+          "tokens_total": 643
+        }
+      ],
+      "edits": [
+        {
+          "new_text": "return gross - fee",
+          "old_text": "return gross + fee",
+          "path": "fees/core.py"
+        }
+      ],
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:666b8daab7738aa23173283ae75206b057b655c43c1579a8897ad1109d4d6505",
+        "visible_rc": 0
+      },
+      "latency_ms": 1147.35,
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "passed": true,
+      "provider": "nemotron",
+      "reasoning_tokens": 0,
+      "tokens_total": 643,
+      "wall_ms": 1250.476,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/op-cold-h2h-nemotron/wt"
+    }
+  },
+  "fix-off-by-one": {
+    "deepseek": {
+      "attempts": [
+        {
+          "check": {
+            "applied": false,
+            "passed": false,
+            "reason": "no_parseable_edit"
+          },
+          "edits": null
+        }
+      ],
+      "budget": {
+        "model_turns": 0.0,
+        "tokens_completion": 0.0,
+        "tokens_estimated_turns": 0.0,
+        "tokens_prompt": 0.0,
+        "tokens_total": 0.0,
+        "tool_calls": 5.0,
+        "tool_calls_crystal": 0.0,
+        "tool_calls_model": 0.0,
+        "tool_calls_runtime": 5.0,
+        "tool_failures": 0.0,
+        "wall_ms": 58.308
+      },
+      "calls": [
+        {
+          "billable": false,
+          "failed": true,
+          "governor": "gov_aadd36e86fd17765b7c32db4",
+          "latency_ms": 0.0,
+          "model": "deepseek-ai/deepseek-v4.1-flash",
+          "provider": "nim:deepseek",
+          "status": "circuit_open",
+          "tokens_total": 0
+        }
+      ],
+      "edits": null,
+      "independent": null,
+      "latency_ms": 0.0,
+      "model": "deepseek-ai/deepseek-v4.1-flash",
+      "passed": false,
+      "provider": "deepseek",
+      "reasoning_tokens": 0,
+      "tokens_total": 0,
+      "wall_ms": 58.308,
+      "worktree": ""
+    },
+    "gpt-oss": {
+      "attempts": [
+        {
+          "check": {
+            "applied": false,
+            "passed": false,
+            "reason": "no_parseable_edit"
+          },
+          "edits": null
+        }
+      ],
+      "budget": {
+        "model_turns": 0.0,
+        "tokens_completion": 0.0,
+        "tokens_estimated_turns": 0.0,
+        "tokens_prompt": 0.0,
+        "tokens_total": 0.0,
+        "tool_calls": 5.0,
+        "tool_calls_crystal": 0.0,
+        "tool_calls_model": 0.0,
+        "tool_calls_runtime": 5.0,
+        "tool_failures": 0.0,
+        "wall_ms": 54.327
+      },
+      "calls": [
+        {
+          "billable": false,
+          "failed": true,
+          "governor": "gov_e5f0a06cb901cfdd778b7117",
+          "latency_ms": 0.0,
+          "model": "openai/gpt-oss-20b",
+          "provider": "nim:gpt-oss",
+          "status": "circuit_open",
+          "tokens_total": 0
+        }
+      ],
+      "edits": null,
+      "independent": null,
+      "latency_ms": 0.0,
+      "model": "openai/gpt-oss-20b",
+      "passed": false,
+      "provider": "gpt-oss",
+      "reasoning_tokens": 0,
+      "tokens_total": 0,
+      "wall_ms": 54.327,
+      "worktree": ""
+    },
+    "nemotron": {
+      "attempts": [
+        {
+          "check": {
+            "applied": true,
+            "changed": [
+              "window/core.py"
+            ],
+            "passed": true,
+            "reason": "",
+            "returncode": 0,
+            "tests_run": 2,
+            "verify_ms": 51.474
+          },
+          "edits": [
+            {
+              "new_text": "return items[-n:]",
+              "old_text": "return items[-n - 1:]",
+              "path": "window/core.py"
+            }
+          ]
+        }
+      ],
+      "budget": {
+        "model_turns": 1.0,
+        "tokens_completion": 40.0,
+        "tokens_estimated_turns": 0.0,
+        "tokens_prompt": 679.0,
+        "tokens_total": 719.0,
+        "tool_calls": 5.0,
+        "tool_calls_crystal": 0.0,
+        "tool_calls_model": 1.0,
+        "tool_calls_runtime": 4.0,
+        "tool_failures": 0.0,
+        "wall_ms": 1452.095
+      },
+      "calls": [
+        {
+          "billable": true,
+          "failed": false,
+          "finish_reason": "stop",
+          "governor": "gov_676f017496c12bdad846bca1",
+          "latency_ms": 1340.184,
+          "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "provider": "nim:nemotron",
+          "reasoning_budget_exhausted": false,
+          "reasoning_in_content": false,
+          "response_sha256": "sha256:f8d6e4e38313382a3813d9306a60d4b5a08bab8430581393e34e645ed46a7039",
+          "status": 200,
+          "tokens_completion": 40,
+          "tokens_prompt": 679,
+          "tokens_reasoning": 0,
+          "tokens_total": 719
+        }
+      ],
+      "edits": [
+        {
+          "new_text": "return items[-n:]",
+          "old_text": "return items[-n - 1:]",
+          "path": "window/core.py"
+        }
+      ],
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:f302577ce427b282cc291c983daef7d897e5b552ee59ab726cadd24cc47ac634",
+        "visible_rc": 0
+      },
+      "latency_ms": 1340.184,
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "passed": true,
+      "provider": "nemotron",
+      "reasoning_tokens": 0,
+      "tokens_total": 719,
+      "wall_ms": 1452.095,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/obo-cold-h2h-nemotron/wt"
+    }
+  },
+  "fix-unhandled-exception": {
+    "deepseek": {
+      "attempts": [
+        {
+          "check": {
+            "applied": false,
+            "passed": false,
+            "reason": "no_parseable_edit"
+          },
+          "edits": null
+        }
+      ],
+      "budget": {
+        "model_turns": 0.0,
+        "tokens_completion": 0.0,
+        "tokens_estimated_turns": 0.0,
+        "tokens_prompt": 0.0,
+        "tokens_total": 0.0,
+        "tool_calls": 5.0,
+        "tool_calls_crystal": 0.0,
+        "tool_calls_model": 0.0,
+        "tool_calls_runtime": 5.0,
+        "tool_failures": 0.0,
+        "wall_ms": 60.63
+      },
+      "calls": [
+        {
+          "billable": false,
+          "failed": true,
+          "governor": "gov_14ace0f37611d9ad8a1afb09",
+          "latency_ms": 0.0,
+          "model": "deepseek-ai/deepseek-v4.1-flash",
+          "provider": "nim:deepseek",
+          "status": "circuit_open",
+          "tokens_total": 0
+        }
+      ],
+      "edits": null,
+      "independent": null,
+      "latency_ms": 0.0,
+      "model": "deepseek-ai/deepseek-v4.1-flash",
+      "passed": false,
+      "provider": "deepseek",
+      "reasoning_tokens": 0,
+      "tokens_total": 0,
+      "wall_ms": 60.63,
+      "worktree": ""
+    },
+    "gpt-oss": {
+      "attempts": [
+        {
+          "check": {
+            "applied": false,
+            "passed": false,
+            "reason": "no_parseable_edit"
+          },
+          "edits": null
+        }
+      ],
+      "budget": {
+        "model_turns": 0.0,
+        "tokens_completion": 0.0,
+        "tokens_estimated_turns": 0.0,
+        "tokens_prompt": 0.0,
+        "tokens_total": 0.0,
+        "tool_calls": 5.0,
+        "tool_calls_crystal": 0.0,
+        "tool_calls_model": 0.0,
+        "tool_calls_runtime": 5.0,
+        "tool_failures": 0.0,
+        "wall_ms": 56.742
+      },
+      "calls": [
+        {
+          "billable": false,
+          "failed": true,
+          "governor": "gov_9cdb84b37da12c5d5af5786a",
+          "latency_ms": 0.0,
+          "model": "openai/gpt-oss-20b",
+          "provider": "nim:gpt-oss",
+          "status": "circuit_open",
+          "tokens_total": 0
+        }
+      ],
+      "edits": null,
+      "independent": null,
+      "latency_ms": 0.0,
+      "model": "openai/gpt-oss-20b",
+      "passed": false,
+      "provider": "gpt-oss",
+      "reasoning_tokens": 0,
+      "tokens_total": 0,
+      "wall_ms": 56.742,
+      "worktree": ""
+    },
+    "nemotron": {
+      "attempts": [
+        {
+          "check": {
+            "applied": true,
+            "changed": [
+              "fracs/core.py"
+            ],
+            "passed": true,
+            "reason": "",
+            "returncode": 0,
+            "tests_run": 2,
+            "verify_ms": 57.807
+          },
+          "edits": [
+            {
+              "new_text": "def ratio_of(text):\n    num, den = text.split('/')\n    if int(den) == 0:\n        return None\n    return int(num) / int(den)",
+              "old_text": "def ratio_of(text):\n    num, den = text.split('/')\n    return int(num) / int(den)",
+              "path": "fracs/core.py"
+            }
+          ]
+        }
+      ],
+      "budget": {
+        "model_turns": 1.0,
+        "tokens_completion": 98.0,
+        "tokens_estimated_turns": 0.0,
+        "tokens_prompt": 698.0,
+        "tokens_total": 796.0,
+        "tool_calls": 5.0,
+        "tool_calls_crystal": 0.0,
+        "tool_calls_model": 1.0,
+        "tool_calls_runtime": 4.0,
+        "tool_failures": 0.0,
+        "wall_ms": 1477.215
+      },
+      "calls": [
+        {
+          "billable": true,
+          "failed": false,
+          "finish_reason": "stop",
+          "governor": "gov_6bc44c45eab30e82c228e895",
+          "latency_ms": 1362.687,
+          "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "provider": "nim:nemotron",
+          "reasoning_budget_exhausted": false,
+          "reasoning_in_content": false,
+          "response_sha256": "sha256:5f21c29e3462e02c2ce99b1911a4f8d8378a4e6811f1ef1a728b71c6c1d58f81",
+          "status": 200,
+          "tokens_completion": 98,
+          "tokens_prompt": 698,
+          "tokens_reasoning": 0,
+          "tokens_total": 796
+        }
+      ],
+      "edits": [
+        {
+          "new_text": "def ratio_of(text):\n    num, den = text.split('/')\n    if int(den) == 0:\n        return None\n    return int(num) / int(den)",
+          "old_text": "def ratio_of(text):\n    num, den = text.split('/')\n    return int(num) / int(den)",
+          "path": "fracs/core.py"
+        }
+      ],
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:5ae4aed1a38acadc9ed1f5c80c8dcae4aa9ac1a0322b515e27fbf9b20d5f746e",
+        "visible_rc": 0
+      },
+      "latency_ms": 1362.687,
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "passed": true,
+      "provider": "nemotron",
+      "reasoning_tokens": 0,
+      "tokens_total": 796,
+      "wall_ms": 1477.215,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/exc-cold-h2h-nemotron/wt"
+    }
+  },
+  "refactor-rename-symbol": {
+    "deepseek": {
+      "attempts": [
+        {
+          "check": {
+            "applied": false,
+            "passed": false,
+            "reason": "no_parseable_edit"
+          },
+          "edits": null
+        }
+      ],
+      "budget": {
+        "model_turns": 0.0,
+        "tokens_completion": 0.0,
+        "tokens_estimated_turns": 0.0,
+        "tokens_prompt": 0.0,
+        "tokens_total": 0.0,
+        "tool_calls": 5.0,
+        "tool_calls_crystal": 0.0,
+        "tool_calls_model": 0.0,
+        "tool_calls_runtime": 5.0,
+        "tool_failures": 0.0,
+        "wall_ms": 55.822
+      },
+      "calls": [
+        {
+          "billable": false,
+          "failed": true,
+          "governor": "gov_8e9f7dcccf5f3d6bf2789cad",
+          "latency_ms": 0.0,
+          "model": "deepseek-ai/deepseek-v4.1-flash",
+          "provider": "nim:deepseek",
+          "status": "circuit_open",
+          "tokens_total": 0
+        }
+      ],
+      "edits": null,
+      "independent": null,
+      "latency_ms": 0.0,
+      "model": "deepseek-ai/deepseek-v4.1-flash",
+      "passed": false,
+      "provider": "deepseek",
+      "reasoning_tokens": 0,
+      "tokens_total": 0,
+      "wall_ms": 55.822,
+      "worktree": ""
+    },
+    "gpt-oss": {
+      "attempts": [
+        {
+          "check": {
+            "applied": false,
+            "passed": false,
+            "reason": "no_parseable_edit"
+          },
+          "edits": null
+        }
+      ],
+      "budget": {
+        "model_turns": 0.0,
+        "tokens_completion": 0.0,
+        "tokens_estimated_turns": 0.0,
+        "tokens_prompt": 0.0,
+        "tokens_total": 0.0,
+        "tool_calls": 5.0,
+        "tool_calls_crystal": 0.0,
+        "tool_calls_model": 0.0,
+        "tool_calls_runtime": 5.0,
+        "tool_failures": 0.0,
+        "wall_ms": 56.753
+      },
+      "calls": [
+        {
+          "billable": false,
+          "failed": true,
+          "governor": "gov_be3edcc40dea1fa45cc31bc3",
+          "latency_ms": 0.0,
+          "model": "openai/gpt-oss-20b",
+          "provider": "nim:gpt-oss",
+          "status": "circuit_open",
+          "tokens_total": 0
+        }
+      ],
+      "edits": null,
+      "independent": null,
+      "latency_ms": 0.0,
+      "model": "openai/gpt-oss-20b",
+      "passed": false,
+      "provider": "gpt-oss",
+      "reasoning_tokens": 0,
+      "tokens_total": 0,
+      "wall_ms": 56.753,
+      "worktree": ""
+    },
+    "nemotron": {
+      "attempts": [
+        {
+          "check": {
+            "applied": true,
+            "changed": [
+              "ledger/core.py"
+            ],
+            "passed": false,
+            "reason": "tests_still_failing",
+            "returncode": 1,
+            "tests_run": 1,
+            "verify_ms": 52.36
+          },
+          "edits": [
+            {
+              "new_text": "def compute_total(items):",
+              "old_text": "def calc_total(items):",
+              "path": "ledger/core.py"
+            }
+          ]
+        },
+        {
+          "check": {
+            "applied": true,
+            "changed": [
+              "ledger/core.py"
+            ],
+            "passed": false,
+            "reason": "tests_still_failing",
+            "returncode": 1,
+            "tests_run": 1,
+            "verify_ms": 49.53
+          },
+          "edits": [
+            {
+              "new_text": "def compute_total(items):\n    return sum(items)",
+              "old_text": "def calc_total(items):\n    return sum(items)",
+              "path": "ledger/core.py"
+            }
+          ]
+        }
+      ],
+      "budget": {
+        "model_turns": 2.0,
+        "tokens_completion": 89.0,
+        "tokens_estimated_turns": 0.0,
+        "tokens_prompt": 1656.0,
+        "tokens_total": 1745.0,
+        "tool_calls": 5.0,
+        "tool_calls_crystal": 0.0,
+        "tool_calls_model": 2.0,
+        "tool_calls_runtime": 3.0,
+        "tool_failures": 0.0,
+        "wall_ms": 2315.913
+      },
+      "calls": [
+        {
+          "billable": true,
+          "failed": false,
+          "finish_reason": "stop",
+          "governor": "gov_5284ff8aaeebe6e52fa205de",
+          "latency_ms": 973.571,
+          "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "provider": "nim:nemotron",
+          "reasoning_budget_exhausted": false,
+          "reasoning_in_content": false,
+          "response_sha256": "sha256:ced60c773872e68bec518a0a519407fef8c78fd215b0d99a29601e679ce37ae9",
+          "status": 200,
+          "tokens_completion": 38,
+          "tokens_prompt": 760,
+          "tokens_reasoning": 0,
+          "tokens_total": 798
+        },
+        {
+          "billable": true,
+          "failed": false,
+          "finish_reason": "stop",
+          "governor": "gov_bda65a5cf9c81f9c65f648a6",
+          "latency_ms": 1178.66,
+          "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "provider": "nim:nemotron",
+          "reasoning_budget_exhausted": false,
+          "reasoning_in_content": false,
+          "response_sha256": "sha256:bff386889fee7854d40c8d02050d14ed094e5e82855eabfb271febebc0413b0d",
+          "status": 200,
+          "tokens_completion": 51,
+          "tokens_prompt": 896,
+          "tokens_reasoning": 0,
+          "tokens_total": 947
+        }
+      ],
+      "edits": null,
+      "independent": null,
+      "latency_ms": 2152.231,
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "passed": false,
+      "provider": "nemotron",
+      "reasoning_tokens": 0,
+      "tokens_total": 1745,
+      "wall_ms": 2315.913,
+      "worktree": ""
+    }
+  },
+  "toolchain-regenerate": {
+    "deepseek": {
+      "attempts": [
+        {
+          "check": {
+            "applied": false,
+            "passed": false,
+            "reason": "no_parseable_edit"
+          },
+          "edits": null
+        }
+      ],
+      "budget": {
+        "model_turns": 0.0,
+        "tokens_completion": 0.0,
+        "tokens_estimated_turns": 0.0,
+        "tokens_prompt": 0.0,
+        "tokens_total": 0.0,
+        "tool_calls": 5.0,
+        "tool_calls_crystal": 0.0,
+        "tool_calls_model": 0.0,
+        "tool_calls_runtime": 5.0,
+        "tool_failures": 0.0,
+        "wall_ms": 50.886
+      },
+      "calls": [
+        {
+          "billable": false,
+          "failed": true,
+          "governor": "gov_a417f1e281114760fbebf918",
+          "latency_ms": 0.0,
+          "model": "deepseek-ai/deepseek-v4.1-flash",
+          "provider": "nim:deepseek",
+          "status": "circuit_open",
+          "tokens_total": 0
+        }
+      ],
+      "edits": null,
+      "independent": null,
+      "latency_ms": 0.0,
+      "model": "deepseek-ai/deepseek-v4.1-flash",
+      "passed": false,
+      "provider": "deepseek",
+      "reasoning_tokens": 0,
+      "tokens_total": 0,
+      "wall_ms": 50.886,
+      "worktree": ""
+    },
+    "gpt-oss": {
+      "attempts": [
+        {
+          "check": {
+            "applied": false,
+            "passed": false,
+            "reason": "no_parseable_edit"
+          },
+          "edits": null
+        }
+      ],
+      "budget": {
+        "model_turns": 0.0,
+        "tokens_completion": 0.0,
+        "tokens_estimated_turns": 0.0,
+        "tokens_prompt": 0.0,
+        "tokens_total": 0.0,
+        "tool_calls": 5.0,
+        "tool_calls_crystal": 0.0,
+        "tool_calls_model": 0.0,
+        "tool_calls_runtime": 5.0,
+        "tool_failures": 0.0,
+        "wall_ms": 63.607
+      },
+      "calls": [
+        {
+          "billable": false,
+          "failed": true,
+          "governor": "gov_20333c2b9c82e4463afc39b6",
+          "latency_ms": 0.0,
+          "model": "openai/gpt-oss-20b",
+          "provider": "nim:gpt-oss",
+          "status": "circuit_open",
+          "tokens_total": 0
+        }
+      ],
+      "edits": null,
+      "independent": null,
+      "latency_ms": 0.0,
+      "model": "openai/gpt-oss-20b",
+      "passed": false,
+      "provider": "gpt-oss",
+      "reasoning_tokens": 0,
+      "tokens_total": 0,
+      "wall_ms": 63.607,
+      "worktree": ""
+    },
+    "nemotron": {
+      "attempts": [
+        {
+          "check": {
+            "applied": false,
+            "passed": false,
+            "reason": "edit_not_applicable:edits limited to existing regular .py files"
+          },
+          "edits": [
+            {
+              "new_text": "{\"VERSION\": \"1.4.0\", \"CHANNEL\": \"stable\"}",
+              "old_text": "{\"VERSION\": \"1.3.0\", \"CHANNEL\": \"stable\"}",
+              "path": "spec.json"
+            }
+          ]
+        },
+        {
+          "check": {
+            "applied": true,
+            "changed": [
+              "release/generated.py"
+            ],
+            "passed": true,
+            "reason": "",
+            "returncode": 0,
+            "tests_run": 2,
+            "verify_ms": 52.006
+          },
+          "edits": [
+            {
+              "new_text": "VERSION = '1.4.0'",
+              "old_text": "VERSION = '1.3.0'",
+              "path": "release/generated.py"
+            }
+          ]
+        }
+      ],
+      "budget": {
+        "model_turns": 2.0,
+        "tokens_completion": 110.0,
+        "tokens_estimated_turns": 0.0,
+        "tokens_prompt": 1836.0,
+        "tokens_total": 1946.0,
+        "tool_calls": 5.0,
+        "tool_calls_crystal": 0.0,
+        "tool_calls_model": 2.0,
+        "tool_calls_runtime": 3.0,
+        "tool_failures": 0.0,
+        "wall_ms": 2323.22
+      },
+      "calls": [
+        {
+          "billable": true,
+          "failed": false,
+          "finish_reason": "stop",
+          "governor": "gov_d458ab35d6fed3cba9164a5a",
+          "latency_ms": 1099.973,
+          "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "provider": "nim:nemotron",
+          "reasoning_budget_exhausted": false,
+          "reasoning_in_content": false,
+          "response_sha256": "sha256:79c7ffec2bffcac97ee474e4811192d9039f0b26a3ecc5ecef82236ffbb13401",
+          "status": 200,
+          "tokens_completion": 63,
+          "tokens_prompt": 821,
+          "tokens_reasoning": 0,
+          "tokens_total": 884
+        },
+        {
+          "billable": true,
+          "failed": false,
+          "finish_reason": "stop",
+          "governor": "gov_8d1108ed9e8e6cdbe4e24a90",
+          "latency_ms": 1100.452,
+          "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "provider": "nim:nemotron",
+          "reasoning_budget_exhausted": false,
+          "reasoning_in_content": false,
+          "response_sha256": "sha256:33a81d6691f1a31edcf17046bfc28ba6381981e39df6401d11d8a5d762e7e0d7",
+          "status": 200,
+          "tokens_completion": 47,
+          "tokens_prompt": 1015,
+          "tokens_reasoning": 0,
+          "tokens_total": 1062
+        }
+      ],
+      "edits": [
+        {
+          "new_text": "VERSION = '1.4.0'",
+          "old_text": "VERSION = '1.3.0'",
+          "path": "release/generated.py"
+        }
+      ],
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:f7dacef674ddb52d26b15207c188f6950b433e499696b5171ea04529eef81cf2",
+        "visible_rc": 0
+      },
+      "latency_ms": 2200.425,
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "passed": true,
+      "provider": "nemotron",
+      "reasoning_tokens": 0,
+      "tokens_total": 1946,
+      "wall_ms": 2323.22,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/tool-cold-h2h-nemotron/wt"
+    }
+  }
+}

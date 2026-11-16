@@ -1,0 +1,54 @@
+{
+ "model": "qwen2.5-coder:7b",
+ "rows": [
+  {
+   "num_gpu": 8,
+   "num_ctx": 2048,
+   "error": "HTTPError: HTTP Error 500: Internal Server Error"
+  },
+  {
+   "num_gpu": 0,
+   "num_ctx": 2048,
+   "timed_out": false,
+   "first_token_s": 111.103,
+   "wall_s": 299.94,
+   "load_s": 57.05,
+   "decode_tok_s": 0.42,
+   "eval_count": 77,
+   "prompt_tok_s": 1.02,
+   "prompt_count": 55,
+   "ollama_size_mib": 4721,
+   "ollama_size_vram_mib": 0,
+   "vram_before_mib": 4164,
+   "vram_during_mib": 4164,
+   "vram_peak_seen_mib": 4164,
+   "ram_avail_before_mib": 4799,
+   "ram_avail_during_mib": 875,
+   "swap_free_during_mib": 5203
+  },
+  {
+   "num_gpu": 6,
+   "num_ctx": 1024,
+   "timed_out": false,
+   "first_token_s": 16.034,
+   "wall_s": 28.83,
+   "load_s": 15.19,
+   "decode_tok_s": 6.0,
+   "eval_count": 77,
+   "prompt_tok_s": 77.84,
+   "prompt_count": 55,
+   "ollama_size_mib": 4735,
+   "ollama_size_vram_mib": 1336,
+   "vram_before_mib": 4164,
+   "vram_during_mib": 5597,
+   "vram_peak_seen_mib": 5597,
+   "ram_avail_before_mib": 4768,
+   "ram_avail_during_mib": 4359,
+   "swap_free_during_mib": 5967
+  }
+ ],
+ "host": {
+  "gpu": "RTX 3050 6GB Laptop",
+  "cpu": "Ryzen 5 150 (12 threads)"
+ }
+}

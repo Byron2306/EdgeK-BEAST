@@ -15,7 +15,36 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey,
 from app.kernel.execution.guardian_authorization import GuardianCapabilityAuthorizer
 from app.kernel.execution.socket_guardian import SocketGuardianServer
 from app.kernel.integration.one_use_capability import OneUseCapabilityLedger
+from app.kernel.networking.fabric_topology import FabricTopology, TopologyDriftError
 from app.kernel.networking.service_registry import ServiceRegistry
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
+DEFAULT_LAB_MANIFEST = REPOSITORY_ROOT / ".beast" / "remote-commons-lab" / "manifest.json"
+DEFAULT_COMPOSE_BASE = REPOSITORY_ROOT / "docker-compose.commons-lab.yml"
+REQUIRED_OPERATION_AUTHORITY = "arda"  # ruling D3.1: ARDA is the Guardian operation authority
+
+
+def load_topology(config_path: Path, registry_path: Path, guardian: Mapping[str, Any]) -> FabricTopology:
+    """Load the fabric topology contract (Phase 3 Task 1) for this Guardian configuration; fail closed on drift."""
+    section = guardian.get("topology") or {}
+    if not isinstance(section, Mapping):
+        raise RuntimeError("guardian topology section must be a mapping")
+
+    def source(field: str, default: Path | None) -> Path | None:
+        raw = str(section.get(field) or "").strip()
+        return _resolve(config_path, raw) if raw else default
+
+    topology = FabricTopology.load(
+        services_path=registry_path,
+        lab_manifest_path=source("lab_manifest", DEFAULT_LAB_MANIFEST),
+        compose_base_path=source("compose_base", DEFAULT_COMPOSE_BASE),
+        compose_override_path=source("compose_override", None),
+    )
+    try:
+        topology.require_consistent()
+    except TopologyDriftError as exc:
+        raise RuntimeError(f"socket guardian refuses to start on topology drift: {exc.findings}") from exc
+    return topology
 
 
 def _resolve(config_path: Path, value: str) -> Path:
@@ -64,6 +93,8 @@ def _authority_verifiers(config_path: Path, values: Mapping[str, Any]) -> dict[s
         verifiers[str(authority)] = key
     if not verifiers:
         raise RuntimeError("at least one ARDA/Metatron authority public key is required")
+    if REQUIRED_OPERATION_AUTHORITY not in verifiers:
+        raise RuntimeError("socket guardian requires the ARDA operation authority public key (ruling D3.1)")
     return verifiers
 
 
@@ -78,6 +109,8 @@ def build_server(config_file: str | Path) -> tuple[SocketGuardianServer, Mapping
 
     registry_path = _resolve(config_path, str(_required(guardian, "service_registry")))
     registry = ServiceRegistry.from_file(registry_path)
+    topology = load_topology(config_path, registry_path, guardian)
+    contract = topology.guardian_bindings()
     signer = _private_signer(_resolve(config_path, str(_required(guardian, "receipt_signing_key"))))
     verifiers = _authority_verifiers(
         config_path, _required(guardian, "operation_authority_public_keys")
@@ -104,6 +137,11 @@ def build_server(config_file: str | Path) -> tuple[SocketGuardianServer, Mapping
     raw_bindings = _required(guardian, "systemd_bindings")
     if not isinstance(raw_bindings, Mapping):
         raise RuntimeError("systemd_bindings must be a mapping")
+    if set(map(str, raw_bindings)) != set(contract["services"]):
+        raise RuntimeError(
+            "systemd binding set must equal the topology contract: "
+            f"bindings={sorted(map(str, raw_bindings))} contract={sorted(contract['services'])}"
+        )
     bindings: dict[str, Mapping[str, Any]] = {}
     for service_id, item in raw_bindings.items():
         if service_id not in registry.services:
@@ -119,7 +157,11 @@ def build_server(config_file: str | Path) -> tuple[SocketGuardianServer, Mapping
             "registry_digest": registry.digest(),
             "network_namespace": str(item.get("network_namespace") or "host"),
             "vrf": str(item.get("vrf") or registry.services[str(service_id)].trust_domain),
+            "contract_port": int(contract["services"][str(service_id)]["port"]),
+            "topology_digest": contract["topology_digest"],
         }
+        if int(registry.services[str(service_id)].port) != bindings[str(service_id)]["contract_port"]:
+            raise RuntimeError(f"registry port for {service_id} disagrees with the topology contract")
     return server, bindings
 
 

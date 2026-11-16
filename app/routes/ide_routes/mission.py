@@ -137,9 +137,14 @@ def register_mission_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[str
             },
         }
 
+    @router.get("/edgek/ide/sourceplan/lifecycle")
     @router.post("/edgek/ide/sourceplan/lifecycle")
-    async def edgek_ide_sourceplan_lifecycle(request: Request, payload: dict[str, Any] = None):
+    async def edgek_ide_sourceplan_lifecycle(request: Request, payload: dict[str, Any] = None, root_path: str = None, plan_id: str = ""):
         payload = payload or {}
+        if root_path and not payload.get("root_path"):
+            payload["root_path"] = root_path
+        if plan_id and not payload.get("plan_id"):
+            payload["plan_id"] = plan_id
         root = _root(payload.get("root_path"))
         plan = payload.get("plan") if isinstance(payload.get("plan"), dict) else {}
         plan_id = str(plan.get("plan_id") or payload.get("plan_id") or "")
@@ -603,6 +608,24 @@ def register_mission_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[str
                 except Exception as exc:
                     return {"ok": False, "command": command, "error": str(exc)}
 
+            def python_module_version(module: str) -> dict[str, Any]:
+                try:
+                    completed = subprocess.run(
+                        [sys.executable, "-m", module, "--version"],
+                        cwd=str(root), capture_output=True, text=True,
+                        timeout=5, check=False,
+                    )
+                    output = (completed.stdout or completed.stderr or "").strip().splitlines()
+                    return {
+                        "ok": completed.returncode == 0,
+                        "command": module,
+                        "invocation": [sys.executable, "-m", module],
+                        "version": output[0] if output else "available",
+                        "returncode": completed.returncode,
+                    }
+                except Exception as exc:
+                    return {"ok": False, "command": module, "error": str(exc)}
+
             def syntax_check(rel_path: str) -> dict[str, Any]:
                 if not rel_path:
                     return {"ok": True, "status": "idle", "detail": "No active file selected."}
@@ -644,7 +667,18 @@ def register_mission_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[str
                 "root": sorted((root_package.get("scripts") or {}).keys()),
                 "desktop": sorted((desktop_package.get("scripts") or {}).keys()),
             }
+            pytest_tool = python_module_version("pytest")
+            ruff_tool = python_module_version("ruff")
+            eslint_tool = command_version("eslint")
+            verifier_tools = [pytest_tool, ruff_tool, eslint_tool]
+            available_verifiers = [item["command"] for item in verifier_tools if item.get("ok")]
             cursor_config = root / ".cursor" / "mcp.json"
+            mcp_configured_servers = []
+            if cursor_config.exists():
+                try:
+                    mcp_configured_servers = sorted((read_json(cursor_config).get("mcpServers") or {}).keys())
+                except Exception:
+                    mcp_configured_servers = []
             snapshot = {
                 "ok": True,
             "beast_object_type": "beast_ide_tooling_snapshot",
@@ -655,14 +689,26 @@ def register_mission_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[str
             "syntax": syntax_check(active_file),
             "linting": {
                 "scripts": scripts,
+                "tools": verifier_tools,
+                "available_tools": available_verifiers,
+                "has_pytest": pytest_tool.get("ok") is True,
+                "has_ruff": ruff_tool.get("ok") is True,
+                "has_eslint": eslint_tool.get("ok") is True,
                 "has_root_lint": any("lint" in item for item in scripts["root"]),
                 "has_desktop_smoke": "smoke" in scripts["desktop"],
                 "has_launch_smoke": "smoke:launch" in scripts["desktop"],
-                "recommendation": "Use the project lint script through the governed terminal." if any("lint" in item for item in scripts["root"]) else "No root lint script detected; use syntax checks and focused tests until a lint contract is added.",
+                "recommendation": (
+                    f"Available verifier tools: {', '.join(available_verifiers)}. Agent runs may invoke them through worktree.verify."
+                    if available_verifiers else
+                    "No pytest or lint executable was found in the gateway Python environment or PATH."
+                ),
             },
             "mcp": {
                 "configured": cursor_config.exists(),
                 "cursor_config": str(cursor_config),
+                "configured_servers": mcp_configured_servers,
+                "configured_server_count": len(mcp_configured_servers),
+                "tool_discovery": "MCP config declares launchable servers; tool count is available only after a server is started and introspected by the broker.",
                 "expected_routes": ["/edgek/mcp/state", "/edgek/mcp/servers", "/edgek/mcp/audit", "/edgek/mcp/executions", "/edgek/mcp/approvals"],
                 "status": "configured" if cursor_config.exists() else "no local .cursor/mcp.json",
             },
@@ -674,6 +720,9 @@ def register_mission_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[str
             },
             "environments": [
                 command_version("python3", ["--version"]),
+                pytest_tool,
+                ruff_tool,
+                eslint_tool,
                 command_version("node", ["--version"]),
                 command_version("npm", ["--version"]),
                 command_version("git", ["--version"]),

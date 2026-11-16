@@ -1,0 +1,1001 @@
+[
+  {
+    "capsule": {
+      "bytes_total": 3129,
+      "manifest_digest": "sha256:79457ebbe1ff9a7a105c95c4e7fab64ce6304c965c5da5f1e92a831e401bba0f",
+      "payload_bytes": 2685,
+      "payload_sha256": "sha256:5aca161b053058eef971c88434b7dec633fcfd299227c32497101eff1ae1fdad",
+      "payload_sha256_child": "sha256:5aca161b053058eef971c88434b7dec633fcfd299227c32497101eff1ae1fdad",
+      "seals_child": [
+        "F_SEAL_SEAL",
+        "F_SEAL_SHRINK",
+        "F_SEAL_GROW",
+        "F_SEAL_WRITE"
+      ],
+      "seals_parent": [
+        "F_SEAL_SEAL",
+        "F_SEAL_SHRINK",
+        "F_SEAL_GROW",
+        "F_SEAL_WRITE"
+      ],
+      "seals_value": 15,
+      "write_after_seal": {
+        "errno": 1,
+        "error": "EPERM",
+        "refused": true
+      }
+    },
+    "computation_saved": {
+      "model_calls_avoided": 1,
+      "tokens_avoided": 643,
+      "wall_ms_saved": 1020.208
+    },
+    "copies": {
+      "bytes_copied_into_memfd": 3129,
+      "child_mmaps_read_only": 1,
+      "child_read_syscall_bytes": 0,
+      "fd_pass_socket_bytes": 202,
+      "fd_passes": 1,
+      "payload_bytes_through_socket": 0,
+      "pipe_baseline_copy_bytes": 6258,
+      "transport_bytes_saved_vs_pipe": 3129,
+      "write_calls_into_memfd": 2
+    },
+    "crystal_id": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+    "family": "fix-config-constant",
+    "governor": {
+      "outcome": "admit",
+      "receipt_hash": "sha256:e542736948cf18b2dbdbb446b137271227aca813af8a03276034aa87eccfd192",
+      "receipt_id": "gov_54a233f80dbf770af41aa3de"
+    },
+    "network": {
+      "connects": 0,
+      "dns_lookups": 0,
+      "http_sends": 0,
+      "inet_sockets": 0,
+      "lo_after": {
+        "rx_bytes": 0,
+        "rx_packets": 0,
+        "tx_bytes": 0,
+        "tx_packets": 0
+      }
+    },
+    "ok": true,
+    "parent_independent": {
+      "hidden_rc": 0,
+      "passed": true,
+      "tree_digest": "sha256:1cc76bf665d84979f08594b1fe26575915758b9a5b6073411eadc1b7a70f8a54",
+      "visible_rc": 0
+    },
+    "parent_model_calls_during_replay": 0,
+    "pgec_eq6": {
+      "c_avoided": 1.833059,
+      "c_lookup_plus_verify": 0.501357,
+      "c_maintenance": 0.05,
+      "c_risk": 0.0,
+      "credit": 1.281702,
+      "formula": "PGEC v1.0 eq.(6): V_K = C_avoided - (C_lookup + C_verify + C_risk + C_maintenance)",
+      "tokens_counted": true,
+      "v_k": 1.281702,
+      "weights": {
+        "model_turn": 1.0,
+        "observed_ktokens": 0.5,
+        "tool_call": 0.1,
+        "wall_second": 0.01
+      }
+    },
+    "postcondition": {
+      "checks": {
+        "files_sha256_after": true,
+        "returncode": true,
+        "tests_run": true
+      },
+      "passed": true,
+      "returncode": 0,
+      "target_sha256": "sha256:0dcf3995cfd291ddc0b9225e402956239ec3478c196e44fd1b7db9f39c84396f",
+      "tests_run": 2,
+      "verify_ms": 43.328
+    },
+    "process": {
+      "admit_token_echoed": true,
+      "child_pid": 1547620,
+      "child_wall_ms": 135.664,
+      "hydrate_ms": 3.047,
+      "isolation": "unshare -rn (empty netns)",
+      "parent_end_to_end_ms": 387.335
+    },
+    "receipt_digest": "sha256:bc828aa54f8154f3fe9645993a6e689cf4c3457dc9685b99880c9ac7a6ec5bb7",
+    "refused": "",
+    "replay": {
+      "changed": [
+        "ingest/config.py"
+      ],
+      "model_calls": 0,
+      "steps": [
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "worktree.inspect",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "worktree.bind",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": "fail",
+          "failures": 1,
+          "opcode": "worktree.verify",
+          "plan": null,
+          "refused": null,
+          "returncode": 1
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "repair.resolve_constant",
+          "plan": {
+            "edits": [
+              {
+                "new_text": "BATCH_SIZE = 250",
+                "old_text": "BATCH_SIZE = 100",
+                "path": "ingest/config.py"
+              }
+            ]
+          },
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "worktree.apply_plan",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": "pass",
+          "failures": 0,
+          "opcode": "worktree.verify",
+          "plan": null,
+          "refused": null,
+          "returncode": 0
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "crystal.complete",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        }
+      ],
+      "tool_calls": 5,
+      "wall_ms": 88.371
+    },
+    "route": {
+      "band": "exact",
+      "digest": "sha256:e078ae74b1bc41a39eddb7e65f9854696d2cd03415b51b8a480f99f732f981da",
+      "fingerprint_compatible": true,
+      "route": "crystal_replay",
+      "similarity": 1.0
+    },
+    "shadow_credit": {
+      "financial_value": null,
+      "mode": "shadow_ledger_only",
+      "redeemable": false,
+      "settlement": "none",
+      "transferable": false,
+      "unit": "non_financial_commons_credit",
+      "units": 1.281702
+    },
+    "stage": null,
+    "task": "const-w1"
+  },
+  {
+    "capsule": {
+      "bytes_total": 3107,
+      "manifest_digest": "sha256:d2124ca3fd884e5766f9e695e3b0b3418f16d55904022b65a549d94b25a0a4eb",
+      "payload_bytes": 2663,
+      "payload_sha256": "sha256:8d9595a1193db9c14c4da720a3a5e8d0098d27687de9288bb85f1d6024200c25",
+      "payload_sha256_child": "sha256:8d9595a1193db9c14c4da720a3a5e8d0098d27687de9288bb85f1d6024200c25",
+      "seals_child": [
+        "F_SEAL_SEAL",
+        "F_SEAL_SHRINK",
+        "F_SEAL_GROW",
+        "F_SEAL_WRITE"
+      ],
+      "seals_parent": [
+        "F_SEAL_SEAL",
+        "F_SEAL_SHRINK",
+        "F_SEAL_GROW",
+        "F_SEAL_WRITE"
+      ],
+      "seals_value": 15,
+      "write_after_seal": {
+        "errno": 1,
+        "error": "EPERM",
+        "refused": true
+      }
+    },
+    "computation_saved": {
+      "model_calls_avoided": 1,
+      "tokens_avoided": 614,
+      "wall_ms_saved": 18368.188
+    },
+    "copies": {
+      "bytes_copied_into_memfd": 3107,
+      "child_mmaps_read_only": 1,
+      "child_read_syscall_bytes": 0,
+      "fd_pass_socket_bytes": 202,
+      "fd_passes": 1,
+      "payload_bytes_through_socket": 0,
+      "pipe_baseline_copy_bytes": 6214,
+      "transport_bytes_saved_vs_pipe": 3107,
+      "write_calls_into_memfd": 2
+    },
+    "crystal_id": "family-crystal:2b089f9fd334db975992def8",
+    "family": "fix-logic-operator",
+    "governor": {
+      "outcome": "admit",
+      "receipt_hash": "sha256:c4695eadbd910840358958bf990310fab5ef6e6499486d3e652d8c87a4ef56bb",
+      "receipt_id": "gov_121ff4178963536aab2390ec"
+    },
+    "network": {
+      "connects": 0,
+      "dns_lookups": 0,
+      "http_sends": 0,
+      "inet_sockets": 0,
+      "lo_after": {
+        "rx_bytes": 0,
+        "rx_packets": 0,
+        "tx_bytes": 0,
+        "tx_packets": 0
+      }
+    },
+    "ok": true,
+    "parent_independent": {
+      "hidden_rc": 0,
+      "passed": true,
+      "tree_digest": "sha256:459002798fbaedbe027decfe10c94c69d371c59ef72a4436fce3c9c9026eaeb0",
+      "visible_rc": 0
+    },
+    "parent_model_calls_during_replay": 0,
+    "pgec_eq6": {
+      "c_avoided": 1.993157,
+      "c_lookup_plus_verify": 0.502475,
+      "c_maintenance": 0.05,
+      "c_risk": 0.0,
+      "credit": 1.440682,
+      "formula": "PGEC v1.0 eq.(6): V_K = C_avoided - (C_lookup + C_verify + C_risk + C_maintenance)",
+      "tokens_counted": true,
+      "v_k": 1.440682,
+      "weights": {
+        "model_turn": 1.0,
+        "observed_ktokens": 0.5,
+        "tool_call": 0.1,
+        "wall_second": 0.01
+      }
+    },
+    "postcondition": {
+      "checks": {
+        "files_sha256_after": true,
+        "returncode": true,
+        "tests_run": true
+      },
+      "passed": true,
+      "returncode": 0,
+      "target_sha256": "sha256:59dd96f85c7c9afaf4044f81efa83b6acbd3ef99ac36b8a8b1cb7c05b8b977d5",
+      "tests_run": 2,
+      "verify_ms": 42.549
+    },
+    "process": {
+      "admit_token_echoed": true,
+      "child_pid": 1547641,
+      "child_wall_ms": 247.471,
+      "hydrate_ms": 2.33,
+      "isolation": "unshare -rn (empty netns)",
+      "parent_end_to_end_ms": 475.755
+    },
+    "receipt_digest": "sha256:805b90599fbf9ebfa1586fb95dd1d6a3bc595a37a32f6a01708431289e1e0f55",
+    "refused": "",
+    "replay": {
+      "changed": [
+        "refunds/core.py"
+      ],
+      "model_calls": 0,
+      "steps": [
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "worktree.inspect",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "worktree.bind",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": "fail",
+          "failures": 1,
+          "opcode": "worktree.verify",
+          "plan": null,
+          "refused": null,
+          "returncode": 1
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "repair.operator_swap",
+          "plan": {
+            "edits": [
+              {
+                "new_text": "    return paid - cost",
+                "old_text": "    return paid + cost",
+                "path": "refunds/core.py"
+              }
+            ],
+            "probes": 2
+          },
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "worktree.apply_plan",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": "pass",
+          "failures": 0,
+          "opcode": "worktree.verify",
+          "plan": null,
+          "refused": null,
+          "returncode": 0
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "crystal.complete",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        }
+      ],
+      "tool_calls": 5,
+      "wall_ms": 201.652
+    },
+    "route": {
+      "band": "exact",
+      "digest": "sha256:605728c7ecef05444b4dc0d7f48372e3dc34976118dcbf647dbdb446a40e3306",
+      "fingerprint_compatible": true,
+      "route": "crystal_replay",
+      "similarity": 1.0
+    },
+    "shadow_credit": {
+      "financial_value": null,
+      "mode": "shadow_ledger_only",
+      "redeemable": false,
+      "settlement": "none",
+      "transferable": false,
+      "unit": "non_financial_commons_credit",
+      "units": 1.440682
+    },
+    "stage": null,
+    "task": "op-w1"
+  },
+  {
+    "capsule": {
+      "bytes_total": 3098,
+      "manifest_digest": "sha256:752f868f8c9bbba66f046d48a5ccd4dea4793543b1eb2d8348f296b8a83c4118",
+      "payload_bytes": 2654,
+      "payload_sha256": "sha256:9ffc5e842342ef1cdcf7dd9cfbfa91b1683ef7ca2fc55bf0b2e5b97cba1afbde",
+      "payload_sha256_child": "sha256:9ffc5e842342ef1cdcf7dd9cfbfa91b1683ef7ca2fc55bf0b2e5b97cba1afbde",
+      "seals_child": [
+        "F_SEAL_SEAL",
+        "F_SEAL_SHRINK",
+        "F_SEAL_GROW",
+        "F_SEAL_WRITE"
+      ],
+      "seals_parent": [
+        "F_SEAL_SEAL",
+        "F_SEAL_SHRINK",
+        "F_SEAL_GROW",
+        "F_SEAL_WRITE"
+      ],
+      "seals_value": 15,
+      "write_after_seal": {
+        "errno": 1,
+        "error": "EPERM",
+        "refused": true
+      }
+    },
+    "computation_saved": {
+      "model_calls_avoided": 1,
+      "tokens_avoided": 689,
+      "wall_ms_saved": 9139.909
+    },
+    "copies": {
+      "bytes_copied_into_memfd": 3098,
+      "child_mmaps_read_only": 1,
+      "child_read_syscall_bytes": 0,
+      "fd_pass_socket_bytes": 202,
+      "fd_passes": 1,
+      "payload_bytes_through_socket": 0,
+      "pipe_baseline_copy_bytes": 6196,
+      "transport_bytes_saved_vs_pipe": 3098,
+      "write_calls_into_memfd": 2
+    },
+    "crystal_id": "family-crystal:f3f8ad2739d13e5733d13336",
+    "family": "fix-off-by-one",
+    "governor": {
+      "outcome": "admit",
+      "receipt_hash": "sha256:18e2bc44ffffa0aed13e05d5b16ce7762f0f5cf45988269a922b20e725fb1a25",
+      "receipt_id": "gov_c14d75c73fa19a1661e4c445"
+    },
+    "network": {
+      "connects": 0,
+      "dns_lookups": 0,
+      "http_sends": 0,
+      "inet_sockets": 0,
+      "lo_after": {
+        "rx_bytes": 0,
+        "rx_packets": 0,
+        "tx_bytes": 0,
+        "tx_packets": 0
+      }
+    },
+    "ok": true,
+    "parent_independent": {
+      "hidden_rc": 0,
+      "passed": true,
+      "tree_digest": "sha256:f4774d160cd41ae9700ba4145481ecf4d90eb311f505c054f644b4fec29bb90f",
+      "visible_rc": 0
+    },
+    "parent_model_calls_during_replay": 0,
+    "pgec_eq6": {
+      "c_avoided": 1.937684,
+      "c_lookup_plus_verify": 0.501785,
+      "c_maintenance": 0.05,
+      "c_risk": 0.0,
+      "credit": 1.385899,
+      "formula": "PGEC v1.0 eq.(6): V_K = C_avoided - (C_lookup + C_verify + C_risk + C_maintenance)",
+      "tokens_counted": true,
+      "v_k": 1.385899,
+      "weights": {
+        "model_turn": 1.0,
+        "observed_ktokens": 0.5,
+        "tool_call": 0.1,
+        "wall_second": 0.01
+      }
+    },
+    "postcondition": {
+      "checks": {
+        "files_sha256_after": true,
+        "returncode": true,
+        "tests_run": true
+      },
+      "passed": true,
+      "returncode": 0,
+      "target_sha256": "sha256:393fc74f1f4ce952dae6c9fd0adbc46f37ec0c26f89f3c301821938f6859b964",
+      "tests_run": 2,
+      "verify_ms": 45.431
+    },
+    "process": {
+      "admit_token_echoed": true,
+      "child_pid": 1547664,
+      "child_wall_ms": 178.473,
+      "hydrate_ms": 2.372,
+      "isolation": "unshare -rn (empty netns)",
+      "parent_end_to_end_ms": 399.088
+    },
+    "receipt_digest": "sha256:759c7429505248f8c1cd42362ba9f66a9be70ac5e58106215cd47e9b62ecb847",
+    "refused": "",
+    "replay": {
+      "changed": [
+        "heads/core.py"
+      ],
+      "model_calls": 0,
+      "steps": [
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "worktree.inspect",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "worktree.bind",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": "fail",
+          "failures": 1,
+          "opcode": "worktree.verify",
+          "plan": null,
+          "refused": null,
+          "returncode": 1
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "repair.boundary_shift",
+          "plan": {
+            "edits": [
+              {
+                "new_text": "    return items[:n]",
+                "old_text": "    return items[:n - 1]",
+                "path": "heads/core.py"
+              }
+            ],
+            "probes": 1
+          },
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "worktree.apply_plan",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": "pass",
+          "failures": 0,
+          "opcode": "worktree.verify",
+          "plan": null,
+          "refused": null,
+          "returncode": 0
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "crystal.complete",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        }
+      ],
+      "tool_calls": 5,
+      "wall_ms": 129.735
+    },
+    "route": {
+      "band": "exact",
+      "digest": "sha256:1fd0139a244724c923aff6ee9a2d6516d229f1b48dc7b08701d72071eb7fd04e",
+      "fingerprint_compatible": true,
+      "route": "crystal_replay",
+      "similarity": 1.0
+    },
+    "shadow_credit": {
+      "financial_value": null,
+      "mode": "shadow_ledger_only",
+      "redeemable": false,
+      "settlement": "none",
+      "transferable": false,
+      "unit": "non_financial_commons_credit",
+      "units": 1.385899
+    },
+    "stage": null,
+    "task": "obo-w1"
+  },
+  {
+    "capsule": {
+      "bytes_total": 3124,
+      "manifest_digest": "sha256:b39ef3d1e6afc126c6072a7a210469e1d878983f79fd89f44c8b27c1f8232184",
+      "payload_bytes": 2680,
+      "payload_sha256": "sha256:f4170ca2555f59806873aad76badd46f00854f386d0ae9345855e689c2a16f88",
+      "payload_sha256_child": "sha256:f4170ca2555f59806873aad76badd46f00854f386d0ae9345855e689c2a16f88",
+      "seals_child": [
+        "F_SEAL_SEAL",
+        "F_SEAL_SHRINK",
+        "F_SEAL_GROW",
+        "F_SEAL_WRITE"
+      ],
+      "seals_parent": [
+        "F_SEAL_SEAL",
+        "F_SEAL_SHRINK",
+        "F_SEAL_GROW",
+        "F_SEAL_WRITE"
+      ],
+      "seals_value": 15,
+      "write_after_seal": {
+        "errno": 1,
+        "error": "EPERM",
+        "refused": true
+      }
+    },
+    "computation_saved": {
+      "model_calls_avoided": 1,
+      "tokens_avoided": 788,
+      "wall_ms_saved": 1628.883
+    },
+    "copies": {
+      "bytes_copied_into_memfd": 3124,
+      "child_mmaps_read_only": 1,
+      "child_read_syscall_bytes": 0,
+      "fd_pass_socket_bytes": 202,
+      "fd_passes": 1,
+      "payload_bytes_through_socket": 0,
+      "pipe_baseline_copy_bytes": 6248,
+      "transport_bytes_saved_vs_pipe": 3124,
+      "write_calls_into_memfd": 2
+    },
+    "crystal_id": "family-crystal:1e0b690bad92323d87963482",
+    "family": "fix-unhandled-exception",
+    "governor": {
+      "outcome": "admit",
+      "receipt_hash": "sha256:033bc79e637717f3d18a3cd8fa5323a84ecfcfa73e985a7e1394b318466b899b",
+      "receipt_id": "gov_6c73b736847a5bcff5949161"
+    },
+    "network": {
+      "connects": 0,
+      "dns_lookups": 0,
+      "http_sends": 0,
+      "inet_sockets": 0,
+      "lo_after": {
+        "rx_bytes": 0,
+        "rx_packets": 0,
+        "tx_bytes": 0,
+        "tx_packets": 0
+      }
+    },
+    "ok": true,
+    "parent_independent": {
+      "hidden_rc": 0,
+      "passed": true,
+      "tree_digest": "sha256:f1c6c7e82c9296b0ce4a9dd11d4abf65ebeba01911697cc872b56c40c6e62011",
+      "visible_rc": 0
+    },
+    "parent_model_calls_during_replay": 0,
+    "pgec_eq6": {
+      "c_avoided": 1.911678,
+      "c_lookup_plus_verify": 0.501389,
+      "c_maintenance": 0.05,
+      "c_risk": 0.0,
+      "credit": 1.360289,
+      "formula": "PGEC v1.0 eq.(6): V_K = C_avoided - (C_lookup + C_verify + C_risk + C_maintenance)",
+      "tokens_counted": true,
+      "v_k": 1.360289,
+      "weights": {
+        "model_turn": 1.0,
+        "observed_ktokens": 0.5,
+        "tool_call": 0.1,
+        "wall_second": 0.01
+      }
+    },
+    "postcondition": {
+      "checks": {
+        "files_sha256_after": true,
+        "returncode": true,
+        "tests_run": true
+      },
+      "passed": true,
+      "returncode": 0,
+      "target_sha256": "sha256:fb1ad642f70a3576010c42da579de0af157f0168ed567135020a864cdcd156df",
+      "tests_run": 2,
+      "verify_ms": 43.945
+    },
+    "process": {
+      "admit_token_echoed": true,
+      "child_pid": 1547690,
+      "child_wall_ms": 138.94,
+      "hydrate_ms": 2.201,
+      "isolation": "unshare -rn (empty netns)",
+      "parent_end_to_end_ms": 363.515
+    },
+    "receipt_digest": "sha256:3645f5aa439ba4c7172440a3c1a39e96dd4600d2ec1a47eb41f13a3e2489b59c",
+    "refused": "",
+    "replay": {
+      "changed": [
+        "division/core.py"
+      ],
+      "model_calls": 0,
+      "steps": [
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "worktree.inspect",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "worktree.bind",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": "fail",
+          "failures": 1,
+          "opcode": "worktree.verify",
+          "plan": null,
+          "refused": null,
+          "returncode": 1
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "repair.guard_exception",
+          "plan": {
+            "edits": [
+              {
+                "new_text": "    try:\n        return a / b\n    except ZeroDivisionError:\n        return 0.0",
+                "old_text": "    return a / b",
+                "path": "division/core.py"
+              }
+            ]
+          },
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "worktree.apply_plan",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": "pass",
+          "failures": 0,
+          "opcode": "worktree.verify",
+          "plan": null,
+          "refused": null,
+          "returncode": 0
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "crystal.complete",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        }
+      ],
+      "tool_calls": 5,
+      "wall_ms": 91.927
+    },
+    "route": {
+      "band": "exact",
+      "digest": "sha256:696188b4d58b1b105845d40b1114ba02bab44868059b553380353077a208b79b",
+      "fingerprint_compatible": true,
+      "route": "crystal_replay",
+      "similarity": 1.0
+    },
+    "shadow_credit": {
+      "financial_value": null,
+      "mode": "shadow_ledger_only",
+      "redeemable": false,
+      "settlement": "none",
+      "transferable": false,
+      "unit": "non_financial_commons_credit",
+      "units": 1.360289
+    },
+    "stage": null,
+    "task": "exc-w1"
+  },
+  {
+    "capsule": {
+      "bytes_total": 3148,
+      "manifest_digest": "sha256:d3c1c3c008c7b5ad27aa69f4d970d7f8fd2acce7d2c3e1e57a3423ba6d4b099c",
+      "payload_bytes": 2704,
+      "payload_sha256": "sha256:f894dd361f2173c33ac4c19e26961136e6bcd559c7d2eb7ed37ad076c04a6935",
+      "payload_sha256_child": "sha256:f894dd361f2173c33ac4c19e26961136e6bcd559c7d2eb7ed37ad076c04a6935",
+      "seals_child": [
+        "F_SEAL_SEAL",
+        "F_SEAL_SHRINK",
+        "F_SEAL_GROW",
+        "F_SEAL_WRITE"
+      ],
+      "seals_parent": [
+        "F_SEAL_SEAL",
+        "F_SEAL_SHRINK",
+        "F_SEAL_GROW",
+        "F_SEAL_WRITE"
+      ],
+      "seals_value": 15,
+      "write_after_seal": {
+        "errno": 1,
+        "error": "EPERM",
+        "refused": true
+      }
+    },
+    "computation_saved": {
+      "model_calls_avoided": 3,
+      "tokens_avoided": 2732,
+      "wall_ms_saved": 12396.267
+    },
+    "copies": {
+      "bytes_copied_into_memfd": 3148,
+      "child_mmaps_read_only": 1,
+      "child_read_syscall_bytes": 0,
+      "fd_pass_socket_bytes": 202,
+      "fd_passes": 1,
+      "payload_bytes_through_socket": 0,
+      "pipe_baseline_copy_bytes": 6296,
+      "transport_bytes_saved_vs_pipe": 3148,
+      "write_calls_into_memfd": 2
+    },
+    "crystal_id": "family-crystal:a0b362d365da0274266f6ba5",
+    "family": "toolchain-regenerate",
+    "governor": {
+      "outcome": "admit",
+      "receipt_hash": "sha256:ff6bcfb43123281f61e026bae6bf7966e1c1c473105d6f3f62fb96aa39907387",
+      "receipt_id": "gov_7a3f45a7cc0dc8987cfcd99f"
+    },
+    "network": {
+      "connects": 0,
+      "dns_lookups": 0,
+      "http_sends": 0,
+      "inet_sockets": 0,
+      "lo_after": {
+        "rx_bytes": 0,
+        "rx_packets": 0,
+        "tx_bytes": 0,
+        "tx_packets": 0
+      }
+    },
+    "ok": true,
+    "parent_independent": {
+      "hidden_rc": 0,
+      "passed": true,
+      "tree_digest": "sha256:16bc82c019fb0de370b04c565a057dfc97650cb1e73b21e672b54678bdef54c6",
+      "visible_rc": 0
+    },
+    "parent_model_calls_during_replay": 0,
+    "pgec_eq6": {
+      "c_avoided": 4.991789,
+      "c_lookup_plus_verify": 0.501827,
+      "c_maintenance": 0.05,
+      "c_risk": 0.0,
+      "credit": 4.439963,
+      "formula": "PGEC v1.0 eq.(6): V_K = C_avoided - (C_lookup + C_verify + C_risk + C_maintenance)",
+      "tokens_counted": true,
+      "v_k": 4.439963,
+      "weights": {
+        "model_turn": 1.0,
+        "observed_ktokens": 0.5,
+        "tool_call": 0.1,
+        "wall_second": 0.01
+      }
+    },
+    "postcondition": {
+      "checks": {
+        "files_sha256_after": true,
+        "returncode": true,
+        "tests_run": true
+      },
+      "passed": true,
+      "returncode": 0,
+      "target_sha256": "sha256:6d370819d2e0cfccce0ab01192586eecfc770bd9024cfb81ec0b08230b211c59",
+      "tests_run": 2,
+      "verify_ms": 51.761
+    },
+    "process": {
+      "admit_token_echoed": true,
+      "child_pid": 1547709,
+      "child_wall_ms": 182.657,
+      "hydrate_ms": 2.639,
+      "isolation": "unshare -rn (empty netns)",
+      "parent_end_to_end_ms": 407.608
+    },
+    "receipt_digest": "sha256:c0e2c8e0293f531578f8d7f576d96da4d5035a76e0cc71e68707945cf9cf8736",
+    "refused": "",
+    "replay": {
+      "changed": [
+        "pricing/generated.py"
+      ],
+      "model_calls": 0,
+      "steps": [
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "worktree.inspect",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "worktree.bind",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": "fail",
+          "failures": 1,
+          "opcode": "worktree.verify",
+          "plan": null,
+          "refused": null,
+          "returncode": 1
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "toolchain.resolve_declared",
+          "plan": {
+            "command": [
+              "/usr/bin/python3",
+              "tools/gen_constants.py"
+            ]
+          },
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "toolchain.run_declared",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        },
+        {
+          "expect": "pass",
+          "failures": 0,
+          "opcode": "worktree.verify",
+          "plan": null,
+          "refused": null,
+          "returncode": 0
+        },
+        {
+          "expect": null,
+          "failures": null,
+          "opcode": "crystal.complete",
+          "plan": null,
+          "refused": null,
+          "returncode": null
+        }
+      ],
+      "tool_calls": 5,
+      "wall_ms": 127.287
+    },
+    "route": {
+      "band": "exact",
+      "digest": "sha256:eb52c0078ca59a289b1ddd26d88177de0c65156a7b3629d2a93b18941ab2d6a8",
+      "fingerprint_compatible": true,
+      "route": "crystal_replay",
+      "similarity": 1.0
+    },
+    "shadow_credit": {
+      "financial_value": null,
+      "mode": "shadow_ledger_only",
+      "redeemable": false,
+      "settlement": "none",
+      "transferable": false,
+      "unit": "non_financial_commons_credit",
+      "units": 4.439963
+    },
+    "stage": null,
+    "task": "tool-w1"
+  }
+]

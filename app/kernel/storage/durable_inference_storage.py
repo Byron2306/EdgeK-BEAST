@@ -157,7 +157,10 @@ class DurableInferenceStorage:
 
     def __init__(self, storage_path: Optional[Path] = None):
         if storage_path is None:
-            storage_path = Path(__file__).resolve().parents[2] / "data" / "durable_inference"
+            # BEAST_DURABLE_INFERENCE_DIR lets tests/sandboxes keep their crystals out of the live store.
+            override = os.environ.get("BEAST_DURABLE_INFERENCE_DIR", "").strip()
+            storage_path = Path(override).expanduser() if override else (
+                Path(__file__).resolve().parents[2] / "data" / "durable_inference")
         self.storage_path = storage_path
         self.storage_path.mkdir(parents=True, exist_ok=True)
         self.blob_path = self.storage_path / "blobs" / "sha256"
@@ -931,6 +934,65 @@ class DurableInferenceStorage:
             "indexed_blob_count": len(set(self.credit_blobs.values())),
             "storage_path": str(self.storage_path),
         }
+
+    def list_credit_summaries(self, *, limit: int = 40) -> List[Dict[str, Any]]:
+        """Return redacted credit rows for IDE/inventory surfaces.
+
+        Omits metadata, prompts, responses, and request payloads so keys and
+        pins are never exported to the desktop renderer.
+        """
+        try:
+            cap = max(0, int(limit))
+        except (TypeError, ValueError):
+            cap = 40
+        credits = sorted(
+            self.credits.values(),
+            key=lambda credit: (
+                str(credit.last_reused_at or ""),
+                str(credit.created_at or ""),
+                credit.credit_id,
+            ),
+            reverse=True,
+        )
+        rows: List[Dict[str, Any]] = []
+        for credit in credits[:cap]:
+            test_names = [str(item) for item in (credit.verified_tests or [])]
+            rows.append(
+                {
+                    "beast_object_type": "semantic_compute_credit_summary",
+                    "version": "1.0",
+                    "credit_id": credit.credit_id,
+                    "id": credit.credit_id,
+                    "artifact_type": credit.artifact_type,
+                    "kind": credit.artifact_type,
+                    "category": credit.artifact_type,
+                    "task_class": credit.task_class,
+                    "name": credit.task_class,
+                    "title": credit.task_class,
+                    "domain": credit.artifact_type,
+                    "reuse_state": credit.reuse_state,
+                    "status": credit.reuse_state,
+                    "value": credit.reuse_state,
+                    "confidence": credit.confidence,
+                    "score": credit.confidence,
+                    "readiness": int(round(float(credit.confidence or 0) * 100)),
+                    "avoided_tokens_estimate": int(credit.avoided_tokens_estimate or 0),
+                    "reuse_count": int(credit.reuse_count or 0),
+                    "created_at": credit.created_at,
+                    "last_reused_at": credit.last_reused_at,
+                    "verified_tests": test_names,
+                    "checks": len(test_names),
+                    "artifacts": 1 if credit.impact_fingerprint_hash else 0,
+                    "traces": int(credit.reuse_count or 0),
+                    "reusable": credit.is_reusable(),
+                    "description": (
+                        f"{credit.task_class} · {credit.artifact_type} · "
+                        f"{int(credit.avoided_tokens_estimate or 0)} tokens avoided · "
+                        f"{int(credit.reuse_count or 0)} reuse(s)"
+                    ),
+                }
+            )
+        return rows
 
     def garbage_collect(self, *, remove_retired_indexes: bool = False, min_age_seconds: float = 0.0) -> Dict[str, Any]:
         """Delete unreferenced immutable blobs and optionally retired mutable indexes."""

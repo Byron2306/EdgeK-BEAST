@@ -5,6 +5,7 @@ reimplement token schedulers or pretend unavailable GPU engines are active.
 """
 
 from __future__ import annotations
+from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 
 import os
 import time
@@ -198,7 +199,7 @@ class InferenceEngineFabric:
             raise ValueError(f"{engine_id} endpoint is not configured")
         started = time.perf_counter()
         if engine_id == "ollama":
-            response = self.client.post(
+            response = _egress.post(self.client, "inference_engine_fabric", 
                 profile.endpoint + "/api/generate",
                 json={
                     "model": model, "prompt": prompt, "system": system_prompt,
@@ -212,7 +213,7 @@ class InferenceEngineFabric:
             prompt_tokens = int(body.get("prompt_eval_count") or 0)
             output_tokens = int(body.get("eval_count") or 0)
         elif engine_id == "tensorrt_llm" and os.environ.get("TENSORRT_LLM_API_MODE", "openai").lower() == "triton":
-            response = self.client.post(
+            response = _egress.post(self.client, "inference_engine_fabric", 
                 profile.endpoint + f"/v2/models/{os.environ.get('TENSORRT_LLM_MODEL_NAME', model)}/generate",
                 json={"text_input": (system_prompt + "\n" if system_prompt else "") + prompt, "max_tokens": max(1, int(max_tokens))},
                 timeout=timeout_seconds,
@@ -225,7 +226,7 @@ class InferenceEngineFabric:
         elif engine_id == "tgi":
             messages = ([{"role": "system", "content": system_prompt}] if system_prompt else []) + [{"role": "user", "content": prompt}]
             try:
-                response = self.client.post(profile.endpoint + "/v1/chat/completions", json={"model": model, "messages": messages, "max_tokens": max(1, int(max_tokens)), "stream": False}, timeout=timeout_seconds)
+                response = _egress.post(self.client, "inference_engine_fabric", profile.endpoint + "/v1/chat/completions", json={"model": model, "messages": messages, "max_tokens": max(1, int(max_tokens)), "stream": False}, timeout=timeout_seconds)
                 response.raise_for_status()
                 body = response.json()
                 choices = body.get("choices") or []
@@ -235,7 +236,7 @@ class InferenceEngineFabric:
             except httpx.HTTPStatusError as exc:
                 if exc.response.status_code not in {404, 405}:
                     raise
-                response = self.client.post(profile.endpoint + "/generate", json={"inputs": (system_prompt + "\n" if system_prompt else "") + prompt, "parameters": {"max_new_tokens": max(1, int(max_tokens))}}, timeout=timeout_seconds)
+                response = _egress.post(self.client, "inference_engine_fabric", profile.endpoint + "/generate", json={"inputs": (system_prompt + "\n" if system_prompt else "") + prompt, "parameters": {"max_new_tokens": max(1, int(max_tokens))}}, timeout=timeout_seconds)
                 response.raise_for_status()
                 body = response.json()
                 text, prompt_tokens, output_tokens = str(body.get("generated_text") or ""), 0, int((body.get("details") or {}).get("generated_tokens") or 0)
@@ -244,7 +245,7 @@ class InferenceEngineFabric:
             if system_prompt:
                 messages.append({"role": "system", "content": system_prompt})
             messages.append({"role": "user", "content": prompt})
-            response = self.client.post(
+            response = _egress.post(self.client, "inference_engine_fabric", 
                 profile.endpoint + "/v1/chat/completions",
                 json={"model": model, "messages": messages, "max_tokens": max(1, int(max_tokens)), "stream": False},
                 timeout=timeout_seconds,

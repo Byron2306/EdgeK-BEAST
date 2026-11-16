@@ -3,6 +3,7 @@ EdgeK BEAST Gateway - Provider Implementations
 Real API integrations for OpenAI and Anthropic
 """
 
+from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 import os
 import json
 import httpx
@@ -68,7 +69,7 @@ class OpenAIProvider(BaseProvider):
         
         logger.info(f"OpenAI request to {url}")
         
-        response = await self.client.post(
+        response = await _egress.apost(self.client, "providers", 
             url,
             headers=self._build_headers(),
             json=payload
@@ -93,7 +94,7 @@ class OpenAIProvider(BaseProvider):
         if ir.top_p is not None:
             payload["top_p"] = ir.top_p
         
-        async with self.client.stream(
+        async with _egress.astream(self.client, "providers", 
             "POST",
             url,
         headers=self._build_headers(),
@@ -175,7 +176,7 @@ class AnthropicProvider(BaseProvider):
         
         logger.info(f"Anthropic request to {url}")
         
-        response = await self.client.post(
+        response = await _egress.apost(self.client, "providers", 
             url,
             headers=self._build_headers(),
             json=payload
@@ -201,7 +202,7 @@ class AnthropicProvider(BaseProvider):
         if ir.temperature is not None:
             payload["temperature"] = ir.temperature
         
-        async with self.client.stream(
+        async with _egress.astream(self.client, "providers", 
             "POST",
             url,
             headers=self._build_headers(),

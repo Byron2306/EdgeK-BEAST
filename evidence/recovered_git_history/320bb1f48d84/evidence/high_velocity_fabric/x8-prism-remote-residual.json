@@ -1,0 +1,41 @@
+{
+  "alternatives": [
+    {
+      "cost_us": 40000,
+      "eligible": true,
+      "route": "fresh_ollama"
+    },
+    {
+      "cost_us": 150000,
+      "eligible": true,
+      "route": "provider"
+    },
+    {
+      "candidate_id": "x8-canary",
+      "cost_us": 12500,
+      "eligible": true,
+      "missing_bytes": 100000,
+      "route": "remote_residual"
+    }
+  ],
+  "authority": "route_selection_and_reconstruction_only",
+  "baseline_cost_us": 40000,
+  "baseline_route": "fresh_ollama",
+  "execution_authority_transferred": false,
+  "local_bytes": 900000,
+  "manifest_verified": true,
+  "missing_bytes": 100000,
+  "net_savings_us": 27500,
+  "object_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "phase": "X8",
+  "promotion_allowed": false,
+  "receipt_digest": "sha256:c753168005c9203787ee8a3985596e7e929a9fc3cfda10223c13a418946a6019",
+  "reconstruction_verified": true,
+  "remote_eligible": true,
+  "remote_selected": true,
+  "replay_fresh": true,
+  "selected_candidate_id": "x8-canary",
+  "selected_cost_us": 12500,
+  "selected_route": "remote_residual",
+  "trust_verified": true
+}

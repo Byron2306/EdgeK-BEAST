@@ -12,7 +12,7 @@
     root.innerHTML = `
       <header class="beast-page-head">
         <div><h2>SourcePlan Forge</h2><div class="sub">DIFF → OPERATIONS → VERIFICATION → ROLLBACK → EVIDENCE CLOSURE</div></div>
-        <div class="beast-page-actions"><button class="beast-button secondary" data-plan-action="clear">Clear</button><button class="beast-button secondary" data-plan-action="draft">Re-Draft</button><button class="beast-button" data-plan-action="lifecycle">Refresh Lifecycle</button><button class="beast-button amber" data-plan-action="verify">Verify</button><button class="beast-button hot" data-plan-action="apply">Apply</button><button class="beast-button danger-button" data-plan-action="rollback" title="Restore the latest captured SourcePlan rollback snapshot">Rollback Latest</button></div>
+        <div class="beast-page-actions"><button class="beast-button secondary" data-plan-action="clear">Clear</button><button class="beast-button secondary" data-plan-action="draft">Re-Draft</button><button class="beast-button" data-plan-action="lifecycle">Refresh Lifecycle</button><button class="beast-button amber" data-plan-action="verify">Verify</button><button class="beast-button hot" data-plan-action="apply">Apply</button><button class="beast-button secondary" data-plan-action="rollback">Rollback latest</button></div>
       </header>
       <section class="sourceplan-summary-grid">
         <article class="beast-card"><h3>Active Buffer</h3><strong class="metric small" data-plan-file>none</strong><p data-plan-buffer-state>No staged changes.</p></article>
@@ -34,11 +34,6 @@
       <section class="beast-card sourceplan-ledger wide">
         <header class="beast-panel-head"><h3>Action Contract & Apply Timeline</h3><span data-plan-updated>never</span></header>
         <div class="sourceplan-contract-grid"><div data-contract-list></div><div data-apply-list></div></div>
-      </section>
-      <section class="beast-card wide phase5-worktree-console">
-        <header class="beast-panel-head"><div><h3>Agent Worktree Provenance</h3><span data-phase5-worktree-state>No durable run selected</span></div><button class="beast-button secondary" data-plan-action="worktree-refresh">Refresh provenance</button></header>
-        <div class="phase5-worktree-warnings" data-phase5-worktree-warnings></div>
-        <div class="phase5-worktree-files" data-phase5-worktree-files><div class="cortex-empty-list">No durable worktree evidence loaded.</div></div>
       </section>`;
     return root;
   }
@@ -48,7 +43,6 @@
     let disposed = false;
     let disposeDiff = () => {};
     let diffKey = '';
-    let worktreeKey = '';
 
     async function refreshDiff(state) {
       const key = `${state.sourcePlan.originalText.length}:${state.sourcePlan.proposedText.length}:${state.sourcePlan.updatedAt}`;
@@ -58,60 +52,30 @@
       disposeDiff = await BeastEditorCortex.mountDiff(root.querySelector('[data-plan-diff-host]'), root.querySelector('[data-plan-diff-fallback]'));
     }
 
-    async function refreshWorktree(force = false) {
-      const runId = window.BeastOperationsConsole?.activeRunId?.() || '';
-      if (!runId || disposed) return;
-      const key = `${BeastStore.get().workspace.root || ''}:${runId}`;
-      if (!force && key === worktreeKey) return;
-      worktreeKey = key;
-      const stateNode = root.querySelector('[data-phase5-worktree-state]');
-      const warningNode = root.querySelector('[data-phase5-worktree-warnings]');
-      const fileNode = root.querySelector('[data-phase5-worktree-files]');
-      stateNode.textContent = 'Loading durable worktree…';
-      try {
-        const payload = await BeastOperationsConsole.loadSurface('worktree', runId, { max_diff_chars:12000 });
-        const files = payload.files || payload.changed_files || payload.items || [];
-        const summary = payload.summary || {};
-        const worktree = payload.worktree || {};
-        const sourceplan = payload.sourceplan || {};
-        stateNode.textContent = `${summary.visible_changed_files ?? files.length} changes · ${worktree.stale_base ? 'STALE BASE' : 'base current'} · ${sourceplan.promotion_ready ? 'review ready' : 'blocked'}`;
-        const warnings = [];
-        if (worktree.stale_base) warnings.push('SourcePlan base is stale because the primary workspace changed.');
-        for (const reason of sourceplan.blocked_reasons || []) warnings.push(`Promotion blocker: ${reason}`);
-        warningNode.innerHTML = warnings.map(item => `<div class="phase5-warning">${escapeHtml(item)}</div>`).join('');
-        fileNode.innerHTML = files.length ? files.map(item => `<details class="phase5-worktree-file ${item.prohibited ? 'blocked' : ''}"><summary><b>${escapeHtml(item.path || 'unknown file')}</b><span>${escapeHtml(item.change_type || item.status || 'CHANGED')}</span>${item.prohibited ? '<em>PROHIBITED</em>' : ''}</summary><div><small>${escapeHtml((item.originating_steps || []).map(row => `${row.step_id || 'step'} · ${row.tool_id || 'tool'}`).join(' | ') || 'No originating step recorded')}</small><pre>${escapeHtml(item.diff?.patch || item.patch || 'No patch body available.')}</pre></div></details>`).join('') : '<div class="cortex-empty-list">No mission changes reported.</div>';
-      } catch (error) {
-        stateNode.textContent = 'Worktree console unavailable';
-        fileNode.innerHTML = `<div class="cortex-empty-list">${escapeHtml(error.message || error)}</div>`;
-      }
-    }
-
     function patch(state) {
       if (disposed) return;
       const planState = state.sourcePlan;
       const active = state.editor.activePath;
       const plan = planState.plan || {};
       const lifecycle = planState.lifecycle || {};
-      const validation = plan.validation && typeof plan.validation === 'object' ? plan.validation : {};
       const operations = operationsFrom(state);
       root.querySelector('[data-plan-file]').textContent = active ? active.split('/').pop() : 'none';
       root.querySelector('[data-plan-buffer-state]').textContent = active ? (state.editor.dirtyPaths.includes(active) ? 'Staged buffer requires governed write.' : 'Active buffer is clean.') : 'Select a file in Editor Cortex.';
       root.querySelector('[data-plan-id]').textContent = plan.plan_id || 'none';
       root.querySelector('[data-plan-status]').textContent = planState.message || planState.status;
       root.querySelector('[data-plan-ops]').textContent = `${planState.selectedOperationIds.length} selected`;
-      root.querySelector('[data-plan-contract]').textContent = validation.status ? `${validation.check_count || 0} proposal checks · ${validation.status}` : lifecycle.action_contract?.rollback_required === false ? 'Direct apply contract' : 'Approval + rollback + evidence';
+      root.querySelector('[data-plan-contract]').textContent = lifecycle.action_contract?.rollback_required === false ? 'Direct apply contract' : 'Approval + rollback + evidence';
       const score = Number(lifecycle.score ?? (lifecycle.can_apply ? 100 : plan ? 72 : 0));
       root.querySelector('[data-plan-ring]').style.setProperty('--value', Math.max(0, Math.min(100, score)));
       root.querySelector('[data-plan-score]').textContent = `${score}%`;
-      root.querySelector('[data-plan-ready]').textContent = lifecycle.can_apply ? 'Ready for governed apply.' : validation.ok ? 'Proposal checks passed. Run governed verification.' : validation.status === 'failed' ? 'Proposal checks failed. Return to Pair Programmer.' : planState.status === 'local-preview' ? 'Preview only — gateway verification required.' : 'Verification incomplete.';
+      root.querySelector('[data-plan-ready]').textContent = lifecycle.can_apply ? 'Ready for governed apply.' : planState.status === 'local-draft' ? 'Gateway verification required.' : 'Verification incomplete.';
       root.querySelector('[data-diff-label]').textContent = active || 'No active file';
       root.querySelector('[data-diff-mode]').textContent = state.connection.status === 'online' && !state.connection.demoMode ? 'GATEWAY PLAN' : 'LOCAL PREVIEW';
       root.querySelector('[data-operation-count]').textContent = `${operations.length} operations`;
       const opHost = root.querySelector('[data-operation-list]');
-      opHost.innerHTML = operations.length ? operations.map(op => `<button class="sourceplan-op ${op.selected ? 'selected' : ''} ${planState.activeOperationId === op.id ? 'active' : ''}" data-plan-op="${escapeHtml(op.id)}"><span>${op.selected ? '✓' : '○'}</span><div><b>${escapeHtml(op.op || op.kind || 'operation')}</b><small>${escapeHtml(op.path || active || '')}</small><em>${escapeHtml(op.description || op.summary || op.risk || 'governed mutation')}</em></div></button>`).join('') : '<div class="cortex-empty-list">Draft a plan to inspect operations.</div>';
-      const proposalChecks = Array.isArray(validation.checks) ? validation.checks.map(check => ({label:`${check.path || 'proposal'} · ${check.kind || 'check'}`,status:check.passed?'pass':'fail'})) : [];
-      const checks = [...proposalChecks,...(lifecycle.checks || [])];
-      root.querySelector('[data-lifecycle-state]').textContent = lifecycle.can_apply ? 'ready' : validation.status || planState.status;
+      opHost.innerHTML = operations.length ? operations.map(op => `<button class="sourceplan-op ${op.selected ? 'selected' : ''} ${planState.activeOperationId === op.id ? 'active' : ''}" data-plan-op="${escapeHtml(op.id)}"><span>${op.selected ? '✓' : '○'}</span><div><b>${escapeHtml(op.op || op.kind || 'operation')}</b><small>${escapeHtml(op.path || active || '')}</small><em>${escapeHtml(op.summary || op.risk || 'governed mutation')}</em></div></button>`).join('') : '<div class="cortex-empty-list">Draft a plan to inspect operations.</div>';
+      const checks = lifecycle.checks || [];
+      root.querySelector('[data-lifecycle-state]').textContent = lifecycle.can_apply ? 'ready' : planState.status;
       root.querySelector('[data-lifecycle-list]').innerHTML = checks.length ? checks.map(check => `<div class="sourceplan-check ${check.status === 'pass' ? 'pass' : check.status === 'fail' ? 'fail' : ''}"><span>${check.status === 'pass' ? '✓' : check.status === 'fail' ? '!' : '○'}</span><b>${escapeHtml(check.label || check.name || 'check')}</b><em>${escapeHtml(check.status || 'pending')}</em></div>`).join('') : '<div class="cortex-empty-list">Lifecycle has not been scored.</div>';
       const contract = lifecycle.action_contract || {};
       const contractRows = [
@@ -123,15 +87,11 @@
       root.querySelector('[data-apply-list]').innerHTML = `<h4>Apply Timeline</h4>${apply ? Object.entries(apply).slice(0, 8).map(([key, value]) => `<div class="contract-row"><span>${escapeHtml(key)}</span><b>${escapeHtml(Array.isArray(value) ? value.join(', ') : typeof value === 'object' ? JSON.stringify(value) : value)}</b></div>`).join('') : '<div class="cortex-empty-list">No apply receipt yet.</div>'}`;
       root.querySelector('[data-plan-updated]').textContent = planState.updatedAt ? new Date(planState.updatedAt).toLocaleTimeString() : 'never';
       root.querySelector('[data-plan-action="verify"]').disabled = !plan || planState.verifying;
-      // Apply performs the authoritative verification again on the backend.
-      // Keep it usable after a draft even when the optional lifecycle refresh
-      // has not run yet; requiring lifecycle.can_apply here made the button
-      // appear permanently dead after AI proposals.
-      root.querySelector('[data-plan-action="apply"]').disabled = !plan || planState.applying || planState.status === 'local-preview' || planState.stale;
-      root.querySelector('[data-plan-action="rollback"]').disabled = planState.applying || !planState.lastApply;
+      root.querySelector('[data-plan-action="apply"]').disabled = !lifecycle.can_apply || planState.applying;
       root.querySelector('[data-plan-action="lifecycle"]').disabled = !plan;
       root.querySelector('[data-plan-action="clear"]').disabled = !plan;
-      refreshDiff(state); refreshWorktree();
+      root.querySelector('[data-plan-action="rollback"]').disabled = !planState.lastApply || planState.status === 'rolling-back';
+      refreshDiff(state);
     }
 
     const unsubscribe = BeastStore.subscribe(patch);
@@ -139,13 +99,12 @@
       const op = event.target.closest('[data-plan-op]'); if (op) { BeastEditorCortex.toggleOperation(op.dataset.planOp); return; }
       const action = event.target.closest('[data-plan-action]')?.dataset.planAction; if (!action) return;
       try {
-        if (action === 'worktree-refresh') { await refreshWorktree(true); BeastFX.trigger('ring',event.target,{size:180}); }
         if (action === 'clear') BeastEditorCortex.clearPlan();
         if (action === 'draft') await BeastEditorCortex.draftSourcePlan();
         if (action === 'lifecycle') await BeastEditorCortex.refreshLifecycle();
         if (action === 'verify') { await BeastEditorCortex.verifyPlan(); BeastFX.trigger('success', event.target, { size: 230 }); }
         if (action === 'apply') { await BeastEditorCortex.applyPlan(); BeastFX.trigger('success', event.target, { size: 320 }); BeastMascot.setState('finished'); setTimeout(() => BeastMascot.setState('idle'), 1600); }
-        if (action === 'rollback') { await BeastEditorCortex.rollbackLatestPlan(); BeastFX.trigger('warning', event.target, { size: 280 }); BeastMascot.setState('working'); setTimeout(() => BeastMascot.setState('idle'), 1200); }
+        if (action === 'rollback') { await BeastEditorCortex.rollbackLatestPlan(); BeastFX.trigger('success', event.target, { size: 260 }); }
       } catch (error) { BeastStore.patch('sourcePlan', { status: 'error', message: String(error.message || error), error: String(error.message || error) }); BeastFX.trigger('warning', event.target, { size: 250 }); }
     });
 

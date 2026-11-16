@@ -1,0 +1,158 @@
+{
+ "_doc": "HF Inference Providers router lanes for the governed client (approved by Byron 2026-11-16). Data only: used by governed_client.hf_router_candidates() when BEAST_GOVERNED_INTERCEPTION is on; ranked per (model, provider) cell by the capability scorecard when BEAST_CAPABILITY_ROUTER is on. Token: HF_TOKEN env or ~/.cache/huggingface/token (never stored here). Prices USD per million tokens from https://router.huggingface.co/v1/models.",
+ "base_url": "https://router.huggingface.co/v1",
+ "key_env": "HF_TOKEN",
+ "key_file": "~/.cache/huggingface/token",
+ "models": [
+  {
+   "model": "moonshotai/Kimi-K2.7-Code",
+   "max_tokens": 2048,
+   "routes": [
+    {
+     "provider": "deepinfra",
+     "usd_per_mtok_in": 0.68,
+     "usd_per_mtok_out": 3.4,
+     "pricing_source": "hf_router_models_2026-11-16",
+     "supports_structured_output": true,
+     "context_length": 262144
+    },
+    {
+     "provider": "featherless-ai",
+     "usd_per_mtok_in": 0.95,
+     "usd_per_mtok_out": 4,
+     "pricing_source": "unlisted_upper_bound_of_sibling_routes",
+     "supports_structured_output": null,
+     "context_length": null
+    },
+    {
+     "provider": "novita",
+     "usd_per_mtok_in": 0.95,
+     "usd_per_mtok_out": 4,
+     "pricing_source": "hf_router_models_2026-11-16",
+     "supports_structured_output": true,
+     "context_length": 262144
+    }
+   ]
+  },
+  {
+   "model": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "max_tokens": 2048,
+   "routes": [
+    {
+     "provider": "deepinfra",
+     "usd_per_mtok_in": 0.2,
+     "usd_per_mtok_out": 0.6,
+     "pricing_source": "hf_router_models_2026-11-16",
+     "supports_structured_output": true,
+     "context_length": 1048576
+    },
+    {
+     "provider": "baseten",
+     "usd_per_mtok_in": 0.3,
+     "usd_per_mtok_out": 1.2,
+     "pricing_source": "hf_router_models_2026-11-16",
+     "supports_structured_output": false,
+     "context_length": 1048576
+    },
+    {
+     "provider": "novita",
+     "usd_per_mtok_in": 0.3,
+     "usd_per_mtok_out": 1.2,
+     "pricing_source": "hf_router_models_2026-11-16",
+     "supports_structured_output": true,
+     "context_length": 1048576
+    }
+   ]
+  },
+  {
+   "model": "Qwen/Qwen3.8-27B",
+   "max_tokens": 2048,
+   "routes": [
+    {
+     "provider": "cerebras",
+     "usd_per_mtok_in": 0.99,
+     "usd_per_mtok_out": 1.49,
+     "pricing_source": "hf_router_models_2026-11-16",
+     "supports_structured_output": true,
+     "context_length": 65536
+    },
+    {
+     "provider": "deepinfra",
+     "usd_per_mtok_in": 0.2,
+     "usd_per_mtok_out": 2.5,
+     "pricing_source": "hf_router_models_2026-11-16",
+     "supports_structured_output": true,
+     "context_length": 262144
+    },
+    {
+     "provider": "nscale",
+     "usd_per_mtok_in": 0.2,
+     "usd_per_mtok_out": 2.5,
+     "pricing_source": "hf_router_models_2026-11-16",
+     "supports_structured_output": true,
+     "context_length": 1048576
+    }
+   ]
+  },
+  {
+   "model": "zai-org/GLM-5.3-Flash",
+   "max_tokens": 2048,
+   "routes": [
+    {
+     "provider": "zai-org",
+     "usd_per_mtok_in": 0.15,
+     "usd_per_mtok_out": 0.5,
+     "pricing_source": "unlisted_upper_bound_of_sibling_routes",
+     "supports_structured_output": true,
+     "context_length": null
+    },
+    {
+     "provider": "deepinfra",
+     "usd_per_mtok_in": 0.15,
+     "usd_per_mtok_out": 0.5,
+     "pricing_source": "hf_router_models_2026-11-16",
+     "supports_structured_output": true,
+     "context_length": 1048576
+    },
+    {
+     "provider": "novita",
+     "usd_per_mtok_in": 0.15,
+     "usd_per_mtok_out": 0.5,
+     "pricing_source": "hf_router_models_2026-11-16",
+     "supports_structured_output": true,
+     "context_length": 1048576
+    }
+   ]
+  },
+  {
+   "model": "openai/gpt-oss-120b",
+   "max_tokens": 2048,
+   "routes": [
+    {
+     "provider": "groq",
+     "usd_per_mtok_in": 0.15,
+     "usd_per_mtok_out": 0.75,
+     "pricing_source": "hf_router_models_2026-11-16",
+     "supports_structured_output": true,
+     "context_length": 131072
+    },
+    {
+     "provider": "cerebras",
+     "usd_per_mtok_in": 0.35,
+     "usd_per_mtok_out": 0.75,
+     "pricing_source": "hf_router_models_2026-11-16",
+     "supports_structured_output": true,
+     "context_length": 131072
+    },
+    {
+     "provider": "deepinfra",
+     "usd_per_mtok_in": 0.037,
+     "usd_per_mtok_out": 0.17,
+     "pricing_source": "hf_router_models_2026-11-16",
+     "supports_structured_output": true,
+     "context_length": 131072
+    }
+   ]
+  }
+ ]
+}

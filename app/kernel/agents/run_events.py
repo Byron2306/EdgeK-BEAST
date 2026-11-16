@@ -96,6 +96,19 @@ def legacy_event_projection(event_type: str, payload: dict[str, Any]) -> tuple[s
         name = "agent_run_done"
         projected.setdefault("ok", event_type == "agent.planner.completed")
         projected.setdefault("sourceplan_status", "completed" if event_type == "agent.planner.completed" else "budget_exhausted")
+    elif event_type == "agent.planner.review_incomplete":
+        name = "agent_run_done"
+        projected.setdefault("sourceplan_status", "review_incomplete")
+    elif event_type in {"agent.planner.review_attempt", "agent.planner.review_result", "agent.planner.review_answer_rejected"}:
+        name = "agent_run_stage"
+        if event_type.endswith("review_attempt"):
+            text = "Drafting grounded review"
+        elif event_type.endswith("review_result"):
+            text = str(projected.get("reason") or "Grounded review answer accepted")
+        else:
+            text = ("Retrying review after an invalid response" if projected.get("retry_available")
+                    else "Review ended without an accepted answer")
+        projected.setdefault("text", text)
     elif event_type == "agent.planner.blocked":
         name = "agent_run_needs_operator"
         projected.setdefault("ok", False)

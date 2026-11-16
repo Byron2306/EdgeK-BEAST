@@ -1,0 +1,1233 @@
+{
+  "rows": [
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_c5239a36b125c01e962f924c",
+      "independent": null,
+      "last_reason": "no_parseable_edit",
+      "model": "qwen3:4b",
+      "passed": false,
+      "reason": "verifier_failed:no_parseable_edit",
+      "task": "const-cold",
+      "tokens_total": 974,
+      "usage": {
+        "completion_tokens": 679,
+        "prompt_tokens": 295
+      },
+      "wall_ms": 80424.261,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_5ebadf5d676ed5a2fa254bd2",
+      "independent": null,
+      "last_reason": "no_parseable_edit",
+      "model": "qwen3:4b",
+      "passed": false,
+      "reason": "verifier_failed:no_parseable_edit",
+      "task": "op-cold",
+      "tokens_total": 1000,
+      "usage": {
+        "completion_tokens": 689,
+        "prompt_tokens": 311
+      },
+      "wall_ms": 95746.939,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_3c7faf12982a78ab9b9733af",
+      "independent": null,
+      "last_reason": "no_parseable_edit",
+      "model": "qwen3:4b",
+      "passed": false,
+      "reason": "verifier_failed:no_parseable_edit",
+      "task": "obo-cold",
+      "tokens_total": 1312,
+      "usage": {
+        "completion_tokens": 928,
+        "prompt_tokens": 384
+      },
+      "wall_ms": 132586.785,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_cc38ee384f02e5392b9e1f39",
+      "independent": null,
+      "last_reason": "no_parseable_edit",
+      "model": "qwen3:4b",
+      "passed": false,
+      "reason": "verifier_failed:no_parseable_edit",
+      "task": "exc-cold",
+      "tokens_total": 1430,
+      "usage": {
+        "completion_tokens": 1024,
+        "prompt_tokens": 406
+      },
+      "wall_ms": 151300.461,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_652988632e08d453443079b0",
+      "independent": null,
+      "last_reason": "no_parseable_edit",
+      "model": "qwen3:4b",
+      "passed": false,
+      "reason": "verifier_failed:no_parseable_edit",
+      "task": "const-near",
+      "tokens_total": 888,
+      "usage": {
+        "completion_tokens": 601,
+        "prompt_tokens": 287
+      },
+      "wall_ms": 77332.214,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_5327683b73fff3543948c0ac",
+      "independent": null,
+      "last_reason": "no_parseable_edit",
+      "model": "qwen3:4b",
+      "passed": false,
+      "reason": "verifier_failed:no_parseable_edit",
+      "task": "op-near",
+      "tokens_total": 1338,
+      "usage": {
+        "completion_tokens": 1024,
+        "prompt_tokens": 314
+      },
+      "wall_ms": 154905.149,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_98d27f6c4a5a8a39d0aa0ea4",
+      "independent": null,
+      "last_reason": "no_parseable_edit",
+      "model": "qwen3:4b",
+      "passed": false,
+      "reason": "verifier_failed:no_parseable_edit",
+      "task": "obo-near",
+      "tokens_total": 1386,
+      "usage": {
+        "completion_tokens": 1024,
+        "prompt_tokens": 362
+      },
+      "wall_ms": 147771.721,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_257016d9dd3c709a15817d35",
+      "independent": null,
+      "last_reason": "no_parseable_edit",
+      "model": "qwen3:4b",
+      "passed": false,
+      "reason": "verifier_failed:no_parseable_edit",
+      "task": "exc-near",
+      "tokens_total": 1492,
+      "usage": {
+        "completion_tokens": 1024,
+        "prompt_tokens": 468
+      },
+      "wall_ms": 138739.153,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": [
+        {
+          "new_text": "INVOICE_RETRY_LIMIT = 5",
+          "old_text": "INVOICE_RETRY_LIMIT = 3",
+          "path": "billing/config.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_907b8ea69577a7858bf9e603",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:0dd2f6ed029b0a07c3c117c50a2875d3728bcae6d5f4fbb30618cb27f0317867",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "qwen3:4b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "const-cold",
+      "tokens_total": 590,
+      "usage": {
+        "completion_tokens": 52,
+        "prompt_tokens": 538
+      },
+      "wall_ms": 9365.371,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/const-cold-bench-qwen3_4b-after/wt"
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": [
+        {
+          "new_text": "def net_amount(gross, fee):\n    return gross - fee",
+          "old_text": "def net_amount(gross, fee):\n    return gross + fee",
+          "path": "fees/core.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_fd40648449a234504bedffe5",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:666b8daab7738aa23173283ae75206b057b655c43c1579a8897ad1109d4d6505",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "qwen3:4b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "op-cold",
+      "tokens_total": 621,
+      "usage": {
+        "completion_tokens": 67,
+        "prompt_tokens": 554
+      },
+      "wall_ms": 9732.025,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/op-cold-bench-qwen3_4b-after/wt"
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": [
+        {
+          "new_text": "def last_n(items, n):\n    return items[-n:]",
+          "old_text": "def last_n(items, n):\n    return items[-n - 1:]",
+          "path": "window/core.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_10251a955609aa6145a40639",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:f302577ce427b282cc291c983daef7d897e5b552ee59ab726cadd24cc47ac634",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "qwen3:4b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "obo-cold",
+      "tokens_total": 696,
+      "usage": {
+        "completion_tokens": 69,
+        "prompt_tokens": 627
+      },
+      "wall_ms": 10897.938,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/obo-cold-bench-qwen3_4b-after/wt"
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": [
+        {
+          "new_text": "    return int(num) / int(den) if den != '0' else None",
+          "old_text": "    return int(num) / int(den)",
+          "path": "fracs/core.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_8dff429ee04fa209bb90fed2",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:a6790a572c131f7f4836bcdd4b67116d8edcefa9928adc3d37970520850f5499",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "qwen3:4b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "exc-cold",
+      "tokens_total": 715,
+      "usage": {
+        "completion_tokens": 66,
+        "prompt_tokens": 649
+      },
+      "wall_ms": 10212.693,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/exc-cold-bench-qwen3_4b-after/wt"
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": [
+        {
+          "new_text": "RETRY_LIMIT = 5",
+          "old_text": "RETRY_LIMIT = 3",
+          "path": "workers/config.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_c129a8abb7fa8d1f416aef0b",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:3ad7978fb258d9308f7145d6fcc976c611b1fe4f6000c6f9d2c271ce9709ed48",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "qwen3:4b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "const-near",
+      "tokens_total": 580,
+      "usage": {
+        "completion_tokens": 50,
+        "prompt_tokens": 530
+      },
+      "wall_ms": 8045.101,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/const-near-bench-qwen3_4b-after/wt"
+    },
+    {
+      "attempts": 2,
+      "config": "after",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_2956a18e02800d0c3d431492",
+      "independent": null,
+      "last_reason": "tests_still_failing",
+      "model": "qwen3:4b",
+      "passed": false,
+      "reason": "verifier_failed:tests_still_failing",
+      "task": "op-near",
+      "tokens_total": 1455,
+      "usage": {
+        "completion_tokens": 144,
+        "prompt_tokens": 1311
+      },
+      "wall_ms": 22288.234,
+      "worktree": ""
+    },
+    {
+      "attempts": 2,
+      "config": "after",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_884edf0053314105377cdfb2",
+      "independent": null,
+      "last_reason": "no_parseable_edit",
+      "model": "qwen3:4b",
+      "passed": false,
+      "reason": "verifier_failed:no_parseable_edit",
+      "task": "obo-near",
+      "tokens_total": 1465,
+      "usage": {
+        "completion_tokens": 102,
+        "prompt_tokens": 1363
+      },
+      "wall_ms": 15117.971,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_2855d9caa03f7a1ab9c2c822",
+      "independent": null,
+      "last_reason": "no_parseable_edit",
+      "model": "qwen3:4b",
+      "passed": false,
+      "reason": "verifier_failed:no_parseable_edit",
+      "task": "exc-near",
+      "tokens_total": 849,
+      "usage": {
+        "completion_tokens": 120,
+        "prompt_tokens": 729
+      },
+      "wall_ms": 17856.179,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": [
+        {
+          "new_text": "INVOICE_RETRY_LIMIT = 5",
+          "old_text": "INVOICE_RETRY_LIMIT = 3",
+          "path": "billing/config.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_25566bc2ebcacbeb5e0b4964",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:0dd2f6ed029b0a07c3c117c50a2875d3728bcae6d5f4fbb30618cb27f0317867",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "granite3.3:2b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "const-cold",
+      "tokens_total": 375,
+      "usage": {
+        "completion_tokens": 33,
+        "prompt_tokens": 342
+      },
+      "wall_ms": 9679.315,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/const-cold-bench-granite3.3_2b-before/wt"
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_97e8dc6c917755234d999782",
+      "independent": null,
+      "last_reason": "edit_not_applicable:edit old_text is not unique in target",
+      "model": "granite3.3:2b",
+      "passed": false,
+      "reason": "verifier_failed:edit_not_applicable:edit old_text is not unique in target",
+      "task": "op-cold",
+      "tokens_total": 400,
+      "usage": {
+        "completion_tokens": 45,
+        "prompt_tokens": 355
+      },
+      "wall_ms": 3908.982,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_13d5fda9e028b788750e64b6",
+      "independent": null,
+      "last_reason": "edit_not_applicable:edit old_text is not unique in target",
+      "model": "granite3.3:2b",
+      "passed": false,
+      "reason": "verifier_failed:edit_not_applicable:edit old_text is not unique in target",
+      "task": "obo-cold",
+      "tokens_total": 485,
+      "usage": {
+        "completion_tokens": 46,
+        "prompt_tokens": 439
+      },
+      "wall_ms": 3433.446,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": [
+        {
+          "new_text": "return int(num) / int(den) if den != '0' else None",
+          "old_text": "return int(num) / int(den)",
+          "path": "fracs/core.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_5ed7039f6499357130be7c3d",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:a6790a572c131f7f4836bcdd4b67116d8edcefa9928adc3d37970520850f5499",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "granite3.3:2b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "exc-cold",
+      "tokens_total": 516,
+      "usage": {
+        "completion_tokens": 42,
+        "prompt_tokens": 474
+      },
+      "wall_ms": 3462.718,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/exc-cold-bench-granite3.3_2b-before/wt"
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": [
+        {
+          "new_text": "RETRY_LIMIT = 5",
+          "old_text": "RETRY_LIMIT = 3",
+          "path": "workers/config.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_60dce360ddaea1dd27be1a63",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:3ad7978fb258d9308f7145d6fcc976c611b1fe4f6000c6f9d2c271ce9709ed48",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "granite3.3:2b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "const-near",
+      "tokens_total": 355,
+      "usage": {
+        "completion_tokens": 27,
+        "prompt_tokens": 328
+      },
+      "wall_ms": 2079.518,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/const-near-bench-granite3.3_2b-before/wt"
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_30a59005a7f1d34d6c795d93",
+      "independent": null,
+      "last_reason": "tests_still_failing",
+      "model": "granite3.3:2b",
+      "passed": false,
+      "reason": "verifier_failed:tests_still_failing",
+      "task": "op-near",
+      "tokens_total": 390,
+      "usage": {
+        "completion_tokens": 31,
+        "prompt_tokens": 359
+      },
+      "wall_ms": 2308.123,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_66027867d9e89aa2540f4122",
+      "independent": null,
+      "last_reason": "edit_not_applicable:edit old_text is not unique in target",
+      "model": "granite3.3:2b",
+      "passed": false,
+      "reason": "verifier_failed:edit_not_applicable:edit old_text is not unique in target",
+      "task": "obo-near",
+      "tokens_total": 463,
+      "usage": {
+        "completion_tokens": 50,
+        "prompt_tokens": 413
+      },
+      "wall_ms": 3777.214,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_1a43135a98a89463996b2903",
+      "independent": null,
+      "last_reason": "tests_still_failing",
+      "model": "granite3.3:2b",
+      "passed": false,
+      "reason": "verifier_failed:tests_still_failing",
+      "task": "exc-near",
+      "tokens_total": 572,
+      "usage": {
+        "completion_tokens": 31,
+        "prompt_tokens": 541
+      },
+      "wall_ms": 2639.931,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": [
+        {
+          "new_text": "INVOICE_RETRY_LIMIT = 5",
+          "old_text": "INVOICE_RETRY_LIMIT = 3",
+          "path": "billing/config.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_0c5ee9f5f46d523fd3abfa65",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:0dd2f6ed029b0a07c3c117c50a2875d3728bcae6d5f4fbb30618cb27f0317867",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "granite3.3:2b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "const-cold",
+      "tokens_total": 678,
+      "usage": {
+        "completion_tokens": 47,
+        "prompt_tokens": 631
+      },
+      "wall_ms": 4136.537,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/const-cold-bench-granite3.3_2b-after/wt"
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": [
+        {
+          "new_text": "def net_amount(gross, fee):\n    return gross - fee",
+          "old_text": "def net_amount(gross, fee):",
+          "path": "fees/core.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_5b5bc9d5c747fc883c636d86",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:e0972824c70d59bb4652bd2e98d54046b39689be3f0a7fcfc248a35a8963c668",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "granite3.3:2b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "op-cold",
+      "tokens_total": 701,
+      "usage": {
+        "completion_tokens": 57,
+        "prompt_tokens": 644
+      },
+      "wall_ms": 4355.554,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/op-cold-bench-granite3.3_2b-after/wt"
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": [
+        {
+          "new_text": "def last_n(items, n):\n    return items[-n:]",
+          "old_text": "def last_n(items, n):",
+          "path": "window/core.py"
+        },
+        {
+          "new_text": "def size(items):\n    return len(items)",
+          "old_text": "def size(items):",
+          "path": "window/core.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_d5e38eb5887c136286268a61",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:e2bae29bbdfec27d9c7c950a6c7fc1b4000bb28493beb8001712048ceaef028c",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "granite3.3:2b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "obo-cold",
+      "tokens_total": 825,
+      "usage": {
+        "completion_tokens": 97,
+        "prompt_tokens": 728
+      },
+      "wall_ms": 7562.89,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/obo-cold-bench-granite3.3_2b-after/wt"
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": [
+        {
+          "new_text": "def ratio_of(text):\n    try:\n        num, den = text.split('/')\n        return int(num) / int(den)\n    except ZeroDivisionError:\n        return None",
+          "old_text": "def ratio_of(text):",
+          "path": "fracs/core.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_ce2ea146604809da15488fda",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:1a211c9bbaa82af4a9fefb63b59a3accaf27ed837d022181032e8ac16de75c1a",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "granite3.3:2b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "exc-cold",
+      "tokens_total": 846,
+      "usage": {
+        "completion_tokens": 83,
+        "prompt_tokens": 763
+      },
+      "wall_ms": 6554.222,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/exc-cold-bench-granite3.3_2b-after/wt"
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": [
+        {
+          "new_text": "RETRY_LIMIT = 5",
+          "old_text": "RETRY_LIMIT = 3",
+          "path": "workers/config.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_2982da919752bb7dbde324f0",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:3ad7978fb258d9308f7145d6fcc976c611b1fe4f6000c6f9d2c271ce9709ed48",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "granite3.3:2b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "const-near",
+      "tokens_total": 658,
+      "usage": {
+        "completion_tokens": 41,
+        "prompt_tokens": 617
+      },
+      "wall_ms": 3291.541,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/const-near-bench-granite3.3_2b-after/wt"
+    },
+    {
+      "attempts": 2,
+      "config": "after",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_f905b590535b641487af05bf",
+      "independent": null,
+      "last_reason": "tests_still_failing",
+      "model": "granite3.3:2b",
+      "passed": false,
+      "reason": "verifier_failed:tests_still_failing",
+      "task": "op-near",
+      "tokens_total": 1601,
+      "usage": {
+        "completion_tokens": 123,
+        "prompt_tokens": 1478
+      },
+      "wall_ms": 10988.649,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_944c7121eaef93a30a4a9762",
+      "independent": null,
+      "last_reason": "tests_still_failing",
+      "model": "granite3.3:2b",
+      "passed": false,
+      "reason": "verifier_failed:tests_still_failing",
+      "task": "obo-near",
+      "tokens_total": 820,
+      "usage": {
+        "completion_tokens": 118,
+        "prompt_tokens": 702
+      },
+      "wall_ms": 9927.998,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": [
+        {
+          "new_text": "def average(values):\n    if len(values) == 0:\n        return None\n    from stats.helpers import mean\n    return mean(values)",
+          "old_text": "def average(values):\n    from stats.helpers import mean\n    return mean(values)",
+          "path": "stats/core.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_300726f3ea8c175f1ac99b4c",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:5c3e2fa6c77be40f35bf1fe4128a8d096853ee47b73a8f43143982fea5e610fc",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "granite3.3:2b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "exc-near",
+      "tokens_total": 942,
+      "usage": {
+        "completion_tokens": 86,
+        "prompt_tokens": 856
+      },
+      "wall_ms": 7701.595,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/exc-near-bench-granite3.3_2b-after/wt"
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": [
+        {
+          "new_text": "INVOICE_RETRY_LIMIT = 5",
+          "old_text": "INVOICE_RETRY_LIMIT = 3",
+          "path": "billing/config.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_494728e14ccec101f2f7efd8",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:0dd2f6ed029b0a07c3c117c50a2875d3728bcae6d5f4fbb30618cb27f0317867",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "granite3.2:2b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "const-cold",
+      "tokens_total": 373,
+      "usage": {
+        "completion_tokens": 33,
+        "prompt_tokens": 340
+      },
+      "wall_ms": 9527.079,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/const-cold-bench-granite3.2_2b-before/wt"
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": [
+        {
+          "new_text": "def net_amount(gross, fee):\n    return gross - fee",
+          "old_text": "def net_amount(gross, fee):\n    return gross + fee",
+          "path": "fees/core.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_891b90a4f93d8d63e0c3a4c1",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:666b8daab7738aa23173283ae75206b057b655c43c1579a8897ad1109d4d6505",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "granite3.2:2b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "op-cold",
+      "tokens_total": 403,
+      "usage": {
+        "completion_tokens": 49,
+        "prompt_tokens": 354
+      },
+      "wall_ms": 4258.63,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/op-cold-bench-granite3.2_2b-before/wt"
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_95f6865f97277538dd80b8c0",
+      "independent": null,
+      "last_reason": "tests_still_failing",
+      "model": "granite3.2:2b",
+      "passed": false,
+      "reason": "verifier_failed:tests_still_failing",
+      "task": "obo-cold",
+      "tokens_total": 462,
+      "usage": {
+        "completion_tokens": 28,
+        "prompt_tokens": 434
+      },
+      "wall_ms": 2542.672,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": [
+        {
+          "new_text": "return None",
+          "old_text": "return int(num) / int(den)",
+          "path": "fracs/core.py"
+        }
+      ],
+      "false_accept": true,
+      "governor": "gov_357b0aa4a488a7886a49a06f",
+      "independent": {
+        "hidden_rc": 1,
+        "passed": false,
+        "tree_digest": "sha256:3779b65da212f510a5492d3a3444c1ddd58cc44f53b06d9035f708672d554b30",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "granite3.2:2b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "exc-cold",
+      "tokens_total": 503,
+      "usage": {
+        "completion_tokens": 26,
+        "prompt_tokens": 477
+      },
+      "wall_ms": 2486.582,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/exc-cold-bench-granite3.2_2b-before/wt"
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": [
+        {
+          "new_text": "RETRY_LIMIT = 5",
+          "old_text": "RETRY_LIMIT = 3",
+          "path": "workers/config.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_e73886cc82ab9fd3401c94c4",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:3ad7978fb258d9308f7145d6fcc976c611b1fe4f6000c6f9d2c271ce9709ed48",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "granite3.2:2b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "const-near",
+      "tokens_total": 353,
+      "usage": {
+        "completion_tokens": 27,
+        "prompt_tokens": 326
+      },
+      "wall_ms": 2854.416,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/const-near-bench-granite3.2_2b-before/wt"
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_89fa84c0363c6b20f28ed3da",
+      "independent": null,
+      "last_reason": "tests_still_failing",
+      "model": "granite3.2:2b",
+      "passed": false,
+      "reason": "verifier_failed:tests_still_failing",
+      "task": "op-near",
+      "tokens_total": 385,
+      "usage": {
+        "completion_tokens": 27,
+        "prompt_tokens": 358
+      },
+      "wall_ms": 2356.171,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_d70b6eea138c7f768bbab97f",
+      "independent": null,
+      "last_reason": "edit_not_applicable:edit old_text is not unique in target",
+      "model": "granite3.2:2b",
+      "passed": false,
+      "reason": "verifier_failed:edit_not_applicable:edit old_text is not unique in target",
+      "task": "obo-near",
+      "tokens_total": 459,
+      "usage": {
+        "completion_tokens": 50,
+        "prompt_tokens": 409
+      },
+      "wall_ms": 4131.8,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "before",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_179682caafdbe1cf940cbe5d",
+      "independent": null,
+      "last_reason": "tests_still_failing",
+      "model": "granite3.2:2b",
+      "passed": false,
+      "reason": "verifier_failed:tests_still_failing",
+      "task": "exc-near",
+      "tokens_total": 576,
+      "usage": {
+        "completion_tokens": 30,
+        "prompt_tokens": 546
+      },
+      "wall_ms": 11110.672,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": [
+        {
+          "new_text": "INVOICE_RETRY_LIMIT = 5",
+          "old_text": "INVOICE_RETRY_LIMIT = 3",
+          "path": "billing/config.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_c84d5891dfc735890895f2fc",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:0dd2f6ed029b0a07c3c117c50a2875d3728bcae6d5f4fbb30618cb27f0317867",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "granite3.2:2b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "const-cold",
+      "tokens_total": 678,
+      "usage": {
+        "completion_tokens": 47,
+        "prompt_tokens": 631
+      },
+      "wall_ms": 4146.948,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/const-cold-bench-granite3.2_2b-after/wt"
+    },
+    {
+      "attempts": 2,
+      "config": "after",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_4f0ec66295063ba965484459",
+      "independent": null,
+      "last_reason": "tests_still_failing",
+      "model": "granite3.2:2b",
+      "passed": false,
+      "reason": "verifier_failed:tests_still_failing",
+      "task": "op-cold",
+      "tokens_total": 1742,
+      "usage": {
+        "completion_tokens": 198,
+        "prompt_tokens": 1544
+      },
+      "wall_ms": 15468.677,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_e049a163111f49b636ac5e1e",
+      "independent": null,
+      "last_reason": "tests_still_failing",
+      "model": "granite3.2:2b",
+      "passed": false,
+      "reason": "verifier_failed:tests_still_failing",
+      "task": "obo-cold",
+      "tokens_total": 846,
+      "usage": {
+        "completion_tokens": 121,
+        "prompt_tokens": 725
+      },
+      "wall_ms": 9272.222,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": [
+        {
+          "new_text": "def ratio_of(text):\n    num, den = text.split('/')\n    if den == '0':\n        return None\n    return int(num) / int(den)",
+          "old_text": "def ratio_of(text):",
+          "path": "fracs/core.py"
+        }
+      ],
+      "false_accept": false,
+      "governor": "gov_9e070f41a4efb204ba0bf2cf",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:3afe606af283d1e179238e430fd6a9f8b0bf1d945267f5721851145753db002c",
+        "visible_rc": 0
+      },
+      "last_reason": "",
+      "model": "granite3.2:2b",
+      "passed": true,
+      "reason": "specialist_output_accepted",
+      "task": "exc-cold",
+      "tokens_total": 850,
+      "usage": {
+        "completion_tokens": 82,
+        "prompt_tokens": 768
+      },
+      "wall_ms": 6398.263,
+      "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/exc-cold-bench-granite3.2_2b-after/wt"
+    },
+    {
+      "attempts": 2,
+      "config": "after",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_682c18ad9674331474d86d9b",
+      "independent": null,
+      "last_reason": "tests_still_failing",
+      "model": "granite3.2:2b",
+      "passed": false,
+      "reason": "verifier_failed:tests_still_failing",
+      "task": "const-near",
+      "tokens_total": 1610,
+      "usage": {
+        "completion_tokens": 158,
+        "prompt_tokens": 1452
+      },
+      "wall_ms": 12445.993,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_d96d93487c119fdf1163bded",
+      "independent": null,
+      "last_reason": "tests_still_failing",
+      "model": "granite3.2:2b",
+      "passed": false,
+      "reason": "verifier_failed:tests_still_failing",
+      "task": "op-near",
+      "tokens_total": 790,
+      "usage": {
+        "completion_tokens": 141,
+        "prompt_tokens": 649
+      },
+      "wall_ms": 11284.213,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_f4a75d636658178aeebb7e9d",
+      "independent": null,
+      "last_reason": "tests_still_failing",
+      "model": "granite3.2:2b",
+      "passed": false,
+      "reason": "verifier_failed:tests_still_failing",
+      "task": "obo-near",
+      "tokens_total": 770,
+      "usage": {
+        "completion_tokens": 70,
+        "prompt_tokens": 700
+      },
+      "wall_ms": 5744.885,
+      "worktree": ""
+    },
+    {
+      "attempts": 1,
+      "config": "after",
+      "edits": null,
+      "false_accept": false,
+      "governor": "gov_2460e4cd38181764ecc4babd",
+      "independent": null,
+      "last_reason": "tests_still_failing",
+      "model": "granite3.2:2b",
+      "passed": false,
+      "reason": "verifier_failed:tests_still_failing",
+      "task": "exc-near",
+      "tokens_total": 1009,
+      "usage": {
+        "completion_tokens": 146,
+        "prompt_tokens": 863
+      },
+      "wall_ms": 11515.197,
+      "worktree": ""
+    }
+  ],
+  "table": {
+    "granite3.2:2b|after": {
+      "false_accepts": 0,
+      "of": 8,
+      "passed": 2,
+      "tokens": 8295,
+      "wall_s": 76.3
+    },
+    "granite3.2:2b|before": {
+      "false_accepts": 1,
+      "of": 8,
+      "passed": 4,
+      "tokens": 3514,
+      "wall_s": 39.3
+    },
+    "granite3.3:2b|after": {
+      "false_accepts": 0,
+      "of": 8,
+      "passed": 6,
+      "tokens": 7071,
+      "wall_s": 54.5
+    },
+    "granite3.3:2b|before": {
+      "false_accepts": 0,
+      "of": 8,
+      "passed": 3,
+      "tokens": 3556,
+      "wall_s": 31.3
+    },
+    "qwen3:4b|after": {
+      "false_accepts": 0,
+      "of": 8,
+      "passed": 5,
+      "tokens": 6971,
+      "wall_s": 103.5
+    },
+    "qwen3:4b|before": {
+      "false_accepts": 0,
+      "of": 8,
+      "passed": 0,
+      "tokens": 9820,
+      "wall_s": 978.8
+    }
+  }
+}

@@ -109,7 +109,6 @@
     if (!(root instanceof Document || root instanceof Element)) return;
     root.querySelectorAll('button').forEach(add);
   }
-  const idle = window.requestIdleCallback || (fn => setTimeout(() => fn({ timeRemaining: () => 0 }), 100));
 
   function fallback(img) {
     if (!(img instanceof HTMLImageElement) || img.dataset.fallbackApplied === 'true') return;
@@ -148,21 +147,15 @@
     if (event.target instanceof HTMLImageElement) fallback(event.target);
   }, true);
 
-  function scanAdded(records) {
-    idle(() => records.forEach(record => record.addedNodes.forEach(node => {
-      if (node.nodeType !== 1) return;
-      if (node.matches?.('button')) add(node);
-      scan(node);
-    })));
-  }
-
-  const observer = new MutationObserver(scanAdded);
+  const observer = new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(node => {
+    if (node.nodeType !== 1) return;
+    if (node.matches?.('button')) add(node);
+    scan(node);
+  })));
 
   window.addEventListener('DOMContentLoaded', () => {
-    idle(() => scan());
-    const outlet = document.getElementById('beastPageOutlet');
-    observer.observe(outlet || document.body, { childList: true, subtree: false });
-    document.addEventListener('beast:route-complete', () => idle(() => scan(outlet || document)));
+    scan();
+    observer.observe(document.body, { childList: true, subtree: true });
   });
 
   window.BeastIconCoverage = { scan, fallback, audit };

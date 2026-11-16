@@ -88,6 +88,32 @@ def stable_hash(value: Any) -> str:
     return "sha256:" + hashlib.sha256(encoded).hexdigest()
 
 
+CONTRACT_SCHEMA = "beast.capability_contract.v1"
+
+
+def capability_contract_digest(task_family: str, fingerprint_hashes: Iterable[str], *,
+                               verifier_labels: Iterable[str] = (), behavior_labels: Iterable[str] = ()) -> str:
+    """Deterministic contract digest for a lattice node (and for the semantic mapper on the request side).
+
+    Binds the task family, the node's crystal fingerprint hashes and its contract fields (verifier and behaviour
+    labels) under a schema version. Order-independent; any change to a bound field changes the digest.
+    """
+    return stable_hash({
+        "schema": CONTRACT_SCHEMA,
+        "task_family": str(task_family),
+        "fingerprint_hashes": sorted({str(f) for f in fingerprint_hashes if f}),
+        "verifier_labels": sorted({str(v) for v in verifier_labels if v}),
+        "behavior_labels": sorted({str(b) for b in behavior_labels if b}),
+    })
+
+
+def contract_digest_for_node(node: Dict[str, Any]) -> str:
+    """Recompute a serialized node's digest from the fields it carries (tamper check)."""
+    return capability_contract_digest(str(node.get("task_family") or ""), node.get("fingerprint_hashes") or [],
+                                      verifier_labels=node.get("verifier_labels") or [],
+                                      behavior_labels=node.get("behavior_labels") or [])
+
+
 def short_hash(value: Any, length: int = 20) -> str:
     return hashlib.sha256(json.dumps(value, sort_keys=True, default=str).encode("utf-8")).hexdigest()[:length]
 
@@ -215,7 +241,13 @@ class CapabilityLatticeNode:
     training_priority: float
 
     def to_dict(self) -> Dict[str, Any]:
+        fingerprints = self.fingerprint_hashes[:12]
+        digest = capability_contract_digest(self.task_family, fingerprints, verifier_labels=self.verifier_labels,
+                                            behavior_labels=self.behavior_labels)
         return {
+            "node_id": digest.split(":", 1)[1][:16],
+            "contract_schema": CONTRACT_SCHEMA,
+            "capability_contract_digest": digest,
             "task_family": self.task_family,
             "signal_count": self.signal_count,
             "positive_count": self.positive_count,
@@ -223,7 +255,7 @@ class CapabilityLatticeNode:
             "providers": self.providers,
             "verifier_labels": self.verifier_labels,
             "behavior_labels": self.behavior_labels,
-            "fingerprint_hashes": self.fingerprint_hashes[:12],
+            "fingerprint_hashes": fingerprints,
             "proof_density": round(self.proof_density, 6),
             "training_priority": round(self.training_priority, 6),
         }

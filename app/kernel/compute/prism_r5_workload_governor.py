@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, Iterable, Protocol
+from typing import Any, Callable, Iterable, Protocol
 
 from .cache_aware_engine_selector import CacheAwareEngineSelector, EngineSelection
 from .residual_candidate import ResidualCandidate
@@ -43,11 +43,15 @@ class PRISMR5WorkloadGovernor:
                  selector: CacheAwareEngineSelector | None = None,
                  concurrency: ConcurrencyController | None = None,
                  speculative: SpeculativeController | None = None,
-                 eviction: EvictionController | None = None) -> None:
+                 eviction: EvictionController | None = None, governor: Any = None) -> None:
         self.pressure_governor = pressure_governor or ResidualPressureGovernor()
         self.selector = selector or CacheAwareEngineSelector()
         self.concurrency = concurrency
         self.speculative = speculative
+        if governor is not None and eviction is not None:  # Compute Governor spine: evictions dry-run via admit
+            from app.kernel.governance.governor_spine import GovernedEvictor
+
+            eviction = GovernedEvictor(eviction, governor=governor, kind="prism")
         self.eviction = eviction
 
     def select(self, *, request_digest: str, workspace_id: str, privacy_domain: str,

@@ -1,0 +1,208 @@
+{
+  "claim_boundaries": [
+    "logical nodes are local, not independent remote physical hosts",
+    "token cost uses the declared experiment rate",
+    "energy was unavailable"
+  ],
+  "commons_admission": {
+    "appraisal_ref": "arda:commons-live:d82f52aa5e9142095ebe9905",
+    "artifact_digest": "sha256:32d95b737fea66b2e4d44d9c619f6aa1df49daf5dc1d9bbf1cd442dd528832e2",
+    "authority": "remote_hypothesis",
+    "chunk_digests": [
+      "sha256:32d95b737fea66b2e4d44d9c619f6aa1df49daf5dc1d9bbf1cd442dd528832e2"
+    ],
+    "evidence_node_id": "sha256:e1dcdadca62cb1052e07a045a09f40a512ec4f39128bb1c7ce19552a9a8016cc",
+    "manifest": {
+      "appraisal_ref": "arda:commons-live:d82f52aa5e9142095ebe9905",
+      "artifact_digest": "sha256:32d95b737fea66b2e4d44d9c619f6aa1df49daf5dc1d9bbf1cd442dd528832e2",
+      "artifact_size": 2527,
+      "authority": "remote_hypothesis",
+      "beast_object_type": "commons_proof_carrying_crystal_manifest",
+      "chunks": [
+        "sha256:32d95b737fea66b2e4d44d9c619f6aa1df49daf5dc1d9bbf1cd442dd528832e2"
+      ],
+      "decay_rules": {
+        "demote_on_false_hit": true,
+        "reproduce_before_execute": true,
+        "ttl_seconds": 86400
+      },
+      "maximum_authority": "verify_only",
+      "policy_attestation_requirements": {
+        "fresh_node_attestation": true,
+        "policy_generation": "policy:milestones-12-14-live:v1"
+      },
+      "privacy_projection_digest": "sha256:2cf372433e107cd5dce55d9e5c6a39978091f781318207e1717c26e68020dff0",
+      "space_id": "space:file-build-proof-v1",
+      "version": "1.0"
+    },
+    "manifest_digest": "sha256:1e0e82357b5abb6a203aa3c1e53a7f9293e0e68c964b95fef7a85b7fc2754bfe",
+    "maximum_authority": "verify_only",
+    "signature": "vFEphr71MG/QiGY7vp2p28YCZwoB+lSRlkf7jjtKdFRSU2HARIHG0CldChTHmw4E0ENtX2fbwU1zR+lxSqteDg==",
+    "signer_public_key": "9vw4v2oOAOcLOAfD94OaLhkOZS+rVIW4/YSDTpmMM2s=",
+    "space_id": "space:file-build-proof-v1"
+  },
+  "economics": {
+    "beast_object_type": "verified_displacement_economics_receipt",
+    "break_even_occurrences_cost": 0,
+    "break_even_occurrences_latency": 0,
+    "confidence_intervals": {
+      "calls_per_occurrence": {
+        "high": 1.0,
+        "low": 1.0,
+        "mean": 1.0,
+        "method": "normal_mean"
+      },
+      "confidence": 0.95,
+      "cost_usd_per_occurrence": {
+        "high": 8.5e-05,
+        "low": 8.5e-05,
+        "mean": 8.5e-05,
+        "method": "normal_mean"
+      },
+      "net_latency_ms_per_occurrence": {
+        "high": 1751.281959504,
+        "low": 1352.40116783,
+        "mean": 1551.841563667,
+        "method": "normal_mean"
+      },
+      "tokens_per_occurrence": {
+        "high": 85.0,
+        "low": 85.0,
+        "mean": 85.0,
+        "method": "normal_mean"
+      }
+    },
+    "equivalent_occurrences": 3,
+    "impact_feedback": {
+      "demotions": 0,
+      "false_hits": 1,
+      "negative_outcomes": 0,
+      "verified_displacements": 3
+    },
+    "latency_avoided_ms_gross": 4657.522208,
+    "measurement_scope": {},
+    "mutation_invalidation": {
+      "invalidations": 1,
+      "tested": true
+    },
+    "net_latency_displacement_ms": 4655.524691,
+    "net_positive": true,
+    "paired_occurrences": 4,
+    "provider_calls_avoided": 3,
+    "provider_cost_avoided_usd": 0.000255,
+    "provider_tokens_avoided": 255,
+    "receipt_digest": "sha256:dd2225b65b4fe1e12dbda73934bfdd57dea8b55d1b1299f35d40ad3c983b1087",
+    "rejected_occurrences": [
+      {
+        "occurrence_id": "mutation-invalidated",
+        "reason": "behavioral_postcondition_mismatch"
+      }
+    ],
+    "setup_cost_usd": 0,
+    "setup_latency_ms": 0,
+    "version": "1.0",
+    "work_moved_locally": {
+      "cpu_ms": 1.496,
+      "energy_joules": null,
+      "governance_and_verification_ms": 1.997517,
+      "io_bytes": 0,
+      "memory_byte_ms": 127490042.364,
+      "pressure_score": null
+    }
+  },
+  "economics_evidence_node": "sha256:5fdacac88b820e144cdda55797bc0488659c17406cb66226b20dbeff64c310ea",
+  "evidence_digest": "sha256:3ff5d2cdf613142f4ba50b158bf25255fe02e0167f86493f2815afa3a58a664d",
+  "federated_aggregate": {
+    "advertised_claims_counted": 0,
+    "aggregate_digest": "sha256:0ed32b9fad4898ecf4f09d5039cc586a33060929dcf82e9416188f6d08d9d44d",
+    "beast_object_type": "federated_verified_displacement_aggregate",
+    "independent_node_count": 2,
+    "provider_calls_avoided": 6,
+    "receipt_digests": [
+      "sha256:38d8fa7b5e2af9fa1a30f2da6dd14b0777574fc226f1cc540f4724fdcdc7e0d4",
+      "sha256:ab6466a59cfa61a835b66e6d01249ef3a1333c991b7bad513b5545aba1ba6778"
+    ]
+  },
+  "generated_at": 1784125980.296925,
+  "provider_observations": [
+    {
+      "eval_duration_ns": 1426357000,
+      "load_duration_ns": 231938600,
+      "model": "qwen2.5:0.5b",
+      "occurrence": 0,
+      "prompt_eval_duration_ns": 54365000,
+      "provider_latency_ms": 1725.910585,
+      "provider_tokens": 85,
+      "response_digest": "sha256:3cc53fe5891c0c26e17748a76ff780e3cd87027bc3718f2172caf6ddde8fcb39"
+    },
+    {
+      "eval_duration_ns": 1273067000,
+      "load_duration_ns": 221699774,
+      "model": "qwen2.5:0.5b",
+      "occurrence": 1,
+      "prompt_eval_duration_ns": 54539000,
+      "provider_latency_ms": 1557.512053,
+      "provider_tokens": 85,
+      "response_digest": "sha256:008a80ac7a4c15939caf709c43757012c0a4f8659a040b3ab756b20b1e23662a"
+    },
+    {
+      "eval_duration_ns": 1076581000,
+      "load_duration_ns": 258744008,
+      "model": "qwen2.5:0.5b",
+      "occurrence": 2,
+      "prompt_eval_duration_ns": 31976000,
+      "provider_latency_ms": 1373.239236,
+      "provider_tokens": 85,
+      "response_digest": "sha256:4e10f75ecc9600fa7d81663bc8b67bca0e50b164541d0e7e6e9b59f41cb507c7"
+    }
+  ],
+  "remote_physical_node_claimed": false,
+  "reproductions": [
+    {
+      "artifact_digest": "sha256:32d95b737fea66b2e4d44d9c619f6aa1df49daf5dc1d9bbf1cd442dd528832e2",
+      "authority": {
+        "applicability": "node_local",
+        "execution": "node_local",
+        "promotion": "node_local"
+      },
+      "beast_object_type": "commons_node_local_reproduction_receipt",
+      "contributor_id": "contributor:beast-local",
+      "displacement_receipt_digest": "sha256:9013b34778c648dc24c069abbc2ba2e2684a8a9d52e023837bac88166254985b",
+      "evidence_node_id": "sha256:75d73420c562fec8d2f7a9c164463a288f797c4a1cf4367e0c561e526d940218",
+      "heldout_count": 3,
+      "local_policy_generation": "policy:milestones-12-14-live:v1",
+      "local_verifier_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+      "manifest_digest": "sha256:1e0e82357b5abb6a203aa3c1e53a7f9293e0e68c964b95fef7a85b7fc2754bfe",
+      "node_attestation_digest": "sha256:32c6140c0a19049d86a996c652827c0e5b0de9fc1d44bee29592fd8b376d97c8",
+      "node_id": "commons-node-local-a",
+      "provider_calls_avoided": 3,
+      "receipt_digest": "sha256:38d8fa7b5e2af9fa1a30f2da6dd14b0777574fc226f1cc540f4724fdcdc7e0d4",
+      "revoked": false,
+      "status": "locally_reproduced"
+    },
+    {
+      "artifact_digest": "sha256:32d95b737fea66b2e4d44d9c619f6aa1df49daf5dc1d9bbf1cd442dd528832e2",
+      "authority": {
+        "applicability": "node_local",
+        "execution": "node_local",
+        "promotion": "node_local"
+      },
+      "beast_object_type": "commons_node_local_reproduction_receipt",
+      "contributor_id": "contributor:beast-local",
+      "displacement_receipt_digest": "sha256:51d4a198b9fa164be1b8a8ffdd517d98499e93675bea5616f815c49159e16f71",
+      "evidence_node_id": "sha256:f6565db14fb45310794fd4853fbabd4155492428d54133306409b5165ff3b11b",
+      "heldout_count": 3,
+      "local_policy_generation": "policy:milestones-12-14-live:v1",
+      "local_verifier_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+      "manifest_digest": "sha256:1e0e82357b5abb6a203aa3c1e53a7f9293e0e68c964b95fef7a85b7fc2754bfe",
+      "node_attestation_digest": "sha256:d40083ca61f26a1cf923251ef4c83cff99f61b8893754ad59e773550c9cd8514",
+      "node_id": "commons-node-local-b",
+      "provider_calls_avoided": 3,
+      "receipt_digest": "sha256:ab6466a59cfa61a835b66e6d01249ef3a1333c991b7bad513b5545aba1ba6778",
+      "revoked": false,
+      "status": "locally_reproduced"
+    }
+  ],
+  "schema": "beast.milestones-12-14-live-closure.v1",
+  "scope": "one live provider plus two distinct locally attested logical Commons nodes"
+}

@@ -1,0 +1,50 @@
+[
+ {
+  "provider": "replicate",
+  "route": "openai/gpt-oss-120b",
+  "accepted": false,
+  "status": "http_error",
+  "json_valid": false,
+  "dialect": "prompt_validate_retry",
+  "early_stop": false,
+  "ttft_ms": 0.0,
+  "latency_ms": 1627.2,
+  "tokens_prompt": 163,
+  "tokens_completion": 0,
+  "tokens_estimated": true,
+  "spend_usd": 2.9e-05,
+  "error": "402:{\"status\":402,\"detail\":\"Your account requires credit to run predictions.\",\"title\":\"Insufficient credit\"}"
+ },
+ {
+  "provider": "replicate",
+  "route": "deepseek-ai/deepseek-v3.1",
+  "accepted": false,
+  "status": "http_error",
+  "json_valid": false,
+  "dialect": "prompt_validate_retry",
+  "early_stop": false,
+  "ttft_ms": 0.0,
+  "latency_ms": 1550.7,
+  "tokens_prompt": 163,
+  "tokens_completion": 0,
+  "tokens_estimated": true,
+  "spend_usd": 0.000163,
+  "error": "402:{\"title\":\"Insufficient credit\",\"detail\":\"You have insufficient credit to run this model. Go to https://replicate.com/account/billing#billing to purchase credit. Once you purchase credit, please wait a few minutes before trying again.\",\"status\":402}\n"
+ },
+ {
+  "provider": "replicate",
+  "route": "qwen/qwen3-235b-a22b-instruct-2507",
+  "accepted": false,
+  "status": "http_error",
+  "json_valid": false,
+  "dialect": "prompt_validate_retry",
+  "early_stop": false,
+  "ttft_ms": 0.0,
+  "latency_ms": 1225.4,
+  "tokens_prompt": 163,
+  "tokens_completion": 0,
+  "tokens_estimated": true,
+  "spend_usd": 0.000163,
+  "error": "429:{\"detail\":\"Request was throttled. Your rate limit for creating predictions is reduced to 6 requests per minute with a burst of 1 requests until you add a payment method. Your rate limit resets in ~9s.\",\"status\":429,\"retry_after\":9}\n"
+ }
+]

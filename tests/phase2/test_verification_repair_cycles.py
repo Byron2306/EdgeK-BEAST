@@ -45,7 +45,9 @@ def test_failed_verification_returns_structured_observation_and_repairs(tmp_path
         ])
         final = await AgentPlannerRuntime(engine, provider, max_turns=8, max_repair_cycles=2).run(run_id)
         planner = final["checkpoint"]["planner"]
-        assert final["state"] == "completed"
+        assert final["state"] == "policy_blocked"
+        assert planner["status"] == "session_complete_graduation_refused"
+        assert "focused_behavioral_pytest_not_proven" in planner["blocker"]
         assert planner["repair_cycles"] == 1
         failed = [item for item in planner["observations"] if item["tool_id"] == "worktree.verify" and item["status"] == "failed"]
         assert len(failed) == 1

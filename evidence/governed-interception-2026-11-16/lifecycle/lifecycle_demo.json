@@ -1,0 +1,93 @@
+{
+ "loaded": {
+  "pid": 1623468,
+  "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/beast-worker-36303b4a35.scope",
+  "beast_scope": true,
+  "gpu_used_before_spawn_mib": 8,
+  "gpu_used_loaded_mib": 568,
+  "server_vram_mib": 554
+ },
+ "frozen_at": 1794810747.1612644,
+ "call": {
+  "provider": "llamacpp-owned",
+  "model": "qwen2.5-0.5b",
+  "placement": "gpu_full",
+  "status": "stream_stall",
+  "json_valid": false,
+  "passed": false,
+  "verify_reason": "",
+  "dialect": "openai_json_schema",
+  "early_stop": false,
+  "stop_reason": "ttft_timeout",
+  "tokens_prompt": 0,
+  "tokens_completion": 0,
+  "tokens_estimated": true,
+  "budget_headroom_tokens": 0,
+  "ttft_ms": 0.0,
+  "latency_ms": 60080.8,
+  "spend_usd": 0.0,
+  "error": "",
+  "receipt_id": "gov_56392a33c6057d8330554fd0",
+  "governor_receipt": "gov_b12c29647d1207bd3f2fbb06",
+  "teardown": {
+   "mode": "owned_process",
+   "ok": true,
+   "pid": 1623468,
+   "signal_path": [
+    "pidfd:SIGTERM",
+    "pidfd:SIGKILL",
+    "cgroup.kill"
+   ],
+   "reclaimed": {
+    "fds_closed": 0,
+    "releases": {},
+    "vram_pid_before_mib": 554,
+    "vram_pid_after_mib": 0,
+    "gpu_used_before_mib": 568,
+    "gpu_used_after_mib": 8
+   },
+   "receipt_id": "gov_2a4b0f522f03580602522adc",
+   "elapsed_ms": 3822.4
+  }
+ },
+ "gpu_used_after_teardown_mib": 8,
+ "server_alive_after": false,
+ "receipt_chain": {
+  "valid": true,
+  "count": 3,
+  "errors": []
+ },
+ "teardown_receipt": [
+  {
+   "beast_scope": true,
+   "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/beast-worker-36303b4a35.scope",
+   "created_at": 1794810809.0439458,
+   "elapsed_ms": 3822.0,
+   "handle_id": "proc_9305098417fa",
+   "label": "llama-server:qwen2.5-0.5b",
+   "ok": true,
+   "origin": "spawned",
+   "pid": 1623468,
+   "prev_hash": "sha256:e888378aaf50b7a7cc29a6a347409831fb45498b1ebba5ad53e5f3de47fb9e67",
+   "receipt_hash": "sha256:fe3f3964731138e24ee43e3f4af724dcabd2e2882a5da48d51d32a34b0e0839a",
+   "receipt_id": "gov_2a4b0f522f03580602522adc",
+   "reclaimed": {
+    "fds_closed": 0,
+    "gpu_used_after_mib": 8,
+    "gpu_used_before_mib": 568,
+    "releases": {},
+    "vram_pid_after_mib": 0,
+    "vram_pid_before_mib": 554
+   },
+   "seq": 1,
+   "signal_path": [
+    "pidfd:SIGTERM",
+    "pidfd:SIGKILL",
+    "cgroup.kill"
+   ],
+   "start_time": 14503594,
+   "trigger": "stream_stall",
+   "type": "process_teardown"
+  }
+ ]
+}

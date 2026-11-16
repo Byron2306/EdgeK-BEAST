@@ -1,0 +1,1838 @@
+[
+ {
+  "task": "const-h1",
+  "family": "fix-config-constant",
+  "source_files": 2,
+  "wall_s": 2.19,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 1,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 525,
+    "tokens_completion": 29,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 2019,
+    "ttft_ms": 1577.2,
+    "latency_ms": 1908.1,
+    "spend_usd": 0.000192,
+    "error": "",
+    "receipt_id": "gov_933bd9ea0f53fca4603551e5",
+    "governor_receipt": "gov_afb68c83cce595d2ea40d72d",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud"
+ },
+ {
+  "task": "op-h1",
+  "family": "fix-logic-operator",
+  "source_files": 2,
+  "wall_s": 2.3,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 1,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 531,
+    "tokens_completion": 34,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 2014,
+    "ttft_ms": 1743.6,
+    "latency_ms": 2072.7,
+    "spend_usd": 0.0002,
+    "error": "",
+    "receipt_id": "gov_da22345c4926fd1390890a1e",
+    "governor_receipt": "gov_8b17d5abc04f780494cb3712",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud"
+ },
+ {
+  "task": "obo-h1",
+  "family": "fix-off-by-one",
+  "source_files": 2,
+  "wall_s": 2.22,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 1,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 573,
+    "tokens_completion": 37,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 2011,
+    "ttft_ms": 1591.6,
+    "latency_ms": 1980.8,
+    "spend_usd": 0.000216,
+    "error": "",
+    "receipt_id": "gov_1ae8b0ebaefc0422c8169ef9",
+    "governor_receipt": "gov_89733e29ee341f9963b75753",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud"
+ },
+ {
+  "task": "exc-h1",
+  "family": "fix-unhandled-exception",
+  "source_files": 2,
+  "wall_s": 2.25,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 1,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 573,
+    "tokens_completion": 62,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1986,
+    "ttft_ms": 1625.4,
+    "latency_ms": 2025.8,
+    "spend_usd": 0.000246,
+    "error": "",
+    "receipt_id": "gov_39f4972612f6752c0a624bda",
+    "governor_receipt": "gov_9babd2fd155037cb1b76aeee",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud"
+ },
+ {
+  "task": "ren-h1",
+  "family": "refactor-rename-symbol",
+  "source_files": 4,
+  "wall_s": 2.56,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 1,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 660,
+    "tokens_completion": 148,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1900,
+    "ttft_ms": 1690.5,
+    "latency_ms": 2337.6,
+    "spend_usd": 0.000376,
+    "error": "",
+    "receipt_id": "gov_b75b0b6cd5f9755c7e9adf9a",
+    "governor_receipt": "gov_23fc2dec175884433cd6f302",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 3,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud"
+ },
+ {
+  "task": "ren-h2",
+  "family": "refactor-rename-symbol",
+  "source_files": 4,
+  "wall_s": 4.8,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 2,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "hidden_check_failed",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 670,
+    "tokens_completion": 62,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1986,
+    "ttft_ms": 1680.4,
+    "latency_ms": 2128.5,
+    "spend_usd": 0.000275,
+    "error": "",
+    "receipt_id": "gov_a1f5678d68614d5efe8c9d71",
+    "governor_receipt": "gov_e15b08902405a48878be756f",
+    "teardown": {}
+   },
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 814,
+    "tokens_completion": 169,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1879,
+    "ttft_ms": 1610.5,
+    "latency_ms": 2233.0,
+    "spend_usd": 0.000447,
+    "error": "",
+    "receipt_id": "gov_b7b3333a166e8ecda2d4c951",
+    "governor_receipt": "gov_6c7105fb9c832a8c94bfb07d",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": true,
+    "hidden_passed": false,
+    "reason": "hidden_check_failed",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 3,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud"
+ },
+ {
+  "task": "tool-h1",
+  "family": "toolchain-regenerate",
+  "source_files": 5,
+  "wall_s": 2.1,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 1,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 744,
+    "tokens_completion": 38,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 2010,
+    "ttft_ms": 1504.4,
+    "latency_ms": 1849.0,
+    "spend_usd": 0.000269,
+    "error": "",
+    "receipt_id": "gov_94ce94e78e989afd1d208775",
+    "governor_receipt": "gov_a0316b6ff6e4373f4a92a513",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud"
+ },
+ {
+  "task": "refguard-h1",
+  "family": "composite-refguard",
+  "source_files": 5,
+  "wall_s": 5.48,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 2,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "hidden_check_failed",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 886,
+    "tokens_completion": 276,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1772,
+    "ttft_ms": 1408.4,
+    "latency_ms": 2635.5,
+    "spend_usd": 0.000597,
+    "error": "",
+    "receipt_id": "gov_cacbff0e0c805ebfa78ea720",
+    "governor_receipt": "gov_279c5c47a52ba9c1402fc058",
+    "teardown": {}
+   },
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1243,
+    "tokens_completion": 265,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1783,
+    "ttft_ms": 1514.8,
+    "latency_ms": 2382.9,
+    "spend_usd": 0.000691,
+    "error": "",
+    "receipt_id": "gov_925ec6da379b422777259486",
+    "governor_receipt": "gov_8e777a0bca2325158947ae00",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": true,
+    "hidden_passed": false,
+    "reason": "hidden_check_failed",
+    "files_changed": 4,
+    "had_feedback": true
+   },
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 4,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud"
+ },
+ {
+  "task": "dual-h1",
+  "family": "composite",
+  "source_files": 2,
+  "wall_s": 2.13,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 1,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 711,
+    "tokens_completion": 58,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1990,
+    "ttft_ms": 1518.4,
+    "latency_ms": 1890.4,
+    "spend_usd": 0.000283,
+    "error": "",
+    "receipt_id": "gov_50e4a512153d8cf51cead2a9",
+    "governor_receipt": "gov_e28dfa1f7343100e7f4071c1",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud"
+ },
+ {
+  "task": "far-1",
+  "family": "far",
+  "source_files": 2,
+  "wall_s": 4.1,
+  "accepted": false,
+  "accepted_by": "",
+  "avoided": false,
+  "reason": "all_candidates_failed",
+  "model_calls": 2,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "hidden_check_failed",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 578,
+    "tokens_completion": 53,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1995,
+    "ttft_ms": 1522.2,
+    "latency_ms": 1864.5,
+    "spend_usd": 0.000237,
+    "error": "",
+    "receipt_id": "gov_cbebfd62620e6bb68e8d1623",
+    "governor_receipt": "gov_c22c92f055e95896a88c691c",
+    "teardown": {}
+   },
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "tests_still_failing",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 712,
+    "tokens_completion": 54,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1994,
+    "ttft_ms": 1535.8,
+    "latency_ms": 1895.3,
+    "spend_usd": 0.000278,
+    "error": "",
+    "receipt_id": "gov_aa67ace4af3a202fb2e028df",
+    "governor_receipt": "gov_2a0e428b7636765739a9270c",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": true,
+    "hidden_passed": false,
+    "reason": "hidden_check_failed",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": false,
+    "visible_passed": false,
+    "hidden_passed": false,
+    "reason": "tests_still_failing",
+    "files_changed": 1,
+    "had_feedback": true
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud"
+ },
+ {
+  "task": "const-h2",
+  "family": "fix-config-constant",
+  "source_files": 2,
+  "wall_s": 2.38,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 1,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 531,
+    "tokens_completion": 32,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 2016,
+    "ttft_ms": 1734.9,
+    "latency_ms": 2111.3,
+    "spend_usd": 0.000198,
+    "error": "",
+    "receipt_id": "gov_78eef48ea43c3ad4339b2c08",
+    "governor_receipt": "gov_864a17dab83a3ce0ebbcd0b7",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud"
+ },
+ {
+  "task": "ren-h3",
+  "family": "refactor-rename-symbol",
+  "source_files": 4,
+  "wall_s": 4.48,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 2,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "hidden_check_failed",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 668,
+    "tokens_completion": 54,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1994,
+    "ttft_ms": 1464.1,
+    "latency_ms": 1812.9,
+    "spend_usd": 0.000265,
+    "error": "",
+    "receipt_id": "gov_936927cb638582ba8afae215",
+    "governor_receipt": "gov_29075cb05cb646966770f733",
+    "teardown": {}
+   },
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 802,
+    "tokens_completion": 167,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1881,
+    "ttft_ms": 1524.9,
+    "latency_ms": 2189.5,
+    "spend_usd": 0.000441,
+    "error": "",
+    "receipt_id": "gov_f518f263a39f77750b4291f1",
+    "governor_receipt": "gov_c720562ede90882615e49a5b",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": true,
+    "hidden_passed": false,
+    "reason": "hidden_check_failed",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 3,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud"
+ },
+ {
+  "task": "refguard-h2",
+  "family": "composite-refguard",
+  "source_files": 5,
+  "wall_s": 4.84,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 2,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "hidden_check_failed",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 879,
+    "tokens_completion": 73,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1975,
+    "ttft_ms": 1527.5,
+    "latency_ms": 1886.9,
+    "spend_usd": 0.000351,
+    "error": "",
+    "receipt_id": "gov_96f3c635dc597e16219ac92e",
+    "governor_receipt": "gov_6b02f58bf4df5a4988177238",
+    "teardown": {}
+   },
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1032,
+    "tokens_completion": 254,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1794,
+    "ttft_ms": 1854.6,
+    "latency_ms": 2486.9,
+    "spend_usd": 0.000614,
+    "error": "",
+    "receipt_id": "gov_6dba91af23badb68af026bc9",
+    "governor_receipt": "gov_36087708fa74173dc1b9603a",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": true,
+    "hidden_passed": false,
+    "reason": "hidden_check_failed",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 4,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud"
+ },
+ {
+  "task": "const-h1",
+  "family": "fix-config-constant",
+  "source_files": 2,
+  "wall_s": 2.56,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 1,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/glm-5p3-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 525,
+    "tokens_completion": 29,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 2019,
+    "ttft_ms": 877.5,
+    "latency_ms": 1146.7,
+    "spend_usd": 9.3e-05,
+    "error": "",
+    "receipt_id": "gov_8e6cc3bd00b5b65fdcbed640",
+    "governor_receipt": "gov_a2eb83f505b03399d716af68",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud"
+ },
+ {
+  "task": "op-h1",
+  "family": "fix-logic-operator",
+  "source_files": 2,
+  "wall_s": 2.72,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 1,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/glm-5p3-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 531,
+    "tokens_completion": 34,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 2014,
+    "ttft_ms": 1188.5,
+    "latency_ms": 1281.8,
+    "spend_usd": 9.7e-05,
+    "error": "",
+    "receipt_id": "gov_d2e3d7310f266b7b023d7b22",
+    "governor_receipt": "gov_c7fa97281aee8a175fa92f5e",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud"
+ },
+ {
+  "task": "obo-h1",
+  "family": "fix-off-by-one",
+  "source_files": 2,
+  "wall_s": 2.68,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 1,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/glm-5p3-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 573,
+    "tokens_completion": 37,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 2011,
+    "ttft_ms": 1168.1,
+    "latency_ms": 1249.9,
+    "spend_usd": 0.000104,
+    "error": "",
+    "receipt_id": "gov_ee3625c53935687fd09740b8",
+    "governor_receipt": "gov_f5e743701af4e529299df9a4",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud"
+ },
+ {
+  "task": "exc-h1",
+  "family": "fix-unhandled-exception",
+  "source_files": 2,
+  "wall_s": 3.58,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 1,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/glm-5p3-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 573,
+    "tokens_completion": 62,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1986,
+    "ttft_ms": 1787.5,
+    "latency_ms": 2139.9,
+    "spend_usd": 0.000117,
+    "error": "",
+    "receipt_id": "gov_81e8a6b091a589cd35aad7a6",
+    "governor_receipt": "gov_0e58b78cd8b5ba21cc542ab1",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud"
+ },
+ {
+  "task": "ren-h1",
+  "family": "refactor-rename-symbol",
+  "source_files": 4,
+  "wall_s": 17.19,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 2,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/glm-5p3-flash",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "hidden_check_failed",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 660,
+    "tokens_completion": 58,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1990,
+    "ttft_ms": 4929.1,
+    "latency_ms": 5261.4,
+    "spend_usd": 0.000128,
+    "error": "",
+    "receipt_id": "gov_c624391d7af878c88f82fed7",
+    "governor_receipt": "gov_9b133c828a772efcb08ec1c9",
+    "teardown": {}
+   },
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/glm-5p3-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 799,
+    "tokens_completion": 148,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1900,
+    "ttft_ms": 8269.1,
+    "latency_ms": 9077.8,
+    "spend_usd": 0.000194,
+    "error": "",
+    "receipt_id": "gov_89c6c104d3139205745de3fe",
+    "governor_receipt": "gov_e9f192d4ba4dcc0c7eb08d05",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": true,
+    "hidden_passed": false,
+    "reason": "hidden_check_failed",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 3,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud"
+ },
+ {
+  "task": "ren-h2",
+  "family": "refactor-rename-symbol",
+  "source_files": 4,
+  "wall_s": 8.39,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 2,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/glm-5p3-flash",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "hidden_check_failed",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 670,
+    "tokens_completion": 60,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1988,
+    "ttft_ms": 1785.5,
+    "latency_ms": 2152.4,
+    "spend_usd": 0.000131,
+    "error": "",
+    "receipt_id": "gov_622a4a5b82af8cca7fa677f6",
+    "governor_receipt": "gov_ae842bca907bea67e0278f97",
+    "teardown": {}
+   },
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/glm-5p3-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 811,
+    "tokens_completion": 169,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1879,
+    "ttft_ms": 2160.7,
+    "latency_ms": 2874.9,
+    "spend_usd": 0.000206,
+    "error": "",
+    "receipt_id": "gov_41914929cb8c9b6e825723f1",
+    "governor_receipt": "gov_2f98c64119ab16b8ff18e204",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": true,
+    "hidden_passed": false,
+    "reason": "hidden_check_failed",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 3,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud"
+ },
+ {
+  "task": "tool-h1",
+  "family": "toolchain-regenerate",
+  "source_files": 5,
+  "wall_s": 3.44,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 1,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/glm-5p3-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 744,
+    "tokens_completion": 31,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 2017,
+    "ttft_ms": 1828.3,
+    "latency_ms": 2005.5,
+    "spend_usd": 0.000127,
+    "error": "",
+    "receipt_id": "gov_d320b36b8e0ea8e4916003c6",
+    "governor_receipt": "gov_dcfc39d0073eaa42a87c6867",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud"
+ },
+ {
+  "task": "refguard-h1",
+  "family": "composite-refguard",
+  "source_files": 5,
+  "wall_s": 6.19,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 1,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/glm-5p3-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 886,
+    "tokens_completion": 268,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1780,
+    "ttft_ms": 3310.0,
+    "latency_ms": 4793.4,
+    "spend_usd": 0.000267,
+    "error": "",
+    "receipt_id": "gov_834b0c5495043fc03efdb670",
+    "governor_receipt": "gov_bfdbbe506ac2679189b53168",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 4,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud"
+ },
+ {
+  "task": "dual-h1",
+  "family": "composite",
+  "source_files": 2,
+  "wall_s": 4.26,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 1,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/glm-5p3-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 711,
+    "tokens_completion": 58,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1990,
+    "ttft_ms": 2486.8,
+    "latency_ms": 2790.9,
+    "spend_usd": 0.000136,
+    "error": "",
+    "receipt_id": "gov_f0453c8e36ad4205183e13b9",
+    "governor_receipt": "gov_761be94a7127612c06f23512",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud"
+ },
+ {
+  "task": "far-1",
+  "family": "far",
+  "source_files": 2,
+  "wall_s": 19.1,
+  "accepted": false,
+  "accepted_by": "",
+  "avoided": false,
+  "reason": "all_candidates_failed",
+  "model_calls": 2,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/glm-5p3-flash",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "hidden_check_failed",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 578,
+    "tokens_completion": 55,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1993,
+    "ttft_ms": 1611.5,
+    "latency_ms": 2073.9,
+    "spend_usd": 0.000114,
+    "error": "",
+    "receipt_id": "gov_16c25e6aed6d4d614dcdd2da",
+    "governor_receipt": "gov_a3356ec03ce21c214e82ce47",
+    "teardown": {}
+   },
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/glm-5p3-flash",
+    "placement": "cloud",
+    "status": "json_invalid",
+    "json_valid": false,
+    "passed": false,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": false,
+    "stop_reason": "",
+    "tokens_prompt": 646,
+    "tokens_completion": 2048,
+    "tokens_estimated": false,
+    "budget_headroom_tokens": 0,
+    "ttft_ms": 0.0,
+    "latency_ms": 14014.8,
+    "spend_usd": 0.001121,
+    "error": "no_json_action",
+    "receipt_id": "gov_9d33fee1514c587e98b46e55",
+    "governor_receipt": "gov_5b1ab275086bdc7d38c82a5e",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": true,
+    "hidden_passed": false,
+    "reason": "hidden_check_failed",
+    "files_changed": 1,
+    "had_feedback": true
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud"
+ },
+ {
+  "task": "const-h2",
+  "family": "fix-config-constant",
+  "source_files": 2,
+  "wall_s": 3.03,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 1,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/glm-5p3-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 531,
+    "tokens_completion": 32,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 2016,
+    "ttft_ms": 1430.3,
+    "latency_ms": 1625.5,
+    "spend_usd": 9.6e-05,
+    "error": "",
+    "receipt_id": "gov_9f964d069fe0db6694a69438",
+    "governor_receipt": "gov_3cc4d56cf51a4f2920adfab5",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 1,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud"
+ },
+ {
+  "task": "ren-h3",
+  "family": "refactor-rename-symbol",
+  "source_files": 4,
+  "wall_s": 8.71,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 2,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/glm-5p3-flash",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "hidden_check_failed",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 668,
+    "tokens_completion": 54,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1994,
+    "ttft_ms": 3191.4,
+    "latency_ms": 3499.8,
+    "spend_usd": 0.000127,
+    "error": "",
+    "receipt_id": "gov_e5371decc998acb97699ec1f",
+    "governor_receipt": "gov_910de874966f1eed2d714a4e",
+    "teardown": {}
+   },
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/glm-5p3-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 802,
+    "tokens_completion": 167,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1881,
+    "ttft_ms": 1731.7,
+    "latency_ms": 2325.8,
+    "spend_usd": 0.000204,
+    "error": "",
+    "receipt_id": "gov_8b9986437ca1c77304fb2d33",
+    "governor_receipt": "gov_6bf6d2990bda2039eb1b1432",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": true,
+    "hidden_passed": false,
+    "reason": "hidden_check_failed",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 3,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud"
+ },
+ {
+  "task": "refguard-h2",
+  "family": "composite-refguard",
+  "source_files": 5,
+  "wall_s": 13.25,
+  "accepted": true,
+  "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+  "avoided": false,
+  "reason": "verified",
+  "model_calls": 2,
+  "calls": [
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/glm-5p3-flash",
+    "placement": "cloud",
+    "status": "verifier_reject",
+    "json_valid": true,
+    "passed": false,
+    "verify_reason": "hidden_check_failed",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 879,
+    "tokens_completion": 73,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1975,
+    "ttft_ms": 6241.6,
+    "latency_ms": 6665.6,
+    "spend_usd": 0.000168,
+    "error": "",
+    "receipt_id": "gov_67d46e88ef05112393d2d677",
+    "governor_receipt": "gov_0dca3c94013c1fd3464393c9",
+    "teardown": {}
+   },
+   {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/glm-5p3-flash",
+    "placement": "cloud",
+    "status": "ok",
+    "json_valid": true,
+    "passed": true,
+    "verify_reason": "",
+    "dialect": "openai_json_schema",
+    "early_stop": true,
+    "stop_reason": "schema_valid_action",
+    "tokens_prompt": 1032,
+    "tokens_completion": 254,
+    "tokens_estimated": true,
+    "budget_headroom_tokens": 1794,
+    "ttft_ms": 2537.2,
+    "latency_ms": 3748.9,
+    "spend_usd": 0.000282,
+    "error": "",
+    "receipt_id": "gov_208655a297a7fe877a8b94d3",
+    "governor_receipt": "gov_5ab5612b96e9d1f6206fa3ac",
+    "teardown": {}
+   }
+  ],
+  "ranking": [
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   },
+   {
+    "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+    "value": 0.0,
+    "source": "static_order"
+   }
+  ],
+  "verdicts": [
+   {
+    "passed": false,
+    "visible_passed": true,
+    "hidden_passed": false,
+    "reason": "hidden_check_failed",
+    "files_changed": 1,
+    "had_feedback": true
+   },
+   {
+    "passed": true,
+    "visible_passed": true,
+    "hidden_passed": true,
+    "reason": "",
+    "files_changed": 4,
+    "had_feedback": false
+   }
+  ],
+  "candidate": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud"
+ }
+]

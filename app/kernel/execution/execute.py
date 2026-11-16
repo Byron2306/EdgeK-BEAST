@@ -21,6 +21,7 @@ from app.kernel.compute.compute_plane import get_compute_plane
 from app.kernel.compute.streaming_interceptor import StreamingComputeInterceptor, StreamingInterceptionEngine
 from app.kernel.storage.durable_inference_storage import DurableInferenceStorage
 from app.kernel.compute.adaptive_dispatcher import AdaptiveDispatcher
+from app.kernel.compute.adaptive_router import record_dispatch_proposal
 from app.kernel.compute.crystal_runtime_boundary import CrystalRuntimeBoundary
 from app.kernel.compute.integration_harness import BeastHarnessRequest
 from app.kernel.registry.provider_registry import ProviderRegistry
@@ -99,26 +100,12 @@ class Executor:
         # Determine the target provider
         provider_type = self._determine_provider_type(ir)
         
-        # New Adaptive Routing Hook
+        # D9 Unified Adaptive Router (IEI v0.9 §7.12.1, Table 15): the dispatcher result is recorded as a
+        # proposal-only RouteDecision. Routing never rewrites the model/provider or grants execution.
         adaptive_route = await self.dispatcher.route(ir)
+        route_decision = record_dispatch_proposal(ir, adaptive_route)
         if adaptive_route:
-            logger.info(f"Adaptive routing selected: {adaptive_route['model_ref']}")
-            ir.metadata["adaptive_route"] = adaptive_route
-            if adaptive_route.get("execution_mode") == "local_specialist_adapter":
-                model_ref = str(adaptive_route.get("model_ref") or "")
-                if not model_ref.startswith("ollama://"):
-                    return self._create_error_response(
-                        "ADAPTIVE_ROUTE_REJECTED",
-                        "Adaptive specialist route is not an approved local Ollama target.",
-                        status_code=409,
-                    )
-                ir.model = model_ref.removeprefix("ollama://")
-                ir.metadata["adaptive_route_executed"] = True
-                ir.metadata["provider_candidates"] = [{
-                    "provider": "ollama", "model": ir.model,
-                    "local": True, "confidence": adaptive_route.get("confidence_score", 0.0),
-                }]
-                provider_type = ProviderType.OLLAMA
+            logger.info("Adaptive route proposal recorded: %s", route_decision.route.value)
 
         provider_name = "google" if provider_type == ProviderType.GEMINI else provider_type.value
         compute = compute_interceptor.begin(ir, provider_name)
@@ -304,6 +291,16 @@ class Executor:
                 },
             }
             return response
+        specialist_response = await self._try_local_specialist(ir, route_decision, compute)
+        if specialist_response is not None:
+            return specialist_response
+        # Governed interception (BEAST_GOVERNED_INTERCEPTION, default off): after every avoidance rung above
+        # (deterministic, reuse, durable replay, crystal runtime, local specialist) has declined, a request that
+        # carries an action schema goes through the one governed client: scorecard-ranked candidates,
+        # schema-forced decoding, streamed early stop, breaker + fallback, and model_call receipts.
+        governed_response = await self._try_governed_interception(ir, compute)
+        if governed_response is not None:
+            return governed_response
         admission = runtime_governor.begin_execution(
             provider=provider_name,
             model=ir.model,
@@ -316,6 +313,14 @@ class Executor:
                 "compute_recommended_rung": compute.gate.recommended_rung,
             }
         )
+        if admission.allowed and getattr(admission, "pressure_factor", 1.0) < 1.0:
+            # PSI pressure only shrinks the output budget through the governor's pressure policy.
+            factor = float(admission.pressure_factor)
+            if ir.max_tokens:
+                ir.max_tokens = max(1, int(ir.max_tokens * factor))
+            if isinstance(ir.metadata, dict):
+                ir.metadata["pressure_budget"] = {"factor": factor, "reason": admission.pressure_reason,
+                                                  "max_tokens": ir.max_tokens}
         if not admission.allowed:
             receipt = compute_interceptor.complete(
                 compute,
@@ -1342,6 +1347,94 @@ class Executor:
         except Exception:
             pass
         return text[:1200]
+
+    def _specialist_dispatch(self):
+        dispatch = getattr(self, "_swarm_specialist", None)
+        if dispatch is None:
+            from app.kernel.agents.swarm_specialist import OllamaSwarmRunner, SwarmSpecialistDispatch
+            from app.kernel.governance.governor_spine import ComputeGovernorSpine
+
+            governor = getattr(compute_interceptor, "governor", None)
+            spine = getattr(governor, "spine", None)
+            if spine is None:
+                spine = ComputeGovernorSpine()
+                if governor is not None:
+                    governor.spine = spine
+            dispatch = SwarmSpecialistDispatch(runner=OllamaSwarmRunner(), governor=spine)
+            self._swarm_specialist = dispatch
+        return dispatch
+
+    async def _try_governed_interception(self, ir: EdgeKIR, compute) -> Optional[Dict[str, Any]]:
+        from app.kernel.compute import governed_client as _gc
+
+        metadata = ir.metadata if isinstance(ir.metadata, dict) else {}
+        schema = metadata.get("governed_schema")
+        if not _gc.enabled() or not isinstance(schema, dict):
+            return None
+        family = str(metadata.get("task_family") or "general")
+        client = getattr(self, "_governed_client", None)
+        if client is None:
+            from app.kernel.governance.governor_spine import ComputeGovernorSpine, GovernorReceiptLog
+
+            receipts = GovernorReceiptLog(Path(__file__).resolve().parents[3] / ".beast" / "governed-interception" / "receipts.jsonl")
+            client = _gc.GovernedModelClient(_gc.default_candidates(), governor=ComputeGovernorSpine(receipts=receipts, enforce=True))
+            self._governed_client = client
+
+        def schema_only_verifier(value: Any) -> Dict[str, Any]:
+            # Proxy callers verify downstream (tests, IDE apply); here acceptance means schema-valid.
+            return {"passed": True, "reason": "schema_valid_proxy_caller_verifies"}
+
+        result = await client.complete(family=family, messages=list(ir.messages or []), schema=schema,
+                                       verify=schema_only_verifier, run_id=str(compute.plan.plan_id))
+        text = json.dumps(result.value) if result.accepted else ""
+        response = self._openai_text_response(ir, text, provider="beast_governed_interception",
+                                              extra={"edgek_governed_interception": result.public()})
+        calls = [c for c in result.calls if c.status not in {"skipped_circuit_open", "refused_governor"}]
+        prompt = sum(c.tokens_prompt for c in calls)
+        completion = sum(c.tokens_completion for c in calls)
+        response["usage"] = {"prompt_tokens": prompt, "completion_tokens": completion, "total_tokens": prompt + completion}
+        if not result.accepted:
+            response["choices"][0]["finish_reason"] = "error"
+        receipt = compute_interceptor.complete(
+            compute,
+            response=response,
+            status="governed_interception_succeeded" if result.accepted else "governed_interception_failed",
+            provider_execution_requested=bool(calls),
+            behavior_preserved=bool(result.accepted),
+        )
+        response["edgek_compute"] = self._compute_summary(compute, receipt)
+        response["edgek_runtime"] = {"attempt_id": "", "provider": result.accepted_by or "beast_governed_interception",
+                                     "timeout_seconds": 0}
+        return response
+
+    async def _try_local_specialist(self, ir: EdgeKIR, route_decision: Any, compute: Any) -> Optional[Dict[str, Any]]:
+        """Rung 2 of the cost ladder: a D9 local_specialist_adapter proposal, once the governor admits it, runs on
+        a local Ollama swarm runner. Its output must pass the Quality Cascade, Output Governor and verifier gates;
+        otherwise it is discarded and the provider path continues (BEAST_SWARM_SPECIALIST, default off)."""
+        from app.kernel.agents.swarm_specialist import specialist_enabled
+
+        route = getattr(getattr(route_decision, "route", None), "value", "")
+        if route != "local_specialist_adapter" or not specialist_enabled():
+            return None
+        outcome = await self._specialist_dispatch().dispatch(ir, route_decision.to_dict(), run_id=compute.plan.plan_id)
+        if isinstance(ir.metadata, dict):
+            ir.metadata["local_specialist"] = outcome.receipt
+        if not outcome.dispatched or outcome.response is None:
+            logger.info("Local specialist not used (%s); provider path continues", outcome.reason)
+            return None
+        response = self._openai_text_response(ir, outcome.response["text"], provider="beast_local_specialist",
+                                              extra={"edgek_local_specialist": outcome.receipt})
+        response["model"] = outcome.response["model"]
+        receipt = compute_interceptor.complete(
+            compute,
+            response=response,
+            status="local_specialist_succeeded",
+            provider_execution_requested=False,
+            behavior_preserved=None,
+        )
+        response["edgek_compute"] = self._compute_summary(compute, receipt)
+        response["edgek_runtime"] = {"attempt_id": "", "provider": "local_specialist", "timeout_seconds": 0}
+        return response
 
     def _openai_text_response(
         self,

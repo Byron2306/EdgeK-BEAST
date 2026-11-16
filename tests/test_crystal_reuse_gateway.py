@@ -90,7 +90,7 @@ def test_crystal_reuse_gateway_uses_semantic_matcher_and_exports_observability(t
             reusable=True,
             payload={"response": "near match"},
             avoided_tokens_estimate=55,
-            confidence=0.91,
+            confidence=0.97,  # D9: only exact-band (>= 0.95) semantic hits that pass a verifier may be served
             reason="semantic_similarity_hit",
         )
 
@@ -98,6 +98,7 @@ def test_crystal_reuse_gateway_uses_semantic_matcher_and_exports_observability(t
         storage=DurableInferenceStorage(tmp_path / "durable"),
         semantic_matcher=matcher,
         seal=ResidueSeal(tmp_path / "keys"),
+        semantic_verifier=lambda request, replay: True,
     )
 
     decision = gateway.decide(CrystalReuseRequest(prompt="similar prompt", model="m"))
@@ -121,6 +122,37 @@ def test_crystal_reuse_gateway_inventory_advertises_public_integrations(tmp_path
     assert {"local_semantic_cache", "local_prefix_kv_store", "local_execution_gateway", "compute_forge"}.issubset(ids)
     assert inventory["runtime_order"][0] == "exact_answer"
     assert inventory["integration_health"]["capability_count"] >= 7
+
+
+def test_crystal_reuse_inventory_lists_redacted_credit_summaries(tmp_path):
+    storage = DurableInferenceStorage(tmp_path / "durable")
+    storage.store_semantic_result(
+        "rename_symbol",
+        "repo-ide-polish",
+        "crystal_reuse_v1",
+        ["visible", "hidden"],
+        240,
+        0.91,
+        impact_fingerprint_hash="sha256:ide-polish",
+        metadata={"request": {"prompt": "SECRET_SHOULD_NOT_LEAK", "api_key": "sk-test"}, "model": "local"},
+    )
+    gateway = CrystalReuseGateway(storage=storage, seal=ResidueSeal(tmp_path / "keys"))
+
+    inventory = gateway.inventory()
+    credits = inventory["credits"]
+
+    assert len(credits) == 1
+    row = credits[0]
+    assert row["task_class"] == "rename_symbol"
+    assert row["credit_id"].startswith("scc_")
+    assert row["avoided_tokens_estimate"] == 240
+    assert "metadata" not in row
+    assert "request" not in row
+    dumped = str(row)
+    assert "SECRET_SHOULD_NOT_LEAK" not in dumped
+    assert "sk-test" not in dumped
+    assert inventory["storage"]["total_credits"] == 1
+    assert inventory["storage"]["total_avoided_tokens"] == 240
 
 
 def test_crystal_reuse_gateway_exports_first_class_integration_bundle(tmp_path):

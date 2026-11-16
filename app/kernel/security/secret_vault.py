@@ -170,6 +170,39 @@ class SecretVault:
             "load": loaded,
         }
 
+    def set_secret(self, env_name: str, value: str) -> Dict[str, object]:
+        """Upsert one approved provider environment value without exposing it.
+
+        The desktop sends a value only to the local gateway.  This method keeps
+        the existing vault entries, writes a user-only file, and loads the new
+        value into this gateway process so a restart is not required.
+        """
+        name = str(env_name or "").strip()
+        secret = str(value or "").strip()
+        if not re.fullmatch(r"[A-Z][A-Z0-9_]{1,127}", name):
+            raise ValueError("Invalid provider environment name")
+        if not secret:
+            raise ValueError("Secret value is required")
+        existing = {entry.env_name: entry for entry in self.read_env_file(self.vault_path)}
+        existing[name] = SecretEntry(0, name, self._provider_for_env(name), secret, name)
+        self.vault_path.parent.mkdir(parents=True, exist_ok=True)
+        lines = [
+            "# EdgeK BEAST local provider secret vault",
+            "# chmod 600; do not commit; values are loaded only into local process env.",
+        ]
+        for entry in sorted(existing.values(), key=lambda item: item.env_name):
+            lines.append(f"{entry.env_name}={self._quote_env(entry.value)}")
+        self.vault_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        self.vault_path.chmod(stat.S_IRUSR | stat.S_IWUSR)
+        os.environ[name] = secret
+        return {
+            "vault_path": str(self.vault_path),
+            "written": True,
+            "mode": oct(self.vault_path.stat().st_mode & 0o777),
+            "entry": existing[name].redacted(),
+            "providers": self._provider_counts(existing.values()),
+        }
+
     def status(self) -> Dict[str, object]:
         entries = self.read_env_file(self.vault_path)
         env_entries = [

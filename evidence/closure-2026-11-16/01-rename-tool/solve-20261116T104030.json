@@ -1,0 +1,2156 @@
+{
+ "tgi_alone_tool": [
+  {
+   "task": "ren-h1",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.91,
+   "spend_usd": 0.0,
+   "accepted": true,
+   "accepted_by": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 694,
+     "tokens_completion": 56,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 712,
+     "ttft_ms": 349.9,
+     "latency_ms": 1713.0,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_dc9ab9863ad98bafce4b5647",
+     "governor_receipt": "gov_c4fe0a2f9fa4e2f85c743005",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "fetch_user",
+      "file": "users/core.py",
+      "new_name": "load_user"
+     }
+    ],
+    "edits": [
+     {
+      "path": "users/core.py",
+      "old_text": "def fetch_user(items):",
+      "new_text": "def load_user(items):"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ]
+  },
+  {
+   "task": "ren-h2",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.71,
+   "spend_usd": 0.0,
+   "accepted": true,
+   "accepted_by": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 705,
+     "tokens_completion": 59,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 709,
+     "ttft_ms": 164.4,
+     "latency_ms": 1515.9,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_b305d93e9e430b57fdf59a74",
+     "governor_receipt": "gov_f454e67247ff31c4065207f5",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "make_report",
+      "file": "reports/core.py",
+      "new_name": "build_report"
+     }
+    ],
+    "edits": [
+     {
+      "path": "reports/core.py",
+      "old_text": "def make_report(items):",
+      "new_text": "def build_report(items):"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ]
+  },
+  {
+   "task": "ren-h3",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 16.98,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "json_invalid",
+     "json_valid": false,
+     "passed": false,
+     "verify_reason": "",
+     "dialect": "tgi_json_object",
+     "early_stop": false,
+     "stop_reason": "",
+     "tokens_prompt": 607,
+     "tokens_completion": 768,
+     "tokens_estimated": false,
+     "budget_headroom_tokens": 0,
+     "ttft_ms": 158.4,
+     "latency_ms": 16973.9,
+     "spend_usd": 0.0,
+     "error": "no_json_action",
+     "receipt_id": "gov_3a04e21a5f79e1bb77cc190b",
+     "governor_receipt": "gov_21328c97e57e568f9d89077a",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": []
+  },
+  {
+   "task": "ren-w1",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.66,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:edit_not_applicable:edit old_text is not unique in target",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 698,
+     "tokens_completion": 59,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 709,
+     "ttft_ms": 162.1,
+     "latency_ms": 1597.7,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_a8777de25222e0166526b3e7",
+     "governor_receipt": "gov_b75dc41558df94bb4efe00ad",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:edit_not_applicable:edit old_text is not unique in target",
+     "files_changed": 0
+    }
+   ]
+  },
+  {
+   "task": "ren-w2",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.72,
+   "spend_usd": 0.0,
+   "accepted": true,
+   "accepted_by": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 705,
+     "tokens_completion": 58,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 710,
+     "ttft_ms": 163.4,
+     "latency_ms": 1547.5,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_e9e841423b6d0d70cc1fa72a",
+     "governor_receipt": "gov_84d90c83b9fdfbd7f5ec168d",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "dump_json",
+      "file": "exporter/core.py",
+      "new_name": "write_json"
+     }
+    ],
+    "edits": [
+     {
+      "path": "exporter/core.py",
+      "old_text": "def dump_json(items):",
+      "new_text": "def write_json(items):"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ]
+  },
+  {
+   "task": "ren-near",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.71,
+   "spend_usd": 0.0,
+   "accepted": true,
+   "accepted_by": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 715,
+     "tokens_completion": 59,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 709,
+     "ttft_ms": 160.9,
+     "latency_ms": 1508.9,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_ab02657722554ffe428cf3ac",
+     "governor_receipt": "gov_2ee9aed36a8872424af0b290",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "calc_total",
+      "file": "totals/core.py",
+      "new_name": "compute_total"
+     }
+    ],
+    "edits": [
+     {
+      "path": "totals/core.py",
+      "old_text": "def calc_total(items):",
+      "new_text": "def compute_total(items):"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ]
+  },
+  {
+   "task": "refguard-h1",
+   "family": "composite-refguard",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.88,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tests_still_failing",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 933,
+     "tokens_completion": 63,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 705,
+     "ttft_ms": 279.0,
+     "latency_ms": 1762.0,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_0bd4aafe1fe650f0530defde",
+     "governor_receipt": "gov_6aafa3c8417b7c077b9d6d75",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 4
+    }
+   ]
+  },
+  {
+   "task": "refguard-h2",
+   "family": "composite-refguard",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.91,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tests_still_failing",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 926,
+     "tokens_completion": 61,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 707,
+     "ttft_ms": 269.2,
+     "latency_ms": 1746.6,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_932f6ed74f5388bfa0a42468",
+     "governor_receipt": "gov_cdaa9025f86fd45e467a5a3e",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 4
+    }
+   ]
+  },
+  {
+   "task": "refguard-h3",
+   "family": "composite-refguard",
+   "tool": "code.rename_symbol",
+   "wall_s": 2.01,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tests_still_failing",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 933,
+     "tokens_completion": 64,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 704,
+     "ttft_ms": 285.0,
+     "latency_ms": 1850.1,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_aff9a5bba761b2a9ead82964",
+     "governor_receipt": "gov_12f3b6ea2f73189b3c397609",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 4
+    }
+   ]
+  },
+  {
+   "task": "refguard-w1",
+   "family": "composite-refguard",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.94,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tests_still_failing",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 941,
+     "tokens_completion": 64,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 704,
+     "ttft_ms": 286.9,
+     "latency_ms": 1820.9,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_c9520cda102a70d96fc0a537",
+     "governor_receipt": "gov_ee3fc1cb57f09801e0739283",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 4
+    }
+   ]
+  },
+  {
+   "task": "fresh-refguard-6bb5",
+   "family": "fresh-lattice2",
+   "tool": "code.rename_symbol",
+   "wall_s": 2.04,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tests_still_failing",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 974,
+     "tokens_completion": 67,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 701,
+     "ttft_ms": 290.9,
+     "latency_ms": 1911.9,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_312c0abf7299214bf63ea751",
+     "governor_receipt": "gov_1902d5a1fea373415c7a45c1",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 4
+    }
+   ]
+  },
+  {
+   "task": "fresh-refop-6bb5",
+   "family": "fresh-lattice2-diff",
+   "tool": "code.rename_symbol",
+   "wall_s": 2.25,
+   "spend_usd": 0.0,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tests_still_failing",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 862,
+     "tokens_completion": 71,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 697,
+     "ttft_ms": 271.3,
+     "latency_ms": 2096.8,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_01855a66277cd385313b5540",
+     "governor_receipt": "gov_4f4d57bdaa209865adf5aeeb",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 4
+    }
+   ]
+  },
+  {
+   "task": "fresh-rename-6bb5",
+   "family": "fresh-single2",
+   "tool": "code.rename_symbol",
+   "wall_s": 2.03,
+   "spend_usd": 0.0,
+   "accepted": true,
+   "accepted_by": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 729,
+     "tokens_completion": 68,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 700,
+     "ttft_ms": 187.8,
+     "latency_ms": 1825.5,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_d65c3fe0b5849594cd63c160",
+     "governor_receipt": "gov_8bb9984b8e8ff2f04f2f76c9",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "get_latency_total",
+      "file": "books6bb5/core.py",
+      "new_name": "fetch_latency_total"
+     }
+    ],
+    "edits": [
+     {
+      "path": "books6bb5/core.py",
+      "old_text": "def get_latency_total(items):",
+      "new_text": "def fetch_latency_total(items):"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ]
+  }
+ ],
+ "chain_tool": [
+  {
+   "task": "ren-h1",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.67,
+   "spend_usd": 0.0,
+   "accepted": true,
+   "accepted_by": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 692,
+     "tokens_completion": 56,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 712,
+     "ttft_ms": 70.0,
+     "latency_ms": 1439.0,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_258ec82d8888652b60ea332f",
+     "governor_receipt": "gov_30b1af7a958035573deb14d9",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "fetch_user",
+      "file": "users/core.py",
+      "new_name": "load_user"
+     }
+    ],
+    "edits": [
+     {
+      "path": "users/core.py",
+      "old_text": "def fetch_user(items):",
+      "new_text": "def load_user(items):"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ]
+  },
+  {
+   "task": "ren-h2",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.69,
+   "spend_usd": 0.0,
+   "accepted": true,
+   "accepted_by": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 702,
+     "tokens_completion": 59,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 709,
+     "ttft_ms": 71.5,
+     "latency_ms": 1453.5,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_817b0aa96dea767c945d694a",
+     "governor_receipt": "gov_109abf21f7ac09c886878161",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "make_report",
+      "file": "reports/core.py",
+      "new_name": "build_report"
+     }
+    ],
+    "edits": [
+     {
+      "path": "reports/core.py",
+      "old_text": "def make_report(items):",
+      "new_text": "def build_report(items):"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ]
+  },
+  {
+   "task": "ren-h3",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 20.74,
+   "spend_usd": 0.00012,
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 2,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "json_invalid",
+     "json_valid": false,
+     "passed": false,
+     "verify_reason": "",
+     "dialect": "tgi_json_object",
+     "early_stop": false,
+     "stop_reason": "",
+     "tokens_prompt": 603,
+     "tokens_completion": 768,
+     "tokens_estimated": false,
+     "budget_headroom_tokens": 0,
+     "ttft_ms": 71.3,
+     "latency_ms": 17373.5,
+     "spend_usd": 0.0,
+     "error": "no_json_action",
+     "receipt_id": "gov_0d4310ca4c77bfd7ac2f4ba7",
+     "governor_receipt": "gov_6c0f505d06415ae3209e549a",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "placement": "cloud",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 700,
+     "tokens_completion": 29,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 2019,
+     "ttft_ms": 1468.1,
+     "latency_ms": 1548.3,
+     "spend_usd": 0.00012,
+     "error": "",
+     "receipt_id": "gov_dcb95309b7d7c412885e3404",
+     "governor_receipt": "gov_8330f299c882b516dc70b548",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "parse_cfg",
+      "file": "configs/core.py",
+      "new_name": "parse_config"
+     }
+    ],
+    "edits": []
+   },
+   "verdicts": [
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ]
+  },
+  {
+   "task": "ren-w1",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 5.06,
+   "spend_usd": 0.000141,
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 2,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:edit_not_applicable:edit old_text is not unique in target",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 695,
+     "tokens_completion": 59,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 709,
+     "ttft_ms": 106.3,
+     "latency_ms": 1621.4,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_0a39ce8f43a32b52df8103d5",
+     "governor_receipt": "gov_93515f49135a0efcf77e2529",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "placement": "cloud",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 846,
+     "tokens_completion": 29,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 2019,
+     "ttft_ms": 1612.4,
+     "latency_ms": 1837.2,
+     "spend_usd": 0.000141,
+     "error": "",
+     "receipt_id": "gov_ce0af94bfcda367cd68a0f06",
+     "governor_receipt": "gov_5d52a0b6e2475707f9859816",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "send_mail",
+      "file": "mailer/core.py",
+      "new_name": "send_email"
+     }
+    ],
+    "edits": []
+   },
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:edit_not_applicable:edit old_text is not unique in target",
+     "files_changed": 0
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ]
+  },
+  {
+   "task": "ren-w2",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.79,
+   "spend_usd": 0.0,
+   "accepted": true,
+   "accepted_by": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 703,
+     "tokens_completion": 58,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 710,
+     "ttft_ms": 102.5,
+     "latency_ms": 1552.1,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_74c6a4419e390809cdf9bd92",
+     "governor_receipt": "gov_70bc10a0f21778d735315813",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "dump_json",
+      "file": "exporter/core.py",
+      "new_name": "write_json"
+     }
+    ],
+    "edits": [
+     {
+      "path": "exporter/core.py",
+      "old_text": "def dump_json(items):",
+      "new_text": "def write_json(items):"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ]
+  },
+  {
+   "task": "ren-near",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.67,
+   "spend_usd": 0.0,
+   "accepted": true,
+   "accepted_by": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 713,
+     "tokens_completion": 59,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 709,
+     "ttft_ms": 71.7,
+     "latency_ms": 1454.4,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_de9c4b523c3d3b9b862e1753",
+     "governor_receipt": "gov_11c94285fb7c7f946b9f990a",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "calc_total",
+      "file": "totals/core.py",
+      "new_name": "compute_total"
+     }
+    ],
+    "edits": [
+     {
+      "path": "totals/core.py",
+      "old_text": "def calc_total(items):",
+      "new_text": "def compute_total(items):"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ]
+  },
+  {
+   "task": "refguard-h1",
+   "family": "composite-refguard",
+   "tool": "code.rename_symbol",
+   "wall_s": 6.02,
+   "spend_usd": 0.000226,
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 2,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tests_still_failing",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 927,
+     "tokens_completion": 63,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 705,
+     "ttft_ms": 173.3,
+     "latency_ms": 1701.2,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_e3a011fffec086649f0dbde1",
+     "governor_receipt": "gov_d7fbdcc6fdeb1de325e4287b",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "placement": "cloud",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 1244,
+     "tokens_completion": 79,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 1969,
+     "ttft_ms": 2152.6,
+     "latency_ms": 2487.9,
+     "spend_usd": 0.000226,
+     "error": "",
+     "receipt_id": "gov_13243ac1b87d671def0353fb",
+     "governor_receipt": "gov_e2f3c2bae2985bc2649838d8",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "calc_grade_mean",
+      "file": "grades/core.py",
+      "new_name": "compute_grade_mean"
+     }
+    ],
+    "edits": [
+     {
+      "path": "grades/core.py",
+      "old_text": "    return sum(items) / len(items)",
+      "new_text": "    if not items:\n        return None\n    return sum(items) / len(items)"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 4
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 4
+    }
+   ]
+  },
+  {
+   "task": "refguard-h2",
+   "family": "composite-refguard",
+   "tool": "code.rename_symbol",
+   "wall_s": 6.05,
+   "spend_usd": 0.000223,
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 2,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tests_still_failing",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 920,
+     "tokens_completion": 61,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 707,
+     "ttft_ms": 244.5,
+     "latency_ms": 1784.0,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_88ae2d3878280b25524ebfc1",
+     "governor_receipt": "gov_33fbbd3847e2ea42b7e5449f",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "placement": "cloud",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 1234,
+     "tokens_completion": 76,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 1972,
+     "ttft_ms": 2292.2,
+     "latency_ms": 2622.8,
+     "spend_usd": 0.000223,
+     "error": "",
+     "receipt_id": "gov_101bff45538c5fa3c7996d90",
+     "governor_receipt": "gov_98ccf02471eba1ca4697d170",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "avg_reading",
+      "file": "sensors/core.py",
+      "new_name": "mean_reading"
+     }
+    ],
+    "edits": [
+     {
+      "path": "sensors/core.py",
+      "old_text": "    return sum(items) / len(items)",
+      "new_text": "    if not items:\n        return None\n    return sum(items) / len(items)"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 4
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 4
+    }
+   ]
+  },
+  {
+   "task": "refguard-h3",
+   "family": "composite-refguard",
+   "tool": "code.rename_symbol",
+   "wall_s": 5.59,
+   "spend_usd": 0.000226,
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 2,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tests_still_failing",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 928,
+     "tokens_completion": 64,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 704,
+     "ttft_ms": 225.6,
+     "latency_ms": 1791.1,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_d056f885df26cc34e9b95ac9",
+     "governor_receipt": "gov_f5be6874a0aade9ad8fca51b",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "placement": "cloud",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 1245,
+     "tokens_completion": 79,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 1969,
+     "ttft_ms": 1753.5,
+     "latency_ms": 2026.5,
+     "spend_usd": 0.000226,
+     "error": "",
+     "receipt_id": "gov_007790346b2e4ad7c5db6481",
+     "governor_receipt": "gov_e0c69713a5a1bc9f4d8b39e4",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "calc_cart_average",
+      "file": "carts/core.py",
+      "new_name": "compute_cart_average"
+     }
+    ],
+    "edits": [
+     {
+      "path": "carts/core.py",
+      "old_text": "    return sum(items) / len(items)",
+      "new_text": "    if not items:\n        return None\n    return sum(items) / len(items)"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 4
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 4
+    }
+   ]
+  },
+  {
+   "task": "refguard-w1",
+   "family": "composite-refguard",
+   "tool": "code.rename_symbol",
+   "wall_s": 6.13,
+   "spend_usd": 0.000228,
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 2,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tests_still_failing",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 935,
+     "tokens_completion": 64,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 704,
+     "ttft_ms": 229.3,
+     "latency_ms": 1815.5,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_b92d294dab01fe4ea5d96fde",
+     "governor_receipt": "gov_7fa10d8b9fdd91c17381238c",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "placement": "cloud",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 1252,
+     "tokens_completion": 80,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 1968,
+     "ttft_ms": 1986.7,
+     "latency_ms": 2338.2,
+     "spend_usd": 0.000228,
+     "error": "",
+     "receipt_id": "gov_99b9001b30366b534643d7ca",
+     "governor_receipt": "gov_273e3c6213db4a0446528488",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "calc_survey_mean",
+      "file": "surveys/core.py",
+      "new_name": "compute_survey_mean"
+     }
+    ],
+    "edits": [
+     {
+      "path": "surveys/core.py",
+      "old_text": "    return sum(items) / len(items)",
+      "new_text": "    if not items:\n        return None\n    return sum(items) / len(items)"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 4
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 4
+    }
+   ]
+  },
+  {
+   "task": "fresh-refguard-6bb5",
+   "family": "fresh-lattice2",
+   "tool": "code.rename_symbol",
+   "wall_s": 12.12,
+   "spend_usd": 0.00204,
+   "accepted": false,
+   "accepted_by": "",
+   "avoided": false,
+   "reason": "all_candidates_failed",
+   "model_calls": 4,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tests_still_failing",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 969,
+     "tokens_completion": 69,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 699,
+     "ttft_ms": 238.4,
+     "latency_ms": 1883.6,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_e3f6348a2b6a3dc94da4af5c",
+     "governor_receipt": "gov_a75bfe0b442e460173464865",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "placement": "cloud",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:edit_not_applicable:edit old_text is not unique in target",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 1291,
+     "tokens_completion": 74,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 1974,
+     "ttft_ms": 1884.3,
+     "latency_ms": 2393.9,
+     "spend_usd": 0.000231,
+     "error": "",
+     "receipt_id": "gov_62b515778bba13da10246870",
+     "governor_receipt": "gov_9e4dfc7bfa92a9f3277a74d8",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+     "placement": "cloud",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tests_still_failing",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 1458,
+     "tokens_completion": 55,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 1993,
+     "ttft_ms": 1499.6,
+     "latency_ms": 1849.3,
+     "spend_usd": 0.000503,
+     "error": "",
+     "receipt_id": "gov_9ed51ef03243970788cf4f3c",
+     "governor_receipt": "gov_bf5f4024c36c5fa18023109d",
+     "teardown": {}
+    },
+    {
+     "provider": "hf",
+     "model": "moonshotai/Kimi-K2.7-Code:deepinfra",
+     "placement": "cloud",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tests_still_failing",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 1766,
+     "tokens_completion": 31,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 2017,
+     "ttft_ms": 3942.3,
+     "latency_ms": 4119.4,
+     "spend_usd": 0.001306,
+     "error": "",
+     "receipt_id": "gov_edd7c7cce67f352f8ae690b5",
+     "governor_receipt": "gov_60b5a64236ecb733473d361d",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": null,
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 4
+    },
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:edit_not_applicable:edit old_text is not unique in target",
+     "files_changed": 0
+    },
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 1
+    },
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 4
+    }
+   ]
+  },
+  {
+   "task": "fresh-refop-6bb5",
+   "family": "fresh-lattice2-diff",
+   "tool": "code.rename_symbol",
+   "wall_s": 19.94,
+   "spend_usd": 0.001621,
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 3,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tests_still_failing",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 858,
+     "tokens_completion": 71,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 697,
+     "ttft_ms": 203.4,
+     "latency_ms": 2027.4,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_03d9c3065b0047b66e03ac43",
+     "governor_receipt": "gov_ab56f9c025b1cde98354b4a3",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "placement": "cloud",
+     "status": "json_invalid",
+     "json_valid": false,
+     "passed": false,
+     "verify_reason": "",
+     "dialect": "openai_json_schema",
+     "early_stop": false,
+     "stop_reason": "",
+     "tokens_prompt": 1052,
+     "tokens_completion": 2048,
+     "tokens_estimated": false,
+     "budget_headroom_tokens": 0,
+     "ttft_ms": 0.0,
+     "latency_ms": 13643.9,
+     "spend_usd": 0.001182,
+     "error": "no_json_action",
+     "receipt_id": "gov_ec96b30225011f3e9d5df2eb",
+     "governor_receipt": "gov_9dba4b66a9e0e097b69a9c15",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+     "placement": "cloud",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 1182,
+     "tokens_completion": 70,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 1978,
+     "ttft_ms": 1456.6,
+     "latency_ms": 1837.8,
+     "spend_usd": 0.000439,
+     "error": "",
+     "receipt_id": "gov_3ed95c93f59f774a50a73e7b",
+     "governor_receipt": "gov_0ff5792241296fafba593cef",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "calc_latency_net",
+      "file": "tally6bb5/core.py",
+      "new_name": "compute_latency_net"
+     }
+    ],
+    "edits": [
+     {
+      "path": "tally6bb5/core.py",
+      "old_text": "    return sum(items) + len(items)",
+      "new_text": "    return sum(items) - len(items)"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 4
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 4
+    }
+   ]
+  },
+  {
+   "task": "fresh-rename-6bb5",
+   "family": "fresh-single2",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.96,
+   "spend_usd": 0.0,
+   "accepted": true,
+   "accepted_by": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 727,
+     "tokens_completion": 68,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 700,
+     "ttft_ms": 131.5,
+     "latency_ms": 1755.2,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_c0116f3e97128b1d048d2b3a",
+     "governor_receipt": "gov_b4703e1ba84f901672a6cf94",
+     "teardown": {}
+    }
+   ],
+   "ranking": [
+    {
+     "ident": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/glm-5p3-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    },
+    {
+     "ident": "hf:moonshotai/Kimi-K2.7-Code:deepinfra@cloud",
+     "value": 0.0,
+     "source": "static_order"
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "get_latency_total",
+      "file": "books6bb5/core.py",
+      "new_name": "fetch_latency_total"
+     }
+    ],
+    "edits": [
+     {
+      "path": "books6bb5/core.py",
+      "old_text": "def get_latency_total(items):",
+      "new_text": "def fetch_latency_total(items):"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ]
+  }
+ ]
+}

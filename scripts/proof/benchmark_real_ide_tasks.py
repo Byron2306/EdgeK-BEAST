@@ -7,6 +7,14 @@ it does not claim live Ollama quality unless ``--live`` is added later.
 """
 
 from __future__ import annotations
+try:  # closure-2026-11-16: governed egress shim
+    from app.kernel.compute import governed_egress as _egress
+except ModuleNotFoundError:  # run as a script: repo root not on sys.path yet
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _sys.path.insert(0, str(_Path(__file__).resolve().parents[2]))
+    from app.kernel.compute import governed_egress as _egress
 
 import argparse
 import asyncio
@@ -80,7 +88,7 @@ class LiveRawOllamaProvider:
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
+        with _egress.urlopen("benchmark_real_ide_tasks", request, timeout=self.timeout_seconds) as response:
             body = json.loads(response.read().decode("utf-8"))
         self.calls += 1
         raw = body.get("response") if isinstance(body, dict) else None

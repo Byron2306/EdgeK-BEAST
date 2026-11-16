@@ -1,0 +1,16 @@
+# ~/.config/systemd/user/beast-consumer.service — ONE persistent leaf cgroup for agents/IDE ("the consumer").
+# ARDA keys its measured set on the exact cgroup id, so agents must run inside this unit's cgroup:
+#   tmux -L beast-consumer attach -t agents   (or: tmux -L beast-consumer new-window -t agents 'codex')
+[Unit]
+Description=BEAST consumer cgroup (agents/IDE whose model egress X7 governs)
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/tmux -L beast-consumer new-session -d -s agents
+ExecStop=/usr/bin/tmux -L beast-consumer kill-server
+EnvironmentFile=%h/GitHub/EdgeK-BEAST/deploy/closure-2026-11-16/agents.env
+Environment=BEAST_ARDA_EGRESS_ADMIT=1
+Delegate=no
+
+[Install]
+WantedBy=default.target

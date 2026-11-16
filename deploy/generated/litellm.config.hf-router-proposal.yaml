@@ -1,0 +1,324 @@
+# PROPOSAL ONLY (2026-11-16, governed interception). NOT applied to the running LiteLLM, which reads
+# deploy/generated/litellm.config.yaml. Replaces the stale Llama-3.1-8B HF-provider lanes with the HF-router
+# lanes Byron approved (one entry per model x provider, all via HF_TOKEN / router.huggingface.co).
+# Removed lanes:
+#   - meta-llama/Meta-Llama-3.1-8B-Instruct <- deepinfra/meta-llama/Meta-Llama-3.1-8B-Instruct
+#   - meta-llama/Meta-Llama-3.1-8B-Instruct <- featherless_ai/meta-llama/Meta-Llama-3.1-8B-Instruct
+#   - llama-3.1-8b-instant <- groq/llama-3.1-8b-instant
+#   - huggingface <- huggingface/openai/gpt-oss-120b
+#   - meta-llama/Meta-Llama-3.1-8B-Instruct <- hyperbolic/meta-llama/Meta-Llama-3.1-8B-Instruct
+#   - meta-llama/llama-3.1-8b-instruct <- novita/meta-llama/llama-3.1-8b-instruct
+#   - meta-llama/Llama-3.1-8B-Instruct <- nscale/meta-llama/Llama-3.1-8B-Instruct
+# To apply (Byron): cp deploy/generated/litellm.config.hf-router-proposal.yaml deploy/generated/litellm.config.yaml
+#   then restart the LiteLLM process (pid 830027 today) with the same --config path.
+model_list:
+- model_name: claude-3-haiku-20240307
+  litellm_params:
+    model: anthropic/claude-3-haiku-20240307
+    api_key: os.environ/ANTHROPIC_API_KEY
+  rpm: 50
+  tpm: 40000
+- model_name: gpt-oss-120b
+  litellm_params:
+    model: cerebras/gpt-oss-120b
+    api_key: os.environ/CEREBRAS_API_KEY
+    api_base: https://api.cerebras.ai/v1
+  rpm: 60
+  tpm: 120000
+- model_name: gpt-5-codex
+  litellm_params:
+    model: openai/gpt-5-codex
+    api_key: os.environ/OPENAI_API_KEY
+    api_base: https://api.openai.com/v1
+  rpm: 30
+  tpm: 60000
+- model_name: command-a-03-2025
+  litellm_params:
+    model: cohere/command-a-03-2025
+    api_key: os.environ/COHERE_API_KEY
+    api_base: https://api.cohere.com/v2
+  rpm: 60
+  tpm: 120000
+- model_name: gemini-flash
+  litellm_params:
+    model: gemini/gemini-2.5-flash
+    api_key: os.environ/GEMINI_API_KEY
+  rpm: 60
+  tpm: 100000
+- model_name: litellm-gpt-3.5-turbo
+  litellm_params:
+    model: openai/gpt-3.5-turbo
+    api_key: os.environ/LITELLM_API_KEY
+    api_base: http://localhost:4000
+  rpm: 120
+  tpm: 120000
+- model_name: llama_cpp
+  litellm_params:
+    model: openai/llama_cpp
+    api_key: os.environ/LLAMA_CPP_API_KEY
+    api_base: os.environ/LLAMA_CPP_BASE_URL
+- model_name: local-nim-model
+  litellm_params:
+    model: openai/local-nim-model
+    api_key: os.environ/LOCAL_NIM_BASE_URL
+    api_base: http://127.0.0.1:8000/v1
+- model_name: nvidia-nim
+  litellm_params:
+    model: openai/meta/llama-3.1-70b-instruct
+    api_key: os.environ/NVIDIA_API_KEY
+    api_base: https://integrate.api.nvidia.com/v1
+  rpm: 60
+  tpm: 120000
+- model_name: qwen3:4b
+  litellm_params:
+    model: ollama/qwen3:4b
+    api_base: http://127.0.0.1:11434
+  rpm: 30
+  tpm: 24000
+- model_name: gpt-3.5-turbo
+  litellm_params:
+    model: openai/gpt-3.5-turbo
+    api_key: os.environ/OPENAI_API_KEY
+    api_base: https://api.openai.com/v1
+  rpm: 60
+  tpm: 90000
+- model_name: openrouter/auto
+  litellm_params:
+    model: openrouter/auto
+    api_key: os.environ/OPENROUTER_API_KEY
+    api_base: https://openrouter.ai/api/v1
+  rpm: 80
+  tpm: 120000
+- model_name: ovhcloud/ai-endpoints
+  litellm_params:
+    model: ovhcloud/ai-endpoints
+    api_key: os.environ/OVHCLOUD_APP_KEY
+    api_base: https://api.ovh.com/1.0
+  rpm: 60
+  tpm: 120000
+- model_name: meta/meta-llama-3-70b-instruct
+  litellm_params:
+    model: meta/meta-llama-3-70b-instruct
+    api_key: os.environ/REPLICATE_API_TOKEN
+- model_name: sglang
+  litellm_params:
+    model: openai/sglang
+    api_key: os.environ/SGLANG_BASE_URL
+- model_name: tensorrt_llm
+  litellm_params:
+    model: openai/tensorrt_llm
+    api_key: os.environ/TENSORRT_LLM_BASE_URL
+- model_name: tgi-local
+  litellm_params:
+    model: openai/Qwen/Qwen2.5-Coder-3B-Instruct-AWQ
+    api_base: http://127.0.0.1:8090/v1
+    api_key: unused
+  rpm: 120
+  tpm: 120000
+- model_name: vllm
+  litellm_params:
+    model: openai/vllm
+    api_key: os.environ/VLLM_BASE_URL
+- model_name: grok-build-0.1
+  litellm_params:
+    model: openai/grok-build-0.1
+    api_key: os.environ/XAI_API_KEY
+    api_base: https://api.x.ai/v1
+- model_name: moonshotai/Kimi-K2.7-Code
+  litellm_params:
+    model: huggingface/deepinfra/moonshotai/Kimi-K2.7-Code
+    api_key: os.environ/HF_TOKEN
+    input_cost_per_token: 6.800000000000001e-07
+    output_cost_per_token: 3.4e-06
+  model_info:
+    id: hf-router:moonshotai/Kimi-K2.7-Code:deepinfra
+    hf_route: deepinfra
+    pricing_source: hf_router_models_2026-11-16
+  rpm: 60
+  tpm: 120000
+- model_name: moonshotai/Kimi-K2.7-Code
+  litellm_params:
+    model: huggingface/featherless-ai/moonshotai/Kimi-K2.7-Code
+    api_key: os.environ/HF_TOKEN
+    input_cost_per_token: 9.499999999999999e-07
+    output_cost_per_token: 4.0e-06
+  model_info:
+    id: hf-router:moonshotai/Kimi-K2.7-Code:featherless-ai
+    hf_route: featherless-ai
+    pricing_source: unlisted_upper_bound_of_sibling_routes
+  rpm: 60
+  tpm: 120000
+- model_name: moonshotai/Kimi-K2.7-Code
+  litellm_params:
+    model: huggingface/novita/moonshotai/Kimi-K2.7-Code
+    api_key: os.environ/HF_TOKEN
+    input_cost_per_token: 9.499999999999999e-07
+    output_cost_per_token: 4.0e-06
+  model_info:
+    id: hf-router:moonshotai/Kimi-K2.7-Code:novita
+    hf_route: novita
+    pricing_source: hf_router_models_2026-11-16
+  rpm: 60
+  tpm: 120000
+- model_name: deepseek-ai/DeepSeek-V4.1-Flash
+  litellm_params:
+    model: huggingface/deepinfra/deepseek-ai/DeepSeek-V4.1-Flash
+    api_key: os.environ/HF_TOKEN
+    input_cost_per_token: 2.0000000000000002e-07
+    output_cost_per_token: 6.0e-07
+  model_info:
+    id: hf-router:deepseek-ai/DeepSeek-V4.1-Flash:deepinfra
+    hf_route: deepinfra
+    pricing_source: hf_router_models_2026-11-16
+  rpm: 60
+  tpm: 120000
+- model_name: deepseek-ai/DeepSeek-V4.1-Flash
+  litellm_params:
+    model: huggingface/baseten/deepseek-ai/DeepSeek-V4.1-Flash
+    api_key: os.environ/HF_TOKEN
+    input_cost_per_token: 3.0e-07
+    output_cost_per_token: 1.2e-06
+  model_info:
+    id: hf-router:deepseek-ai/DeepSeek-V4.1-Flash:baseten
+    hf_route: baseten
+    pricing_source: hf_router_models_2026-11-16
+  rpm: 60
+  tpm: 120000
+- model_name: deepseek-ai/DeepSeek-V4.1-Flash
+  litellm_params:
+    model: huggingface/novita/deepseek-ai/DeepSeek-V4.1-Flash
+    api_key: os.environ/HF_TOKEN
+    input_cost_per_token: 3.0e-07
+    output_cost_per_token: 1.2e-06
+  model_info:
+    id: hf-router:deepseek-ai/DeepSeek-V4.1-Flash:novita
+    hf_route: novita
+    pricing_source: hf_router_models_2026-11-16
+  rpm: 60
+  tpm: 120000
+- model_name: Qwen/Qwen3.8-27B
+  litellm_params:
+    model: huggingface/cerebras/Qwen/Qwen3.8-27B
+    api_key: os.environ/HF_TOKEN
+    input_cost_per_token: 9.9e-07
+    output_cost_per_token: 1.49e-06
+  model_info:
+    id: hf-router:Qwen/Qwen3.8-27B:cerebras
+    hf_route: cerebras
+    pricing_source: hf_router_models_2026-11-16
+  rpm: 60
+  tpm: 120000
+- model_name: Qwen/Qwen3.8-27B
+  litellm_params:
+    model: huggingface/deepinfra/Qwen/Qwen3.8-27B
+    api_key: os.environ/HF_TOKEN
+    input_cost_per_token: 2.0000000000000002e-07
+    output_cost_per_token: 2.5e-06
+  model_info:
+    id: hf-router:Qwen/Qwen3.8-27B:deepinfra
+    hf_route: deepinfra
+    pricing_source: hf_router_models_2026-11-16
+  rpm: 60
+  tpm: 120000
+- model_name: Qwen/Qwen3.8-27B
+  litellm_params:
+    model: huggingface/nscale/Qwen/Qwen3.8-27B
+    api_key: os.environ/HF_TOKEN
+    input_cost_per_token: 2.0000000000000002e-07
+    output_cost_per_token: 2.5e-06
+  model_info:
+    id: hf-router:Qwen/Qwen3.8-27B:nscale
+    hf_route: nscale
+    pricing_source: hf_router_models_2026-11-16
+  rpm: 60
+  tpm: 120000
+- model_name: zai-org/GLM-5.3-Flash
+  litellm_params:
+    model: huggingface/zai-org/zai-org/GLM-5.3-Flash
+    api_key: os.environ/HF_TOKEN
+    input_cost_per_token: 1.5e-07
+    output_cost_per_token: 5.0e-07
+  model_info:
+    id: hf-router:zai-org/GLM-5.3-Flash:zai-org
+    hf_route: zai-org
+    pricing_source: unlisted_upper_bound_of_sibling_routes
+  rpm: 60
+  tpm: 120000
+- model_name: zai-org/GLM-5.3-Flash
+  litellm_params:
+    model: huggingface/deepinfra/zai-org/GLM-5.3-Flash
+    api_key: os.environ/HF_TOKEN
+    input_cost_per_token: 1.5e-07
+    output_cost_per_token: 5.0e-07
+  model_info:
+    id: hf-router:zai-org/GLM-5.3-Flash:deepinfra
+    hf_route: deepinfra
+    pricing_source: hf_router_models_2026-11-16
+  rpm: 60
+  tpm: 120000
+- model_name: zai-org/GLM-5.3-Flash
+  litellm_params:
+    model: huggingface/novita/zai-org/GLM-5.3-Flash
+    api_key: os.environ/HF_TOKEN
+    input_cost_per_token: 1.5e-07
+    output_cost_per_token: 5.0e-07
+  model_info:
+    id: hf-router:zai-org/GLM-5.3-Flash:novita
+    hf_route: novita
+    pricing_source: hf_router_models_2026-11-16
+  rpm: 60
+  tpm: 120000
+- model_name: openai/gpt-oss-120b
+  litellm_params:
+    model: huggingface/groq/openai/gpt-oss-120b
+    api_key: os.environ/HF_TOKEN
+    input_cost_per_token: 1.5e-07
+    output_cost_per_token: 7.5e-07
+  model_info:
+    id: hf-router:openai/gpt-oss-120b:groq
+    hf_route: groq
+    pricing_source: hf_router_models_2026-11-16
+  rpm: 60
+  tpm: 120000
+- model_name: openai/gpt-oss-120b
+  litellm_params:
+    model: huggingface/cerebras/openai/gpt-oss-120b
+    api_key: os.environ/HF_TOKEN
+    input_cost_per_token: 3.5e-07
+    output_cost_per_token: 7.5e-07
+  model_info:
+    id: hf-router:openai/gpt-oss-120b:cerebras
+    hf_route: cerebras
+    pricing_source: hf_router_models_2026-11-16
+  rpm: 60
+  tpm: 120000
+- model_name: openai/gpt-oss-120b
+  litellm_params:
+    model: huggingface/deepinfra/openai/gpt-oss-120b
+    api_key: os.environ/HF_TOKEN
+    input_cost_per_token: 3.7e-08
+    output_cost_per_token: 1.7000000000000001e-07
+  model_info:
+    id: hf-router:openai/gpt-oss-120b:deepinfra
+    hf_route: deepinfra
+    pricing_source: hf_router_models_2026-11-16
+  rpm: 60
+  tpm: 120000
+litellm_settings:
+  drop_params: true
+  set_verbose: false
+  request_timeout: 120
+general_settings:
+  master_key: os.environ/EDGEK_LITELLM_MASTER_KEY
+  database_url: os.environ/EDGEK_LITELLM_DATABASE_URL
+edgek_beast:
+  gateway_base_url: http://127.0.0.1:8101
+  governance: BEAST remains the policy, compression, tool-laziness, and forensic layer.
+  provider_registry: http://127.0.0.1:8101/edgek/providers/registry
+  tool_call_interception: http://127.0.0.1:8101/edgek/tools/intercept
+  required_integrations: http://127.0.0.1:8101/edgek/tools/integrations
+router_settings:
+  routing_strategy: latency-based-routing
+  num_retries: 1
+  allowed_fails: 2
+  cooldown_time: 120

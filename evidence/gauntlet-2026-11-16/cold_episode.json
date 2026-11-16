@@ -1,0 +1,92 @@
+{
+  "attempts": [
+    {
+      "check": {
+        "applied": true,
+        "output_tail": "..\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK",
+        "passed": true,
+        "returncode": 0,
+        "tests_run": 2,
+        "verify_ms": 44.318
+      },
+      "edit": {
+        "new_text": "INVOICE_RETRY_LIMIT = 5",
+        "old_text": "INVOICE_RETRY_LIMIT = 3"
+      }
+    }
+  ],
+  "budget": {
+    "model_turns": 1.0,
+    "tokens_completion": 460.0,
+    "tokens_estimated_turns": 0.0,
+    "tokens_prompt": 341.0,
+    "tokens_total": 801.0,
+    "tool_calls": 5.0,
+    "tool_calls_crystal": 0.0,
+    "tool_calls_model": 1.0,
+    "tool_calls_runtime": 4.0,
+    "tool_failures": 0.0,
+    "wall_ms": 3798.85
+  },
+  "crystal_id": "coding-crystal:4720e3bdaa55dd552f88cdad",
+  "edit": {
+    "new_text": "INVOICE_RETRY_LIMIT = 5",
+    "old_text": "INVOICE_RETRY_LIMIT = 3"
+  },
+  "envelope_digest": "sha256:2edae81cd934058610abea980902841713743520e5f21f2f8a1fd1ae2e94e0aa",
+  "fixed_target_sha256": "sha256:f538f060abe20d3e769ea89bbf5af7d88bb70858cac040441e806a3561f43162",
+  "nim_calls": [
+    {
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "finish_reason": "stop",
+      "governor": {
+        "outcome": "admit",
+        "receipt_hash": "sha256:83270a85e7e2860d5831889726d7dd16eb1edaad0a4d0c6f339b41a926e90fa5",
+        "receipt_id": "gov_4056642997dacc2ffc4f31c4"
+      },
+      "latency_ms": 3508.145,
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "model_errors_before": [],
+      "provider": "nvidia_nim",
+      "response_sha256": "sha256:ce4f563b5f688be22217b16c6d56cc26bdfc2eab6d38b85152093eedbaa4f918",
+      "response_text": "{\"old_text\": \"INVOICE_RETRY_LIMIT = 3\", \"new_text\": \"INVOICE_RETRY_LIMIT = 5\"}",
+      "status": 200,
+      "tokens_completion": 460,
+      "tokens_prompt": 341,
+      "tokens_reasoning": 428,
+      "tokens_total": 801,
+      "usage_reported": true
+    }
+  ],
+  "route": {
+    "band": "insufficient",
+    "beast_object_type": "beast_route_decision",
+    "crystal_id": "",
+    "demotion_signal": "",
+    "digest": "sha256:46423efb0c9140ee6d092c797d6b88adceb74b79dbdd39097d9e52e0d858da25",
+    "envelope_digest": "",
+    "execution_granted": false,
+    "fingerprint_compatible": false,
+    "proposal_only": true,
+    "reasons": [
+      "no promoted crystal for task family",
+      "similarity<0.80: provider fallback"
+    ],
+    "route": "provider_fallback",
+    "similarity": 0.0,
+    "specialist_ref": "",
+    "verifier": "action_ir_full_verification",
+    "version": "d9.1"
+  },
+  "run_id": "gauntlet-2026-11-16:cold-billing:1794800456",
+  "task": "cold-billing",
+  "verification": {
+    "failures_before_pass": 1,
+    "final_returncode": 0,
+    "passed": true,
+    "present": true,
+    "verify_steps": 2
+  },
+  "wall_ms": 3798.85,
+  "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16/work/cold-billing/worktree"
+}

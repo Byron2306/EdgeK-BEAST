@@ -48,6 +48,10 @@ class RequiredIntegrationRegistry:
         "longcodezip": {"kind": "compressor", "required": True, "binary": "longcodezip", "native": True},
         "reporelay": {"kind": "repository", "required": True, "binary": "reporelay", "native": True},
     }
+    # rtk/sqz "native" backends are lightweight BEAST stand-ins, not the real tools: they stay usable as a
+    # fallback but never report ready unless the real binary is on PATH.
+    NATIVE_STUBS = frozenset({"rtk", "sqz"})
+    NATIVE_BACKENDS = frozenset({"longcodezip", "reporelay"})
 
     def __init__(self, policies: Optional[Dict[str, Any]] = None):
         self.policies = policies or {}
@@ -74,11 +78,14 @@ class RequiredIntegrationRegistry:
             if kind != "compressor" and name not in {"rtk", "sqz", "longcodezip"}:
                 continue
             path = shutil.which(str(binary or name))
+            stub = name in self.NATIVE_STUBS
+            native = not stub and bool(config.get("native") or name in self.NATIVE_BACKENDS)
             backends.append({
                 "name": name,
-                "kind": "native_with_optional_binary" if config.get("native") or name in {"rtk", "sqz", "longcodezip", "reporelay"} else "external_binary",
+                "kind": "native_stub_fallback" if stub else (
+                    "native_with_optional_binary" if native else "external_binary"),
                 "binary": str(binary or name),
-                "ready": bool(config.get("native") or name in {"rtk", "sqz", "longcodezip", "reporelay"} or path),
+                "ready": (bool(path) and self._identified(name, path)) if stub else (bool(path) or native),
                 "binary_path": path,
                 "fallback": "native_beast_backend",
             })
@@ -95,6 +102,16 @@ class RequiredIntegrationRegistry:
             "default": "edgek_prune",
             "backends": backends,
         }
+
+    @staticmethod
+    def _identified(name: str, path: str) -> bool:
+        """With BEAST_COMPRESSION_TIERS=1, rtk/sqz count as ready only when ``--version`` identifies the real tool.
+
+        Default-off: legacy behaviour (binary on PATH => ready) is unchanged when the flag is unset.
+        """
+        from app.context.compression_tiers import _probe, tiers_enabled
+
+        return _probe(name, path)[0] if tiers_enabled() else True
 
     def _status_one(self, name: str, config: Dict[str, Any]) -> IntegrationStatus:
         kind = str(config.get("kind") or self.DEFAULTS.get(name, {}).get("kind") or "external")
@@ -130,10 +147,14 @@ class RequiredIntegrationRegistry:
                 detail.update(pg_ready)
         if binary:
             path = shutil.which(str(binary))
-            ready = bool(path) or bool(config.get("native")) or name in {"rtk", "sqz", "longcodezip", "reporelay"}
+            stub = name in self.NATIVE_STUBS
+            ready = bool(path) or (not stub and (bool(config.get("native")) or name in self.NATIVE_BACKENDS))
             detail["binary"] = str(binary)
             detail["binary_path"] = path
             detail["native_backend"] = name if ready else ""
+            if stub:
+                detail["native_stub"] = f"beast_native_{name}"
+                detail["native_stub_is_real_tool"] = False
         if name == "semantic_tool_interceptor":
             detail["backends"] = ["workspace_graph_vectors", "basic_semantic_grep"]
             ready = True
@@ -326,9 +347,11 @@ class ToolCallInterceptor:
             "longcodezip": "longcodezip",
             "reporelay": "reporelay",
         }.get(algorithm)
+        # Real CLIs take a subcommand: rtk-ai/rtk filters stdin via ``rtk log``; ojuschugh1/sqz via ``sqz compress``.
+        argv = {"rtk": [binary, "log"], "sqz": [binary, "compress", "--no-cache", "--no-abbrev"]}.get(algorithm, [binary])
         if binary and shutil.which(binary):
             completed = subprocess.run(
-                [binary],
+                argv,
                 input=text,
                 capture_output=True,
                 text=True,

@@ -36,31 +36,19 @@
           <p data-health-copy></p>
         </section>
         <section class="beast-card warning beast-next-card">
-          <h3>Next Best Action</h3><strong class="metric" data-mission-next-action>Awaiting mission telemetry</strong>
-          <p data-mission-next-copy>Connect to the gateway to identify the next governed action.</p>
-          <button class="beast-button amber" data-mission-action="focus-launch">Start a coding task</button>
+          <h3>Next Best Action</h3><strong class="metric">Review Center + Evidence Forge</strong>
+          <p>Validate quality gates, contradiction handling, evidence selection, traceability, and audit-pack assembly on the clean shell.</p>
+          <button class="beast-button amber" data-nav="review">Open Review Center</button>
         </section>
       </div>
-      <section class="beast-card wide beast-mission-launch" data-mission-launch>
-        <header class="beast-panel-head"><div><h3>Start a Coding Task</h3><span>Bind the workspace, check trust, plan safely, then isolate the implementation.</span></div><span class="beast-pill live">GUIDED</span></header>
-        <ol class="beast-mission-launch-steps"><li><b>1. Define</b><span>State the outcome and the part of the workspace it affects.</span></li><li><b>2. Trust</b><span>Review workspace identity and trust evidence before routing work.</span></li><li><b>3. Plan</b><span>Use a normal chat stream to inspect and plan before writing.</span></li><li><b>4. Implement</b><span>Create a governed worktree mission for multi-file or risky changes.</span></li></ol>
-        <label class="beast-mission-objective"><span>Task outcome</span><textarea data-mission-objective rows="3" placeholder="Example: Add a searchable provider catalog to the desktop IDE and verify it in Electron."></textarea></label>
-        <div class="beast-page-actions">
-          <button class="beast-button secondary" data-mission-action="plan-chat">Plan in Chat</button>
-          <button class="beast-button secondary" data-mission-action="verify-trust">Verify Trust</button>
-          <button class="beast-button hot" data-mission-action="create-worktree">Create Worktree Mission</button>
-          <button class="beast-button secondary" data-mission-action="open-workspace">Open Workspace</button>
-        </div>
-        <p class="beast-mission-launch-status" data-mission-launch-status>Nothing is created until you choose a path.</p>
-      </section>
       <section class="beast-metric-grid" data-mission-metrics></section>
       <section class="beast-stage-flow" data-mission-stages></section>
       <section class="beast-card wide beast-migration-status">
-        <h3>Live Surface Status</h3>
+        <h3>Phase 4 Migration Status</h3>
         <div class="beast-check-grid">
-          <div><b data-mission-gateway-mark>○</b><span>Gateway contract</span></div><div><b data-mission-workspace-mark>○</b><span>Workspace identity</span></div>
-          <div><b data-mission-editor-mark>○</b><span>Editor surface</span></div><div><b data-mission-sourceplan-mark>○</b><span>SourcePlan lifecycle</span></div>
-          <div><b data-mission-review-mark>○</b><span>Review telemetry</span></div><div><b data-mission-evidence-mark>○</b><span>Evidence telemetry</span></div>
+          <div><b>✓</b><span>Single route owner</span></div><div><b>✓</b><span>Single mascot timer</span></div>
+          <div><b>✓</b><span>Editor Cortex + SourcePlan</span></div><div><b>✓</b><span>Zoom-safe page scroll</span></div>
+          <div><b>✓</b><span>Review Center bridge</span></div><div><b>✓</b><span>Evidence Forge bridge</span></div>
         </div>
       </section>
     `;
@@ -84,15 +72,6 @@
       root.querySelector('[data-health-ring]').style.setProperty('--value', Math.max(0, Math.min(100, mission.health)));
       root.querySelector('[data-health-value]').textContent = `${mission.health}%`;
       root.querySelector('[data-health-copy]').textContent = `${mission.confidence} confidence · ${mission.risk} risk`;
-      const live=state.connection?.status==='online';
-      root.querySelector('[data-mission-next-action]').textContent=live?(mission.status==='Unassigned'?'Assign a governed mission':'Open the current mission workspace'):'Restore a verified gateway connection';
-      root.querySelector('[data-mission-next-copy]').textContent=live?(mission.status==='Unassigned'?'No live mission is assigned yet. Use Workspace or Swarm to begin governed work.':'Use the workspace to inspect current mission context and SourcePlan readiness.'):'The desktop will not infer a mission or progress while its gateway is unavailable.';
-      const launchStatus=root.querySelector('[data-mission-launch-status]');
-      launchStatus.textContent=state.worktrees?.creating ? 'Creating the isolated worktree mission…' : state.worktrees?.error ? `Worktree status: ${state.worktrees.error}` : state.workspace?.root ? `Workspace bound: ${state.workspace.root}` : 'Choose a workspace before creating an isolated worktree mission.';
-      const objectiveField=root.querySelector('[data-mission-objective]');
-      if (document.activeElement!==objectiveField && objectiveField.value!==String(mission.draftObjective||'')) objectiveField.value=String(mission.draftObjective||'');
-      const marks={gateway:live,workspace:Boolean(state.workspace?.root),editor:Boolean(state.editor?.activePath||state.editor?.openTabs?.length),sourceplan:Boolean(state.sourcePlan?.updatedAt),review:Boolean(state.review?.updatedAt),evidence:Boolean(state.evidence?.updatedAt)};
-      Object.entries(marks).forEach(([key,ok])=>{const node=root.querySelector(`[data-mission-${key}-mark]`);if(node){node.textContent=ok?'✓':'○';node.classList.toggle('live',ok);}});
 
       const metrics = [
         ['Artifacts', mission.metrics.artifacts, 'evidence'],
@@ -134,40 +113,11 @@
     }
 
     const unsubscribe = BeastStore.subscribe(patch);
-    root.addEventListener('click', async event => {
-      const action=event.target.closest('[data-mission-action]')?.dataset.missionAction;
-      if (action === 'refresh') {
+    root.addEventListener('click', event => {
+      if (event.target.closest('[data-mission-action="refresh"]')) {
         BeastDesktopBridge.snapshot({ signal });
         BeastFX.trigger('ring', event.target, { size: 230 });
       }
-      if (action === 'focus-launch') {
-        root.querySelector('[data-mission-launch]')?.scrollIntoView({behavior:'smooth',block:'start'});
-        root.querySelector('[data-mission-objective]')?.focus({preventScroll:true});
-      }
-      if (action === 'open-workspace') BeastRouter.navigate('workspace');
-      if (action === 'verify-trust') BeastRouter.navigate('trust');
-      if (action === 'plan-chat') {
-        const objective=(root.querySelector('[data-mission-objective]')?.value||BeastStore.get().mission.draftObjective||'').trim();
-        if (!objective) { root.querySelector('[data-mission-objective]')?.focus(); return; }
-        BeastTerminalToolingDoctorBridge.setChatPrompt(`Help me plan this coding task. First inspect the relevant workspace context; do not make changes yet.\n\nTask: ${objective}`);
-        BeastRouter.navigate('terminal');
-      }
-      if (action === 'create-worktree') {
-        const objective=(root.querySelector('[data-mission-objective]')?.value||BeastStore.get().mission.draftObjective||'').trim();
-        if (!objective) { root.querySelector('[data-mission-objective]')?.focus(); return; }
-        try {
-          await BeastUtilityOrchestrationBridge.worktreeAction('create','',{objective});
-          BeastRouter.navigate('worktrees');
-        } catch (error) {
-          BeastStore.patch('worktrees',{error:String(error.message || error)});
-        }
-      }
-    });
-    root.addEventListener('input', event => {
-      if (!event.target.matches('[data-mission-objective]')) return;
-      const draft=event.target.value;
-      localStorage.setItem('beast.mission.draft',draft);
-      BeastStore.patch('mission',{draftObjective:draft});
     });
 
     if (!BeastStore.get().mission.loading && !BeastStore.get().mission.lastRefreshAt) queueMicrotask(() => BeastDesktopBridge.snapshot({ signal }));

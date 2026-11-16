@@ -1,0 +1,1507 @@
+{
+ "registry": ".beast/gauntlets/2026-11-16-closure/family_crystals.sqlite3",
+ "seeded_from": ".beast/gauntlets/2026-11-16-large/family_crystals.sqlite3",
+ "promoted_before": [
+  "fix-config-constant",
+  "fix-logic-operator",
+  "fix-off-by-one",
+  "fix-unhandled-exception",
+  "toolchain-regenerate"
+ ],
+ "rename_family": {
+  "family": "refactor-rename-symbol",
+  "cold": {
+   "task": "ren-cold",
+   "family": "refactor-rename-symbol",
+   "role": "cold",
+   "phase": "cold",
+   "observed_failures": 1,
+   "candidates": [
+    {
+     "crystal_id": "family-crystal:1e0b690bad92323d87963482",
+     "similarity": 0.45,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": false,
+      "failure_count": true,
+      "python_target": true,
+      "resolver_plan": false
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "fix-unhandled-exception",
+     "composite": false,
+     "children": [],
+     "expected_failures": 1
+    },
+    {
+     "crystal_id": "family-crystal:2b089f9fd334db975992def8",
+     "similarity": 0.45,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": false,
+      "failure_count": true,
+      "python_target": true,
+      "resolver_plan": false
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "fix-logic-operator",
+     "composite": false,
+     "children": [],
+     "expected_failures": 1
+    },
+    {
+     "crystal_id": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+     "similarity": 0.45,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": false,
+      "failure_count": true,
+      "python_target": true,
+      "resolver_plan": false
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "fix-config-constant",
+     "composite": false,
+     "children": [],
+     "expected_failures": 1
+    },
+    {
+     "crystal_id": "family-crystal:a0b362d365da0274266f6ba5",
+     "similarity": 0.45,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": false,
+      "failure_count": true,
+      "python_target": true,
+      "resolver_plan": false
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "toolchain-regenerate",
+     "composite": false,
+     "children": [],
+     "expected_failures": 1
+    },
+    {
+     "crystal_id": "family-crystal:f3f8ad2739d13e5733d13336",
+     "similarity": 0.45,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": false,
+      "failure_count": true,
+      "python_target": true,
+      "resolver_plan": false
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "fix-off-by-one",
+     "composite": false,
+     "children": [],
+     "expected_failures": 1
+    },
+    {
+     "crystal_id": "family-crystal:a7b5eaea0ee8fae87e9a5923",
+     "similarity": 0.3,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": false,
+      "failure_count": false,
+      "python_target": true,
+      "resolver_plan": false
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "composite:fix-off-by-one+fix-config-constant",
+     "composite": true,
+     "children": [
+      "family-crystal:f3f8ad2739d13e5733d13336",
+      "family-crystal:5298d8b45bf3e16b7e2fa9df"
+     ],
+     "expected_failures": 2
+    }
+   ],
+   "route": {
+    "route": "provider_fallback",
+    "similarity": 0.45,
+    "band": "insufficient",
+    "fingerprint_compatible": true,
+    "crystal_id": "family-crystal:1e0b690bad92323d87963482",
+    "specialist_ref": "",
+    "envelope_digest": "sha256:49ab6aeae4e121e33538b3bc6cbcef3e1edd18fa8e0b9d42bf1b65f5682b19e1",
+    "demotion_signal": "",
+    "reasons": [
+     "similarity<0.80: provider fallback"
+    ],
+    "proposal_only": true,
+    "execution_granted": false,
+    "verifier": "action_ir_full_verification",
+    "beast_object_type": "beast_route_decision",
+    "version": "d9.1",
+    "digest": "sha256:23ff94245ccedbdd78cdc805c6c3f26aca01dc687fcb6f11e99e47c8934fbec2"
+   },
+   "tiers": [
+    {
+     "tier": "provider:nemotron",
+     "passed": true,
+     "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-closure/work/ren-cold-cold/governed/wt0",
+     "edits": [
+      {
+       "renames": [
+        {
+         "symbol": "calc_total",
+         "file": "ledger/core.py",
+         "new_name": "compute_total"
+        }
+       ],
+       "edits": [
+        {
+         "path": "ledger/core.py",
+         "old_text": "def calc_total(items):",
+         "new_text": "def compute_total(items):"
+        }
+       ]
+      }
+     ],
+     "accepted_by": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+     "model_calls": 1,
+     "spend_usd": 0.0,
+     "last_check": {
+      "accepted_by": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full"
+     }
+    }
+   ],
+   "accepted_by": "provider:nemotron",
+   "model_calls": 1,
+   "tokens_total": 796,
+   "wall_ms": 1979.738,
+   "passed": true,
+   "independent": {
+    "visible_rc": 0,
+    "hidden_rc": 0,
+    "tree_digest": "sha256:d574b50d1704f672765705aca317948383fc3bdb4c206a7dc187afa9cd0f3c9a",
+    "passed": true
+   },
+   "false_accept": false
+  },
+  "extraction": {
+   "reproduced": true,
+   "changed": [
+    "ledger/cli.py",
+    "ledger/core.py",
+    "ledger/report.py"
+   ],
+   "exact_state_match": true,
+   "equivalence": "byte_identical"
+  },
+  "heldout": [
+   {
+    "task": "ren-h1",
+    "ok": true,
+    "independent": {
+     "visible_rc": 0,
+     "hidden_rc": 0,
+     "tree_digest": "sha256:ef2374b9146b8b6ef95009e43551184c88fc9dd10f4c3e45d6a341f59f1f2f4d",
+     "passed": true
+    },
+    "wall_ms": 121.685,
+    "model_calls": 0,
+    "reason": null
+   },
+   {
+    "task": "ren-h2",
+    "ok": true,
+    "independent": {
+     "visible_rc": 0,
+     "hidden_rc": 0,
+     "tree_digest": "sha256:1b1dff1460670001c6a5de255e6b88f70a7500d78fef77c145e8dc1bd82429a3",
+     "passed": true
+    },
+    "wall_ms": 118.568,
+    "model_calls": 0,
+    "reason": null
+   },
+   {
+    "task": "ren-h3",
+    "ok": true,
+    "independent": {
+     "visible_rc": 0,
+     "hidden_rc": 0,
+     "tree_digest": "sha256:6fb21d148b515211560466a6735cc7d5193717f5e90707fc1a8f8a362ad353c3",
+     "passed": true
+    },
+    "wall_ms": 113.009,
+    "model_calls": 0,
+    "reason": null
+   }
+  ],
+  "promotion": {
+   "status": "promoted",
+   "record_digest": "sha256:1c2e7c041582b135631160a1baa1683e7cbdc9a9e57e786e760179f184df9086",
+   "approved_by": "Byron",
+   "promoted_at": 1794818726.502167,
+   "heldout_receipt": {
+    "candidate_id": "family-crystal:a54695a14f648efdd70f6620",
+    "attempts": 3,
+    "successes": 3,
+    "promoted": true,
+    "reason": "held-out replay passed",
+    "variant_ids": [
+     "ren-h1",
+     "ren-h2",
+     "ren-h3"
+    ],
+    "variant_results": [
+     true,
+     true,
+     true
+    ],
+    "evidence_root": "sha256:f0a739e1073f995a22b08103924858e7e2509b787256c52e353dbdaa709ba558",
+    "structured": false,
+    "episode_envelope_digest": "sha256:6f9ee6cca299036fa23f9c8dfd929e41f6c874568eab695b2643e9a6e7aa0b45",
+    "variant_results_digest": "sha256:d39f6d293a8d63932abdfcc2779fefdbfe50e517f84317f227a136921ad0a7ac",
+    "reproduction_record_digest": "sha256:47b1c2c0c08bf598b09881d342c2e461f70ddf1ebf0a3e4dcd053df31d06d964"
+   }
+  },
+  "distilled": "family-crystal:a54695a14f648efdd70f6620",
+  "crystal_digest": "sha256:a54695a14f648efdd70f6620023f15810b303dcc2365d3c9620e3ce31bc058d3"
+ },
+ "refguard_lattice": {
+  "composite": "family-crystal:b782ade90da59ee99e8877fd",
+  "children": [
+   "family-crystal:a54695a14f648efdd70f6620",
+   "family-crystal:1e0b690bad92323d87963482"
+  ],
+  "families": [
+   "refactor-rename-symbol",
+   "fix-unhandled-exception"
+  ],
+  "authority_A_L": [
+   "workspace.read_range",
+   "worktree.bind",
+   "worktree.replace_exact",
+   "worktree.verify"
+  ],
+  "heldout": [
+   {
+    "task": "refguard-h1",
+    "ok": true,
+    "independent": {
+     "visible_rc": 0,
+     "hidden_rc": 0,
+     "tree_digest": "sha256:3d3e8a4619afd5a025f0575f222caa3928324ad1501895804dec7fb82fb56b86",
+     "passed": true
+    },
+    "wall_ms": 169.356,
+    "reason": null
+   },
+   {
+    "task": "refguard-h2",
+    "ok": true,
+    "independent": {
+     "visible_rc": 0,
+     "hidden_rc": 0,
+     "tree_digest": "sha256:dfe553540eff2cc0733637f16b07d1d306758ee180c98ee0c0af9b65f8e376b7",
+     "passed": true
+    },
+    "wall_ms": 186.471,
+    "reason": null
+   },
+   {
+    "task": "refguard-h3",
+    "ok": true,
+    "independent": {
+     "visible_rc": 0,
+     "hidden_rc": 0,
+     "tree_digest": "sha256:89000753b7aa85bd5b81257ad186e1e890bea27e19b26cf135db6869359543fe",
+     "passed": true
+    },
+    "wall_ms": 179.084,
+    "reason": null
+   }
+  ],
+  "digest": "sha256:b782ade90da59ee99e8877fdc160c2e7951e8345592a855323021e33a632fb6f",
+  "promotion": {
+   "status": "promoted",
+   "record_digest": "sha256:99f8fe03cb79c0d2687f382ba8025df29630eb718ec2a26d1d507d7c05fc0853",
+   "approved_by": "Byron",
+   "promoted_at": 1794818727.312925,
+   "heldout_receipt": {
+    "candidate_id": "family-crystal:b782ade90da59ee99e8877fd",
+    "attempts": 3,
+    "successes": 3,
+    "promoted": true,
+    "reason": "held-out replay passed",
+    "variant_ids": [
+     "refguard-h1",
+     "refguard-h2",
+     "refguard-h3"
+    ],
+    "variant_results": [
+     true,
+     true,
+     true
+    ],
+    "evidence_root": "sha256:134e1472caa19818ec0af5cbc2be963673281c6c99623372d9218ebd69df18ba",
+    "structured": false,
+    "episode_envelope_digest": "sha256:83a0958a38be5baeb052b890c917657f7d4ae561159d514a532a6b5fddc95095",
+    "variant_results_digest": "sha256:4008bea1a4bb80a84d2de6e6a347b9616275872c62e2043bb6547b8fffc3966e",
+    "reproduction_record_digest": "sha256:74243ba319cc6e6300717c008946f916d7e27c56d2024452d14fbb1ee87386cf"
+   }
+  }
+ },
+ "fresh_seed": 20261117,
+ "fresh": [
+  {
+   "task": "fresh-refguard-4a92",
+   "family": "fresh-lattice2",
+   "role": "fresh",
+   "phase": "fresh",
+   "observed_failures": 2,
+   "candidates": [
+    {
+     "crystal_id": "family-crystal:b782ade90da59ee99e8877fd",
+     "similarity": 1.0,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": true,
+      "failure_count": true,
+      "python_target": true,
+      "resolver_plan": true
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "composite:refactor-rename-symbol+fix-unhandled-exception",
+     "composite": true,
+     "children": [
+      "family-crystal:a54695a14f648efdd70f6620",
+      "family-crystal:1e0b690bad92323d87963482"
+     ],
+     "expected_failures": 2
+    },
+    {
+     "crystal_id": "family-crystal:1e0b690bad92323d87963482",
+     "similarity": 0.85,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": true,
+      "failure_count": false,
+      "python_target": true,
+      "resolver_plan": true
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "fix-unhandled-exception",
+     "composite": false,
+     "children": [],
+     "expected_failures": 1
+    },
+    {
+     "crystal_id": "family-crystal:a54695a14f648efdd70f6620",
+     "similarity": 0.85,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": true,
+      "failure_count": false,
+      "python_target": true,
+      "resolver_plan": true
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "refactor-rename-symbol",
+     "composite": false,
+     "children": [],
+     "expected_failures": 1
+    },
+    {
+     "crystal_id": "family-crystal:a7b5eaea0ee8fae87e9a5923",
+     "similarity": 0.45,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": false,
+      "failure_count": true,
+      "python_target": true,
+      "resolver_plan": false
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "composite:fix-off-by-one+fix-config-constant",
+     "composite": true,
+     "children": [
+      "family-crystal:f3f8ad2739d13e5733d13336",
+      "family-crystal:5298d8b45bf3e16b7e2fa9df"
+     ],
+     "expected_failures": 2
+    },
+    {
+     "crystal_id": "family-crystal:2b089f9fd334db975992def8",
+     "similarity": 0.3,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": false,
+      "failure_count": false,
+      "python_target": true,
+      "resolver_plan": false
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "fix-logic-operator",
+     "composite": false,
+     "children": [],
+     "expected_failures": 1
+    },
+    {
+     "crystal_id": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+     "similarity": 0.3,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": false,
+      "failure_count": false,
+      "python_target": true,
+      "resolver_plan": false
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "fix-config-constant",
+     "composite": false,
+     "children": [],
+     "expected_failures": 1
+    }
+   ],
+   "route": {
+    "route": "crystal_replay",
+    "similarity": 1.0,
+    "band": "exact",
+    "fingerprint_compatible": true,
+    "crystal_id": "family-crystal:b782ade90da59ee99e8877fd",
+    "specialist_ref": "",
+    "envelope_digest": "sha256:83a0958a38be5baeb052b890c917657f7d4ae561159d514a532a6b5fddc95095",
+    "demotion_signal": "",
+    "reasons": [
+     "similarity>=0.95 with exact fingerprints: zero-call crystal proposal"
+    ],
+    "proposal_only": true,
+    "execution_granted": false,
+    "verifier": "d6_activation_gates_and_verify_command",
+    "beast_object_type": "beast_route_decision",
+    "version": "d9.1",
+    "digest": "sha256:91bea83469569376eb77ebe149ed46738d1472e9bb966be05aa3ed106b098408"
+   },
+   "tiers": [
+    {
+     "tier": "lattice",
+     "crystal_id": "family-crystal:b782ade90da59ee99e8877fd",
+     "governor": {
+      "outcome": "admit",
+      "receipt_id": "gov_bfbb78a25ba996b46a44dcda"
+     },
+     "passed": true,
+     "stages": [
+      {
+       "crystal_id": "family-crystal:a54695a14f648efdd70f6620",
+       "stage": {
+        "composite_id": "family-crystal:b782ade90da59ee99e8877fd",
+        "index": 0
+       },
+       "ok": true,
+       "refused": "",
+       "capsule": {
+        "bytes_total": 4340,
+        "payload_bytes": 3896,
+        "payload_sha256": "sha256:8f3cd5cc34348a832730a8f510c39fbcf6a97230648f0ee068b2df378f3c4f61",
+        "manifest_digest": "sha256:86aa28d95b87f62be585791a3f922c5aaec3000adbb72d7b3a41cbded8ee60a5",
+        "payload_sha256_child": "sha256:8f3cd5cc34348a832730a8f510c39fbcf6a97230648f0ee068b2df378f3c4f61",
+        "seals_value": 15,
+        "seals_parent": [
+         "F_SEAL_SEAL",
+         "F_SEAL_SHRINK",
+         "F_SEAL_GROW",
+         "F_SEAL_WRITE"
+        ],
+        "seals_child": [
+         "F_SEAL_SEAL",
+         "F_SEAL_SHRINK",
+         "F_SEAL_GROW",
+         "F_SEAL_WRITE"
+        ],
+        "write_after_seal": {
+         "refused": true,
+         "errno": 1,
+         "error": "EPERM"
+        }
+       },
+       "copies": {
+        "write_calls_into_memfd": 2,
+        "bytes_copied_into_memfd": 4340,
+        "fd_passes": 1,
+        "fd_pass_socket_bytes": 202,
+        "payload_bytes_through_socket": 0,
+        "child_mmaps_read_only": 1,
+        "child_read_syscall_bytes": 0,
+        "pipe_baseline_copy_bytes": 8680,
+        "transport_bytes_saved_vs_pipe": 4340
+       },
+       "process": {
+        "child_pid": 1768544,
+        "isolation": "unshare -rn (empty netns)",
+        "admit_token_echoed": true,
+        "child_wall_ms": 263.523,
+        "hydrate_ms": 2.864,
+        "parent_end_to_end_ms": 555.133
+       },
+       "replay": {
+        "tool_calls": 5,
+        "model_calls": 0,
+        "wall_ms": 217.615,
+        "changed": [
+         "metrics4a92/api.py",
+         "metrics4a92/cli.py",
+         "metrics4a92/core.py",
+         "metrics4a92/report.py"
+        ],
+        "steps": [
+         {
+          "opcode": "worktree.inspect",
+          "expect": null,
+          "returncode": null,
+          "failures": null,
+          "refused": null,
+          "plan": null
+         },
+         {
+          "opcode": "worktree.bind",
+          "expect": null,
+          "returncode": null,
+          "failures": null,
+          "refused": null,
+          "plan": null
+         },
+         {
+          "opcode": "worktree.verify",
+          "expect": "fail",
+          "returncode": 1,
+          "failures": 2,
+          "refused": null,
+          "plan": null
+         },
+         {
+          "opcode": "repair.rename_symbol",
+          "expect": null,
+          "returncode": null,
+          "failures": null,
+          "refused": null,
+          "plan": {
+           "rename": {
+            "flagged": 0,
+            "new": "compute_score_mean",
+            "old": "calc_score_mean",
+            "tool": "code.rename_symbol"
+           },
+           "rewrite_files": [
+            "metrics4a92/api.py",
+            "metrics4a92/cli.py",
+            "metrics4a92/core.py",
+            "metrics4a92/report.py"
+           ]
+          }
+         },
+         {
+          "opcode": "worktree.apply_plan",
+          "expect": null,
+          "returncode": null,
+          "failures": null,
+          "refused": null,
+          "plan": null
+         },
+         {
+          "opcode": "worktree.verify",
+          "expect": "improve",
+          "returncode": 1,
+          "failures": 1,
+          "refused": null,
+          "plan": null
+         },
+         {
+          "opcode": "crystal.complete",
+          "expect": null,
+          "returncode": null,
+          "failures": null,
+          "refused": null,
+          "plan": null
+         }
+        ]
+       },
+       "network": {
+        "inet_sockets": 0,
+        "connects": 0,
+        "dns_lookups": 0,
+        "http_sends": 0,
+        "lo_after": {
+         "rx_bytes": 0,
+         "rx_packets": 0,
+         "tx_bytes": 0,
+         "tx_packets": 0
+        }
+       },
+       "postcondition": {
+        "checks": {
+         "returncode": true,
+         "tests_run": true
+        },
+        "passed": true,
+        "returncode": 1,
+        "target_sha256": "sha256:3a70b65d2e85b9784b60ee8955ba57b69e5900c7feb10f69ded716dda982e70c",
+        "tests_run": 2,
+        "verify_ms": 41.762
+       }
+      },
+      {
+       "crystal_id": "family-crystal:1e0b690bad92323d87963482",
+       "stage": {
+        "composite_id": "family-crystal:b782ade90da59ee99e8877fd",
+        "index": 1
+       },
+       "ok": true,
+       "refused": "",
+       "capsule": {
+        "bytes_total": 4354,
+        "payload_bytes": 3910,
+        "payload_sha256": "sha256:ed7e33b214248f5097ae0580a3fd83b4786980679817f110123db56771b78ae9",
+        "manifest_digest": "sha256:a2aeb3a742c54ba9944c9806f8761385fd7fb1c41accaa07e3acb97f1aaaa0a9",
+        "payload_sha256_child": "sha256:ed7e33b214248f5097ae0580a3fd83b4786980679817f110123db56771b78ae9",
+        "seals_value": 15,
+        "seals_parent": [
+         "F_SEAL_SEAL",
+         "F_SEAL_SHRINK",
+         "F_SEAL_GROW",
+         "F_SEAL_WRITE"
+        ],
+        "seals_child": [
+         "F_SEAL_SEAL",
+         "F_SEAL_SHRINK",
+         "F_SEAL_GROW",
+         "F_SEAL_WRITE"
+        ],
+        "write_after_seal": {
+         "refused": true,
+         "errno": 1,
+         "error": "EPERM"
+        }
+       },
+       "copies": {
+        "write_calls_into_memfd": 2,
+        "bytes_copied_into_memfd": 4354,
+        "fd_passes": 1,
+        "fd_pass_socket_bytes": 202,
+        "payload_bytes_through_socket": 0,
+        "child_mmaps_read_only": 1,
+        "child_read_syscall_bytes": 0,
+        "pipe_baseline_copy_bytes": 8708,
+        "transport_bytes_saved_vs_pipe": 4354
+       },
+       "process": {
+        "child_pid": 1768550,
+        "isolation": "unshare -rn (empty netns)",
+        "admit_token_echoed": true,
+        "child_wall_ms": 131.025,
+        "hydrate_ms": 2.795,
+        "parent_end_to_end_ms": 344.272
+       },
+       "replay": {
+        "tool_calls": 5,
+        "model_calls": 0,
+        "wall_ms": 84.099,
+        "changed": [
+         "metrics4a92/core.py"
+        ],
+        "steps": [
+         {
+          "opcode": "worktree.inspect",
+          "expect": null,
+          "returncode": null,
+          "failures": null,
+          "refused": null,
+          "plan": null
+         },
+         {
+          "opcode": "worktree.bind",
+          "expect": null,
+          "returncode": null,
+          "failures": null,
+          "refused": null,
+          "plan": null
+         },
+         {
+          "opcode": "worktree.verify",
+          "expect": "fail",
+          "returncode": 1,
+          "failures": 1,
+          "refused": null,
+          "plan": null
+         },
+         {
+          "opcode": "repair.guard_exception",
+          "expect": null,
+          "returncode": null,
+          "failures": null,
+          "refused": null,
+          "plan": {
+           "edits": [
+            {
+             "new_text": "    try:\n        return sum(items) / len(items)\n    except ZeroDivisionError:\n        return None",
+             "old_text": "    return sum(items) / len(items)",
+             "path": "metrics4a92/core.py"
+            }
+           ]
+          }
+         },
+         {
+          "opcode": "worktree.apply_plan",
+          "expect": null,
+          "returncode": null,
+          "failures": null,
+          "refused": null,
+          "plan": null
+         },
+         {
+          "opcode": "worktree.verify",
+          "expect": "pass",
+          "returncode": 0,
+          "failures": 0,
+          "refused": null,
+          "plan": null
+         },
+         {
+          "opcode": "crystal.complete",
+          "expect": null,
+          "returncode": null,
+          "failures": null,
+          "refused": null,
+          "plan": null
+         }
+        ]
+       },
+       "network": {
+        "inet_sockets": 0,
+        "connects": 0,
+        "dns_lookups": 0,
+        "http_sends": 0,
+        "lo_after": {
+         "rx_bytes": 0,
+         "rx_packets": 0,
+         "tx_bytes": 0,
+         "tx_packets": 0
+        }
+       },
+       "postcondition": {
+        "checks": {
+         "returncode": true,
+         "tests_run": true
+        },
+        "passed": true,
+        "returncode": 0,
+        "target_sha256": "sha256:ba4d4e194c0a85a5d352d08afc991596a638f4ac9c308001b547be4c5e28e153",
+        "tests_run": 2,
+        "verify_ms": 42.982
+       }
+      }
+     ],
+     "final_worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-closure/work/fresh-refguard-4a92-fresh/lattice-stage1",
+     "lattice_wall_ms": 904.352,
+     "model_calls_during_lattice": 0,
+     "tool_calls": 10
+    }
+   ],
+   "accepted_by": "lattice",
+   "model_calls": 0,
+   "tokens_total": 0,
+   "wall_ms": 1436.521,
+   "passed": true,
+   "independent": {
+    "visible_rc": 0,
+    "hidden_rc": 0,
+    "tree_digest": "sha256:d8f1326e56fce742d9ca5b3e5fca70fd243c244a04cd1bdf15e8a0ac9c3d4043",
+    "passed": true
+   },
+   "false_accept": false
+  },
+  {
+   "task": "fresh-refop-4a92",
+   "family": "fresh-lattice2-diff",
+   "role": "fresh",
+   "phase": "fresh",
+   "observed_failures": 2,
+   "candidates": [
+    {
+     "crystal_id": "family-crystal:b782ade90da59ee99e8877fd",
+     "similarity": 1.0,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": true,
+      "failure_count": true,
+      "python_target": true,
+      "resolver_plan": true
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "composite:refactor-rename-symbol+fix-unhandled-exception",
+     "composite": true,
+     "children": [
+      "family-crystal:a54695a14f648efdd70f6620",
+      "family-crystal:1e0b690bad92323d87963482"
+     ],
+     "expected_failures": 2
+    },
+    {
+     "crystal_id": "family-crystal:a7b5eaea0ee8fae87e9a5923",
+     "similarity": 0.85,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": true,
+      "failure_count": true,
+      "python_target": true,
+      "resolver_plan": false
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "composite:fix-off-by-one+fix-config-constant",
+     "composite": true,
+     "children": [
+      "family-crystal:f3f8ad2739d13e5733d13336",
+      "family-crystal:5298d8b45bf3e16b7e2fa9df"
+     ],
+     "expected_failures": 2
+    },
+    {
+     "crystal_id": "family-crystal:2b089f9fd334db975992def8",
+     "similarity": 0.85,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": true,
+      "failure_count": false,
+      "python_target": true,
+      "resolver_plan": true
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "fix-logic-operator",
+     "composite": false,
+     "children": [],
+     "expected_failures": 1
+    },
+    {
+     "crystal_id": "family-crystal:a54695a14f648efdd70f6620",
+     "similarity": 0.85,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": true,
+      "failure_count": false,
+      "python_target": true,
+      "resolver_plan": true
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "refactor-rename-symbol",
+     "composite": false,
+     "children": [],
+     "expected_failures": 1
+    },
+    {
+     "crystal_id": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+     "similarity": 0.7,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": true,
+      "failure_count": false,
+      "python_target": true,
+      "resolver_plan": false
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "fix-config-constant",
+     "composite": false,
+     "children": [],
+     "expected_failures": 1
+    },
+    {
+     "crystal_id": "family-crystal:f3f8ad2739d13e5733d13336",
+     "similarity": 0.7,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": true,
+      "failure_count": false,
+      "python_target": true,
+      "resolver_plan": false
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "fix-off-by-one",
+     "composite": false,
+     "children": [],
+     "expected_failures": 1
+    }
+   ],
+   "route": {
+    "route": "crystal_replay",
+    "similarity": 1.0,
+    "band": "exact",
+    "fingerprint_compatible": true,
+    "crystal_id": "family-crystal:b782ade90da59ee99e8877fd",
+    "specialist_ref": "",
+    "envelope_digest": "sha256:83a0958a38be5baeb052b890c917657f7d4ae561159d514a532a6b5fddc95095",
+    "demotion_signal": "",
+    "reasons": [
+     "similarity>=0.95 with exact fingerprints: zero-call crystal proposal"
+    ],
+    "proposal_only": true,
+    "execution_granted": false,
+    "verifier": "d6_activation_gates_and_verify_command",
+    "beast_object_type": "beast_route_decision",
+    "version": "d9.1",
+    "digest": "sha256:91bea83469569376eb77ebe149ed46738d1472e9bb966be05aa3ed106b098408"
+   },
+   "tiers": [
+    {
+     "tier": "lattice",
+     "crystal_id": "family-crystal:b782ade90da59ee99e8877fd",
+     "governor": {
+      "outcome": "admit",
+      "receipt_id": "gov_7e75a39a79598537c6c0a8c8"
+     },
+     "passed": false,
+     "stages": [
+      {
+       "crystal_id": "family-crystal:a54695a14f648efdd70f6620",
+       "stage": {
+        "composite_id": "family-crystal:b782ade90da59ee99e8877fd",
+        "index": 0
+       },
+       "ok": false,
+       "refused": "",
+       "capsule": {
+        "bytes_total": 4326,
+        "payload_bytes": 3882,
+        "payload_sha256": "sha256:bc4d54684ab9f0bd153d81123f6c2d81b039a95598dcd13f35a0ab59e9a8f573",
+        "manifest_digest": "sha256:1f20c32840f8f99bc5eeef50117818f49a690099a02650b195b92364a10dfa96",
+        "payload_sha256_child": "sha256:bc4d54684ab9f0bd153d81123f6c2d81b039a95598dcd13f35a0ab59e9a8f573",
+        "seals_value": 15,
+        "seals_parent": [
+         "F_SEAL_SEAL",
+         "F_SEAL_SHRINK",
+         "F_SEAL_GROW",
+         "F_SEAL_WRITE"
+        ],
+        "seals_child": [
+         "F_SEAL_SEAL",
+         "F_SEAL_SHRINK",
+         "F_SEAL_GROW",
+         "F_SEAL_WRITE"
+        ],
+        "write_after_seal": {
+         "refused": true,
+         "errno": 1,
+         "error": "EPERM"
+        }
+       },
+       "copies": {
+        "write_calls_into_memfd": 2,
+        "bytes_copied_into_memfd": 4326,
+        "fd_passes": 1,
+        "fd_pass_socket_bytes": 202,
+        "payload_bytes_through_socket": 0,
+        "child_mmaps_read_only": 1,
+        "child_read_syscall_bytes": 0,
+        "pipe_baseline_copy_bytes": 8652,
+        "transport_bytes_saved_vs_pipe": 4326
+       },
+       "process": {
+        "child_pid": 1768586,
+        "isolation": "unshare -rn (empty netns)",
+        "admit_token_echoed": true,
+        "child_wall_ms": 238.955,
+        "hydrate_ms": 2.441,
+        "parent_end_to_end_ms": 494.463
+       },
+       "replay": {
+        "tool_calls": 5,
+        "model_calls": 0,
+        "wall_ms": null,
+        "changed": [
+         "tally4a92/api.py",
+         "tally4a92/cli.py",
+         "tally4a92/core.py",
+         "tally4a92/report.py"
+        ],
+        "steps": [
+         {
+          "opcode": "worktree.inspect",
+          "expect": null,
+          "returncode": null,
+          "failures": null,
+          "refused": null,
+          "plan": null
+         },
+         {
+          "opcode": "worktree.bind",
+          "expect": null,
+          "returncode": null,
+          "failures": null,
+          "refused": null,
+          "plan": null
+         },
+         {
+          "opcode": "worktree.verify",
+          "expect": "fail",
+          "returncode": 1,
+          "failures": 2,
+          "refused": null,
+          "plan": null
+         },
+         {
+          "opcode": "repair.rename_symbol",
+          "expect": null,
+          "returncode": null,
+          "failures": null,
+          "refused": null,
+          "plan": {
+           "rename": {
+            "flagged": 0,
+            "new": "compute_score_net",
+            "old": "calc_score_net",
+            "tool": "code.rename_symbol"
+           },
+           "rewrite_files": [
+            "tally4a92/api.py",
+            "tally4a92/cli.py",
+            "tally4a92/core.py",
+            "tally4a92/report.py"
+           ]
+          }
+         },
+         {
+          "opcode": "worktree.apply_plan",
+          "expect": null,
+          "returncode": null,
+          "failures": null,
+          "refused": null,
+          "plan": null
+         },
+         {
+          "opcode": "worktree.verify",
+          "expect": "improve",
+          "returncode": 1,
+          "failures": 2,
+          "refused": "verify expectation 'improve' not met",
+          "plan": null
+         }
+        ]
+       },
+       "network": {
+        "inet_sockets": 0,
+        "connects": 0,
+        "dns_lookups": 0,
+        "http_sends": 0,
+        "lo_after": {
+         "rx_bytes": 0,
+         "rx_packets": 0,
+         "tx_bytes": 0,
+         "tx_packets": 0
+        }
+       },
+       "postcondition": {
+        "passed": false
+       }
+      }
+     ],
+     "final_worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-closure/work/fresh-refop-4a92-fresh/repo",
+     "lattice_wall_ms": 496.12,
+     "model_calls_during_lattice": 0,
+     "tool_calls": 5
+    },
+    {
+     "tier": "provider:nemotron",
+     "passed": true,
+     "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-closure/work/fresh-refop-4a92-fresh/governed/wt2",
+     "edits": [
+      {
+       "renames": [
+        {
+         "symbol": "calc_score_net",
+         "file": "tally4a92/core.py",
+         "new_name": "compute_score_net"
+        }
+       ],
+       "edits": [
+        {
+         "path": "tally4a92/core.py",
+         "old_text": "    return sum(items) + len(items)",
+         "new_text": "    return sum(items) - len(items)"
+        }
+       ]
+      }
+     ],
+     "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+     "model_calls": 3,
+     "spend_usd": 0.000921,
+     "last_check": {
+      "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud"
+     }
+    }
+   ],
+   "accepted_by": "provider:nemotron",
+   "model_calls": 3,
+   "tokens_total": 5099,
+   "wall_ms": 20746.693,
+   "passed": true,
+   "independent": {
+    "visible_rc": 0,
+    "hidden_rc": 0,
+    "tree_digest": "sha256:d199ea7ca307f8650d2cd22bb49437630723cb7132a6d8eacf25e90dda8d6e34",
+    "passed": true
+   },
+   "false_accept": false
+  },
+  {
+   "task": "fresh-rename-4a92",
+   "family": "fresh-single2",
+   "role": "fresh",
+   "phase": "fresh",
+   "observed_failures": 1,
+   "candidates": [
+    {
+     "crystal_id": "family-crystal:a54695a14f648efdd70f6620",
+     "similarity": 1.0,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": true,
+      "failure_count": true,
+      "python_target": true,
+      "resolver_plan": true
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "refactor-rename-symbol",
+     "composite": false,
+     "children": [],
+     "expected_failures": 1
+    },
+    {
+     "crystal_id": "family-crystal:b782ade90da59ee99e8877fd",
+     "similarity": 0.85,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": true,
+      "failure_count": false,
+      "python_target": true,
+      "resolver_plan": true
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "composite:refactor-rename-symbol+fix-unhandled-exception",
+     "composite": true,
+     "children": [
+      "family-crystal:a54695a14f648efdd70f6620",
+      "family-crystal:1e0b690bad92323d87963482"
+     ],
+     "expected_failures": 2
+    },
+    {
+     "crystal_id": "family-crystal:1e0b690bad92323d87963482",
+     "similarity": 0.45,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": false,
+      "failure_count": true,
+      "python_target": true,
+      "resolver_plan": false
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "fix-unhandled-exception",
+     "composite": false,
+     "children": [],
+     "expected_failures": 1
+    },
+    {
+     "crystal_id": "family-crystal:2b089f9fd334db975992def8",
+     "similarity": 0.45,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": false,
+      "failure_count": true,
+      "python_target": true,
+      "resolver_plan": false
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "fix-logic-operator",
+     "composite": false,
+     "children": [],
+     "expected_failures": 1
+    },
+    {
+     "crystal_id": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+     "similarity": 0.45,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": false,
+      "failure_count": true,
+      "python_target": true,
+      "resolver_plan": false
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "fix-config-constant",
+     "composite": false,
+     "children": [],
+     "expected_failures": 1
+    },
+    {
+     "crystal_id": "family-crystal:a0b362d365da0274266f6ba5",
+     "similarity": 0.45,
+     "features": {
+      "unittest_verify": true,
+      "failure_signature": false,
+      "failure_count": true,
+      "python_target": true,
+      "resolver_plan": false
+     },
+     "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+     "task_family": "toolchain-regenerate",
+     "composite": false,
+     "children": [],
+     "expected_failures": 1
+    }
+   ],
+   "route": {
+    "route": "crystal_replay",
+    "similarity": 1.0,
+    "band": "exact",
+    "fingerprint_compatible": true,
+    "crystal_id": "family-crystal:a54695a14f648efdd70f6620",
+    "specialist_ref": "",
+    "envelope_digest": "sha256:6f9ee6cca299036fa23f9c8dfd929e41f6c874568eab695b2643e9a6e7aa0b45",
+    "demotion_signal": "",
+    "reasons": [
+     "similarity>=0.95 with exact fingerprints: zero-call crystal proposal"
+    ],
+    "proposal_only": true,
+    "execution_granted": false,
+    "verifier": "d6_activation_gates_and_verify_command",
+    "beast_object_type": "beast_route_decision",
+    "version": "d9.1",
+    "digest": "sha256:a31dd3597f3255187833d2f6317913d07198bc812d21362e8410d0baa4c0b89f"
+   },
+   "tiers": [
+    {
+     "tier": "crystal",
+     "crystal_id": "family-crystal:a54695a14f648efdd70f6620",
+     "governor": {
+      "outcome": "admit",
+      "receipt_id": "gov_5f76f09b5412d3383cb8a4b1"
+     },
+     "replay": {
+      "ok": true,
+      "reason": null,
+      "tool_calls": 5,
+      "wall_ms": 116.177,
+      "changed": [
+       "books4a92/cli.py",
+       "books4a92/core.py",
+       "books4a92/report.py"
+      ]
+     },
+     "refused_at": null,
+     "passed": true
+    }
+   ],
+   "accepted_by": "crystal",
+   "model_calls": 0,
+   "tokens_total": 0,
+   "wall_ms": 626.991,
+   "passed": true,
+   "independent": {
+    "visible_rc": 0,
+    "hidden_rc": 0,
+    "tree_digest": "sha256:03dd34eca831a77816612bbc314bfe4102f0576227b04065de5104266cf8fe82",
+    "passed": true
+   },
+   "false_accept": false
+  }
+ ],
+ "episodes": [
+  {
+   "task": "ren-cold",
+   "family": "refactor-rename-symbol",
+   "tool": "code.rename_symbol",
+   "wall_s": 1.65,
+   "spend_usd": 0.0,
+   "accepted": true,
+   "accepted_by": "tgi:Qwen/Qwen2.5-Coder-3B-Instruct-AWQ@gpu_full",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 1,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 737,
+     "tokens_completion": 59,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 709,
+     "ttft_ms": 74.2,
+     "latency_ms": 1457.7,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_4342d01b9a1ad598c7a854af",
+     "governor_receipt": "gov_16cef1b375afa426515ff7a9",
+     "teardown": {}
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "calc_total",
+      "file": "ledger/core.py",
+      "new_name": "compute_total"
+     }
+    ],
+    "edits": [
+     {
+      "path": "ledger/core.py",
+      "old_text": "def calc_total(items):",
+      "new_text": "def compute_total(items):"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 3
+    }
+   ],
+   "worktree": null
+  },
+  {
+   "task": "fresh-refop-4a92",
+   "family": "fresh-lattice2-diff",
+   "tool": "code.rename_symbol",
+   "wall_s": 19.62,
+   "spend_usd": 0.000921,
+   "accepted": true,
+   "accepted_by": "fireworks:accounts/fireworks/models/deepseek-v4p1-flash@cloud",
+   "avoided": false,
+   "reason": "verified",
+   "model_calls": 3,
+   "calls": [
+    {
+     "provider": "tgi",
+     "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+     "placement": "gpu_full",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tool_refused:edit_not_applicable:edit old_text is not unique in target",
+     "dialect": "tgi_json_object",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 911,
+     "tokens_completion": 578,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 190,
+     "ttft_ms": 402.9,
+     "latency_ms": 12796.9,
+     "spend_usd": 0.0,
+     "error": "",
+     "receipt_id": "gov_b3db72b6af03baa79271c8af",
+     "governor_receipt": "gov_8c31975b4160807499a5a403",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/glm-5p3-flash",
+     "placement": "cloud",
+     "status": "verifier_reject",
+     "json_valid": true,
+     "passed": false,
+     "verify_reason": "tests_still_failing",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 1579,
+     "tokens_completion": 65,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 1983,
+     "ttft_ms": 2677.9,
+     "latency_ms": 3004.0,
+     "spend_usd": 0.000269,
+     "error": "",
+     "receipt_id": "gov_eb34838236f122362ce2a6b4",
+     "governor_receipt": "gov_b9ed60cf08d314de62ae58f1",
+     "teardown": {}
+    },
+    {
+     "provider": "fireworks",
+     "model": "accounts/fireworks/models/deepseek-v4p1-flash",
+     "placement": "cloud",
+     "status": "ok",
+     "json_valid": true,
+     "passed": true,
+     "verify_reason": "",
+     "dialect": "openai_json_schema",
+     "early_stop": true,
+     "stop_reason": "schema_valid_action",
+     "tokens_prompt": 1897,
+     "tokens_completion": 69,
+     "tokens_estimated": true,
+     "budget_headroom_tokens": 1979,
+     "ttft_ms": 1621.1,
+     "latency_ms": 2097.1,
+     "spend_usd": 0.000652,
+     "error": "",
+     "receipt_id": "gov_4345dff4b8ebbb571aa65b20",
+     "governor_receipt": "gov_07633ee31063e37741e84b86",
+     "teardown": {}
+    }
+   ],
+   "action": {
+    "renames": [
+     {
+      "symbol": "calc_score_net",
+      "file": "tally4a92/core.py",
+      "new_name": "compute_score_net"
+     }
+    ],
+    "edits": [
+     {
+      "path": "tally4a92/core.py",
+      "old_text": "    return sum(items) + len(items)",
+      "new_text": "    return sum(items) - len(items)"
+     }
+    ]
+   },
+   "verdicts": [
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tool_refused:edit_not_applicable:edit old_text is not unique in target",
+     "files_changed": 0
+    },
+    {
+     "passed": false,
+     "visible_passed": false,
+     "hidden_passed": false,
+     "reason": "tests_still_failing",
+     "files_changed": 4
+    },
+    {
+     "passed": true,
+     "visible_passed": true,
+     "hidden_passed": true,
+     "reason": "",
+     "files_changed": 4
+    }
+   ],
+   "worktree": null
+  }
+ ],
+ "model_calls_total": 4,
+ "spend_usd": 0.000921,
+ "governor_chain": {
+  "valid": true,
+  "count": 11,
+  "errors": []
+ },
+ "wall_s": 26.69
+}

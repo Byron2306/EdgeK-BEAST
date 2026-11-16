@@ -1,0 +1,185 @@
+{
+  "claim": "hardware-backed independent ARDA admission",
+  "hardware_proof_passed": false,
+  "timestamp": 1791615962.097045,
+  "environment": {
+    "tpm_device": false,
+    "tpm2_quote": null
+  },
+  "live_nodes": [
+    {
+      "node_id": "commons-node-a",
+      "challenge": {
+        "challenge_id": "tpm-challenge:05ff2084fb94932e247cb853941e0b49",
+        "node_id": "commons-node-a",
+        "nonce": "b79e41fe7989e25a88bd465960264afb5f6534e00460ff18949a5ab6629b0b89",
+        "audience": "beast-commons-node-attestation",
+        "pcr_bank": "sha256",
+        "pcrs": [
+          0,
+          2,
+          4,
+          7,
+          10,
+          14
+        ],
+        "issued_at": 1791615962.13234,
+        "expires_at": 1791616262.13234,
+        "state": "issued"
+      },
+      "submitted_evidence": {
+        "node_id": "commons-node-a",
+        "challenge_id": "tpm-challenge:05ff2084fb94932e247cb853941e0b49",
+        "nonce": "b79e41fe7989e25a88bd465960264afb5f6534e00460ff18949a5ab6629b0b89",
+        "audience": "beast-commons-node-attestation",
+        "evidence_digest": "sha256:ea39fb3c1f98902a7387b2447ec96a0e8e452e59e2f9ec55fb51df2908728162",
+        "eligible_for_commons": false,
+        "status": "hardware_evidence_unavailable"
+      },
+      "http_status": 403,
+      "decision": "REFUSE",
+      "response": {
+        "detail": "TPM evidence is not Commons eligible"
+      }
+    },
+    {
+      "node_id": "commons-node-b",
+      "challenge": {
+        "challenge_id": "tpm-challenge:be5d4e1c46367f1242a86db0290915b0",
+        "node_id": "commons-node-b",
+        "nonce": "9e3f7c3d9ada73fe86248e925c41c9f749a592bb1f732435bdae81556ac867a1",
+        "audience": "beast-commons-node-attestation",
+        "pcr_bank": "sha256",
+        "pcrs": [
+          0,
+          2,
+          4,
+          7,
+          10,
+          14
+        ],
+        "issued_at": 1791615962.1457038,
+        "expires_at": 1791616262.1457038,
+        "state": "issued"
+      },
+      "submitted_evidence": {
+        "node_id": "commons-node-b",
+        "challenge_id": "tpm-challenge:be5d4e1c46367f1242a86db0290915b0",
+        "nonce": "9e3f7c3d9ada73fe86248e925c41c9f749a592bb1f732435bdae81556ac867a1",
+        "audience": "beast-commons-node-attestation",
+        "evidence_digest": "sha256:ea39fb3c1f98902a7387b2447ec96a0e8e452e59e2f9ec55fb51df2908728162",
+        "eligible_for_commons": false,
+        "status": "hardware_evidence_unavailable"
+      },
+      "http_status": 403,
+      "decision": "REFUSE",
+      "response": {
+        "detail": "TPM evidence is not Commons eligible"
+      }
+    },
+    {
+      "node_id": "commons-node-c",
+      "challenge": {
+        "challenge_id": "tpm-challenge:709b86eaaef536f25841501c17e0915a",
+        "node_id": "commons-node-c",
+        "nonce": "ff685c440db735f150dc524434e555e4b649fc7559512acf5ab793e86334ed27",
+        "audience": "beast-commons-node-attestation",
+        "pcr_bank": "sha256",
+        "pcrs": [
+          0,
+          2,
+          4,
+          7,
+          10,
+          14
+        ],
+        "issued_at": 1791615962.1522179,
+        "expires_at": 1791616262.1522179,
+        "state": "issued"
+      },
+      "submitted_evidence": {
+        "node_id": "commons-node-c",
+        "challenge_id": "tpm-challenge:709b86eaaef536f25841501c17e0915a",
+        "nonce": "ff685c440db735f150dc524434e555e4b649fc7559512acf5ab793e86334ed27",
+        "audience": "beast-commons-node-attestation",
+        "evidence_digest": "sha256:ea39fb3c1f98902a7387b2447ec96a0e8e452e59e2f9ec55fb51df2908728162",
+        "eligible_for_commons": false,
+        "status": "hardware_evidence_unavailable"
+      },
+      "http_status": 403,
+      "decision": "REFUSE",
+      "response": {
+        "detail": "TPM evidence is not Commons eligible"
+      }
+    }
+  ],
+  "isolated_adversarial_test": {
+    "scope": "temporary key and ledger, no live authority material",
+    "input_had_quote": false,
+    "input_had_ek_certificate": false,
+    "input_had_ak_activation_proof": false,
+    "input_had_event_log": false,
+    "submitted_evidence": {
+      "node_id": "isolated-untrusted-test-node",
+      "challenge_id": "tpm-challenge:61fcc8983c8489a09a577ec31e9b2c98",
+      "nonce": "bccb54d954446e79956c0ab25d0936f3425d81d22ae0a81474fb6cff18fd58b7",
+      "audience": "beast-commons-node-attestation",
+      "evidence_digest": "sha256:6436e994bbb430193cc819f448bea119ad17f0f3b0f2365caaa41b0d59965ee4",
+      "status": "hardware_quote_valid_measurements_reconciled",
+      "eligible_for_commons": true,
+      "measurement_reconciliation": {
+        "valid": true
+      },
+      "verifier_facts": {
+        "quote_valid": true,
+        "ek_chain_valid": true,
+        "ak_credential_activated": true,
+        "event_log_replay_valid": true
+      }
+    },
+    "appraisal": {
+      "appraisal_ref": "arda:commons-node:da51de3e7f6f1979707f794b7f935a4ef590a720df70cf686ffd92d759bc1469",
+      "authority": "arda",
+      "audience": "commons-job-choir",
+      "policy_generation": "isolated-test-policy",
+      "state": "verified",
+      "expires_at": 1791616262.1633098,
+      "request_digest": "sha256:eda2c6c8a5fab2e46ce563a8f3cf1768008fd1acaa3f31e304d1795045473cc5",
+      "nonce": "b4fc9c063edbcdef9d7c06f164fb9f64",
+      "key_id": "isolated-test-key",
+      "evidence_digest": "sha256:6436e994bbb430193cc819f448bea119ad17f0f3b0f2365caaa41b0d59965ee4",
+      "signature": "Zrprx9tH4A6wYKEhFHE9e6JVpyEhuOTsGQSD2CLTjNScdIylZQnRaxBxisOsXnK5DkZ+XUiCEk28uUSavgXKCQ=="
+    },
+    "advertisement": {
+      "node_id": "isolated-untrusted-test-node",
+      "attestation": "verified",
+      "capabilities": [
+        "cpu"
+      ],
+      "pressure_budget": 0.5,
+      "reliability": 0.8,
+      "route_penalty": 0.0,
+      "expires_at": 1791616262.1633098,
+      "appraisal_ref": "arda:commons-node:da51de3e7f6f1979707f794b7f935a4ef590a720df70cf686ffd92d759bc1469",
+      "attestation_evidence": {
+        "appraisal_ref": "arda:commons-node:da51de3e7f6f1979707f794b7f935a4ef590a720df70cf686ffd92d759bc1469",
+        "authority": "arda",
+        "audience": "commons-job-choir",
+        "policy_generation": "isolated-test-policy",
+        "state": "verified",
+        "expires_at": 1791616262.1633098,
+        "request_digest": "sha256:eda2c6c8a5fab2e46ce563a8f3cf1768008fd1acaa3f31e304d1795045473cc5",
+        "nonce": "b4fc9c063edbcdef9d7c06f164fb9f64",
+        "key_id": "isolated-test-key",
+        "evidence_digest": "sha256:6436e994bbb430193cc819f448bea119ad17f0f3b0f2365caaa41b0d59965ee4",
+        "signature": "Zrprx9tH4A6wYKEhFHE9e6JVpyEhuOTsGQSD2CLTjNScdIylZQnRaxBxisOsXnK5DkZ+XUiCEk28uUSavgXKCQ=="
+      }
+    },
+    "signature_valid": true,
+    "job_choir_selected": "isolated-untrusted-test-node",
+    "replay_refused": true,
+    "self_reported_evidence_refused": false,
+    "security_boundary_passed": false
+  },
+  "conclusion": "REFUSE on honest missing evidence; self-reported verification flags are accepted by the issuer in isolation. Independent cryptographic evidence verification is not proven."
+}

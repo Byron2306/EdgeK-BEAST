@@ -2,6 +2,19 @@
 
 from __future__ import annotations
 
+import os
+import tempfile
+
+# Isolate live crystal stores BEFORE any app import: ServiceFactory.initialize() and app.main build default stores at
+# import time, and tests used to append forge/fused crystals and mock gpt-3.5-turbo outcomes into
+# app/data/durable_inference/crystal_chain.jsonl and app/.beast/crystal_compute_evidence.json.
+_BEAST_TEST_STATE = tempfile.mkdtemp(prefix="beast-test-state-")
+os.environ.setdefault("BEAST_DURABLE_INFERENCE_DIR", os.path.join(_BEAST_TEST_STATE, "durable_inference"))
+os.environ.setdefault("BEAST_CRYSTAL_COMPUTE_EVIDENCE", os.path.join(_BEAST_TEST_STATE, "crystal_compute_evidence.json"))
+# app.main builds the memory hull (.beast/vault), trace ledger, semantic cache and route optimizer under BEAST_STATE_ROOT;
+# mammoth/gateway tests used to write "local-test" residue into the live repo vault.
+os.environ.setdefault("BEAST_STATE_ROOT", os.path.join(_BEAST_TEST_STATE, "state"))
+
 import pytest
 from pathlib import Path
 from app.kernel.compute.factory import ServiceFactory

@@ -11,7 +11,7 @@ services:
       BEAST_COMMONS_CLIENT_TRUST_STORE: /run/beast/clients.yaml
       BEAST_COMMONS_TRUST_EVIDENCE: /run/beast/trust-evidence.json
     ports:
-      - "8111:8000"
+      - "127.0.0.1:8111:8000"
     volumes:
       - commons_node_a:/var/lib/beast
       - ./.beast/remote-commons-lab/commons-node-a:/run/beast:rw
@@ -28,7 +28,7 @@ services:
       BEAST_COMMONS_CLIENT_TRUST_STORE: /run/beast/clients.yaml
       BEAST_COMMONS_TRUST_EVIDENCE: /run/beast/trust-evidence.json
     ports:
-      - "8112:8000"
+      - "127.0.0.1:8112:8000"
     volumes:
       - commons_node_b:/var/lib/beast
       - ./.beast/remote-commons-lab/commons-node-b:/run/beast:rw
@@ -45,7 +45,7 @@ services:
       BEAST_COMMONS_CLIENT_TRUST_STORE: /run/beast/clients.yaml
       BEAST_COMMONS_TRUST_EVIDENCE: /run/beast/trust-evidence.json
     ports:
-      - "8113:8000"
+      - "127.0.0.1:8113:8000"
     volumes:
       - commons_node_c:/var/lib/beast
       - ./.beast/remote-commons-lab/commons-node-c:/run/beast:rw

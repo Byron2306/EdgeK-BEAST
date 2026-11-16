@@ -71,6 +71,7 @@
   async function runInWorktree(prompt, options = {}) {
     const objective = String(prompt || BeastStore.get().aiCoding.prompt || '').trim();
     if (!objective) throw new Error('Describe the coding task before creating an isolated mission.');
+    if (codingRunTarget().kind !== 'local') throw new Error('REFUSE_REMOTE_WORKTREE_MISSION: Use Agent mode for a target-native remote worktree; this button creates local missions.');
     if (BeastStore.get().connection.status !== 'online' || BeastDesktopBridge.demoMode) throw new Error('An isolated agent mission requires a live BEAST gateway.');
     if (BeastStore.get().aiCoding.streaming) throw new Error('Wait for the current AI turn to finish before isolating a new mission.');
     const sourceRoot = root();
@@ -143,29 +144,54 @@
     });
   }
 
-  function syncModel(modelId = '') {
-    const app = BeastStore.get();
-    const selected = app.models.registry.find(row => row.id === modelId)
-      || app.models.registry.find(row => row.id === app.models.selectedId)
-      || app.models.registry[0] || {};
-    let model = String(selected.id || modelId || app.models.selectedId || app.models.active || localStorage.getItem('beast.model') || '');
-    let provider = String(selected.provider || app.models.provider || localStorage.getItem('beast.provider') || '');
-    let baseUrl = String(selected.baseUrl || selected.base_url || selected.endpoint || '');
-    // Migrate the pair programmer once to the installed, CPU-safe coder
-    // model. Later explicit model selections remain respected.
-    const isLocalOllama = /^(?:ollama|local_ollama)$/i.test(provider);
-    const preferred = app.models.registry.find(row => row.id === RELIABLE_LOCAL_CODER && /^(?:ollama|local_ollama)$/i.test(String(row.provider || '')));
-    if (isLocalOllama && preferred && localStorage.getItem('beast.pair-programmer.local-model-migrated') !== '1') {
-      model = RELIABLE_LOCAL_CODER;
-      provider = String(preferred.provider || provider);
-      localStorage.setItem('beast.pair-programmer.local-model-migrated', '1');
-      appendTrace('routing', `Reliable local coding profile selected: ${RELIABLE_LOCAL_CODER} · 8K context · 4K output`);
+  function codingModelAvailable(row, app = BeastStore.get()) {
+    if (!row) return false;
+    if (row.governedAuto === true || row.governed_auto === true || row.id === 'auto' || row.provider === 'beast') return true;
+    const gateway = String(app.connection?.gatewayUrl || '').replace(/\/$/, '');
+    if (row.hostedCoding === true) {
+      return Boolean(gateway && row.gatewayUrl === gateway &&
+        row.provider === 'nvidia_nim' && row.inferenceVerified === true && row.reachable === true);
     }
-    if (model) localStorage.setItem('beast.model', model);
-    if (provider) localStorage.setItem('beast.provider', provider);
-    patch({ model, provider });
+    if (row.gatewayUrl && row.gatewayUrl !== gateway) return false;
+    if (row.installed === true) return true;
+    if (row.selectable === true && (row.configured === true || row.live === true) && row.reachable !== false) return true;
+    return row.configured === true && row.reachable === true && row.gatewayUrl === gateway;
+  }
+
+  function syncModel(modelId = '', {explicitSelection = false} = {}) {
+    const app = BeastStore.get();
+    const requested = String(modelId || app.aiCoding.model || app.models.selectedId || app.models.selectedModel || localStorage.getItem('beast.model') || '').trim();
+    const autoRequested = !requested || requested === 'auto' || requested === 'beast-auto' || requested === 'beast';
+    if (explicitSelection && app.aiCoding.streaming) throw new Error('Finish the current AI turn before switching models.');
+    const inventory = Array.isArray(app.models.registry) ? app.models.registry : [];
+    const selected = autoRequested
+      ? (inventory.find(row => row.governedAuto || row.id === 'auto' || row.provider === 'beast') || {
+          id:'auto', model:'auto', provider:'beast', governedAuto:true, selectable:true, configured:true, reachable:true
+        })
+      : (inventory.find(row => row.id === requested && codingModelAvailable(row, app))
+         || inventory.find(row => row.model === requested && codingModelAvailable(row, app))
+         || (window.BeastModelAgentBridge?.findRoute?.(requested, app)));
+    if (!selected || (!autoRequested && !codingModelAvailable(selected, app) && !selected.governedAuto)) {
+      throw new Error(`REFUSE: model '${requested || '(none)'}' is not in the available model inventory. Refresh Models and explicitly select a model, or use Auto (BEAST governed).`);
+    }
+    const auto = Boolean(selected.governedAuto || selected.id === 'auto' || selected.provider === 'beast');
+    const provider = auto ? 'beast' : String(selected.provider || '').trim();
+    const model = auto ? 'auto' : String(selected.model || selected.id);
+    const routeId = auto ? 'auto' : String(selected.id || model);
+    const baseUrl = String(selected.baseUrl || selected.base_url || selected.endpoint || '');
+    const providerHint = String(app.aiCoding.provider || localStorage.getItem('beast.provider') || '').trim();
+    if (selected.hostedCoding && !explicitSelection &&
+        (providerHint !== provider || app.aiCoding.model !== selected.id)) {
+      throw new Error('REFUSE: explicitly select the hosted provider and model before starting a coding run.');
+    }
+    if (!auto && !provider || (!auto && !explicitSelection && providerHint && providerHint !== provider && !(providerHint === 'local_ollama' && provider === 'ollama'))) {
+      throw new Error(`REFUSE: selected provider '${providerHint}' does not match model provider '${provider}'.`);
+    }
+    localStorage.setItem('beast.model', routeId);
+    localStorage.setItem('beast.provider', provider);
+    patch({ model: routeId, provider, routeId, governedAuto: auto, ...(explicitSelection && (app.aiCoding.model !== routeId || app.aiCoding.provider !== provider) ? {sessionId:''} : {}) });
     persist();
-    return { model, provider, baseUrl };
+    return { model: auto ? 'auto' : model, provider, baseUrl, routeId, explicit:true, hostedCoding:selected.hostedCoding === true, governedAuto: auto };
   }
 
   function providerStateRoute(state = {}, modelHint = '') {
@@ -222,33 +248,23 @@
   }
 
   async function resolveCodingRoute(modelId = '') {
-    let route = syncModel(modelId);
-    if (route.model && route.provider) return route;
-    appendTrace('routing', 'Model registry was not ready; refreshing live providers before starting the Pair Programmer.');
-    try {
+    const explicit = String(modelId || BeastStore.get().aiCoding.model || '').trim();
+    const auto = !explicit || explicit === 'auto' || explicit === 'beast-auto' || explicit === 'beast';
+    let inventory = BeastStore.get().models.registry || [];
+    const present = row => auto
+      ? (row.governedAuto || row.id === 'auto' || row.provider === 'beast')
+      : ((row.id === explicit || row.model === explicit) && codingModelAvailable(row));
+    if (!inventory.some(present)) {
       if (window.BeastModelAgentBridge?.refreshModels) {
         await window.BeastModelAgentBridge.refreshModels({ timeoutMs:8000, cacheTtl:0 });
-        route = syncModel(modelId || BeastStore.get().aiCoding.model);
-        if (route.model && route.provider) return route;
+        inventory = BeastStore.get().models.registry || [];
       }
-    } catch (error) {
-      appendTrace('routing', `Live model refresh did not complete: ${String(error.message || error)}`);
     }
-    try {
-      const state = await BeastRuntime.request('/edgek/providers/state', { timeoutMs:6000, cacheTtl:0 });
-      route = providerStateRoute(state, modelId || BeastStore.get().aiCoding.model);
-      if (route.model && route.provider) {
-        localStorage.setItem('beast.model', route.model);
-        localStorage.setItem('beast.provider', route.provider);
-        patch({ model:route.model, provider:route.provider });
-        appendTrace('routing', `Recovered live provider route: ${route.provider}/${route.model}`);
-        persist();
-        return route;
-      }
-    } catch (error) {
-      appendTrace('routing', `Provider state fallback unavailable: ${String(error.message || error)}`);
+    if (auto) return syncModel('auto');
+    if (!inventory.some(present)) {
+      throw new Error(`REFUSE: requested model '${explicit}' is unavailable; no provider fallback is authorized.`);
     }
-    return route;
+    return syncModel(explicit);
   }
 
   async function resolveSemanticEscalationRoute(currentRoute = {}) {
@@ -430,12 +446,60 @@
     return String(sessionId);
   }
 
-  function agentRunCreatePayload({ sessionId, runPrompt, mode, analysisRun, route, files, semanticContext, semanticRisk, selection, options, maxOutputTokens, maxContextChars, launch }) {
+  // The operator-selected destination, never the model, owns coding authority.
+  // Refuse an incomplete remote target rather than defaulting to local.
+  function codingRunTarget() {
+    const selected = BeastStore.get().workspace.executionTarget || {kind:'local'};
+    const kind = String(selected.kind || 'local');
+    if (kind === 'local') return {kind:'local'};
+    if (kind === 'ssh') {
+      const host = String(selected.host || '').trim();
+      const remoteRoot = String(selected.remoteRoot || selected.path || '').trim();
+      if (!/^[A-Za-z0-9][A-Za-z0-9@._:-]{0,252}$/.test(host) ||
+          !/^\/[A-Za-z0-9._+\/-]+$/.test(remoteRoot) || remoteRoot.split('/').includes('..')) {
+        throw new Error('REFUSE_REMOTE_TARGET: SSH coding requires a verified host and absolute remote workspace.');
+      }
+      return {kind:'ssh', host, remoteRoot};
+    }
+    if (kind === 'container') {
+      const containerId = String(selected.containerId || selected.id || '').trim();
+      const workspaceFolder = String(selected.workspaceFolder || '').trim();
+      if (!/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$/.test(containerId) ||
+          !/^\/[A-Za-z0-9._+\/-]+$/.test(workspaceFolder) || workspaceFolder.split('/').includes('..')) {
+        throw new Error('REFUSE_REMOTE_TARGET: Container coding requires a container ID and absolute workspace folder.');
+      }
+      return {kind:'container',containerId,workspaceFolder};
+    }
+    throw new Error(`REFUSE_REMOTE_TARGET: Unsupported coding target ${kind}.`);
+  }
+
+  function agentRunCreatePayload({ sessionId, runPrompt, mode, analysisRun, route, files, semanticContext, semanticRisk, selection, options, maxOutputTokens, maxContextChars, launch, target }) {
     const localOllama = /^(?:ollama|local_ollama)$/i.test(String(route.provider || ''));
+    const mutatingRun = !analysisRun && mode !== 'ask' && mode !== 'review';
+    const isPythonTest = path => /(^|\/)(test_[^/]+|[^/]+_test)\.py$/i.test(String(path || ''));
+    const activePath = String(BeastStore.get().editor.activePath || '');
+    const implementationTarget = mutatingRun
+      ? ([activePath, ...files].find(path => path && files.includes(path) && !isPythonTest(path)) || '')
+      : '';
+    const targetStem = implementationTarget.endsWith('.py')
+      ? implementationTarget.split('/').pop().replace(/\.py$/i, '')
+      : '';
+    const workspacePaths = (BeastStore.get().workspace.files || []).map(row => String(row?.path || row || '')).filter(Boolean);
+    const requiredTestFiles = targetStem
+      ? [...new Set([...files, ...workspacePaths].filter(path => {
+          const name = String(path).split('/').pop();
+          return isPythonTest(path) && (name === `test_${targetStem}.py` || name === `${targetStem}_test.py`);
+        }))].slice(0, 16)
+      : [];
     return {
-      root_path:root(), session_id:sessionId, objective:runPrompt, mode:analysisRun?'analysis':mode, provider:route.provider, model:route.model, launch:Boolean(launch),
+      root_path:root(), session_id:sessionId, objective:runPrompt, mode:analysisRun?'analysis':mode, provider:route.provider, model:route.model, governed_auto:Boolean(route.governedAuto), route_id:route.routeId || '', launch:Boolean(launch),
+      execution_target:target.kind, execution_target_payload:target,
       request:{
         transport:'durable_agent_run_v2', prompt:runPrompt, context_files:files, simulate:Boolean(options.simulate),
+        ...(options.swarmRunId ? {swarm_run_id:String(options.swarmRunId)} : {}),
+        ...(implementationTarget ? {implementation_target:implementationTarget} : {}),
+        ...(requiredTestFiles.length ? {required_test_files:requiredTestFiles} : {}),
+        ...(mode === 'review' ? { read_only_file_review:true } : {}),
         semantic_context:semanticContext, semantic_risk:semanticRisk,
         launch_strategy:'typed_planner',
         ...(localOllama && route.baseUrl ? { ollama_base_url:route.baseUrl, provider_base_url:route.baseUrl } : {}),
@@ -497,7 +561,7 @@
       files = normalizeContextFiles([activeContextFile, ...files]);
     }
     const selectedMode=BeastStore.get().aiCoding.mode;const mode=resolvedModeForPrompt(selectedMode,clean);
-    const analysisRun = mode === 'agent' && isAgentAnalysisPrompt(clean) && !options.actionIrRecovery && !options.forcePatch;
+    const analysisRun = mode === 'review' || (mode === 'agent' && isAgentAnalysisPrompt(clean) && !options.actionIrRecovery && !options.forcePatch);
     // An investigation starts from the active file, not every attachment
     // accumulated by earlier turns. Additional files enter only through an
     // explicit @mention or an approved capability request.
@@ -511,7 +575,7 @@
     if(mode!=='ask'&&!files.length)throw new Error('Edit and Agent modes require an open or attached workspace file. Open the target file, then retry.');
     const semanticContext = await buildIdeSemanticContext(clean, files);
     const semanticRisk = semanticRiskFor(semanticContext, { mode, analysisRun, files });
-    if (localCoder && semanticRisk.high && !options.focused && !options.actionIrRecovery && !options.forceLocalOllama) {
+    if (localCoder && semanticRisk.high && !options.focused && !options.actionIrRecovery && !options.forceLocalOllama && options.allowProviderEscalation === true) {
       const escalated = await resolveSemanticEscalationRoute(route);
       if (escalated.model && escalated.provider) {
         appendTrace('routing', `Semantic risk ${semanticRisk.score} (${semanticRisk.reasons.join(' · ') || 'high fanout'}) escalated first-pass patching from ${route.provider}/${route.model} to ${escalated.provider}/${escalated.model}.`);
@@ -536,6 +600,10 @@
     }
     const retryDirective=options.focused?'\n\nRecovery mode: make one exact, reviewable edit in the single attached file. Do not inspect or propose changes outside it; return valid Action IR JSON before output ends.':(options.actionIrRecovery?'\n\nRecovery mode: your previous response looked like an edit packet but failed BEAST SourcePlan compilation. Return one valid BEAST Action IR JSON object only. Include complete exact replacements, at most one source-edit action per file, and no markdown or prose. If you cannot make a safe exact edit, emit ask_for_context instead of advisory prose.':'');
     const runPrompt = `${instructionFor(mode, clean, files, selection, localCoder)}${retryDirective}`;
+    const selectedCodingTarget = codingRunTarget();
+    if (route.hostedCoding && selectedCodingTarget.kind !== 'local') {
+      throw new Error('Hosted Nemotron coding currently requires a local workspace target.');
+    }
     const agentProfile = agentTurnProfile(clean, mode, analysisRun, files);
     addMessage('user', clean, { mode, files, selection:selection ? { path:selection.path, range:selection.range } : null });
     const assistantId = addMessage('assistant', '', {
@@ -560,7 +628,7 @@
       if (!sessionId) sessionId = await createSession(clean, files, route.model, route.provider, analysisRun ? 'analysis' : mode);
       const maxOutputTokens = Number(options.maxTokens || (localCoder ? (mode === 'ask' ? RELIABLE_LOCAL_PROFILE.askTokens : RELIABLE_LOCAL_PROFILE.editTokens) : detachedPlanner ? (mode === 'ask' ? RELIABLE_PLANNER_PROFILE.askTokens : RELIABLE_PLANNER_PROFILE.editTokens) : (mode === 'ask' ? 6000 : 16000)));
       const maxContextChars = Number(options.contextMaxCharsEach || (localCoder ? RELIABLE_LOCAL_PROFILE.contextChars : detachedPlanner ? RELIABLE_PLANNER_PROFILE.contextChars : 50000));
-      const created = await createDurableAgentRun(agentRunCreatePayload({ sessionId, runPrompt, mode, analysisRun, route, files, semanticContext, semanticRisk, selection, options, maxOutputTokens, maxContextChars, launch:true }), {
+      const created = await createDurableAgentRun(agentRunCreatePayload({ sessionId, runPrompt, mode, analysisRun, route, files, semanticContext, semanticRisk, selection, options, maxOutputTokens, maxContextChars, launch:true, target:selectedCodingTarget }), {
         localCoder,
         detachedPlannerLaunch: detachedPlanner,
         maxTurns:Number(options.maxTurns || (localCoder ? 5 : 8))
@@ -728,16 +796,22 @@
         terminalEventSeen = true;
         eventSource.close(); runtime.streamState.stream = null; runtime.streamState.runId = ''; runtime.streamState.sequence = 0; patch({activeRunId:'',activeRunSequence:0}); clearWatchdog();
         const payload = eventPayload(event);
+        if (payload.completion_mode === 'read_only_review_incomplete') { finishIncompleteReview(assistantId,payload); return; }
         const recoveredPlan=payload.session?.output?.sourceplan_plan;
         if(!proposalReady&&recoveredPlan?.operations?.length){const proposal=stageSourcePlan(recoveredPlan);proposalReady=Boolean(proposal?.ready);if(proposal)updateAssistant(assistantId,{content:proposalSummary(proposal,recoveredPlan.objective),proposal,internalFormat:'beast.action_intent.v1'});}
         const current=BeastStore.get().aiCoding.messages.find(message=>message.id===assistantId);
         let fallback='';
         if((mode==='ask'||analysisRun)&&!String(current?.content||'').trim())fallback='I did not receive a text response. Try again or choose another model.';
-        if(mode!=='ask'&&!analysisRun&&!proposalReady&&!needsOperator&&!advisoryReceived)fallback=`I finished investigating, but no safe patch was produced. The locked context was kept (${files.join(', ') || 'no files'}). Retry with the exact selection or ask for a smaller governed patch.`;
-        finishProgress(assistantId,fallback?'Stopped before a safe result was produced':'Run complete');
+        if(mode!=='ask'&&!analysisRun&&!proposalReady&&!needsOperator&&!advisoryReceived)fallback=`Coding run finished without a promotable SourcePlan. Inspect the durable AgentRun verification and graduation receipts before retrying. Context: ${files.join(', ') || 'none'}.`;
+        const terminalRefusal = payload.ok === false || ['policy_blocked','failed','budget_exhausted','rejected'].includes(String(payload.state||payload.run_state||''));
+        if(terminalRefusal){
+          fallback = `Coding session ended; graduation is not accepted. ${String(payload.error||payload.reason||fallback||'Inspect the durable AgentRun receipts.').slice(0,900)}\n\nAny isolated worktree diff remains unpromoted. Syntax checks alone do not establish behavioral correctness.`;
+          proposalReady = false;
+        }
+        finishProgress(assistantId,terminalRefusal?'Session finished; graduation not accepted':fallback?'No promotable SourcePlan':'Run complete');
         mergeAssistantPlanState(assistantId,{ status:payload.sourceplan_status || (fallback ? 'stopped_without_safe_result' : 'complete'), active_step_id:proposalReady?'review_sourceplan':needsOperator?'operator_review':'complete', reason:fallback || runDoneSentence(payload.sourceplan_status || 'complete', { needsOperator, proposalReady, advisoryReceived, analysisRun }) });
         updateAssistant(assistantId,{ streaming:false, activity:'', ...(fallback?{content:fallback,error:true}:{}) });
-        patch({ streaming:false, status:proposalReady?'ready-to-review':needsOperator||fallback?'review-needed':'complete', error:needsOperator?BeastStore.get().aiCoding.error:fallback });
+        patch({ streaming:false, status:terminalRefusal?'review-needed':proposalReady?'ready-to-review':needsOperator||fallback?'review-needed':'complete', error:needsOperator?BeastStore.get().aiCoding.error:fallback });
         const completeText = runDoneSentence(payload.sourceplan_status || 'complete', { needsOperator, proposalReady, advisoryReceived, analysisRun });
         appendTrace('complete', completeText);
         appendTurn(assistantId,'complete',completeText,'done');
@@ -772,15 +846,53 @@
     }
   }
 
+  function finishIncompleteReview(assistantId, payload) {
+    const reason = String(payload.error || 'No grounded file review was produced.');
+    const content = payload.coverage ? `${reason}\n\nCoverage supplied: ${payload.coverage}.` : reason;
+    updateAssistant(assistantId,{content,streaming:false,activity:'',error:true});
+    patch({streaming:false,activeRunId:'',activeRunSequence:0,status:'review-needed',error:reason});
+    finishProgress(assistantId,'Review incomplete');
+    appendTrace('review',reason);
+    persist();
+  }
+
   async function reconnectActiveRun(runId, after = 0) {
     const identifier = String(runId || '').trim();
     if (!identifier || !root() || runtime.streamState.stream) return { ok:false, skipped:true };
     const detail = await BeastRuntime.request(`/edgek/agent-runs/${encodeURIComponent(identifier)}?root_path=${encodeURIComponent(root())}&auto_recover=true`, { timeoutMs:10000, cacheTtl:0 });
     const run = detail?.run || {};
     const terminal = ['completed','cancelled','failed','budget_exhausted','policy_blocked','rejected','rolled_back'].includes(String(run.state || ''));
+    const readOnly = ['analysis','chat','ask'].includes(String(run.mode || '').trim().toLowerCase());
     if (terminal) {
       runtime.streamState.runId = ''; runtime.streamState.sequence = 0;
-      patch({ activeRunId:'', activeRunSequence:0, streaming:false, status:String(run.state || 'complete'), error:String(run.error || '') });
+      const refused = ['policy_blocked','failed','budget_exhausted','rejected'].includes(String(run.state || ''));
+      if (readOnly) {
+        const completed = run.state === 'completed';
+        const summary = String(run.checkpoint?.planner?.final_summary || '').trim();
+        const content = completed
+          ? (summary || 'Read-only run completed without a saved answer.')
+          : String(run.error || `Read-only run ended: ${run.state}.`);
+        const assistant = [...(BeastStore.get().aiCoding.messages || [])].reverse().find(item=>item?.role==='assistant');
+        const id = assistant?.id || addMessage('assistant','',{mode:'ask'});
+        updateAssistant(id,{content,streaming:false,activity:'',error:refused});
+        patch({activeRunId:'',activeRunSequence:0,streaming:false,status:completed?'complete':refused?'review-needed':run.state,error:refused?content:''});
+        persist();
+        return {ok:true,terminal:true,run};
+      }
+      let l4Memory = null;
+      try {
+        const evidence = await BeastRuntime.request(`/edgek/agent-runs/${encodeURIComponent(identifier)}/memory-evidence?root_path=${encodeURIComponent(root())}`, { timeoutMs:10000, cacheTtl:0 });
+        if (evidence?.historical_state === run.state && evidence?.authority === 'advisory_only_no_promotion') l4Memory = evidence.memory || null;
+      } catch (_) { /* Memory retrieval is advisory; original refusal remains authoritative. */ }
+      const detail = refused
+        ? `Coding session finished; graduation not accepted. ${String(run.error || 'Inspect the durable graduation receipts.').slice(0,900)}\n\nThe isolated worktree diff has not been promoted.`
+        : `Durable AgentRun finished: ${String(run.state || 'completed')}. Check graduation receipts before promotion.`;
+      const currentMessages = BeastStore.get().aiCoding.messages || [];
+      const lastAssistant = [...currentMessages].reverse().find(message => message?.role === 'assistant');
+      if (lastAssistant) {
+        updateAssistant(lastAssistant.id, {content:detail,streaming:false,activity:'',error:refused,memoryEvidence:l4Memory});
+      }
+      patch({ activeRunId:'', activeRunSequence:0, streaming:false, status:refused?'review-needed':String(run.state || 'complete'), error:refused?String(run.error || 'Graduation not accepted'):'' });
       persist();
       return { ok:true, terminal:true, run };
     }
@@ -824,7 +936,19 @@
     eventSource.addEventListener('agent_run_needs_operator', event => { const payload=eventPayload(event); updateAssistant(assistantId,{content:String(payload.assistant_text||payload.error||'The durable run needs operator input.'),streaming:false,activity:'Needs your input',error:true}); patch({status:'review-needed',error:String(payload.error||'Operator input required')}); });
     eventSource.addEventListener('agent_run_done', event => {
       terminalEventSeen=true; const payload=eventPayload(event); eventSource.close(); runtime.streamState.stream=null; runtime.streamState.runId=''; runtime.streamState.sequence=0; clearWatchdog();
-      updateAssistant(assistantId,{streaming:false,activity:''}); patch({streaming:false,activeRunId:'',activeRunSequence:0,status:proposalReady?'ready-to-review':payload.ok===false?'review-needed':'complete'}); appendTrace('complete','Recovered durable run reached a terminal result.'); persist();
+      if (payload.completion_mode === 'read_only_review_incomplete') { finishIncompleteReview(assistantId,payload); return; }
+      const terminalState = String(payload.state || payload.run_state || '');
+      const refused = payload.ok === false || ['policy_blocked','failed','budget_exhausted','rejected'].includes(terminalState);
+      if (readOnly && payload.completion_mode === 'read_only_advisory' && !refused) {
+        updateAssistant(assistantId,{content:String(payload.summary || 'Read-only run completed without a saved answer.'),streaming:false,activity:'',error:false});
+        patch({streaming:false,activeRunId:'',activeRunSequence:0,status:'complete',error:''});
+        persist();
+        return;
+      }
+      const reason = String(payload.error || payload.reason || 'Inspect durable graduation receipts.');
+      updateAssistant(assistantId,{streaming:false,activity:'', ...(refused?{content:`Coding session finished; graduation not accepted. ${reason.slice(0,900)}\n\nAny worktree diff remains unpromoted.`,error:true}:{})});
+      patch({streaming:false,activeRunId:'',activeRunSequence:0,status:refused?'review-needed':proposalReady?'ready-to-review':'complete',error:refused?reason:''});
+      appendTrace('complete',refused?'Durable coding session finished; graduation not accepted.':'Recovered durable run reached a terminal result.'); persist();
     });
     eventSource.addEventListener('agent_run_error', event => { terminalEventSeen=true; const payload=eventPayload(event); fail(providerTransportFailure(payload, 'Durable run failed.'),assistantId,eventSource); });
     eventSource.addEventListener('error', () => { if(runtime.streamState.stream===eventSource&&BeastStore.get().aiCoding.streaming) disconnect('Durable run event replay disconnected. Reconnect will resume from the last stored event.',assistantId,eventSource); });
@@ -914,6 +1038,14 @@
     persist();
   }
 
-    return { runInWorktree, retryLastRequest, recoverInvalidPacket, continueWithAddedContext, syncModel, providerStateRoute, resolveCodingRoute, createSession, send, reconnectActiveRun, disconnect, fail, cancel, clear };
+    function holdApprovalWatchdog() { clearWatchdog(); }
+    function resumeApprovalWatchdog() {
+      const stream = runtime.streamState.stream;
+      if (!stream) return;
+      const latest = [...(BeastStore.get().aiCoding.messages || [])].reverse().find(item => item?.role === 'assistant');
+      if (latest?.id) armWatchdog(latest.id, stream);
+    }
+    registry.selectCodingModel = modelId => syncModel(modelId, {explicitSelection:true});
+    return { runInWorktree, retryLastRequest, recoverInvalidPacket, continueWithAddedContext, syncModel, providerStateRoute, resolveCodingRoute, createSession, send, reconnectActiveRun, disconnect, fail, cancel, clear, holdApprovalWatchdog, resumeApprovalWatchdog };
   };
 })();

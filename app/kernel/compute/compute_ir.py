@@ -69,6 +69,8 @@ class ComputeGateDecision:
     reason: str
     predicted_avoidable_work: List[str] = field(default_factory=list)
     created_at: str = ""
+    # Compute Governor spine admission (outcome, reasons, receipt); empty when no spine decision was made.
+    governor: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         result = asdict(self)

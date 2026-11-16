@@ -24,6 +24,7 @@ class SwarmKernelServices:
     dispatcher: Any = None
     interceptor: Any = None
     residual_solver: Any = None
+    specialist_runner: Any = None  # local Ollama swarm runner (agents.swarm_specialist.OllamaSwarmRunner)
     patch_compiler: Any = None
     forge_executor: Any = None
     verifier: Any = None
@@ -34,6 +35,7 @@ class SwarmKernelServices:
     cost_predictor: Any = None
     cache_selector: Any = None
     local_route_optimizer: Any = None
+    prec_orchestrator: Any = None
     context_economizer: Any = None
     compression_pipeline: Any = None
     ast_compressor: Any = None
@@ -74,13 +76,17 @@ class SwarmKernelServices:
         from app.kernel.adapters.provider_economist import ProviderEconomist
         from app.kernel.compute.ast_compressor import ASTCompressor
         from app.kernel.compute.compression_pipeline import CompressionPipeline
+        from app.kernel.agents.swarm_specialist import OllamaSwarmRunner
+        from app.kernel.data_processing.quality_cascade import QualityCascade
 
         values: Dict[str, Any] = {
             "economist": ProviderEconomist(),
             "context_economizer": ContextEconomizer(policies or {}),
             "compression_pipeline": CompressionPipeline(policies or {}),
             "ast_compressor": ASTCompressor(),
+            "quality_cascade": QualityCascade(policies or {}),
             "workspace_graph": workspace_graph,
+            "specialist_runner": OllamaSwarmRunner(),  # no network at construction; dispatch is governor-gated
         }
         values.update({key: value for key, value in overrides.items() if key in cls.field_names()})
         return cls(**values)

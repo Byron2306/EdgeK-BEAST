@@ -15,6 +15,13 @@ from fastapi import APIRouter
 
 from app.kernel.evidence.evidence_bus import EvidenceBus
 from app.kernel.agents.mode_router import ModeRouter
+from app.kernel.governance.governor_spine import (
+    ComputeGovernorSpine,
+    Episode,
+    GovernorReceiptLog,
+    Proposal,
+    forensic_sink,
+)
 from app.kernel.policy.architecture_decisions import architecture_decision_register
 from app.kernel.policy.spec_covenant import SpecCovenantCompiler
 from app.kernel.security.safety_governor import SafetyGovernor
@@ -119,6 +126,18 @@ def build_policy_router(default_root: str | Path, mode_router: ModeRouter) -> AP
         if not argv:
             return {"ok": False, "error": "empty_command", "safety": receipt}
 
+        # Compute Governor spine: Safety only classifies; execution runs behind admit (enforced when
+        # BEAST_GOVERNOR_ENFORCE is on, receipted in shadow mode). The safety checks above are unchanged.
+        spine = ComputeGovernorSpine(receipts=GovernorReceiptLog(
+            root / ".beast" / "governor" / "receipts.jsonl",
+            sinks=[forensic_sink(root / ".beast" / "evidence" / "governor")]))
+        proposal = Proposal(kind="command", lane="operator", command=command, safety=receipt, approved=approved,
+                            signature_material={"cwd": str(cwd)})
+        admission = spine.admit(Episode(run_id=task_id or "terminal"), proposal)
+        if not admission.permits():
+            return {"ok": False, "error": f"governor_{admission.outcome}", "safety": receipt,
+                    "governor": admission.to_dict()}
+
         started = time.time()
 
         def execute_command() -> tuple[bool, str, str, int]:
@@ -145,7 +164,9 @@ def build_policy_router(default_root: str | Path, mode_router: ModeRouter) -> AP
                     124,
                 )
 
-        timed_out, stdout, stderr, returncode = await asyncio.to_thread(execute_command)
+        timed_out, stdout, stderr, returncode = await asyncio.to_thread(
+            spine.run_admitted, admission, proposal, execute_command
+        )
         finished = time.time()
         result = {
             "beast_object_type": "beast_governed_terminal_execution",
@@ -163,6 +184,7 @@ def build_policy_router(default_root: str | Path, mode_router: ModeRouter) -> AP
             "approved": approved,
             "operator_override": operator_override,
             "safety": receipt,
+            "governor": admission.to_dict(),
             "created_at": int(finished),
         }
         out_dir = root / ".beast" / "evidence" / "terminal"

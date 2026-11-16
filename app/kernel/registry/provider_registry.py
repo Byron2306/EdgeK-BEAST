@@ -221,7 +221,7 @@ class ProviderRegistry:
             "proxy_path": "/proxy/nvidia-nim",
             "litellm_model_prefix": "openai/",
             "base_url": "https://integrate.api.nvidia.com/v1",
-            "default_model": "nvidia/nemotron-3-super-120b-a12b",
+            "default_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
             "openai_compatible": True,
         },
         "local_nim": {
@@ -246,7 +246,7 @@ class ProviderRegistry:
             # Native Ollama endpoints live under /api/*; /v1 is only its
             # optional OpenAI-compatibility facade.
             "base_url": "http://127.0.0.1:11434",
-            "default_model": "qwen2.5-coder:1.5b",
+            "default_model": "qwen3:4b",
             "risk_level": "local",
             "requires_approval": False,
         },

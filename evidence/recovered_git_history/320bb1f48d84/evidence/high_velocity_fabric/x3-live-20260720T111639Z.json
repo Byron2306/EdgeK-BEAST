@@ -1,0 +1,35 @@
+{
+  "authority": "transport_laboratory_only",
+  "config": {
+    "allow_production_nic": false,
+    "duration_seconds": 10,
+    "frame_count": 4096,
+    "frame_size": 2048,
+    "namespace_rx": "beast-x3-rx",
+    "namespace_tx": "beast-x3-tx",
+    "packet_size": 512,
+    "production_interface": null,
+    "veth_rx": "beastx3rx",
+    "veth_tx": "beastx3tx"
+  },
+  "digest": "sha256:3cc922858b9ecd5a91fd5ba25ed98980a18662b40f55d7e64b29ee64d9daab67",
+  "fallback_available": true,
+  "measurements": [
+    {
+      "bytes_rx": 158327808,
+      "bytes_tx": 158327808,
+      "cpu_system_seconds": 8.314154,
+      "cpu_user_seconds": 4.2853129999999995,
+      "drops": 0,
+      "mode": "udp_fallback",
+      "p50_latency_us": 28.763,
+      "p95_latency_us": 44.002,
+      "p99_latency_us": 88.617,
+      "packets_rx": 309234,
+      "packets_tx": 309234,
+      "ring_saturation_events": 0
+    }
+  ],
+  "production_nic_touched": false,
+  "selected_mode": "udp_fallback"
+}

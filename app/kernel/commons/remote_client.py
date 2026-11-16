@@ -4,24 +4,26 @@ from __future__ import annotations
 import base64
 import ipaddress
 import json
-from pathlib import Path
 import re
 import secrets
 import sqlite3
 import threading
 import time
-from typing import Any, Mapping
+from collections.abc import Mapping
+from pathlib import Path
+from typing import Any
 from urllib.parse import quote, urlsplit
 
+import httpx
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
-import httpx
 
 from app.kernel.integration.signed_decision import verify_appraisal
-from .discovery import CommonsDiscoveryCatalog, DISCOVERY_PROTOCOL
+
+from .discovery import DISCOVERY_PROTOCOL, CommonsDiscoveryCatalog
 from .lattice_trust import CrystalLatticeTrustStore
-from .remote_protocol import CommonsRequestSigner, PROTOCOL_VERSION, canonical_json, sha256_bytes
+from .remote_protocol import PROTOCOL_VERSION, CommonsRequestSigner, canonical_json, sha256_bytes
 
 
 def _safe_segment(value: str) -> str:
@@ -88,6 +90,19 @@ class RemoteCommonsRegistry:
                     created_at REAL NOT NULL,
                     updated_at REAL NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS remote_commons_endpoint_history (
+                    sequence INTEGER PRIMARY KEY AUTOINCREMENT,
+                    node_id TEXT NOT NULL,
+                    previous_endpoint TEXT NOT NULL,
+                    candidate_endpoint TEXT NOT NULL,
+                    changed INTEGER NOT NULL,
+                    state TEXT NOT NULL,
+                    descriptor_digest TEXT NOT NULL,
+                    recorded_at REAL NOT NULL,
+                    FOREIGN KEY(node_id) REFERENCES remote_commons_nodes(node_id)
+                );
+                CREATE INDEX IF NOT EXISTS idx_remote_commons_endpoint_history_node
+                ON remote_commons_endpoint_history(node_id, sequence);
                 """
             )
             columns = {str(row[1]) for row in connection.execute("PRAGMA table_info(remote_commons_nodes)").fetchall()}
@@ -147,8 +162,104 @@ class RemoteCommonsRegistry:
                 (state, json.dumps(dict(result), sort_keys=True, separators=(",", ":"), default=str), time.time(), node_id),
             )
 
-    @staticmethod
-    def _row(row: sqlite3.Row) -> dict[str, Any]:
+    def reconcile_endpoint(
+        self, node_id: str, endpoint: str, result: Mapping[str, Any]
+    ) -> dict[str, Any]:
+        candidate = str(endpoint or "").strip()
+        probe = dict(result)
+        state = str(probe.get("state") or "").strip()
+        if not candidate or probe.get("ok") is not True or not state:
+            raise ValueError("endpoint reconciliation requires a verified probe result")
+        now = time.time()
+        try:
+            with self._lock, self._connect() as connection:
+                connection.execute("BEGIN IMMEDIATE")
+                row = connection.execute(
+                    "SELECT endpoint FROM remote_commons_nodes WHERE node_id=?", (node_id,)
+                ).fetchone()
+                if row is None:
+                    raise LookupError(f"remote Commons node not registered: {node_id}")
+                conflict = connection.execute(
+                    "SELECT node_id FROM remote_commons_nodes WHERE endpoint=? AND node_id<>?",
+                    (candidate, node_id),
+                ).fetchone()
+                if conflict is not None:
+                    raise ValueError(
+                        f"remote Commons endpoint is already registered to {conflict['node_id']}"
+                    )
+                previous = str(row["endpoint"])
+                connection.execute(
+                    "INSERT INTO remote_commons_endpoint_history(node_id,previous_endpoint,candidate_endpoint,changed,state,descriptor_digest,recorded_at) "
+                    "VALUES(?,?,?,?,?,?,?)",
+                    (
+                        node_id,
+                        previous,
+                        candidate,
+                        int(previous != candidate),
+                        state,
+                        str(probe.get("descriptor_digest") or ""),
+                        now,
+                    ),
+                )
+                connection.execute(
+                    "UPDATE remote_commons_nodes SET endpoint=?,state=?,last_probe_json=?,updated_at=? WHERE node_id=?",
+                    (
+                        candidate,
+                        state,
+                        json.dumps(probe, sort_keys=True, separators=(",", ":"), default=str),
+                        now,
+                        node_id,
+                    ),
+                )
+        except sqlite3.IntegrityError as exc:
+            raise ValueError("remote Commons endpoint is already registered") from exc
+        return self.get(node_id)
+
+    def endpoint_history(self, node_id: str, *, limit: int = 50) -> list[dict[str, Any]]:
+        bounded = max(1, min(int(limit), 500))
+        with self._connect() as connection:
+            rows = connection.execute(
+                "SELECT previous_endpoint,candidate_endpoint,changed,state,descriptor_digest,recorded_at "
+                "FROM remote_commons_endpoint_history WHERE node_id=? ORDER BY sequence DESC LIMIT ?",
+                (node_id, bounded),
+            ).fetchall()
+        return [
+            {
+                "previous_endpoint": row["previous_endpoint"],
+                "candidate_endpoint": row["candidate_endpoint"],
+                "changed": bool(row["changed"]),
+                "state": row["state"],
+                "descriptor_digest": row["descriptor_digest"],
+                "recorded_at": row["recorded_at"],
+            }
+            for row in reversed(rows)
+        ]
+
+    def record_endpoint_attempt(
+        self, node_id: str, candidate_endpoint: str, *, state: str,
+        descriptor_digest: str = "",
+    ) -> None:
+        with self._lock, self._connect() as connection:
+            row = connection.execute(
+                "SELECT endpoint FROM remote_commons_nodes WHERE node_id=?", (node_id,)
+            ).fetchone()
+            if row is None:
+                raise LookupError(f"remote Commons node not registered: {node_id}")
+            connection.execute(
+                "INSERT INTO remote_commons_endpoint_history(node_id,previous_endpoint,candidate_endpoint,changed,state,descriptor_digest,recorded_at) "
+                "VALUES(?,?,?,?,?,?,?)",
+                (
+                    node_id,
+                    str(row["endpoint"]),
+                    str(candidate_endpoint),
+                    0,
+                    str(state),
+                    str(descriptor_digest),
+                    time.time(),
+                ),
+            )
+
+    def _row(self, row: sqlite3.Row) -> dict[str, Any]:
         return {
             "node_id": row["node_id"],
             "endpoint": row["endpoint"],
@@ -161,6 +272,7 @@ class RemoteCommonsRegistry:
             "last_probe": json.loads(row["last_probe_json"] or "{}"),
             "created_at": row["created_at"],
             "updated_at": row["updated_at"],
+            "endpoint_history": self.endpoint_history(str(row["node_id"])),
         }
 
 
@@ -172,6 +284,7 @@ class RemoteCommonsGateway:
         lattice_trust_store: CrystalLatticeTrustStore | None = None,
         discovery_catalog: CommonsDiscoveryCatalog | None = None,
         timeout_seconds: float = 8.0,
+        custody: Any = None,
     ):
         self.registry = registry
         self.gate = gate
@@ -180,6 +293,7 @@ class RemoteCommonsGateway:
         self.lattice_trust_store = lattice_trust_store
         self.discovery_catalog = discovery_catalog
         self.timeout_seconds = max(1.0, float(timeout_seconds))
+        self.custody = custody  # D3.3 DockerCustodyAttestor: signed custody records only, never authority
 
     @classmethod
     def arda_key_from_file(cls, path: str | Path) -> Ed25519PublicKey:
@@ -191,6 +305,15 @@ class RemoteCommonsGateway:
     def register(self, **values: Any) -> dict[str, Any]:
         values["endpoint"] = self.gate.validate_base_url(str(values.get("endpoint") or ""))
         return self.registry.register(**values)
+
+    async def _verify_live_node(self, node: Mapping[str, Any]) -> dict[str, Any]:
+        response = await self._request(node, "GET", "/v1/node", authenticate=False)
+        response.raise_for_status()
+        value = response.json()
+        result = self._verify_node_document(node, value)
+        self._enforce_lattice_monotonic(node, result)
+        result["checked_at"] = time.time()
+        return result
 
     async def _request(
         self, node: Mapping[str, Any], method: str, target: str, *,
@@ -210,18 +333,167 @@ class RemoteCommonsGateway:
     async def probe(self, node_id: str) -> dict[str, Any]:
         node = self.registry.get(node_id)
         try:
-            response = await self._request(node, "GET", "/v1/node", authenticate=False)
-            response.raise_for_status()
-            value = response.json()
-            result = self._verify_node_document(node, value)
-            self._enforce_lattice_monotonic(node, result)
-            result["checked_at"] = time.time()
+            result = await self._verify_live_node(node)
             self.registry.record_probe(node_id, state=result["state"], result=result)
             return result
         except (httpx.HTTPError, InvalidSignature, ValueError, TypeError, PermissionError, KeyError, json.JSONDecodeError) as exc:
             result = {"ok": False, "state": "refused", "node_id": node_id, "error": str(exc), "checked_at": time.time()}
             self.registry.record_probe(node_id, state="refused", result=result)
             return result
+
+    async def health(
+        self, *, refresh: bool = False, now: float | None = None
+    ) -> dict[str, Any]:
+        checked_at = float(time.time() if now is None else now)
+        rows: list[dict[str, Any]] = []
+        accepted_by_policy = {
+            "lattice": {"lattice_attested", "lattice_hardware_attested"},
+            "arda": {"hardware_attested", "lattice_hardware_attested"},
+            "lattice_or_arda": {"lattice_attested", "hardware_attested", "lattice_hardware_attested"},
+            "lattice_and_arda": {"lattice_hardware_attested"},
+            "pinned": {"authenticated_unattested", "lattice_attested", "hardware_attested", "lattice_hardware_attested"},
+        }
+        for registered in self.registry.list():
+            node = registered
+            refresh_error = ""
+            if refresh:
+                try:
+                    verified = await self._verify_live_node(node)
+                    self.registry.record_probe(
+                        str(node["node_id"]), state=str(verified["state"]), result=verified
+                    )
+                    node = self.registry.get(str(node["node_id"]))
+                except (
+                    httpx.HTTPError,
+                    InvalidSignature,
+                    ValueError,
+                    TypeError,
+                    PermissionError,
+                    KeyError,
+                    json.JSONDecodeError,
+                ) as exc:
+                    refresh_error = type(exc).__name__
+            probe = dict(node.get("last_probe") or {})
+            policy = str(node.get("trust_policy") or "pinned")
+            accepted = str(node.get("state") or "") in accepted_by_policy.get(policy, set())
+            age = max(0.0, checked_at - float(probe.get("checked_at") or 0))
+            valid_until = float(probe.get("admission_valid_until") or 0)
+            if refresh_error:
+                status = "probe_failed"
+            elif not accepted:
+                status = str(node.get("state") or "unprobed")
+            elif age > 300:
+                status = "stale"
+            elif valid_until <= checked_at:
+                status = "trust_expired"
+            else:
+                status = "healthy"
+            rows.append({
+                "node_id": node["node_id"],
+                "endpoint": node["endpoint"],
+                "status": status,
+                "ok": status == "healthy",
+                "trust_policy": policy,
+                "state": node["state"],
+                "checked_at": probe.get("checked_at"),
+                "probe_age_seconds": age,
+                "admission_valid_until": probe.get("admission_valid_until"),
+                "workload_digest": probe.get("workload_digest") or node.get("expected_workload_digest"),
+                "descriptor_digest": probe.get("descriptor_digest"),
+                "refresh_error_type": refresh_error,
+            })
+            if self.custody is not None:
+                rows[-1]["custody"] = self._custody(rows[-1], checked_at)
+        healthy_count = sum(1 for row in rows if row["ok"])
+        return {
+            "beast_object_type": "remote_commons_fabric_health",
+            "version": "1.0",
+            "status": "healthy" if rows and healthy_count == len(rows) else "degraded",
+            "authority": "verify_only",
+            "refreshed": bool(refresh),
+            "checked_at": checked_at,
+            "node_count": len(rows),
+            "healthy_count": healthy_count,
+            "nodes": rows,
+            **({"custody_model": "signed_custody_records_only"} if self.custody is not None else {}),
+        }
+
+    def _custody(self, row: Mapping[str, Any], now: float) -> dict[str, Any]:
+        from app.kernel.commons.docker_custody import CustodyRefused
+
+        try:
+            return self.custody.attest(row, now=now)
+        except CustodyRefused as exc:
+            return {"status": "refused", "reason": str(exc)}
+
+    async def reconcile_endpoint(
+        self, node_id: str, candidate_endpoint: str
+    ) -> dict[str, Any]:
+        node = self.registry.get(node_id)
+        previous_endpoint = str(node["endpoint"])
+        validated_candidate = ""
+        descriptor_digest = ""
+        try:
+            validated_candidate = self.gate.validate_base_url(candidate_endpoint)
+            candidate = {**node, "endpoint": validated_candidate}
+            response = await self._request(
+                candidate, "GET", "/v1/node", authenticate=False
+            )
+            response.raise_for_status()
+            value = response.json()
+            descriptor_digest = str(value.get("descriptor_digest") or "")
+            verification = self._verify_node_document(node, value)
+            self._enforce_lattice_monotonic(node, verification)
+            verification["checked_at"] = time.time()
+            updated = self.registry.reconcile_endpoint(
+                node_id, validated_candidate, verification
+            )
+        except (
+            httpx.HTTPError,
+            InvalidSignature,
+            ValueError,
+            TypeError,
+            PermissionError,
+            KeyError,
+            json.JSONDecodeError,
+        ) as exc:
+            recorded_candidate = validated_candidate or "<rejected-origin>"
+            self.registry.record_endpoint_attempt(
+                node_id,
+                recorded_candidate,
+                state="refused",
+                descriptor_digest=descriptor_digest,
+            )
+            return {
+                "status": "refused",
+                "node_id": node_id,
+                "previous_endpoint": previous_endpoint,
+                "candidate_endpoint": recorded_candidate,
+                "changed": False,
+                "identity_verified": False,
+                "error": str(exc),
+            }
+
+        receipt = {
+            "status": "reconciled",
+            "node_id": node_id,
+            "previous_endpoint": previous_endpoint,
+            "candidate_endpoint": validated_candidate,
+            "changed": previous_endpoint != validated_candidate,
+            "identity_verified": True,
+            "verification": verification,
+            "node": updated,
+        }
+        if self.discovery_catalog is not None:
+            try:
+                count = self.discovery_catalog.supersede_origins(
+                    node_id, validated_candidate, verification["subject_digest"]
+                )
+                receipt["discovery_supersession"] = {"status": "updated", "count": count}
+            except sqlite3.Error:
+                # The registry already committed. Reconcile again to retry the catalog update.
+                receipt["discovery_supersession"] = {"status": "retry_required"}
+        return receipt
 
     def _verify_node_document(self, node: Mapping[str, Any], value: Mapping[str, Any]) -> dict[str, Any]:
         descriptor = dict(value.get("descriptor") or {})
@@ -307,6 +579,7 @@ class RemoteCommonsGateway:
             "state": state,
             "node_id": node_id,
             "descriptor_digest": value["descriptor_digest"],
+            "subject_digest": subject_digest,
             "workload_digest": descriptor.get("workload_digest"),
             "arda_appraisal_verified": appraisal_verified,
             "lattice_attestation_verified": lattice_verified,
@@ -416,7 +689,11 @@ class RemoteCommonsGateway:
         )
         registered = None
         admission = "candidate_only"
-        if auto_register and state == "trusted_candidate" and trust["verification"].get("endpoint_possession_verified"):
+        if (
+            auto_register
+            and observed["state"] == "trusted_candidate"
+            and trust["verification"].get("endpoint_possession_verified")
+        ):
             try:
                 existing = self.registry.get(node_id)
             except LookupError:
@@ -457,7 +734,7 @@ class RemoteCommonsGateway:
                 )
                 response.raise_for_status()
                 document = response.json()
-                descriptor_digest = str(((document.get("node") or {}).get("descriptor_digest") or ""))
+                descriptor_digest = str((document.get("node") or {}).get("descriptor_digest") or "")
                 nonce = secrets.token_urlsafe(32)
                 challenge_body = canonical_json({"nonce": nonce, "descriptor_digest": descriptor_digest})
                 challenge = await self._request(

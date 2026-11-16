@@ -9,6 +9,7 @@ from fastapi import APIRouter
 
 from app.cli.api import BeastApiClient
 from app.kernel.compute.agent_scheduler import AgentScheduler
+from app.kernel.compute.benchmark_evidence import final_boss_evidence
 from app.kernel.compute.mission_crystal_lattice import MissionCrystalLattice
 from app.kernel.evidence.evidence_bus import EvidenceBus
 from app.kernel.workspaces.mission_cockpit import MissionCockpit
@@ -80,6 +81,10 @@ def build_cockpit_router(default_root: str | Path) -> APIRouter:
     async def edgek_evidence_bus_summary(root_path: str = None, limit: int = 20):
         root = _root(root_path)
         return EvidenceBus(root).summary(limit=max(1, min(int(limit), 250)))
+
+    @router.get("/edgek/benchmarks/final-boss/evidence")
+    async def edgek_final_boss_benchmark_evidence(root_path: str = None):
+        return final_boss_evidence(_root(root_path))
 
     @router.get("/edgek/evidence-bus/query")
     async def edgek_evidence_bus_query(

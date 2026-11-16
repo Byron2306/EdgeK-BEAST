@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import hashlib
+import json
 import os
 import re
 import sys
@@ -18,6 +19,16 @@ from app.kernel.workspaces.worktree_forge import WorktreeForge
 
 def _is_remote_target(context: ToolExecutionContext) -> bool:
     return str(context.execution_target or "local").strip().lower() not in {"", "local"}
+
+
+def _remote_mutation_path(value: Any) -> str:
+    raw = str(value or "").replace("\\", "/")
+    if not raw or raw.startswith("/"):
+        raise ValueError("remote mutation requires a relative file path")
+    relative = _safe_remote_relative(raw)
+    if relative == "." or any(part in {".git", ".beast"} for part in relative.split("/")):
+        raise PermissionError("remote mutation cannot modify Git or BEAST governance metadata")
+    return relative
 
 
 def _remote_worktree_root(context: ToolExecutionContext) -> str:
@@ -193,13 +204,16 @@ async def _worktree_bind(arguments: dict[str, Any], context: ToolExecutionContex
             raise ValueError("remote worktree base_ref is outside safe syntax")
         branch = f"beast-agent-{safe_run}"
         worktree_root = f"{descriptor['base'].rstrip('/')}/.beast/agent-worktrees/{safe_run}"
+        if not descriptor["base"].startswith("/"):
+            raise ValueError("remote coding requires an absolute workspace root")
         script = (
             f"cd {_shell_quote(descriptor['base'])} && "
+            "git rev-parse --is-inside-work-tree >/dev/null && "
             "mkdir -p .beast/agent-worktrees && "
             f"git rev-parse --verify {_shell_quote(base_ref)} >/dev/null && "
-            f"git worktree remove --force {_shell_quote(worktree_root)} >/dev/null 2>&1 || true; "
-            f"git branch -D {_shell_quote(branch)} >/dev/null 2>&1 || true; "
-            f"git worktree add -B {_shell_quote(branch)} {_shell_quote(worktree_root)} {_shell_quote(base_ref)} >/tmp/beast-worktree-add.out 2>&1 && "
+            f"test ! -e {_shell_quote(worktree_root)} && "
+            f"! git show-ref --verify --quiet {_shell_quote('refs/heads/' + branch)} && "
+            f"git worktree add -b {_shell_quote(branch)} {_shell_quote(worktree_root)} {_shell_quote(base_ref)} >/dev/null && "
             f"cd {_shell_quote(worktree_root)} && printf 'BEAST_WORKTREE\\n' && pwd && git rev-parse HEAD && git branch --show-current"
         )
         result = await _run_target_shell(context, script, timeout=45.0, output_limit=128000)
@@ -207,7 +221,9 @@ async def _worktree_bind(arguments: dict[str, Any], context: ToolExecutionContex
             raise RuntimeError(result["stderr"] or result["stdout"] or f"remote worktree bind failed with exit {result['returncode']}")
         lines = [line for line in result["stdout"].splitlines() if line]
         marker = lines.index("BEAST_WORKTREE") if "BEAST_WORKTREE" in lines else -1
-        resolved_root = lines[marker + 1] if marker >= 0 and len(lines) > marker + 1 else worktree_root
+        if marker < 0 or len(lines) < marker + 4:
+            raise RuntimeError("remote worktree bind returned incomplete identity evidence")
+        resolved_root = lines[marker + 1]
         base_commit = lines[marker + 2] if marker >= 0 and len(lines) > marker + 2 else ""
         resolved_branch = lines[marker + 3] if marker >= 0 and len(lines) > marker + 3 else branch
         if context.engine is not None:
@@ -264,19 +280,32 @@ async def _worktree_write_file(arguments: dict[str, Any], context: ToolExecution
     if _is_remote_target(context):
         descriptor = _remote_target_descriptor(context)
         root = _remote_worktree_root(context)
-        relative = _safe_remote_relative(arguments.get("path") or "")
+        relative = _remote_mutation_path(arguments.get("path") or "")
         content = str(arguments.get("content") or "")
         if len(content.encode("utf-8")) > 2 * 1024 * 1024:
             raise ValueError("write exceeds 2 MiB mutation boundary")
         encoded = base64.b64encode(content.encode("utf-8")).decode("ascii")
-        remote_file = f"{root.rstrip('/')}/{relative}"
-        source_file = f"{descriptor['base'].rstrip('/')}/{relative}"
         script = (
-            f"test ! -e {_shell_quote(source_file)} && "
-            f"test ! -e {_shell_quote(remote_file)} && "
-            f"cd {_shell_quote(root)} && mkdir -p {_shell_quote(str(Path(relative).parent))} && "
-            f"printf %s {_shell_quote(encoded)} | base64 -d > {_shell_quote(relative)} && "
-            f"sha256sum -- {_shell_quote(relative)} | awk '{{print $1}}'"
+            f"cd {_shell_quote(root)} && "
+            "python3 - <<'PY'\n"
+            "import base64, hashlib, pathlib\n"
+            "root = pathlib.Path.cwd().resolve()\n"
+            f"source_root = pathlib.Path({json.dumps(descriptor['base'])}).resolve()\n"
+            f"relative = pathlib.Path({json.dumps(relative)})\n"
+            "source_file = (source_root / relative).resolve()\n"
+            "source_file.relative_to(source_root)\n"
+            "if source_file.exists() or source_file.is_symlink():\n"
+            "    raise SystemExit('existing source files require replace_exact')\n"
+            "destination = root / relative\n"
+            "destination.parent.mkdir(parents=True, exist_ok=True)\n"
+            "resolved_parent = destination.parent.resolve()\n"
+            "resolved_parent.relative_to(root)\n"
+            "resolved_destination = resolved_parent / destination.name\n"
+            f"content = base64.b64decode({json.dumps(encoded)})\n"
+            "with resolved_destination.open('xb') as handle:\n"
+            "    handle.write(content)\n"
+            "print(hashlib.sha256(content).hexdigest())\n"
+            "PY"
         )
         result = await _run_target_shell(context, script, timeout=20.0, output_limit=64000)
         if not result["ok"]:
@@ -326,7 +355,7 @@ async def _worktree_replace_exact(arguments: dict[str, Any], context: ToolExecut
     if _is_remote_target(context):
         descriptor = _remote_target_descriptor(context)
         root = _remote_worktree_root(context)
-        relative = _safe_remote_relative(arguments.get("path") or "")
+        relative = _remote_mutation_path(arguments.get("path") or "")
         old_text = str(arguments.get("old_text") or "")
         new_text = str(arguments.get("new_text") or "")
         expected = max(1, min(int(arguments.get("expected_occurrences") or 1), 100))
@@ -335,12 +364,15 @@ async def _worktree_replace_exact(arguments: dict[str, Any], context: ToolExecut
         payload = base64.b64encode(f"{old_text}\0{new_text}".encode("utf-8")).decode("ascii")
         script = (
             f"cd {_shell_quote(root)} && "
-            f"test -f {_shell_quote(relative)} && "
-            f"test $(wc -c < {_shell_quote(relative)}) -le 4194304 && "
             "python3 - <<'PY'\n"
             "import base64, hashlib, pathlib\n"
-            f"path = pathlib.Path({_shell_quote(relative)})\n"
-            f"old, new = base64.b64decode({_shell_quote(payload)}).decode('utf-8').split('\\0', 1)\n"
+            "root = pathlib.Path.cwd().resolve()\n"
+            f"relative = pathlib.Path({json.dumps(relative)})\n"
+            "path = (root / relative).resolve(strict=True)\n"
+            "path.relative_to(root)\n"
+            "if not path.is_file() or path.stat().st_size > 4194304:\n"
+            "    raise SystemExit('replace_exact requires a regular file <= 4MiB')\n"
+            f"old, new = base64.b64decode({json.dumps(payload)}).decode('utf-8').split('\\0', 1)\n"
             f"expected = {expected}\n"
             "text = path.read_text(encoding='utf-8')\n"
             "found = text.count(old)\n"
@@ -680,7 +712,7 @@ def register_worktree_tools(registry: AgentToolRegistry) -> AgentToolRegistry:
         tool_id="worktree.verify", version="1", title="Run worktree verification",
         description="Run an explicit argv verification command inside the bound worktree without a shell.", category="verification",
         risk=ToolRisk.HIGH, effect=ToolEffect.EXECUTION,
-        input_schema={"type":"object","required":["command"],"properties":{"command":{"type":"array"},"timeout_seconds":{"type":"number"}},"additionalProperties":False},
+        input_schema={"type":"object","required":["command"],"properties":{"command":{"type":"array","items":{"type":"string"}},"timeout_seconds":{"type":"number"}},"additionalProperties":False},
         timeout_seconds=610, requires_approval=True, requires_worktree=True, idempotent=False, targets=("local","ssh","container"), handler=_worktree_run_verification,
     ))
     registry.register(ToolSpec(

@@ -31,7 +31,10 @@ def make_run(tmp_path):
     return engine, run["run_id"]
 
 
-def _repo_run(tmp_path, *, provider="simulated", model="planner-test"):
+def _repo_run(tmp_path, *, provider="simulated", model="planner-test", graduation_contract=False):
+    """Agent repo run. ``graduation_contract`` adds the operator-owned R3.24 contract
+    (explicit implementation_target + baseline pytest file) that mutating runs need to
+    finish COMPLETED instead of policy_blocked by the post-session graduation gate."""
     import subprocess
 
     root = tmp_path / "repo"
@@ -40,6 +43,13 @@ def _repo_run(tmp_path, *, provider="simulated", model="planner-test"):
     subprocess.run(["git", "config", "user.email", "beast@example.test"], cwd=root, check=True)
     subprocess.run(["git", "config", "user.name", "BEAST Test"], cwd=root, check=True)
     (root / "answer.py").write_text("VALUE = 1\n", encoding="utf-8")
+    request = {
+        "context_files": ["answer.py"],
+        "semantic_context": {"active_file": "answer.py", "open_files": ["answer.py"]},
+    }
+    if graduation_contract:
+        (root / "test_answer.py").write_text("import answer\n\n\ndef test_value():\n    assert answer.VALUE == 2\n", encoding="utf-8")
+        request.update({"implementation_target": "answer.py", "required_test_files": ["test_answer.py"]})
     subprocess.run(["git", "add", "."], cwd=root, check=True)
     subprocess.run(["git", "commit", "-qm", "initial"], cwd=root, check=True)
     engine = AgentRunEngine(root)
@@ -49,10 +59,7 @@ def _repo_run(tmp_path, *, provider="simulated", model="planner-test"):
         mode="agent",
         provider=provider,
         model=model,
-        request={
-            "context_files": ["answer.py"],
-            "semantic_context": {"active_file": "answer.py", "open_files": ["answer.py"]},
-        },
+        request=request,
     )["run_id"]
     approval_id = "mutate-worktree"
     engine.store.create_approval(run_id, {"request_id": approval_id, "capabilities": [{"id": "worktree_mutation"}]})
@@ -144,7 +151,7 @@ def test_planner_turn_budget_is_terminal(tmp_path):
 
 
 def test_budget_edge_autofinalizes_after_verify_and_sourceplan(tmp_path):
-    engine, run_id, approval_id = _repo_run(tmp_path, provider="nvidia_nim", model="planner-test")
+    engine, run_id, approval_id = _repo_run(tmp_path, provider="nvidia_nim", model="planner-test", graduation_contract=True)
     provider = ScriptedPlannerProvider([
         {"decision_type": "tool", "tool_id": "workspace.index", "arguments": {"limit": 1200, "include_symbols": True}},
         {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "Change VALUE to 2 and verify it", "provider": "nvidia_nim", "risk": "high"}},
@@ -733,6 +740,8 @@ def test_ollama_provider_exposes_route_and_timeout_usage_on_success():
             self._pressure_decision = None
 
         def _request_json(self, path: str, payload: dict[str, Any], timeout: float) -> dict[str, Any]:
+            if path == "/api/tags":  # model-installed preflight
+                return {"models": [{"name": "qwen2.5:0.5b"}]}
             self._seen_timeout = timeout
             return {"response": "{\"decision_type\":\"complete\",\"summary\":\"done\"}", "total_duration": 5_000_000}
 
@@ -975,6 +984,10 @@ def test_chat_timeout_promotes_partial_stream_to_completion(tmp_path):
 
         async def next_decision(self, prompt, *, run, turn):
             await asyncio.sleep(0.02)
+            # Turn isolation: only a validated structured completion streamed during this turn is promotable.
+            engine.emit(run_id, "agent.model.delta", {
+                "text": '{"decision_type":"complete","summary":"Workspace looks like a safe agent probe."}',
+            })
             self.last_partial_text = "Workspace looks like a safe agent probe."
             await asyncio.sleep(0.08)
             raise TimeoutError("slow final parse")
@@ -1325,9 +1338,11 @@ def test_mutating_timeout_heuristic_block_retries_strong_provider(tmp_path):
         request={"decision_timeout_ms": 10},
     )["run_id"]
 
-    class RecoveringStrong:
+    class RecoveringStrong(NIMPlannerProvider):
+        # R3.22: strong re-entry resolves only the exact requested provider class and model.
         def __init__(self):
             self.calls = 0
+            self.model = "planner-test"
             self.last_partial_text = ""
             self.last_route = {"provider": "nvidia_nim", "engine": "nvidia_nim", "route_kind": "direct_generate", "reason": "nim_chat_completions"}
             self.last_usage = {"engine": "nvidia_nim", "model": "test-nim"}
@@ -1440,6 +1455,9 @@ def test_large_real_repo_endurance_touches_20_files_and_hands_off_sourceplan(tmp
     for package in ("api", "worker", "ui", "shared"):
         (root / "packages" / package).mkdir(parents=True)
         (root / "packages" / package / "__init__.py").write_text("", encoding="utf-8")
+    # R3.24 graduation contract: an operator-owned baseline test for the explicit implementation target.
+    (root / "test_endurance.py").write_text(
+        "from packages.pkg_0 import module_0\n\n\ndef test_compute():\n    assert module_0.compute() == 0\n", encoding="utf-8")
     subprocess.run(["git", "add", "."], cwd=root, check=True)
     subprocess.run(["git", "commit", "-qm", "initial"], cwd=root, check=True)
     engine = AgentRunEngine(root)
@@ -1450,7 +1468,8 @@ def test_large_real_repo_endurance_touches_20_files_and_hands_off_sourceplan(tmp
         mode="agent",
         provider="simulated",
         model="planner-test",
-        request={"context_files": paths[:8], "monorepo": True, "long_horizon": True},
+        request={"context_files": paths[:8], "monorepo": True, "long_horizon": True,
+                 "implementation_target": paths[0], "required_test_files": ["test_endurance.py"]},
     )["run_id"]
     approval_id = "large-mutation"
     engine.store.create_approval(run_id, {"request_id": approval_id, "capabilities": [{"id": "worktree_mutation"}, {"id": "run_isolated_verifier"}]})
@@ -1554,7 +1573,7 @@ def test_verification_planner_prefers_focused_pytest_for_changed_tests():
         },
     }
     plan = plan_verification(run)
-    assert plan["command"] == ["python", "-m", "pytest", "-q", "tests/test_agent_loop.py"]
+    assert plan["command"] == ["python3", "-m", "pytest", "-q", "tests/test_agent_loop.py"]
     assert plan["reason"] == "focused_pytest_for_changed_test_files"
     assert plan["execution_target"]["kind"] == "container"
     assert plan["catalog_matches"] == ["python:pytest"]
@@ -1792,7 +1811,7 @@ def test_edit_prompt_includes_target_aware_verification_hint(tmp_path):
     prompt = runtime._prompt(run, runtime._load_state(run_id))
     assert "EXECUTION TARGET: ssh" in prompt
     assert "VERIFICATION HINT:" in prompt
-    assert '"command":["python","-m","pytest","-q","tests/test_agent_loop.py"]' in prompt
+    assert '"command":["python3","-m","pytest","-q","tests/test_agent_loop.py"]' in prompt
     assert '"kind":"ssh"' in prompt
 
 
@@ -1830,7 +1849,7 @@ def test_agent_phase_enforcement_inserts_worktree_bind_after_initial_inspection(
 
 
 def test_agent_phase_enforcement_runs_default_verify_and_sourceplan_after_mutation(tmp_path):
-    engine, run_id, approval_id = _repo_run(tmp_path)
+    engine, run_id, approval_id = _repo_run(tmp_path, graduation_contract=True)
     provider = ScriptedPlannerProvider([
         {"decision_type": "tool", "tool_id": "workspace.index", "arguments": {"limit": 1200, "include_symbols": True}},
         {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "repair VALUE"}},
@@ -1854,7 +1873,8 @@ def test_agent_phase_enforcement_runs_default_verify_and_sourceplan_after_mutati
     assert verify["status"] == "completed"
     assert verify["result"]["command"][:3] == ["python", "-m", "py_compile"]
     assert verify["result"]["command"][-1] == "answer.py"
-    assert planner["final_summary"] == "VALUE repaired and verified."
+    # After verify + SourcePlan the runtime autofinalizes (no extra model turn), with its own grounded summary.
+    assert planner["final_summary"].startswith("Completed bounded changes")
 
 
 def test_failed_verification_records_analysis_and_target_paths(tmp_path):
@@ -1896,7 +1916,7 @@ def test_prompt_surfaces_structured_repair_contract_after_failed_verify(tmp_path
 
 
 def test_mutating_heuristic_block_after_bind_retries_strong_provider(tmp_path):
-    engine, run_id, approval_id = _repo_run(tmp_path, provider="nvidia_nim", model="meta/llama-3.1-70b-instruct")
+    engine, run_id, approval_id = _repo_run(tmp_path, provider="nvidia_nim", model="meta/llama-3.1-70b-instruct", graduation_contract=True)
     scripted = iter([
         {"decision_type": "tool", "tool_id": "worktree.replace_exact", "approval_id": approval_id, "arguments": {"path": "answer.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2"}},
         {"decision_type": "tool", "tool_id": "worktree.verify", "approval_id": approval_id, "arguments": {"command": ["python", "-m", "py_compile", "answer.py"]}},
@@ -1968,9 +1988,11 @@ def test_first_mutation_retry_prompt_includes_exact_file_context(tmp_path):
 def test_first_mutation_retry_unwraps_sticky_provider_primary(tmp_path):
     engine, run_id, approval_id = _repo_run(tmp_path, provider="nvidia_nim", model="planner-test")
 
-    class _Primary:
+    class _Primary(NIMPlannerProvider):
+        # R3.22: strong re-entry only resolves the exact requested provider class and model.
         def __init__(self):
             self.calls = 0
+            self.model = "planner-test"
             self.last_route = {"provider": "nvidia_nim", "engine": "nvidia_nim", "route_kind": "direct_generate", "reason": "retry"}
 
         async def next_decision(self, prompt: str, *, run: dict[str, Any], turn: int):
@@ -2064,6 +2086,12 @@ def test_blocked_fallback_salvages_partial_decision_from_wrapped_primary(tmp_pat
 
 def test_blocked_fallback_salvages_partial_decision_from_recent_model_delta(tmp_path):
     engine, run_id, approval_id = _repo_run(tmp_path, provider="nvidia_nim", model="planner-test")
+    delta_text = (
+        '{"decision_type":"tool","tool_id":"worktree.replace_exact",'
+        f'"approval_id":"{approval_id}",'
+        '"arguments":{"path":"answer.py","old_text":"VALUE = 1","new_text":"VALUE = 2"},'
+        '"summary":"Implement code change."}'
+    )
 
     class _Wrapper:
         def __init__(self):
@@ -2072,6 +2100,8 @@ def test_blocked_fallback_salvages_partial_decision_from_recent_model_delta(tmp_
             self.last_usage = {"engine": "nvidia_nim", "model": "planner-test"}
 
         async def next_decision(self, prompt: str, *, run: dict[str, Any], turn: int):
+            # Turn isolation: only deltas streamed during the current planner turn are salvageable.
+            engine.emit(run_id, "agent.model.delta", {"text": delta_text})
             return parse_planner_decision({
                 "decision_type": "blocked",
                 "blocker": "Heuristic fallback found no further deterministic step; stronger planner route required.",
@@ -2090,14 +2120,6 @@ def test_blocked_fallback_salvages_partial_decision_from_recent_model_delta(tmp_
         "worktree_root": str(tmp_path / "repo"),
         "worktree_branch": "beast/test",
         "worktree_base_commit": "HEAD",
-    })
-    engine.emit(run_id, "agent.model.delta", {
-        "text": (
-            '{"decision_type":"tool","tool_id":"worktree.replace_exact",'
-            f'"approval_id":"{approval_id}",'
-            '"arguments":{"path":"answer.py","old_text":"VALUE = 1","new_text":"VALUE = 2"},'
-            '"summary":"Implement code change."}'
-        )
     })
     final = asyncio.run(runtime.run(run_id))
     assert final["state"] != "policy_blocked"

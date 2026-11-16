@@ -171,7 +171,14 @@ class SkillTree:
         candidate_id: str,
         approved_by: str = "user",
         require_validation: bool = True,
+        d6_promotion: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
+        from app.kernel.governance.governor_spine import enforcement_enabled
+
+        # Compute Governor spine: with enforcement on, L3 promotion requires a D6 crystal promotion proof
+        # (use governor_spine.promote_skill_via_d6). Default-off keeps the legacy sandbox-validation path.
+        if enforcement_enabled() and (d6_promotion or {}).get("status") != "promoted":
+            raise ValueError("d6_crystal_promotion_required")
         candidate = self.meta_tool_generator.get_candidate_by_id(candidate_id)
         if not candidate:
             raise ValueError(f"Meta-tool candidate not found: {candidate_id}")
@@ -204,6 +211,7 @@ class SkillTree:
                 "frequency": candidate.frequency,
                 "tags": candidate.tags,
                 "validation": self._validation_to_dict(latest_validation) if latest_validation else None,
+                **({"d6_promotion": dict(d6_promotion)} if d6_promotion else {}),
             },
         )
 

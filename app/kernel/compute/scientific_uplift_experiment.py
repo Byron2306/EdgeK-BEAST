@@ -1,5 +1,6 @@
 """Pre-registered blinded small-model versus crystal-assisted experiment."""
 from __future__ import annotations
+from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 
 import hashlib
 import json
@@ -136,7 +137,7 @@ class ScientificUpliftExperiment:
         body = json.dumps({"model": self.model, "prompt": prompt, "stream": False,
                            "options": {"temperature": 0, "seed": self.seed, "num_predict": 96}}).encode()
         request = urllib.request.Request(self.endpoint + "/api/generate", data=body, headers={"Content-Type": "application/json"})
-        with urllib.request.urlopen(request, timeout=60) as response:
+        with _egress.urlopen("scientific_uplift_experiment", request, timeout=60) as response:
             return str(json.loads(response.read()).get("response") or "")
 
     @staticmethod

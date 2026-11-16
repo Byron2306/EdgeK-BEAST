@@ -59,8 +59,8 @@ class InferenceComputeInterceptor:
 
     def begin(self, ir: Any, provider: str) -> ComputeInterception:
         plan = self.governor.build_plan(ir, provider)
-        gate = self.governor.evaluate(plan)
         metadata = dict(getattr(ir, "metadata", None) or {})
+        gate = self._evaluate_with_cascade(plan, metadata)
         shadow_results = self.transform_executor.execute(
             plan.deterministic_candidates,
             metadata.get("deterministic_work"),
@@ -130,6 +130,16 @@ class InferenceComputeInterceptor:
             prec_phase=prec_phase,
             counterfactual_crystals=counterfactual_crystals,
         )
+
+    def _evaluate_with_cascade(self, plan: Any, metadata: Dict[str, Any]) -> Any:
+        """Compute Governor spine: feed attested Quality Cascade results into evaluate()/admit()."""
+        from app.kernel.governance.governor_spine import cascade_admission_input
+
+        import inspect
+
+        if "quality_cascade" not in inspect.signature(self.governor.evaluate).parameters:
+            return self.governor.evaluate(plan)  # governors without the spine keyword keep their legacy contract
+        return self.governor.evaluate(plan, quality_cascade=cascade_admission_input(metadata))
 
     def complete(
         self,

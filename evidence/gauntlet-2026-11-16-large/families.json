@@ -1,0 +1,1223 @@
+[
+  {
+    "cold": {
+      "accepted_by": "provider:nemotron",
+      "candidates": [],
+      "false_accept": false,
+      "family": "fix-config-constant",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:0dd2f6ed029b0a07c3c117c50a2875d3728bcae6d5f4fbb30618cb27f0317867",
+        "visible_rc": 0
+      },
+      "model_calls": 1,
+      "observed_failures": 1,
+      "passed": true,
+      "phase": "cold",
+      "role": "cold",
+      "route": {
+        "band": "insufficient",
+        "beast_object_type": "beast_route_decision",
+        "crystal_id": "",
+        "demotion_signal": "",
+        "digest": "sha256:0f9ad468ebdc7628ff2e5f1b1cd985826ac04e8f23a418d28fcd793208867826",
+        "envelope_digest": "",
+        "execution_granted": false,
+        "fingerprint_compatible": false,
+        "proposal_only": true,
+        "reasons": [
+          "no promoted family crystal",
+          "similarity<0.80: provider fallback"
+        ],
+        "route": "provider_fallback",
+        "similarity": 0.0,
+        "specialist_ref": "",
+        "verifier": "action_ir_full_verification",
+        "version": "d9.1"
+      },
+      "task": "const-cold",
+      "tiers": [
+        {
+          "calls": [
+            {
+              "billable": true,
+              "failed": false,
+              "finish_reason": "stop",
+              "governor": "gov_da84f67641295ba62fdcea9b",
+              "latency_ms": 972.767,
+              "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+              "provider": "nim:nemotron",
+              "reasoning_budget_exhausted": false,
+              "reasoning_in_content": false,
+              "response_sha256": "sha256:508325a1420bdceefd67be3d63aa3ec01ef28923183d15304834d2de7aadcb81",
+              "status": 200,
+              "tokens_completion": 46,
+              "tokens_prompt": 597,
+              "tokens_reasoning": 0,
+              "tokens_total": 643
+            }
+          ],
+          "edits": [
+            {
+              "new_text": "INVOICE_RETRY_LIMIT = 5",
+              "old_text": "INVOICE_RETRY_LIMIT = 3",
+              "path": "billing/config.py"
+            }
+          ],
+          "last_check": {
+            "applied": true,
+            "changed": [
+              "billing/config.py"
+            ],
+            "passed": true,
+            "reason": "",
+            "returncode": 0,
+            "tests_run": 2,
+            "verify_ms": 64.198
+          },
+          "latency_ms": 972.767,
+          "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "passed": true,
+          "provider": "nemotron",
+          "tier": "provider:nemotron",
+          "tokens_total": 643,
+          "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/const-cold-cold/nemotron-wt"
+        }
+      ],
+      "tokens_total": 643,
+      "wall_ms": 1155.872
+    },
+    "crystal_digest": "sha256:5298d8b45bf3e16b7e2fa9dfcc6adb002bf5aff9a9fa72747f67eae0d37316d6",
+    "distilled": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+    "extraction": {
+      "changed": [
+        "billing/config.py"
+      ],
+      "equivalence": "byte_identical",
+      "exact_state_match": true,
+      "reproduced": true
+    },
+    "family": "fix-config-constant",
+    "heldout": [
+      {
+        "independent": {
+          "hidden_rc": 0,
+          "passed": true,
+          "tree_digest": "sha256:d340a2657a2bb41db9238ec10bdc2e3a56bfaed68700715f7e2ec91dc19c0741",
+          "visible_rc": 0
+        },
+        "model_calls": 0,
+        "ok": true,
+        "reason": null,
+        "task": "const-h1",
+        "wall_ms": 118.84
+      },
+      {
+        "independent": {
+          "hidden_rc": 0,
+          "passed": true,
+          "tree_digest": "sha256:b490dd609760d9ba0a61c50d24cd1d57746d049dca996017671a7eafadb3648c",
+          "visible_rc": 0
+        },
+        "model_calls": 0,
+        "ok": true,
+        "reason": null,
+        "task": "const-h2",
+        "wall_ms": 112.476
+      },
+      {
+        "independent": {
+          "hidden_rc": 0,
+          "passed": true,
+          "tree_digest": "sha256:9611637db62df1e05e5f2eeb6f6fb5aefc9c6d7f059979ec03ed6c14131946f0",
+          "visible_rc": 0
+        },
+        "model_calls": 0,
+        "ok": true,
+        "reason": null,
+        "task": "const-h3",
+        "wall_ms": 103.566
+      }
+    ],
+    "promotion": {
+      "approved_by": "Byron",
+      "heldout_receipt": {
+        "attempts": 3,
+        "candidate_id": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+        "episode_envelope_digest": "sha256:730a9e2014ed1ed840dcf363ea6cb7bfb41207f89b52968c0649375a1ff692fd",
+        "evidence_root": "sha256:65190e7dc38744bc631331bdc248d08680dafdda574c77899c5fb964a4a62d0e",
+        "promoted": true,
+        "reason": "held-out replay passed",
+        "reproduction_record_digest": "sha256:4b710f324c1b70fae7368d8df72bd021cc09ce271827b3963fd53fb2789dfb82",
+        "structured": false,
+        "successes": 3,
+        "variant_ids": [
+          "const-h1",
+          "const-h2",
+          "const-h3"
+        ],
+        "variant_results": [
+          true,
+          true,
+          true
+        ],
+        "variant_results_digest": "sha256:464f857db73a1fe3fbd9a7e86a3836a1875bccfdbd2e126dbb74d8a31dec4faa"
+      },
+      "promoted_at": 1794805392.4801757,
+      "record_digest": "sha256:985f12c735035f6721b97f7f01a02f848cae112d23fe44ce5f6eb0c09b73d4f7",
+      "status": "promoted"
+    }
+  },
+  {
+    "cold": {
+      "accepted_by": "specialist:qwen3:4b",
+      "candidates": [
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": true,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.85,
+          "task_family": "fix-config-constant"
+        }
+      ],
+      "false_accept": false,
+      "family": "fix-logic-operator",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:666b8daab7738aa23173283ae75206b057b655c43c1579a8897ad1109d4d6505",
+        "visible_rc": 0
+      },
+      "model_calls": 1,
+      "observed_failures": 1,
+      "passed": true,
+      "phase": "cold",
+      "role": "cold",
+      "route": {
+        "band": "structural",
+        "beast_object_type": "beast_route_decision",
+        "crystal_id": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+        "demotion_signal": "",
+        "digest": "sha256:d8d382dc12125fde21fcd58994440f5f860a32b9d1d5d7fb3fee023e7947df42",
+        "envelope_digest": "sha256:730a9e2014ed1ed840dcf363ea6cb7bfb41207f89b52968c0649375a1ff692fd",
+        "execution_granted": false,
+        "fingerprint_compatible": true,
+        "proposal_only": true,
+        "reasons": [
+          "structural match: local specialist adapter proposal (adapter cannot execute)"
+        ],
+        "route": "local_specialist_adapter",
+        "similarity": 0.85,
+        "specialist_ref": "ollama://qwen3:4b",
+        "verifier": "hidden_tests_and_policy",
+        "version": "d9.1"
+      },
+      "task": "op-cold",
+      "tiers": [
+        {
+          "attempts": 1,
+          "config": "after",
+          "edits": [
+            {
+              "new_text": "def net_amount(gross, fee):\n    return gross - fee",
+              "old_text": "def net_amount(gross, fee):\n    return gross + fee",
+              "path": "fees/core.py"
+            }
+          ],
+          "governor": "gov_28ca80a5e2aa556e3f5a11a1",
+          "last_check": {
+            "applied": true,
+            "changed": [
+              "fees/core.py"
+            ],
+            "passed": true,
+            "reason": "",
+            "returncode": 0,
+            "tests_run": 2,
+            "verify_ms": 100.634
+          },
+          "model": "qwen3:4b",
+          "passed": true,
+          "reason": "specialist_output_accepted",
+          "tier": "specialist",
+          "tokens_total": 614,
+          "usage": {
+            "completion_tokens": 67,
+            "prompt_tokens": 547
+          },
+          "wall_ms": 18409.195,
+          "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/op-cold-cold/specialist-wt"
+        }
+      ],
+      "tokens_total": 614,
+      "wall_ms": 18615.659
+    },
+    "crystal_digest": "sha256:2b089f9fd334db975992def88b9a7ebdc23187065c9f7bfced6efb90b3ef289c",
+    "distilled": "family-crystal:2b089f9fd334db975992def8",
+    "extraction": {
+      "changed": [
+        "fees/core.py"
+      ],
+      "equivalence": "byte_identical",
+      "exact_state_match": true,
+      "reproduced": true
+    },
+    "family": "fix-logic-operator",
+    "heldout": [
+      {
+        "independent": {
+          "hidden_rc": 0,
+          "passed": true,
+          "tree_digest": "sha256:752fb2bb08cbf25aaebc1ec7245b9b10b711242e990b2f3325e4c11107f9eb53",
+          "visible_rc": 0
+        },
+        "model_calls": 0,
+        "ok": true,
+        "reason": null,
+        "task": "op-h1",
+        "wall_ms": 212.842
+      },
+      {
+        "independent": {
+          "hidden_rc": 0,
+          "passed": true,
+          "tree_digest": "sha256:ff93f3c4d25875bc89c0d05555e6c3183b82b3e5fbbc601505d4a33611d926e7",
+          "visible_rc": 0
+        },
+        "model_calls": 0,
+        "ok": true,
+        "reason": null,
+        "task": "op-h2",
+        "wall_ms": 169.525
+      },
+      {
+        "independent": {
+          "hidden_rc": 0,
+          "passed": true,
+          "tree_digest": "sha256:ba824f17e6d0380a67a6e38601bc121d3ab6f74c4ac6b7ac8804bf24e55a9a74",
+          "visible_rc": 0
+        },
+        "model_calls": 0,
+        "ok": true,
+        "reason": null,
+        "task": "op-h3",
+        "wall_ms": 214.516
+      }
+    ],
+    "promotion": {
+      "approved_by": "Byron",
+      "heldout_receipt": {
+        "attempts": 3,
+        "candidate_id": "family-crystal:2b089f9fd334db975992def8",
+        "episode_envelope_digest": "sha256:10c56b452dabde4b614593f8b83eb27588646dce35e7cb6f563f4b6bf13904be",
+        "evidence_root": "sha256:1f469eefa0d4b21d2a303ef65889885aed809c45a7d9d96ce378bced26a334f5",
+        "promoted": true,
+        "reason": "held-out replay passed",
+        "reproduction_record_digest": "sha256:8dfa6ae2215c4b001681cc6c4e648f5c3b5f75de66c91e78abb060f08eb6a62d",
+        "structured": false,
+        "successes": 3,
+        "variant_ids": [
+          "op-h1",
+          "op-h2",
+          "op-h3"
+        ],
+        "variant_results": [
+          true,
+          true,
+          true
+        ],
+        "variant_results_digest": "sha256:43481ac43dd6132428c83ef6a95d002dbb9f080e0b78857596686bed3764d9f1"
+      },
+      "promoted_at": 1794805412.3702931,
+      "record_digest": "sha256:24683d32bf63e29a5cfcabdb8f1a0d132869d114007f6930e0071f38b4ef2da9",
+      "status": "promoted"
+    }
+  },
+  {
+    "cold": {
+      "accepted_by": "specialist:qwen3:4b",
+      "candidates": [
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:2b089f9fd334db975992def8",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": true,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.85,
+          "task_family": "fix-logic-operator"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": true,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.85,
+          "task_family": "fix-config-constant"
+        }
+      ],
+      "false_accept": false,
+      "family": "fix-off-by-one",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:f302577ce427b282cc291c983daef7d897e5b552ee59ab726cadd24cc47ac634",
+        "visible_rc": 0
+      },
+      "model_calls": 1,
+      "observed_failures": 1,
+      "passed": true,
+      "phase": "cold",
+      "role": "cold",
+      "route": {
+        "band": "structural",
+        "beast_object_type": "beast_route_decision",
+        "crystal_id": "family-crystal:2b089f9fd334db975992def8",
+        "demotion_signal": "",
+        "digest": "sha256:5ac6537977619931b269198bfe99c6e4f317db541a876f8e10096c5c3c911db0",
+        "envelope_digest": "sha256:10c56b452dabde4b614593f8b83eb27588646dce35e7cb6f563f4b6bf13904be",
+        "execution_granted": false,
+        "fingerprint_compatible": true,
+        "proposal_only": true,
+        "reasons": [
+          "structural match: local specialist adapter proposal (adapter cannot execute)"
+        ],
+        "route": "local_specialist_adapter",
+        "similarity": 0.85,
+        "specialist_ref": "ollama://qwen3:4b",
+        "verifier": "hidden_tests_and_policy",
+        "version": "d9.1"
+      },
+      "task": "obo-cold",
+      "tiers": [
+        {
+          "attempts": 1,
+          "config": "after",
+          "edits": [
+            {
+              "new_text": "def last_n(items, n):\n    return items[-n:]",
+              "old_text": "def last_n(items, n):\n    return items[-n - 1:]",
+              "path": "window/core.py"
+            }
+          ],
+          "governor": "gov_7edf55b43a4be5a471064108",
+          "last_check": {
+            "applied": true,
+            "changed": [
+              "window/core.py"
+            ],
+            "passed": true,
+            "reason": "",
+            "returncode": 0,
+            "tests_run": 2,
+            "verify_ms": 60.666
+          },
+          "model": "qwen3:4b",
+          "passed": true,
+          "reason": "specialist_output_accepted",
+          "tier": "specialist",
+          "tokens_total": 689,
+          "usage": {
+            "completion_tokens": 69,
+            "prompt_tokens": 620
+          },
+          "wall_ms": 9049.963,
+          "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/obo-cold-cold/specialist-wt"
+        }
+      ],
+      "tokens_total": 689,
+      "wall_ms": 9318.382
+    },
+    "crystal_digest": "sha256:f3f8ad2739d13e5733d13336dfc025d786afccb539eba02a8bbb951d508cc219",
+    "distilled": "family-crystal:f3f8ad2739d13e5733d13336",
+    "extraction": {
+      "changed": [
+        "window/core.py"
+      ],
+      "equivalence": "byte_identical",
+      "exact_state_match": true,
+      "reproduced": true
+    },
+    "family": "fix-off-by-one",
+    "heldout": [
+      {
+        "independent": {
+          "hidden_rc": 0,
+          "passed": true,
+          "tree_digest": "sha256:8e0d970c63020489d8c180e842fb420a031dfe9d32b4c5b31961247ea69f0a0a",
+          "visible_rc": 0
+        },
+        "model_calls": 0,
+        "ok": true,
+        "reason": null,
+        "task": "obo-h1",
+        "wall_ms": 159.596
+      },
+      {
+        "independent": {
+          "hidden_rc": 0,
+          "passed": true,
+          "tree_digest": "sha256:4c2d1104d73098d0dad2306057b2419a8d01b50a89b85340ff8d267d3c343d81",
+          "visible_rc": 0
+        },
+        "model_calls": 0,
+        "ok": true,
+        "reason": null,
+        "task": "obo-h2",
+        "wall_ms": 153.485
+      },
+      {
+        "independent": {
+          "hidden_rc": 0,
+          "passed": true,
+          "tree_digest": "sha256:42068a064adcd2bc38a0445ef4d9763aa0a7cdd3e9b7a885755dc0e397289095",
+          "visible_rc": 0
+        },
+        "model_calls": 0,
+        "ok": true,
+        "reason": null,
+        "task": "obo-h3",
+        "wall_ms": 153.589
+      }
+    ],
+    "promotion": {
+      "approved_by": "Byron",
+      "heldout_receipt": {
+        "attempts": 3,
+        "candidate_id": "family-crystal:f3f8ad2739d13e5733d13336",
+        "episode_envelope_digest": "sha256:fc5bf3d45813d31221cabb6287598285b6332ea3573a4bf6094d66a51d18927b",
+        "evidence_root": "sha256:b0d2f0b6250a55b793daac0c4348d614adb6736000047c38f9da5f7314039b57",
+        "promoted": true,
+        "reason": "held-out replay passed",
+        "reproduction_record_digest": "sha256:dabe4a5996abe90a5d45d28b21fbd9922439f402c979aa752082422b1f1a3e53",
+        "structured": false,
+        "successes": 3,
+        "variant_ids": [
+          "obo-h1",
+          "obo-h2",
+          "obo-h3"
+        ],
+        "variant_results": [
+          true,
+          true,
+          true
+        ],
+        "variant_results_digest": "sha256:0f10947220f8a9e6fedefc90d86685025f4d3a46ba9c6943bb96ec2ab930966a"
+      },
+      "promoted_at": 1794805422.765521,
+      "record_digest": "sha256:38f35bd312fa9f00cdd68f5497e6757c110b296ffbabc86b67438c1e4ec68ca2",
+      "status": "promoted"
+    }
+  },
+  {
+    "cold": {
+      "accepted_by": "provider:nemotron",
+      "candidates": [
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:2b089f9fd334db975992def8",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-logic-operator"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-config-constant"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:f3f8ad2739d13e5733d13336",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-off-by-one"
+        }
+      ],
+      "false_accept": false,
+      "family": "fix-unhandled-exception",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:5ae4aed1a38acadc9ed1f5c80c8dcae4aa9ac1a0322b515e27fbf9b20d5f746e",
+        "visible_rc": 0
+      },
+      "model_calls": 1,
+      "observed_failures": 1,
+      "passed": true,
+      "phase": "cold",
+      "role": "cold",
+      "route": {
+        "band": "insufficient",
+        "beast_object_type": "beast_route_decision",
+        "crystal_id": "family-crystal:2b089f9fd334db975992def8",
+        "demotion_signal": "",
+        "digest": "sha256:88c6e9df83382e1725a6b884304fddaf37fca3ed76181a4c660934ec8f5c6f14",
+        "envelope_digest": "sha256:10c56b452dabde4b614593f8b83eb27588646dce35e7cb6f563f4b6bf13904be",
+        "execution_granted": false,
+        "fingerprint_compatible": true,
+        "proposal_only": true,
+        "reasons": [
+          "similarity<0.80: provider fallback"
+        ],
+        "route": "provider_fallback",
+        "similarity": 0.45,
+        "specialist_ref": "",
+        "verifier": "action_ir_full_verification",
+        "version": "d9.1"
+      },
+      "task": "exc-cold",
+      "tiers": [
+        {
+          "calls": [
+            {
+              "billable": true,
+              "failed": false,
+              "finish_reason": "stop",
+              "governor": "gov_04094023a6b002ead186824e",
+              "latency_ms": 1371.031,
+              "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+              "provider": "nim:nemotron",
+              "reasoning_budget_exhausted": false,
+              "reasoning_in_content": false,
+              "response_sha256": "sha256:5f21c29e3462e02c2ce99b1911a4f8d8378a4e6811f1ef1a728b71c6c1d58f81",
+              "status": 200,
+              "tokens_completion": 98,
+              "tokens_prompt": 690,
+              "tokens_reasoning": 0,
+              "tokens_total": 788
+            }
+          ],
+          "edits": [
+            {
+              "new_text": "def ratio_of(text):\n    num, den = text.split('/')\n    if int(den) == 0:\n        return None\n    return int(num) / int(den)",
+              "old_text": "def ratio_of(text):\n    num, den = text.split('/')\n    return int(num) / int(den)",
+              "path": "fracs/core.py"
+            }
+          ],
+          "last_check": {
+            "applied": true,
+            "changed": [
+              "fracs/core.py"
+            ],
+            "passed": true,
+            "reason": "",
+            "returncode": 0,
+            "tests_run": 2,
+            "verify_ms": 56.082
+          },
+          "latency_ms": 1371.031,
+          "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "passed": true,
+          "provider": "nemotron",
+          "tier": "provider:nemotron",
+          "tokens_total": 788,
+          "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/exc-cold-cold/nemotron-wt"
+        }
+      ],
+      "tokens_total": 788,
+      "wall_ms": 1767.823
+    },
+    "crystal_digest": "sha256:1e0b690bad92323d8796348264658a6dc1f61c663cd52d72159b3de131bcadec",
+    "distilled": "family-crystal:1e0b690bad92323d87963482",
+    "extraction": {
+      "changed": [
+        "fracs/core.py"
+      ],
+      "equivalence": "verifier_equivalent",
+      "exact_state_match": false,
+      "reproduced": true
+    },
+    "family": "fix-unhandled-exception",
+    "heldout": [
+      {
+        "independent": {
+          "hidden_rc": 0,
+          "passed": true,
+          "tree_digest": "sha256:18ab5483b91172c47aa93e1cce828a2239eea41963c0a8fefa5d3ff78fd20c57",
+          "visible_rc": 0
+        },
+        "model_calls": 0,
+        "ok": true,
+        "reason": null,
+        "task": "exc-h1",
+        "wall_ms": 99.788
+      },
+      {
+        "independent": {
+          "hidden_rc": 0,
+          "passed": true,
+          "tree_digest": "sha256:8c1ea59371576c21cb2f2fcc534d7ce9651edd901ba33b574c59bec7471cf387",
+          "visible_rc": 0
+        },
+        "model_calls": 0,
+        "ok": true,
+        "reason": null,
+        "task": "exc-h2",
+        "wall_ms": 107.879
+      },
+      {
+        "independent": {
+          "hidden_rc": 0,
+          "passed": true,
+          "tree_digest": "sha256:3322a00f02491342ebba1614cc2e01880f6b770db97fd32987d8ceed8cd2d58e",
+          "visible_rc": 0
+        },
+        "model_calls": 0,
+        "ok": true,
+        "reason": null,
+        "task": "exc-h3",
+        "wall_ms": 94.238
+      }
+    ],
+    "promotion": {
+      "approved_by": "Byron",
+      "heldout_receipt": {
+        "attempts": 3,
+        "candidate_id": "family-crystal:1e0b690bad92323d87963482",
+        "episode_envelope_digest": "sha256:49ab6aeae4e121e33538b3bc6cbcef3e1edd18fa8e0b9d42bf1b65f5682b19e1",
+        "evidence_root": "sha256:47409d53aa6bad191859955bc92beb1372f4c7202266fb62dd812782eb2be54a",
+        "promoted": true,
+        "reason": "held-out replay passed",
+        "reproduction_record_digest": "sha256:349821cbbe4196316153760954ba4b9cb7b8232fbd8be4cd1a549616e11b05ae",
+        "structured": false,
+        "successes": 3,
+        "variant_ids": [
+          "exc-h1",
+          "exc-h2",
+          "exc-h3"
+        ],
+        "variant_results": [
+          true,
+          true,
+          true
+        ],
+        "variant_results_digest": "sha256:b911e98b24f68df3bcdfd24ac884677b8f27e44ab9b001a8aba8a31d3e1eace8"
+      },
+      "promoted_at": 1794805425.3817163,
+      "record_digest": "sha256:e2eaeef1010823a7223537df774b60beee23f0b8a9263a2ef231157003c3413d",
+      "status": "promoted"
+    }
+  },
+  {
+    "cold": {
+      "accepted_by": null,
+      "candidates": [
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:1e0b690bad92323d87963482",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-unhandled-exception"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:2b089f9fd334db975992def8",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-logic-operator"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-config-constant"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:f3f8ad2739d13e5733d13336",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-off-by-one"
+        }
+      ],
+      "false_accept": false,
+      "family": "refactor-rename-symbol",
+      "independent": null,
+      "model_calls": 2,
+      "observed_failures": 1,
+      "passed": false,
+      "phase": "cold",
+      "role": "cold",
+      "route": {
+        "band": "insufficient",
+        "beast_object_type": "beast_route_decision",
+        "crystal_id": "family-crystal:1e0b690bad92323d87963482",
+        "demotion_signal": "",
+        "digest": "sha256:23ff94245ccedbdd78cdc805c6c3f26aca01dc687fcb6f11e99e47c8934fbec2",
+        "envelope_digest": "sha256:49ab6aeae4e121e33538b3bc6cbcef3e1edd18fa8e0b9d42bf1b65f5682b19e1",
+        "execution_granted": false,
+        "fingerprint_compatible": true,
+        "proposal_only": true,
+        "reasons": [
+          "similarity<0.80: provider fallback"
+        ],
+        "route": "provider_fallback",
+        "similarity": 0.45,
+        "specialist_ref": "",
+        "verifier": "action_ir_full_verification",
+        "version": "d9.1"
+      },
+      "task": "ren-cold",
+      "tiers": [
+        {
+          "calls": [
+            {
+              "billable": true,
+              "failed": false,
+              "finish_reason": "stop",
+              "governor": "gov_d15faea09153d2099dee84d7",
+              "latency_ms": 964.256,
+              "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+              "provider": "nim:nemotron",
+              "reasoning_budget_exhausted": false,
+              "reasoning_in_content": false,
+              "response_sha256": "sha256:ced60c773872e68bec518a0a519407fef8c78fd215b0d99a29601e679ce37ae9",
+              "status": 200,
+              "tokens_completion": 38,
+              "tokens_prompt": 752,
+              "tokens_reasoning": 0,
+              "tokens_total": 790
+            },
+            {
+              "billable": true,
+              "failed": false,
+              "finish_reason": "stop",
+              "governor": "gov_ae116023ef03d177f4b3c944",
+              "latency_ms": 1049.815,
+              "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+              "provider": "nim:nemotron",
+              "reasoning_budget_exhausted": false,
+              "reasoning_in_content": false,
+              "response_sha256": "sha256:bff386889fee7854d40c8d02050d14ed094e5e82855eabfb271febebc0413b0d",
+              "status": 200,
+              "tokens_completion": 51,
+              "tokens_prompt": 888,
+              "tokens_reasoning": 0,
+              "tokens_total": 939
+            }
+          ],
+          "edits": null,
+          "last_check": {
+            "applied": true,
+            "changed": [
+              "ledger/core.py"
+            ],
+            "passed": false,
+            "reason": "tests_still_failing",
+            "returncode": 1,
+            "tests_run": 1,
+            "verify_ms": 57.256
+          },
+          "latency_ms": 2014.071,
+          "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "passed": false,
+          "provider": "nemotron",
+          "tier": "provider:nemotron",
+          "tokens_total": 1729,
+          "worktree": ""
+        },
+        {
+          "calls": [
+            {
+              "billable": false,
+              "failed": true,
+              "governor": "gov_a3b300babedee10296355464",
+              "latency_ms": 0.0,
+              "model": "deepseek-ai/deepseek-v4.1-flash",
+              "provider": "nim:deepseek",
+              "status": "circuit_open",
+              "tokens_total": 0
+            }
+          ],
+          "edits": null,
+          "last_check": {
+            "applied": false,
+            "passed": false,
+            "reason": "no_parseable_edit"
+          },
+          "latency_ms": 0.0,
+          "model": "deepseek-ai/deepseek-v4.1-flash",
+          "passed": false,
+          "provider": "deepseek",
+          "tier": "provider:deepseek",
+          "tokens_total": 0,
+          "worktree": ""
+        }
+      ],
+      "tokens_total": 1729,
+      "wall_ms": 2517.48
+    },
+    "distilled": null,
+    "family": "refactor-rename-symbol",
+    "reason": "cold_unsolved"
+  },
+  {
+    "cold": {
+      "accepted_by": "provider:nemotron",
+      "candidates": [
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:2b089f9fd334db975992def8",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": true,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.85,
+          "task_family": "fix-logic-operator"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:f3f8ad2739d13e5733d13336",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": true,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.85,
+          "task_family": "fix-off-by-one"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:1e0b690bad92323d87963482",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-unhandled-exception"
+        },
+        {
+          "children": [],
+          "composite": false,
+          "crystal_id": "family-crystal:5298d8b45bf3e16b7e2fa9df",
+          "expected_failures": 1,
+          "features": {
+            "failure_count": true,
+            "failure_signature": false,
+            "python_target": true,
+            "resolver_plan": false,
+            "unittest_verify": true
+          },
+          "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)",
+          "similarity": 0.45,
+          "task_family": "fix-config-constant"
+        }
+      ],
+      "false_accept": false,
+      "family": "toolchain-regenerate",
+      "independent": {
+        "hidden_rc": 0,
+        "passed": true,
+        "tree_digest": "sha256:f7dacef674ddb52d26b15207c188f6950b433e499696b5171ea04529eef81cf2",
+        "visible_rc": 0
+      },
+      "model_calls": 3,
+      "observed_failures": 1,
+      "passed": true,
+      "phase": "cold",
+      "role": "cold",
+      "route": {
+        "band": "structural",
+        "beast_object_type": "beast_route_decision",
+        "crystal_id": "family-crystal:2b089f9fd334db975992def8",
+        "demotion_signal": "",
+        "digest": "sha256:5ac6537977619931b269198bfe99c6e4f317db541a876f8e10096c5c3c911db0",
+        "envelope_digest": "sha256:10c56b452dabde4b614593f8b83eb27588646dce35e7cb6f563f4b6bf13904be",
+        "execution_granted": false,
+        "fingerprint_compatible": true,
+        "proposal_only": true,
+        "reasons": [
+          "structural match: local specialist adapter proposal (adapter cannot execute)"
+        ],
+        "route": "local_specialist_adapter",
+        "similarity": 0.85,
+        "specialist_ref": "ollama://qwen3:4b",
+        "verifier": "hidden_tests_and_policy",
+        "version": "d9.1"
+      },
+      "task": "tool-cold",
+      "tiers": [
+        {
+          "attempts": 1,
+          "config": "after",
+          "edits": null,
+          "governor": "gov_856ac9f5f582dd57b9231695",
+          "last_check": {
+            "applied": true,
+            "changed": [
+              "release/generated.py"
+            ],
+            "passed": false,
+            "reason": "tests_still_failing",
+            "returncode": 1,
+            "tests_run": 2,
+            "verify_ms": 98.446
+          },
+          "model": "qwen3:4b",
+          "passed": false,
+          "reason": "verifier_failed:tests_still_failing",
+          "tier": "specialist",
+          "tokens_total": 794,
+          "usage": {
+            "completion_tokens": 66,
+            "prompt_tokens": 728
+          },
+          "wall_ms": 9925.076,
+          "worktree": ""
+        },
+        {
+          "calls": [
+            {
+              "billable": true,
+              "failed": false,
+              "finish_reason": "stop",
+              "governor": "gov_7211db30abb0976c357ed02a",
+              "latency_ms": 1140.503,
+              "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+              "provider": "nim:nemotron",
+              "reasoning_budget_exhausted": false,
+              "reasoning_in_content": false,
+              "response_sha256": "sha256:79c7ffec2bffcac97ee474e4811192d9039f0b26a3ecc5ecef82236ffbb13401",
+              "status": 200,
+              "tokens_completion": 63,
+              "tokens_prompt": 817,
+              "tokens_reasoning": 0,
+              "tokens_total": 880
+            },
+            {
+              "billable": true,
+              "failed": false,
+              "finish_reason": "stop",
+              "governor": "gov_1101793c433014d5fdb36e28",
+              "latency_ms": 1038.654,
+              "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+              "provider": "nim:nemotron",
+              "reasoning_budget_exhausted": false,
+              "reasoning_in_content": false,
+              "response_sha256": "sha256:33a81d6691f1a31edcf17046bfc28ba6381981e39df6401d11d8a5d762e7e0d7",
+              "status": 200,
+              "tokens_completion": 47,
+              "tokens_prompt": 1011,
+              "tokens_reasoning": 0,
+              "tokens_total": 1058
+            }
+          ],
+          "edits": [
+            {
+              "new_text": "VERSION = '1.4.0'",
+              "old_text": "VERSION = '1.3.0'",
+              "path": "release/generated.py"
+            }
+          ],
+          "last_check": {
+            "applied": true,
+            "changed": [
+              "release/generated.py"
+            ],
+            "passed": true,
+            "reason": "",
+            "returncode": 0,
+            "tests_run": 2,
+            "verify_ms": 52.346
+          },
+          "latency_ms": 2179.157,
+          "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "passed": true,
+          "provider": "nemotron",
+          "tier": "provider:nemotron",
+          "tokens_total": 1938,
+          "worktree": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.beast/gauntlets/2026-11-16-large/work/tool-cold-cold/nemotron-wt"
+        }
+      ],
+      "tokens_total": 2732,
+      "wall_ms": 12578.924
+    },
+    "crystal_digest": "sha256:a0b362d365da0274266f6ba5378fde4ea5ddf2ac6a2afec8fd57d0dbe44afa96",
+    "distilled": "family-crystal:a0b362d365da0274266f6ba5",
+    "extraction": {
+      "changed": [
+        "release/generated.py"
+      ],
+      "equivalence": "byte_identical",
+      "exact_state_match": true,
+      "reproduced": true
+    },
+    "family": "toolchain-regenerate",
+    "heldout": [
+      {
+        "independent": {
+          "hidden_rc": 0,
+          "passed": true,
+          "tree_digest": "sha256:3fd253b24d6f40fbb277ec05885bcefe41ef430951bdeb1f07b61369254cf0d5",
+          "visible_rc": 0
+        },
+        "model_calls": 0,
+        "ok": true,
+        "reason": null,
+        "task": "tool-h1",
+        "wall_ms": 139.176
+      },
+      {
+        "independent": {
+          "hidden_rc": 0,
+          "passed": true,
+          "tree_digest": "sha256:ae3d25ae4717d260e5e5fccbe5863aa4e41f470eca58f3f7ce6b19e0d21dee61",
+          "visible_rc": 0
+        },
+        "model_calls": 0,
+        "ok": true,
+        "reason": null,
+        "task": "tool-h2",
+        "wall_ms": 152.339
+      },
+      {
+        "independent": {
+          "hidden_rc": 0,
+          "passed": true,
+          "tree_digest": "sha256:b74eda0a8895cdbf72f2ff2492ec9d4571e4fb75128077319bcd997625352fd1",
+          "visible_rc": 0
+        },
+        "model_calls": 0,
+        "ok": true,
+        "reason": null,
+        "task": "tool-h3",
+        "wall_ms": 149.721
+      }
+    ],
+    "promotion": {
+      "approved_by": "Byron",
+      "heldout_receipt": {
+        "attempts": 3,
+        "candidate_id": "family-crystal:a0b362d365da0274266f6ba5",
+        "episode_envelope_digest": "sha256:74129e934107670b385caa742288cc8d3599b152d95a76bd15e8098a42eaad10",
+        "evidence_root": "sha256:9a56569b5fe64f33c9c7cf6bdbd0cc6cc942d0e991178950471c0ddf19524ac2",
+        "promoted": true,
+        "reason": "held-out replay passed",
+        "reproduction_record_digest": "sha256:912edde839e084e34aa32b6de64c150252a5a82e36750760f06919a9623ded48",
+        "structured": false,
+        "successes": 3,
+        "variant_ids": [
+          "tool-h1",
+          "tool-h2",
+          "tool-h3"
+        ],
+        "variant_results": [
+          true,
+          true,
+          true
+        ],
+        "variant_results_digest": "sha256:c7b786fe99f91a9e46743ec2cc57a86f15de4cc2a5852ec01b18b2bc04b4713e"
+      },
+      "promoted_at": 1794805441.5073369,
+      "record_digest": "sha256:866046acbd3c35c2bc213e463952147f864184d76428a05ef58fdb9adcd6e620",
+      "status": "promoted"
+    }
+  }
+]

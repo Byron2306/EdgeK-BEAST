@@ -77,13 +77,38 @@ class AdaptiveDispatcher:
         contract_digest = str(task_ir.metadata.get("capability_contract_digest") or "")
         if not contract_digest:
             return None
-        for node in nodes:
+        for raw in nodes:
+            node = self._normalize_node(raw)
+            if not self._contract_intact(node):
+                continue  # fail closed: a node whose contract fields no longer match its digest never routes
             if (
                 node.get("task_class") == task_class
                 and str(node.get("capability_contract_digest") or "") == contract_digest
             ):
                 return {**node, "confidence": 0.95}
         return None
+
+    @staticmethod
+    def _normalize_node(node: Dict[str, Any]) -> Dict[str, Any]:
+        """Accept the distiller's real lattice schema (task_family, no node_id) without relaxing the contract:
+        a node still needs a capability_contract_digest and all path fingerprints to be routable."""
+        import hashlib
+        import json
+
+        normalized = dict(node)
+        normalized.setdefault("task_class", node.get("task_family"))
+        if not normalized.get("node_id"):
+            identity = {k: node.get(k) for k in ("task_family", "capability_contract_digest", "fingerprint_hashes")}
+            normalized["node_id"] = hashlib.sha256(json.dumps(identity, sort_keys=True, default=str).encode()).hexdigest()[:16]
+        return normalized
+
+    @staticmethod
+    def _contract_intact(node: Dict[str, Any]) -> bool:
+        from app.kernel.compute.crystal_distillation import CONTRACT_SCHEMA, contract_digest_for_node
+
+        if node.get("contract_schema") != CONTRACT_SCHEMA:
+            return True  # legacy nodes without a schema keep the plain equality check (they carry no digest today)
+        return str(node.get("capability_contract_digest") or "") == contract_digest_for_node(node)
 
     def _verify_path_fingerprints(self, node: Dict[str, Any], metadata: Dict[str, Any]) -> bool:
         required = (

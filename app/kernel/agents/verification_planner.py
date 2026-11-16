@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import posixpath
+import re
 from typing import Any
 
 
@@ -11,6 +12,33 @@ MUTATION_TOOLS = {"worktree.replace_exact", "worktree.write_file"}
 
 def _request_payload(run: dict[str, Any]) -> dict[str, Any]:
     return run.get("request") if isinstance(run.get("request"), dict) else {}
+
+
+def verified_handoff_command(run: dict[str, Any]) -> list[str] | None:
+    """Build argv from the durable run request, never from model output."""
+    request = _request_payload(run)
+    if request.get("post_session_closure") != "verified_handoff":
+        return None
+    runner = request.get("post_session_test_runner")
+    error = "REFUSE_VERIFIED_HANDOFF_TEST_CONFIG"
+    if runner not in ("unittest", "pytest"):
+        raise ValueError(f"{error}: post_session_test_runner must be unittest or pytest")
+    tests = request.get("required_test_files")
+    if (not isinstance(tests, list) or not 1 <= len(tests) <= 16
+            or not all(
+                isinstance(path, str) and len(path) <= 220
+                and re.fullmatch(r"(?:[A-Za-z0-9_][A-Za-z0-9_.-]*/)*[A-Za-z0-9_][A-Za-z0-9_.-]*\.py", path)
+                for path in tests
+            )
+            or len(set(tests)) != len(tests)):
+        raise ValueError(f"{error}: required_test_files must name 1 to 16 distinct relative Python files")
+    if runner == "pytest":
+        return ["python3", "-m", "pytest", "-q", "--", *tests]
+    if not all(re.fullmatch(r"test_[A-Za-z0-9_]+\.py", path) for path in tests):
+        raise ValueError(f"{error}: unittest requires explicit root-level test_*.py filenames")
+    if len(tests) == 1:
+        return ["python3", "-m", "unittest", "discover", "-p", tests[0], "-q"]
+    return ["python3", "-m", "unittest", "-q", *tests]
 
 
 def changed_paths_from_observations(run: dict[str, Any]) -> list[str]:

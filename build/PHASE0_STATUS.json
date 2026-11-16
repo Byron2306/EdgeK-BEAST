@@ -30,12 +30,12 @@
     "enterprise_runtime_contract": {
       "payload": {
         "checks": {
-          "agent_creation_requires_live_route": true,
-          "atlas_uses_live_platform_snapshot": true,
-          "canvas_resize_is_deferred_out_of_observer_delivery": true,
-          "crystal_actions_require_receipts": true,
-          "crystal_verification_does_not_promote_pending_gates": true,
-          "demo_fixtures_require_explicit_build_opt_in": true,
+          "agent_creation_requires_live_route": false,
+          "atlas_uses_live_platform_snapshot": false,
+          "canvas_resize_is_deferred_out_of_observer_delivery": false,
+          "crystal_actions_require_receipts": false,
+          "crystal_verification_does_not_promote_pending_gates": false,
+          "demo_fixtures_require_explicit_build_opt_in": false,
           "demo_query_cannot_force_runtime_offline": true,
           "dependency_complete_python_probe": true,
           "desktop_child_forces_direct_gateway_mode": true,
@@ -44,46 +44,230 @@
           "gateway_startup_recovery_is_bounded": true,
           "guardian_listener_fallback_is_bounded": true,
           "guardian_processes_are_protected_from_system_controls": true,
-          "honest_boot_state": true,
+          "honest_boot_state": false,
           "ipc_gateway_transport": true,
           "legacy_scan_removed": true,
-          "legacy_studio_topology_routes_are_canonicalized": true,
+          "legacy_studio_topology_routes_are_canonicalized": false,
           "managed_gateway_not_reset_to_guardian": true,
-          "mutations_do_not_swallow_gateway_failures": true,
+          "mutations_do_not_swallow_gateway_failures": false,
           "named_navigation_labels_wrap_in_sidebar": true,
-          "named_systems_are_visible_in_primary_ui": true,
+          "named_systems_are_visible_in_primary_ui": false,
           "no_live_agent_demo_fallback": true,
-          "no_unverified_default_model_route": true,
-          "normalizers_tolerate_incomplete_live_telemetry": true,
-          "operation_failure_is_visible": true,
+          "no_unverified_default_model_route": false,
+          "normalizers_tolerate_incomplete_live_telemetry": false,
+          "operation_failure_is_visible": false,
           "platform_snapshot_not_boot_fanout": true,
-          "provider_plane_uses_litellm_models_readiness": true,
+          "provider_plane_uses_litellm_models_readiness": false,
           "registry_gateway_8101": true,
           "remote_commons_control_plane": true,
           "remote_commons_no_direct_egress": true,
           "responsive_header_wrap": true,
           "runtime_canvas_resize_is_deferred_out_of_observer_delivery": true,
-          "snapshot_boot_is_bounded": true,
+          "snapshot_boot_is_bounded": false,
           "sourceplan_has_no_silent_local_success": true,
           "swarm_uses_live_routes": true,
-          "system_mutations_use_preview_and_explicit_approval": true,
+          "system_mutations_use_preview_and_explicit_approval": false,
           "systems_atlas_registered": true,
           "workspace_identity_header": true
         },
-        "failed": [],
-        "status": "PASS"
+        "failed": [
+          "named_systems_are_visible_in_primary_ui",
+          "legacy_studio_topology_routes_are_canonicalized",
+          "atlas_uses_live_platform_snapshot",
+          "demo_fixtures_require_explicit_build_opt_in",
+          "system_mutations_use_preview_and_explicit_approval",
+          "snapshot_boot_is_bounded",
+          "mutations_do_not_swallow_gateway_failures",
+          "operation_failure_is_visible",
+          "crystal_actions_require_receipts",
+          "crystal_verification_does_not_promote_pending_gates",
+          "honest_boot_state",
+          "no_unverified_default_model_route",
+          "provider_plane_uses_litellm_models_readiness",
+          "normalizers_tolerate_incomplete_live_telemetry",
+          "agent_creation_requires_live_route",
+          "canvas_resize_is_deferred_out_of_observer_delivery"
+        ],
+        "status": "FAIL"
       },
-      "returncode": 0,
-      "status": "passed",
+      "returncode": 1,
+      "status": "failed",
       "stderr": ""
     },
     "execution_target_contract": {
       "artifact": "build/EXECUTION_TARGET_PARITY.json",
       "payload": {
-        "checks": 15,
+        "checks": 33,
         "failed": [],
         "ok": true,
-        "passed": 12,
+        "passed": 30,
+        "rows": [
+          {
+            "detail": "",
+            "name": "shared execution target desktop IPC exists",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "Explorer/runtime store exposes selected execution target",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "execution target layer tracks durable target sessions",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "execution target soak is exposed through preload/runtime surfaces",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "tasks and tests execute through the shared target layer",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "remote workspace watchers invalidate through execution targets",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "LSP and DAP pass active execution target into protocol host",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "SSH and container protocol transports are real stdio relays",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "Dev Containers are first-class workbench actions",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "Dev Container Compose configurations are managed through the target layer",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "extensions activate through the selected execution target",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "extension host exposes per-target lifecycle state",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "target-aware IDE services snapshot unifies LSP/DAP/tests/SCM/extensions",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "workspace index snapshots include target files, symbols, imports, tests, and Nim",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "AI streaming keeps explicit context visible and bounded",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "agentic validation preserves execution-target intent through session, compile, and verifier stages",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "planner verification selection is target-native and strategy-rich for remote targets",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "provider scoring escalates hard remote repair failures toward stronger routes",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "Pair Programmer has a focused local-Qwen recovery profile",
+            "status": "passed"
+          },
+          {
+            "detail": "{\"available\":19,\"total\":19,\"coverage\":100}",
+            "name": "local target discovery returns LSP/DAP/notebook/remote groups",
+            "status": "passed"
+          },
+          {
+            "detail": "",
+            "name": "local target renderer syntax acceptance",
+            "status": "passed"
+          },
+          {
+            "detail": "Set BEAST_PARITY_SSH_HOST to run a strict-host-key SSH acceptance handshake.",
+            "name": "SSH target live handshake",
+            "status": "skipped"
+          },
+          {
+            "detail": "Set BEAST_PARITY_CONTAINER_IMAGE to run a Docker acceptance container without implicit image pulls.",
+            "name": "container target live handshake",
+            "status": "skipped"
+          },
+          {
+            "detail": "Set BEAST_PARITY_CONTAINER_IMAGE to run Compose without implicit image pulls.",
+            "name": "Dev Container Compose lifecycle live acceptance",
+            "status": "skipped"
+          },
+          {
+            "detail": "{\"result\":{\"ok\":true,\"target\":{\"kind\":\"local\",\"label\":\"Local workspace\",\"root\":\"/tmp/beast-target-soak-6l1Onz\",\"transport\":\"local\",\"session\":{\"sessionId\":\"target-local-51ed6899093a751c92f1\",\"kind\":\"local\",\"identity\":\"/tmp/beast-target-soak-6l1Onz\",\"label\":\"Local workspace\",\"target\":{\"kind\":\"local\",\"label\":\"Local workspace\",\"root\":\"/tmp/beast-target-soak-6l1Onz\",\"transport\":\"local\"},\"status\":\"idle\",\"health\":\"unknown\",\"transport\":\"local\",\"reconnectCount\":0,\"attachedAt\":\"2026-11-16T08:04:56.349Z\",\"lastSeenAt\":\"2026-11-16T08:04:56.349Z\",\"lastHealthyAt\":\"\",\"lastUsedAt\":\"\",\"lastError\":\"\",\"metadata\":{},\"active\":false}},\"iterations\":3,\"failures\":0,\"interrupted\":true,\"durationMs\":1,\"rows\":[{\"iteration\":1,\"ok\":true,\"returncode\":0,\"durationMs\":1,\"interrupted\":false,\"stdoutTail\":\"/tmp/beast-target-soak-6l1Onz\\n/tmp/beast-target-soak-6l1Onz\\nBEAST_TARGET_SOAK_OK\",\"stderrTail\":\"\",\"error\":\"\"},{\"iteration\":2,\"ok\":true,\"returncode\":0,\"durationMs\":0,\"interrupted\":false,\"stdoutTail\":\"/tmp/beast-target-soak-6l1Onz\\n/tmp/beast-target-soak-6l1Onz\\nBEAST_TARGET_SOAK_OK\",\"stderrTail\":\"\",\"error\":\"\"},{\"iteration\":3,\"ok\":true,\"returncode\":0,\"durationMs\":0,\"interrupted\":true,\"stdoutTail\":\"/tmp/beast-target-soak-6l1Onz\\n/tmp/beast-target-soak-6l1Onz\\nBEAST_TARGET_SOAK_OK\",\"stderrTail\":\"\",\"error\":\"\"}],\"receipt\":{\"id\":\"SOAK-393A7D24B2FD6765\",\"digest\":\"sha256:393a7d24b2fd6765c7c49d4d98a981f222c41e9488ca2a6976f5986bbb9e38e8\",\"evidence\":\"operator-initiated\",\"mode\":\"local:target-soak\"}},\"summary\":{\"ok\":true,\"soaks\":[{\"ok\":true,\"target\":{\"kind\":\"local\",\"label\":\"Local workspace\",\"root\":\"/tmp/beast-target-soak-6l1Onz\",\"transport\":\"local\",\"session\":{\"sessionId\":\"target-local-51ed6899093a751c92f1\",\"kind\":\"local\",\"identity\":\"/tmp/beast-target-soak-6l1Onz\",\"label\":\"Local workspace\",\"target\":{\"kind\":\"local\",\"label\":\"Local workspace\",\"root\":\"/tmp/beast-target-soak-6l1Onz\",\"transport\":\"local\"},\"status\":\"idle\",\"health\":\"unknown\",\"transport\":\"local\",\"reconnectCount\":0,\"attachedAt\":\"2026-11-16T08:04:56.349Z\",\"lastSeenAt\":\"2026-11-16T08:04:56.349Z\",\"lastHealthyAt\":\"\",\"lastUsedAt\":\"\",\"lastError\":\"\",\"metadata\":{},\"active\":false}},\"iterations\":3,\"failures\":0,\"interrupted\":true,\"durationMs\":1,\"rows\":[{\"iteration\":1,\"ok\":true,\"returncode\":0,\"durationMs\":1,\"interrupted\":false,\"stdoutTail\":\"/tmp/beast-target-soak-6l1Onz\\n/tmp/beast-target-soak-6l1Onz\\nBEAST_TARGET_SOAK_OK\",\"stderrTail\":\"\",\"error\":\"\"},{\"iteration\":2,\"ok\":true,\"returncode\":0,\"durationMs\":0,\"interrupted\":false,\"stdoutTail\":\"/tmp/beast-target-soak-6l1Onz\\n/tmp/beast-target-soak-6l1Onz\\nBEAST_TARGET_SOAK_OK\",\"stderrTail\":\"\",\"error\":\"\"},{\"iteration\":3,\"ok\":true,\"returncode\":0,\"durationMs\":0,\"interrupted\":true,\"stdoutTail\":\"/tmp/beast-target-soak-6l1Onz\\n/tmp/beast-target-soak-6l1Onz\\nBEAST_TARGET_SOAK_OK\",\"stderrTail\":\"\",\"error\":\"\"}],\"receipt\":{\"id\":\"SOAK-393A7D24B2FD6765\",\"digest\":\"sha256:393a7d24b2fd6765c7c49d4d98a981f222c41e9488ca2a6976f5986bbb9e38e8\",\"evidence\":\"operator-initiated\",\"mode\":\"local:target-soak\"},\"recordedAt\":1794816296351}],\"counts\":{\"soaks\":1,\"failures\":0}},\"boundedCalls\":3}",
+            "name": "local execution target soak produces receipt/history rows",
+            "status": "passed"
+          },
+          {
+            "detail": "{\"sshProbe\":true,\"sshWrite\":true,\"sshVerify\":true,\"sshConflict\":true,\"sshReconnect\":true,\"attached\":true,\"containerWrite\":true,\"containerVerify\":true,\"applyOk\":true,\"applyError\":\"\",\"applyStderr\":\"\",\"applyStdout\":\"{\\\"preview_ok\\\": true, \\\"verify_ok\\\": true, \\\"saved_ok\\\": true, \\\"apply_ok\\\": true, \\\"status\\\": \\\"applied_verified_crystallized\\\", \\\"verification_ok\\\": true, \\\"evidence_path\\\": true, \\\"rollback_path\\\": true, \\\"applied\\\": [\\\"src/final-apply.js\\\"]}\\n\",\"applyPayload\":{\"preview_ok\":true,\"verify_ok\":true,\"saved_ok\":true,\"apply_ok\":true,\"status\":\"applied_verified_crystallized\",\"verification_ok\":true,\"evidence_path\":true,\"rollback_path\":true,\"applied\":[\"src/final-apply.js\"]},\"taskCounts\":{\"tests\":0,\"tasks\":2,\"flakyTests\":0},\"targetSessions\":[{\"kind\":\"ssh\",\"status\":\"connected\",\"health\":\"healthy\"},{\"kind\":\"container\",\"status\":\"active\",\"health\":\"healthy\"}]}",
+            "name": "remote target mutation and verify loop runs through SSH/container targets with governed final apply",
+            "status": "passed"
+          },
+          {
+            "detail": "{\"result\":{\"ok\":true,\"status\":0,\"stdout\":\"{\\\"ok\\\": true, \\\"target_execution\\\": \\\"remote_ssh\\\", \\\"execution_target\\\": \\\"ssh\\\", \\\"transport\\\": \\\"ssh\\\", \\\"verification_target_execution\\\": \\\"remote_ssh\\\", \\\"verification_execution_target\\\": \\\"ssh\\\", \\\"event_target_execution\\\": \\\"remote_ssh\\\", \\\"event_execution_target\\\": \\\"ssh\\\", \\\"event_command\\\": [\\\"python\\\", \\\"-m\\\", \\\"pytest\\\", \\\"-q\\\", \\\"tests/test_demo.py\\\"]}\\n\",\"stderr\":\"\",\"error\":\"\"},\"payload\":{\"ok\":true,\"target_execution\":\"remote_ssh\",\"execution_target\":\"ssh\",\"transport\":\"ssh\",\"verification_target_execution\":\"remote_ssh\",\"verification_execution_target\":\"ssh\",\"event_target_execution\":\"remote_ssh\",\"event_execution_target\":\"ssh\",\"event_command\":[\"python\",\"-m\",\"pytest\",\"-q\",\"tests/test_demo.py\"]}}",
+            "name": "planner repair loop preserves target execution evidence for failed remote verification",
+            "status": "passed"
+          },
+          {
+            "detail": "{\"result\":{\"ok\":true,\"status\":0,\"stdout\":\"{\\\"command\\\": [\\\"python3\\\", \\\"-m\\\", \\\"pytest\\\", \\\"-q\\\", \\\"tests/test_demo.py\\\"], \\\"reason\\\": \\\"related_pytest_from_workspace_index\\\", \\\"scope\\\": \\\"related_tests\\\", \\\"changed_paths\\\": [\\\"pkg/demo.py\\\"], \\\"execution_target\\\": {\\\"kind\\\": \\\"ssh\\\", \\\"label\\\": \\\"beast-host\\\", \\\"session_id\\\": \\\"\\\", \\\"host\\\": \\\"beast-host\\\", \\\"base\\\": \\\"/workspace/project\\\", \\\"container_id\\\": \\\"\\\", \\\"target_execution\\\": \\\"remote_ssh\\\"}, \\\"target_execution\\\": \\\"remote_ssh\\\", \\\"catalog_matches\\\": [\\\"python:pytest\\\"], \\\"strategy\\\": {\\\"mode\\\": \\\"target_native_remote\\\", \\\"family\\\": \\\"python_pytest\\\", \\\"scope\\\": \\\"related_tests\\\", \\\"reason\\\": \\\"related_pytest_from_workspace_index\\\", \\\"execution_target\\\": {\\\"kind\\\": \\\"ssh\\\", \\\"label\\\": \\\"beast-host\\\", \\\"session_id\\\": \\\"\\\", \\\"host\\\": \\\"beast-host\\\", \\\"base\\\": \\\"/workspace/project\\\", \\\"container_id\\\": \\\"\\\", \\\"target_execution\\\": \\\"remote_ssh\\\"}, \\\"summary\\\": \\\"Run python_pytest verification on the selected ssh target so repair evidence matches the real execution environment.\\\"}, \\\"related_tests\\\": [\\\"tests/test_demo.py\\\"]}\\n\",\"stderr\":\"\",\"error\":\"\"},\"payload\":{\"command\":[\"python3\",\"-m\",\"pytest\",\"-q\",\"tests/test_demo.py\"],\"reason\":\"related_pytest_from_workspace_index\",\"scope\":\"related_tests\",\"changed_paths\":[\"pkg/demo.py\"],\"execution_target\":{\"kind\":\"ssh\",\"label\":\"beast-host\",\"session_id\":\"\",\"host\":\"beast-host\",\"base\":\"/workspace/project\",\"container_id\":\"\",\"target_execution\":\"remote_ssh\"},\"target_execution\":\"remote_ssh\",\"catalog_matches\":[\"python:pytest\"],\"strategy\":{\"mode\":\"target_native_remote\",\"family\":\"python_pytest\",\"scope\":\"related_tests\",\"reason\":\"related_pytest_from_workspace_index\",\"execution_target\":{\"kind\":\"ssh\",\"label\":\"beast-host\",\"session_id\":\"\",\"host\":\"beast-host\",\"base\":\"/workspace/project\",\"container_id\":\"\",\"target_execution\":\"remote_ssh\"},\"summary\":\"Run python_pytest verification on the selected ssh target so repair evidence matches the real execution environment.\"},\"related_tests\":[\"tests/test_demo.py\"]}}",
+            "name": "remote verification planner chooses target-native command and strategy",
+            "status": "passed"
+          },
+          {
+            "detail": "{\"retryResult\":{\"ok\":true,\"status\":0,\"stdout\":\"{\\\"command\\\": [\\\"python3\\\", \\\"-m\\\", \\\"pytest\\\", \\\"-q\\\", \\\"tests/test_demo.py\\\"], \\\"reason\\\": \\\"retry_same_target_verifier_once\\\", \\\"scope\\\": \\\"retry_same_scope\\\", \\\"changed_paths\\\": [\\\"pkg/demo.py\\\"], \\\"execution_target\\\": {\\\"kind\\\": \\\"ssh\\\", \\\"label\\\": \\\"beast-host\\\", \\\"session_id\\\": \\\"\\\", \\\"host\\\": \\\"beast-host\\\", \\\"base\\\": \\\"/workspace/project\\\", \\\"container_id\\\": \\\"\\\", \\\"target_execution\\\": \\\"remote_ssh\\\"}, \\\"target_execution\\\": \\\"remote_ssh\\\", \\\"catalog_matches\\\": [\\\"retryable_failure\\\"], \\\"strategy\\\": {\\\"mode\\\": \\\"target_native_remote\\\", \\\"family\\\": \\\"retry_same_command\\\", \\\"scope\\\": \\\"retry_same_scope\\\", \\\"reason\\\": \\\"retry_same_target_verifier_once\\\", \\\"execution_target\\\": {\\\"kind\\\": \\\"ssh\\\", \\\"label\\\": \\\"beast-host\\\", \\\"session_id\\\": \\\"\\\", \\\"host\\\": \\\"beast-host\\\", \\\"base\\\": \\\"/workspace/project\\\", \\\"container_id\\\": \\\"\\\", \\\"target_execution\\\": \\\"remote_ssh\\\"}, \\\"summary\\\": \\\"Run retry_same_command verification on the selected ssh target so repair evidence matches the real execution environment.\\\", \\\"prior_failure_class\\\": \\\"environment_issue\\\", \\\"retryable_without_code_change\\\": true}, \\\"prior_failure\\\": {\\\"failure_class\\\": \\\"environment_issue\\\", \\\"target_execution\\\": \\\"remote_ssh\\\", \\\"repair_cycle\\\": 1}}\\n\",\"stderr\":\"\",\"error\":\"\"},\"retryPayload\":{\"command\":[\"python3\",\"-m\",\"pytest\",\"-q\",\"tests/test_demo.py\"],\"reason\":\"retry_same_target_verifier_once\",\"scope\":\"retry_same_scope\",\"changed_paths\":[\"pkg/demo.py\"],\"execution_target\":{\"kind\":\"ssh\",\"label\":\"beast-host\",\"session_id\":\"\",\"host\":\"beast-host\",\"base\":\"/workspace/project\",\"container_id\":\"\",\"target_execution\":\"remote_ssh\"},\"target_execution\":\"remote_ssh\",\"catalog_matches\":[\"retryable_failure\"],\"strategy\":{\"mode\":\"target_native_remote\",\"family\":\"retry_same_command\",\"scope\":\"retry_same_scope\",\"reason\":\"retry_same_target_verifier_once\",\"execution_target\":{\"kind\":\"ssh\",\"label\":\"beast-host\",\"session_id\":\"\",\"host\":\"beast-host\",\"base\":\"/workspace/project\",\"container_id\":\"\",\"target_execution\":\"remote_ssh\"},\"summary\":\"Run retry_same_command verification on the selected ssh target so repair evidence matches the real execution environment.\",\"prior_failure_class\":\"environment_issue\",\"retryable_without_code_change\":true},\"prior_failure\":{\"failure_class\":\"environment_issue\",\"target_execution\":\"remote_ssh\",\"repair_cycle\":1}}}",
+            "name": "remote verification planner retries same target verifier once for retryable failures",
+            "status": "passed"
+          },
+          {
+            "detail": "{\"degradeResult\":{\"ok\":true,\"status\":0,\"stdout\":\"{\\\"command\\\": [\\\"python3\\\", \\\"-m\\\", \\\"py_compile\\\", \\\"pkg/demo.py\\\"], \\\"reason\\\": \\\"degraded_target_fallback_after_retryable_verifier_failure\\\", \\\"scope\\\": \\\"changed_files\\\", \\\"changed_paths\\\": [\\\"pkg/demo.py\\\"], \\\"execution_target\\\": {\\\"kind\\\": \\\"ssh\\\", \\\"label\\\": \\\"beast-host\\\", \\\"session_id\\\": \\\"\\\", \\\"host\\\": \\\"beast-host\\\", \\\"base\\\": \\\"/workspace/project\\\", \\\"container_id\\\": \\\"\\\", \\\"target_execution\\\": \\\"remote_ssh\\\"}, \\\"target_execution\\\": \\\"remote_ssh\\\", \\\"catalog_matches\\\": [\\\"retryable_failure\\\"], \\\"strategy\\\": {\\\"mode\\\": \\\"target_native_remote\\\", \\\"family\\\": \\\"python_compile\\\", \\\"scope\\\": \\\"changed_files\\\", \\\"reason\\\": \\\"degraded_target_fallback_after_retryable_verifier_failure\\\", \\\"execution_target\\\": {\\\"kind\\\": \\\"ssh\\\", \\\"label\\\": \\\"beast-host\\\", \\\"session_id\\\": \\\"\\\", \\\"host\\\": \\\"beast-host\\\", \\\"base\\\": \\\"/workspace/project\\\", \\\"container_id\\\": \\\"\\\", \\\"target_execution\\\": \\\"remote_ssh\\\"}, \\\"summary\\\": \\\"Run python_compile verification on the selected ssh target so repair evidence matches the real execution environment.\\\"}, \\\"prior_failure\\\": {\\\"failure_class\\\": \\\"environment_issue\\\", \\\"target_execution\\\": \\\"remote_ssh\\\", \\\"repair_cycle\\\": 2}}\\n\",\"stderr\":\"\",\"error\":\"\"},\"degradePayload\":{\"command\":[\"python3\",\"-m\",\"py_compile\",\"pkg/demo.py\"],\"reason\":\"degraded_target_fallback_after_retryable_verifier_failure\",\"scope\":\"changed_files\",\"changed_paths\":[\"pkg/demo.py\"],\"execution_target\":{\"kind\":\"ssh\",\"label\":\"beast-host\",\"session_id\":\"\",\"host\":\"beast-host\",\"base\":\"/workspace/project\",\"container_id\":\"\",\"target_execution\":\"remote_ssh\"},\"target_execution\":\"remote_ssh\",\"catalog_matches\":[\"retryable_failure\"],\"strategy\":{\"mode\":\"target_native_remote\",\"family\":\"python_compile\",\"scope\":\"changed_files\",\"reason\":\"degraded_target_fallback_after_retryable_verifier_failure\",\"execution_target\":{\"kind\":\"ssh\",\"label\":\"beast-host\",\"session_id\":\"\",\"host\":\"beast-host\",\"base\":\"/workspace/project\",\"container_id\":\"\",\"target_execution\":\"remote_ssh\"},\"summary\":\"Run python_compile verification on the selected ssh target so repair evidence matches the real execution environment.\"},\"prior_failure\":{\"failure_class\":\"environment_issue\",\"target_execution\":\"remote_ssh\",\"repair_cycle\":2}}}",
+            "name": "remote verification planner degrades to target-native syntax fallback after repeated retryable failures",
+            "status": "passed"
+          },
+          {
+            "detail": "{\"result\":{\"ok\":true,\"status\":0,\"stdout\":\"{\\\"first\\\": \\\"strong_remote\\\", \\\"second\\\": \\\"weak_local\\\", \\\"failure_pressure\\\": {\\\"failure_class\\\": \\\"logic_regression\\\", \\\"escalation_hint\\\": \\\"stronger_model_recommended\\\", \\\"execution_target\\\": \\\"ssh\\\", \\\"target_execution\\\": \\\"remote_ssh\\\", \\\"repair_cycle\\\": 2, \\\"hard_failure\\\": true, \\\"remote_failure\\\": true, \\\"strong_route_recommended\\\": true}}\\n\",\"stderr\":\"\",\"error\":\"\"},\"payload\":{\"first\":\"strong_remote\",\"second\":\"weak_local\",\"failure_pressure\":{\"failure_class\":\"logic_regression\",\"escalation_hint\":\"stronger_model_recommended\",\"execution_target\":\"ssh\",\"target_execution\":\"remote_ssh\",\"repair_cycle\":2,\"hard_failure\":true,\"remote_failure\":true,\"strong_route_recommended\":true}}}",
+            "name": "capability scorer prefers stronger route after hard remote repair failure",
+            "status": "passed"
+          },
+          {
+            "detail": "[]",
+            "name": "remote debug interruption recovery auto-resumes governed sessions",
+            "status": "passed"
+          },
+          {
+            "detail": "[]",
+            "name": "remote extension deploy and activation route inside SSH/container targets",
+            "status": "passed"
+          }
+        ],
         "skipped": 3
       },
       "returncode": 0,
@@ -96,37 +280,55 @@
     "local_parity_foundation": {
       "artifact": "build/PARITY_FOUNDATION.json",
       "payload": {
-        "checks": 89,
+        "checks": 93,
         "discovery": {
           "extensionHost": "desktop-runtime-ready",
           "summary": {
-            "available": 19,
-            "coverage": 100,
+            "available": 16,
+            "coverage": 84,
             "total": 19
           }
         },
-        "failed": [],
+        "failed": [
+          "native notebook documents preserve cells, outputs, and trust-aware MIME runtime summaries",
+          "Pair Programmer context and run details expand like chat controls",
+          "AI pair programmer parity acceptance is complete",
+          "Local Ollama coding fallback is selectable when registry is unavailable",
+          "remote editor saves detect server-side changes before overwrite",
+          "VS Code task definitions are explicit and workspace-bounded",
+          "streamed tasks expose background lifecycle and clickable problems",
+          "integrated terminal has persistent local shell lifecycle",
+          "source control workbench exposes diff, commit, branch, breadcrumbs, and keyboard flow",
+          "source control exposes hunks, conflicts, history, remotes, rebase, and cherry-pick",
+          "core editor parity acceptance is complete",
+          "multi-root workspaces persist, address files safely, and reach LSP",
+          "Explorer/workspace target parity is complete",
+          "Git source control parity is complete",
+          "per-folder Git, tasks, settings, and test contracts are native",
+          "Testing discovery and execution share the selected execution target"
+        ],
         "handshakes": {
-          "bash": false,
-          "clangd": false,
-          "dapLaunch": false,
-          "debugpy": false,
-          "delve": false,
-          "go": false,
-          "lldb": false,
-          "notebookKernel": false,
-          "pylsp": false,
-          "python": false,
-          "rust": false,
-          "typescript": false
+          "bash": "passed",
+          "clangd": "skipped",
+          "dapLaunch": "skipped",
+          "dapRestart": "skipped",
+          "debugpy": "skipped",
+          "delve": "skipped",
+          "go": "passed",
+          "lldb": "skipped",
+          "notebookKernel": "skipped",
+          "pylsp": "passed",
+          "python": "passed",
+          "rust": "skipped",
+          "typescript": "passed"
         },
         "mode": {
           "dap": "skipped",
           "kernel": "skipped",
-          "lsp": "skipped"
+          "lsp": "live"
         },
-        "ok": true,
-        "passed": 89,
+        "ok": false,
+        "passed": 77,
         "workbenches": {
           "aiProposal": {
             "error": "",
@@ -142,16 +344,19 @@
           }
         }
       },
-      "returncode": 0,
-      "status": "passed"
+      "returncode": 1,
+      "status": "failed"
     }
   },
   "contract_id": "beast.parity.v1",
   "contract_schema_version": 1,
-  "failed_checks": [],
-  "generated_at": "2026-07-19T12:25:01Z",
-  "identity_digest": "sha256:998399b3ca6e826aabca736e364eb08c66cbb48bac1c54916894dde1f2226efa",
+  "failed_checks": [
+    "enterprise_runtime_contract",
+    "local_parity_foundation"
+  ],
+  "generated_at": "2026-11-16T08:04:59Z",
+  "identity_digest": "sha256:8d3aa26c8e6e721e8e45442a0aecbcc10f245803701a8af8aef09c8ed141a876",
   "release_id": "BEAST-IDE-3.1.0-RC4",
   "schema": "beast.phase0-status.v1",
-  "status": "PASS"
+  "status": "FAIL"
 }

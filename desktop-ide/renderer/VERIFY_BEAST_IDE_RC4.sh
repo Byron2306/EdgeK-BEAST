@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
-/home/byron/EdgeK-BEAST/.venv/bin/python3.14 "$ROOT/tools/validate_release.py" "$ROOT"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PYTHON="${BEAST_PYTHON:-$SCRIPT_DIR/../../.venv/bin/python}"
+if [[ ! -x "$PYTHON" ]]; then
+  PYTHON=python3
+fi
+"$PYTHON" "$ROOT/tools/validate_release.py" "$ROOT"

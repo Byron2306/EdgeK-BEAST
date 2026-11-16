@@ -165,6 +165,8 @@ class SwarmKernel:
         db_path: Optional[str] = None,
         workspace_graph: Optional[Any] = None,
         services: Optional[SwarmKernelServices] = None,
+        quality_workspace_root: Optional[str] = None,
+        prec_execution_capability: Optional[object] = None,
     ):
         self.policies = policies or {}
         self.workspace_graph = workspace_graph
@@ -172,6 +174,12 @@ class SwarmKernel:
             policies=self.policies,
             workspace_graph=workspace_graph,
         )
+        # Trusted composition-root scope only. Never accept a workspace root from
+        # untrusted swarm payloads: quality tools execute subprocesses.
+        self.quality_workspace_root = (
+            Path(quality_workspace_root).resolve() if quality_workspace_root is not None else None
+        )
+        self._prec_execution_capability = prec_execution_capability
         self.lifecycle = HermesLifecycle()
         if db_path is None:
             db_path = Path(__file__).resolve().parents[2] / "data" / "swarm.db"
@@ -324,8 +332,29 @@ class SwarmKernel:
         events.append(self._event(run_id, "crystalist", state, "reuse_classified", crystal_decision))
 
         verifier = self._verifier_checks(payload, task_type)
-        if verifier["checks"]:
+        quality_report = self._native_quality_verification(payload, task_type)
+        if quality_report is not None:
+            accepted = quality_report.get("verification_accepted") is True
+            verifier = {
+                **verifier,
+                "decision": "quality_verified" if accepted else "quality_not_verified",
+                "verification_accepted": accepted,
+                "quality_report": quality_report,
+                "model_call_executed": False,
+            }
+        if verifier["checks"] or quality_report is not None:
             events.append(self._event(run_id, "verifier", state, verifier["decision"], verifier))
+
+        # Stage 3: analyze actual native failed checks AFTER verification.
+        # The initial planning Failure Analyst remains intact. This pass has
+        # no mutation, approval, solver, or model execution authority.
+        if quality_report is not None:
+            from app.kernel.networking.swarm_quality_diagnosis import analyze_quality_failures
+            native_diagnosis = analyze_quality_failures(quality_report)
+            if native_diagnosis is not None:
+                events.append(self._event(run_id, "failure_analyst", state,
+                                          "native_diagnostics_analyzed", native_diagnosis))
+                metadata["native_failure_diagnosis"] = native_diagnosis
 
         supervision = self._supervisor_check(payload, plan, gates)
         state = SwarmState.SUPERVISED
@@ -338,18 +367,34 @@ class SwarmKernel:
             events.append(self._event(run_id, "critic", state, critic["decision"], critic))
 
         status = self._final_status(supervision, critic)
+        verification_accepted = bool(
+            quality_report is not None and quality_report.get("verification_accepted") is True
+        )
+        # A successful planning cycle is not proof that a coding task executed.
+        # Preserve the existing 'ready' planning state; never report 'succeeded'
+        # without an independently verified execution record.
+        if status == "succeeded":
+            status = "ready"
+        if quality_report is not None and not verification_accepted:
+            status = "needs_revision"
+        verification_evidence = {
+            "status": "passed" if verification_accepted else "unverified",
+            "verification_accepted": verification_accepted,
+            "source": "native_quality_cascade" if quality_report is not None else "swarm_planning_only",
+        }
+        metadata["quality_verification"] = verification_evidence
         value = self._value_metrics(payload, plan, gates, status, compression=compression, critic=critic)
         learning = (self.services.scribe or Scribe()).compile_episode(
             task_class=task_type,
             events=[_json_safe(event) for event in events],
             execution=payload.get("execution_result"),
-            verification={"status": "passed" if status in ("ready", "succeeded") else "failed"},
+            verification=verification_evidence,
             critic=critic,
         )
         archive = (self.services.archivist or Archivist()).archive(
             learning,
             execution=payload.get("execution_result"),
-            verification={"status": "passed" if status in ("ready", "succeeded") else "failed"},
+            verification=verification_evidence,
             critic=critic,
         )
         events.append(self._event(run_id, "scribe", SwarmState.ARCHIVED, "chronicle_trace_prepared", {
@@ -371,6 +416,249 @@ class SwarmKernel:
                        plan, gates, value, now, _utc_now(), metadata)
         self._store_run(run, events)
         return self.get_run(run_id)
+
+    async def execute_prec_authorized(self, *, request: Dict[str, Any], provider_type: Any,
+                                      authorization: object, session_id: str = "default") -> Dict[str, Any]:
+        """Explicit host-only PREC entry point. Never called by run().
+
+        The capability is compared by identity against the trusted constructor binding.
+        Payload strings/booleans are not authorization credentials.
+        """
+        import copy
+        from app.kernel.sensorium.contracts import content_hash
+
+        if (self._prec_execution_capability is None or authorization is not self._prec_execution_capability):
+            return {"status": "refused", "reason": "trusted_execution_capability_required",
+                    "provider_called": False, "mutation_authorized": False}
+        if not isinstance(request, dict) or not isinstance(request.get("messages"), list):
+            return {"status": "refused", "reason": "invalid_prec_request", "provider_called": False,
+                    "mutation_authorized": False}
+        try:
+            from app.kernel.compute.perceive import ProviderType
+            if not isinstance(provider_type, ProviderType):
+                raise ValueError("invalid_provider_type")
+        except (ImportError, ValueError):
+            return {"status": "refused", "reason": "invalid_provider_type", "provider_called": False,
+                    "mutation_authorized": False}
+        objective = str(request.get("objective") or "Explicit governed PREC execution")
+        risk = self._risk_level(objective, request)
+        profile = self._execution_profile(request)
+        gates = self._sentinel_gates(objective, risk, request, profile)
+        if any(gate.get("decision") in ("block", "approval_required") for gate in gates):
+            return {"status": "refused", "reason": "swarm_sentinel_gate",
+                    "gates": gates, "provider_called": False, "mutation_authorized": False}
+        prec = self.services.prec_orchestrator
+        if prec is None or not callable(getattr(prec, "execute_cycle", None)):
+            return {"status": "refused", "reason": "prec_orchestrator_unbound",
+                    "provider_called": False, "mutation_authorized": False}
+        request_copy = copy.deepcopy(request)
+        request_hash = content_hash({"provider_type": provider_type.value, "request": request_copy})
+        try:
+            governance, response, ir = await prec.execute_cycle(request_copy, provider_type, session_id=session_id)
+        except Exception as exc:
+            return {"status": "failed", "reason": "prec_execution_exception", "error_type": type(exc).__name__,
+                    "request_hash": request_hash, "prec_invoked": True,
+                    "mutation_authorized": False, "verification_accepted": False}
+        decision = getattr(getattr(governance, "decision", None), "value", getattr(governance, "decision", None))
+        denied = str(decision).lower() in {"deny", "denied"}
+        error = not isinstance(response, dict) or "error" in response
+        return {"status": "governed_denial" if denied else "prec_returned",
+                "request_hash": request_hash, "response_hash": content_hash(response),
+                "prec_invoked": True, "governance_decision": str(decision),
+                "response_error_present": error, "source": "bound_prec_orchestrator",
+                "provider_called": None, "provider_call_attested": False,
+                "mission_persisted_attested": False, "task_completed_attested": False,
+                "verification_accepted": False, "mutation_authorized": False,
+                "route_promotion_authorized": False}
+
+    def evaluate_native_optimization(self, *, baseline: Any, candidate: Any,
+                                     task_class: str = "", candidate_lane: str = "candidate") -> Dict[str, Any]:
+        """Call native measurement gate and optional bound route selector, advisory-only."""
+        from app.kernel.compute.runtime_optimization_gate import evaluate_optimization
+        from types import SimpleNamespace
+
+        # Caller-supplied samples cannot authenticate provenance; suppress gate's
+        # vector/KV authority regardless of its favorable decision.
+        try:
+            measurement = evaluate_optimization(baseline=baseline, candidate=candidate,
+                                                candidate_lane=candidate_lane)
+        except (TypeError, ValueError, KeyError, AttributeError, ZeroDivisionError) as exc:
+            return {"status": "refused", "reason": "invalid_measurement_input",
+                    "error_type": type(exc).__name__, "route_promotion_authorized": False,
+                    "vector_or_kv_injection_authorized": False, "provider_execution_authorized": False}
+        route = None
+        optimizer = self.services.local_route_optimizer
+        if optimizer is not None and task_class:
+            try:
+                route = optimizer.choose_route(SimpleNamespace(task_class=task_class))
+            except Exception as exc:
+                return {"status": "refused", "reason": "local_route_optimizer_failed",
+                        "error_type": type(exc).__name__, "route_promotion_authorized": False,
+                        "vector_or_kv_injection_authorized": False, "provider_execution_authorized": False}
+        return {"status": "advisory_only", "native_measurement_gate_executed": True,
+                "native_route_optimizer_executed": bool(optimizer is not None and task_class),
+                "measurement_gate": {**measurement, "vector_or_kv_injection_authorized": False},
+                "candidate_route": route, "measurement_provenance": "caller_supplied_unattested",
+                "route_promotion_authorized": False, "vector_or_kv_injection_authorized": False,
+                "provider_execution_authorized": False, "source_mutation_authorized": False}
+
+    def _native_quality_verification(self, payload: Dict[str, Any], task_type: str) -> Optional[Dict[str, Any]]:
+        """Native checks, plus explicit scoped pytest execution; no source mutation authority."""
+        if payload.get("native_quality_verification") is not True:
+            return None
+        if self.quality_workspace_root is None:
+            return {"status": "refused", "verification_accepted": False,
+                    "reason": "trusted_workspace_scope_not_configured", "checks": []}
+        root = self.quality_workspace_root.resolve()
+        if not root.is_dir():
+            return {"status": "refused", "verification_accepted": False,
+                    "reason": "trusted_workspace_unavailable", "checks": []}
+        service = self.services.quality_cascade
+        if service is None:
+            return {"status": "refused", "verification_accepted": False,
+                    "reason": "native_quality_cascade_unbound", "checks": []}
+        if task_type not in {"code_change", "test_repair"}:
+            return {"status": "refused", "verification_accepted": False,
+                    "reason": "task_not_supported_for_native_quality", "checks": []}
+
+        requested = payload.get("native_quality_steps", ["py_compile", "pytest_collect"])
+        supported = {"py_compile", "pytest_collect", "git_status", "dependency_check", "pytest_targeted", "lint_python", "lint_javascript"}
+        if (not isinstance(requested, list) or not requested
+                or any(not isinstance(item, str) or item not in supported for item in requested)
+                or len(set(requested)) != len(requested)):
+            return {"status": "refused", "verification_accepted": False,
+                    "reason": "unsupported_empty_or_duplicate_quality_plan", "checks": []}
+
+        # Treat pytest arguments as a capability boundary, not arbitrary CLI input.
+        # Only explicitly named existing Python test files within the trusted tests/
+        # tree may run. No user-supplied flags, conftest targets, directories or paths
+        # outside the trusted tree, including through symlinks.
+        test_paths = []
+        if "pytest_targeted" in requested:
+            raw_paths = payload.get("native_quality_test_paths")
+            if (not isinstance(raw_paths, list) or not 1 <= len(raw_paths) <= 8
+                    or any(not isinstance(p, str) or not p for p in raw_paths)):
+                return {"status": "refused", "verification_accepted": False,
+                        "reason": "targeted_tests_required", "checks": []}
+            tests_root = (root / "tests").resolve()
+            if not tests_root.is_dir() or not tests_root.is_relative_to(root):
+                return {"status": "refused", "verification_accepted": False,
+                        "reason": "trusted_tests_root_unavailable", "checks": []}
+            for rel in raw_paths:
+                candidate_relative = Path(rel)
+                if (candidate_relative.is_absolute() or ".." in candidate_relative.parts
+                        or any(part.startswith("-") for part in candidate_relative.parts)
+                        or candidate_relative.suffix != ".py"
+                        or not candidate_relative.name.startswith("test_")
+                        or candidate_relative.name == "conftest.py"):
+                    return {"status": "refused", "verification_accepted": False,
+                            "reason": "unsafe_targeted_test_path", "checks": []}
+                candidate = (root / candidate_relative).resolve()
+                if not candidate.is_file() or not candidate.is_relative_to(tests_root):
+                    return {"status": "refused", "verification_accepted": False,
+                            "reason": "targeted_test_outside_trusted_tests", "checks": []}
+                test_paths.append(str(candidate.relative_to(root)))
+            if len(set(test_paths)) != len(test_paths):
+                return {"status": "refused", "verification_accepted": False,
+                        "reason": "duplicate_targeted_test_path", "checks": []}
+
+        lint_steps = [s for s in requested if s in {"lint_python", "lint_javascript"}]
+        lint_targets = {}
+        if lint_steps:
+            raw_lint_paths = payload.get("native_quality_lint_paths")
+            if (not isinstance(raw_lint_paths, list) or not 1 <= len(raw_lint_paths) <= 12
+                    or any(not isinstance(item, str) or not item for item in raw_lint_paths)):
+                return {"status": "refused", "verification_accepted": False,
+                        "reason": "explicit_lint_paths_required", "checks": []}
+            lint_targets = {"python": [], "javascript": []}
+            for rel in raw_lint_paths:
+                r = Path(rel)
+                if (r.is_absolute() or ".." in r.parts or any(p.startswith("-") for p in r.parts)
+                        or rel.startswith("/") or "\\" in rel):
+                    return {"status": "refused", "verification_accepted": False,
+                            "reason": "unsafe_lint_target", "checks": []}
+                candidate = root / r
+                if (not candidate.is_file() or candidate.is_symlink()
+                        or not candidate.resolve().is_relative_to(root)):
+                    return {"status": "refused", "verification_accepted": False,
+                            "reason": "lint_target_outside_trusted_workspace", "checks": []}
+                lang = "python" if r.suffix == ".py" else "javascript" if r.suffix in {".js", ".jsx", ".ts", ".tsx"} else None
+                if lang is None or f"lint_{lang}" not in lint_steps:
+                    return {"status": "refused", "verification_accepted": False,
+                            "reason": "lint_target_language_not_requested", "checks": []}
+                lint_targets[lang].append(str(r))
+            if (len(set(raw_lint_paths)) != len(raw_lint_paths)
+                    or any(not lint_targets[step.removeprefix("lint_")] for step in lint_steps)):
+                return {"status": "refused", "verification_accepted": False,
+                        "reason": "duplicate_or_missing_lint_targets", "checks": []}
+
+        envelope = {"task_id": str(payload.get("run_id") or "swarm-native-quality"),
+                    "task_class": task_type, "inputs": {"provider": "local"}}
+        route = {"route_id": "swarm-native-quality-r2-1", "provider": "local",
+                 "preferred_order": [s for s in requested if s not in {"pytest_targeted", "lint_python", "lint_javascript"}]}
+        try:
+            report = service.run(envelope, route, str(root))
+            if "pytest_targeted" in requested:
+                check = service.check_pytest(root, ["-q", *test_paths], timeout_seconds=60)
+                # Preserve the native CascadeCheck structure and evidence custody.
+                report["checks"].append(check.to_dict())
+                report["evidence_records"].append(
+                    service._check_evidence(check, "local", envelope, route)
+                )
+                report["route_execution"]["executed_order"].append("pytest")
+                report["route_execution"]["preferred_order"] = list(requested)
+                report["route_execution"]["source"] = "swarm_trusted_native_quality_plan"
+                report["summary"]["check_count"] += 1
+                report["summary"]["warnings" if check.status == "warning" else check.status if check.status in {"failed", "passed", "skipped"} else "warnings"] += 1
+                states = [c["status"] for c in report["checks"]]
+                accepted = bool(states) and all(s == "passed" for s in states)
+                report["verification_accepted"] = accepted
+                report["status"] = (
+                    "failed" if "failed" in states or "skipped" in states else
+                    "warning" if "warning" in states else "passed"
+                )
+                report["verification_reason"] = (
+                    "all_executed_checks_passed" if accepted else
+                    "targeted_pytest_failed_or_other_check_unverified"
+                )
+                report["targeted_tests"] = list(test_paths)
+            if lint_steps:
+                from app.kernel.data_processing.native_lint import run_native_lint
+                for step in lint_steps:
+                    language = step.removeprefix("lint_")
+                    check = run_native_lint(service, root, language, lint_targets[language])
+                    report["checks"].append(check.to_dict())
+                    report["evidence_records"].append(
+                        service._check_evidence(check, "local", envelope, route)
+                    )
+                    report["route_execution"]["executed_order"].append(check.name)
+                # Recompute all aggregate fields from actual check receipts, including
+                # missing linters. 'skipped' is NEVER verification acceptance.
+                states = [c["status"] for c in report["checks"]]
+                report["summary"] = {
+                    "check_count": len(states),
+                    "failed": states.count("failed"),
+                    "warnings": states.count("warning"),
+                    "passed": states.count("passed"),
+                    "skipped": states.count("skipped"),
+                }
+                report["route_execution"]["preferred_order"] = list(requested)
+                report["route_execution"]["source"] = "swarm_trusted_native_quality_plan"
+                report["verification_accepted"] = bool(states) and all(s == "passed" for s in states)
+                report["status"] = (
+                    "failed" if "failed" in states or "skipped" in states else
+                    "warning" if "warning" in states else "passed"
+                )
+                report["verification_reason"] = (
+                    "all_executed_checks_passed" if report["verification_accepted"] else
+                    "native_lint_failed_unavailable_or_other_check_unverified"
+                )
+                report["lint_targets"] = lint_targets
+            return report
+        except Exception as exc:
+            return {"status": "failed", "verification_accepted": False,
+                    "reason": "native_quality_execution_error",
+                    "error_type": type(exc).__name__, "checks": []}
 
     def governed_roles(self, profile: Optional[str] = None) -> Dict[str, Any]:
         profiles = PROFILE_BINDINGS

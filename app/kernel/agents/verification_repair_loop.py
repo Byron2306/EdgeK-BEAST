@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, Optional
 
@@ -66,7 +67,13 @@ class VerificationRepairLoop:
                 return {"status": "blocked", "rounds": rounds, "scope": request["scope"]}
             source_text = self.source() if self.source is not None else old
             slot_type = str(analysis.get("slot_type") or "python_expression")
-            if slot_type == "python_expression" and ("\n" in replacement or path in replacement or "import " in replacement):
+            # The repair request authorizes one expression regardless of
+            # the failure analyst's advisory slot classification.
+            try:
+                if "\n" in replacement or "\r" in replacement:
+                    raise SyntaxError("multiline residual")
+                ast.parse(replacement.strip(), mode="eval")
+            except (SyntaxError, ValueError, TypeError):
                 rounds.append({"round": number, "status": "blocked", "reason": "residual exceeded one-expression boundary", "failure_analysis": analysis})
                 return {"status": "blocked", "rounds": rounds, "scope": request["scope"]}
             critic = critique_candidate(source=source_text, old=old, new=replacement, slot_type=slot_type)

@@ -1,6 +1,7 @@
 (() => {
+  const DEFAULT_GATEWAY = 'http://127.0.0.1:8101';
   const listeners = { workspace: new Set(), refresh: new Set(), log: new Set() };
-  const demoMode = window.BEAST_ENABLE_DEMO === true && new URLSearchParams(location.search).get('demo') === '1';
+  const demoMode = new URLSearchParams(location.search).get('demo') === '1';
   const DEMO_FILES = {
     'src/core/router.py': `from dataclasses import dataclass\n\n@dataclass\nclass RouteDecision:\n    provider: str\n    model: str\n    reason: str\n\ndef choose_route(task: str) -> RouteDecision:\n    \"\"\"Prefer local inference, escalate only when evidence demands it.\"\"\"\n    if len(task) < 240:\n        return RouteDecision('ollama', 'qwen2.5-coder:7b', 'local-first')\n    return RouteDecision('nvidia_nim', 'nemotron', 'complexity escalation')\n`,
     'src/core/evidence_parser.py': `import json\nfrom pathlib import Path\n\ndef parse_evidence(path: Path) -> list[dict]:\n    rows: list[dict] = []\n    for line in path.read_text(encoding='utf-8').splitlines():\n        if not line.strip():\n            continue\n        rows.append(json.loads(line))\n    return rows\n`,
@@ -9,35 +10,85 @@
     'README.md': `# BEAST Editor Cortex\n\nPhase 2 demonstrates multi-tab editing, persistent dirty buffers, governed SourcePlan drafting, diff review, verification, and apply readiness.\n`
   };
 
-  function desktop() { return window.BeastRuntime?.desktop || window.beastDesktop || null; }
+  function desktop() { return window.beastDesktop || null; }
   function workspaceRoot() { return BeastStore.get().workspace.root || ''; }
-  const remotePrefix='beast-remote://';
-  function remoteRef(host,path) { return `${remotePrefix}${encodeURIComponent(String(host || ''))}/${encodeURIComponent(String(path || ''))}`; }
-  function parseRemoteRef(value) { const text=String(value || '');if(!text.startsWith(remotePrefix))return null;const body=text.slice(remotePrefix.length);const cut=body.indexOf('/');if(cut<1)return null;try{return {host:decodeURIComponent(body.slice(0,cut)),path:decodeURIComponent(body.slice(cut+1))};}catch(_){return null;} }
-  function gatewayUrl() { return window.BeastRuntime?.gatewayUrl || BeastStore.get().connection.gatewayUrl || window.gatewayUrl || 'http://127.0.0.1:8101'; }
+  function gatewayUrl() { return BeastStore.get().connection.gatewayUrl || window.gatewayUrl || DEFAULT_GATEWAY; }
+  function executionTarget() {
+    return BeastStore.get().workspace.executionTarget
+      || JSON.parse(localStorage.getItem('beast.v2.workspace.execution-target') || '{"kind":"local"}');
+  }
+
+  function setExecutionTarget(target = { kind: 'local' }) {
+    const kind = ['local', 'ssh', 'container'].includes(target?.kind) ? target.kind : 'local';
+    const selected = kind === 'ssh'
+      ? { kind, host: String(target.host || '').trim(), path: String(target.remoteRoot || target.path || '~'), remoteRoot: String(target.remoteRoot || target.path || '~'), remotePython: String(target.remotePython || ''), transport: 'ssh' }
+      : kind === 'container'
+        ? { kind, containerId: String(target.containerId || target.id || target.name || '').trim(), name: String(target.name || target.containerId || target.id || '').trim(), workspaceFolder: String(target.workspaceFolder || target.path || '/workspace'), root: String(target.root || workspaceRoot()), transport: 'docker' }
+        : { kind: 'local', label: 'Local workspace', root: workspaceRoot(), transport: 'local' };
+    localStorage.setItem('beast.v2.workspace.execution-target', JSON.stringify(selected));
+    BeastStore.patch('workspace', { executionTarget: selected });
+    const api = desktop();
+    if (api?.setExecutionTarget) {
+      Promise.resolve(api.setExecutionTarget(selected)).then(result => {
+        if (result?.ok === false) throw new Error(result.error || 'Execution target was rejected.');
+      }).catch(error => {
+        BeastStore.patch('compatibility', { runtime: { ...BeastStore.get().compatibility.runtime, remote: { ...BeastStore.get().compatibility.runtime.remote, targetError: String(error.message || error) } } });
+      });
+    }
+    return selected;
+  }
+
+  async function listExecutionTargets(options = {}) {
+    const api = desktop();
+    if (!api?.listExecutionTargets) throw new Error('Execution target discovery is available only in the BEAST desktop shell.');
+    const result = await api.listExecutionTargets({ ...options, root: workspaceRoot() });
+    if (!result?.ok) throw new Error(result?.error || 'Execution target discovery failed.');
+    if (result.active) {
+      localStorage.setItem('beast.v2.workspace.execution-target', JSON.stringify(result.active));
+      BeastStore.patch('workspace', { executionTarget: result.active });
+    }
+    return result;
+  }
+
+  function withTimeout(signal, timeoutMs = 5000) {
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort('timeout'), timeoutMs);
+    if (signal) signal.addEventListener('abort', () => controller.abort(signal.reason), { once: true });
+    return { signal: controller.signal, done: () => window.clearTimeout(timer) };
+  }
 
   async function fetchJson(path, options = {}) {
-    return await BeastRuntime.request(path, { ...options, timeoutMs: options.timeoutMs ?? 15000 });
+    const target = new URL(path, gatewayUrl());
+    const timer = withTimeout(options.signal, options.timeoutMs || 5000);
+    try {
+      const response = await fetch(target, {
+        method: options.method || 'GET',
+        headers: options.body ? { 'Content-Type': 'application/json' } : undefined,
+        body: options.body ? JSON.stringify(options.body) : undefined,
+        signal: timer.signal
+      });
+      if (!response.ok) throw new Error(`${response.status} ${response.statusText}`.trim());
+      return await response.json();
+    } finally { timer.done(); }
   }
 
   async function status(options = {}) {
     if (demoMode) {
-      const result = { gatewayUrl: 'http://127.0.0.1:8000', repoRoot: '/demo/BEAST', version: 'phase10-demo', health: { ok: true, local_mode: true } };
-      BeastStore.patch('connection', { status: 'online', gatewayUrl: 'http://127.0.0.1:8000', localMode: true, demoMode: true, build: 'BEAST Phase 10 Demo', checkedAt: Date.now(), error: '' });
+      const result = { gatewayUrl: DEFAULT_GATEWAY, repoRoot: '/demo/BEAST', version: 'phase6-demo', health: { ok: true, local_mode: true } };
+      BeastStore.patch('connection', { status: 'online', gatewayUrl: DEFAULT_GATEWAY, localMode: true, demoMode: true, build: 'BEAST Phase 6 Demo', checkedAt: Date.now(), error: '' });
       if (workspaceRoot() !== '/demo/BEAST') setRoot('/demo/BEAST');
       return result;
     }
     const api = desktop();
     try {
-      const result = api?.status ? await BeastRuntime.desktopCall('status',[options || {}]) : await fetchJson('/edgek/root-info', options);
-      const gateway = result?.gatewayUrl || BeastRuntime.gatewayUrl || window.gatewayUrl || 'http://127.0.0.1:8101';
+      const result = api?.status ? await api.status() : await fetchJson('/edgek/root-info', options);
+      const gateway = result?.gatewayUrl || window.gatewayUrl || DEFAULT_GATEWAY;
       BeastStore.patch('connection', {
         status: result?.health?.ok === false ? 'offline' : 'online', gatewayUrl: gateway,
-        localMode: Boolean(result?.health?.local_mode), build: result?.desktopVersion || result?.version || 'BEAST Phase 10',
+        localMode: Boolean(result?.health?.local_mode), build: result?.desktopVersion || result?.version || 'BEAST Phase 6',
         checkedAt: Date.now(), error: ''
       });
-      if (!workspaceRoot() && result?.repoRoot) setRoot(result.repoRoot,{folders:result.workspaceFolders||[]});
-      else if(Array.isArray(result?.workspaceFolders)&&result.workspaceFolders.length)setWorkspaceFolders(result.workspaceFolders);
+      if (!workspaceRoot() && result?.repoRoot) setRoot(result.repoRoot);
       window.gatewayUrl = gateway;
       return result;
     } catch (error) {
@@ -46,27 +97,22 @@
     }
   }
 
-  function setWorkspaceFolders(folders) { const rows=(Array.isArray(folders)?folders:[]).filter(item=>item&&item.path).slice(0,12).map(item=>({id:String(item.id||''),name:String(item.name||item.id||''),path:String(item.path),primary:Boolean(item.primary)}));try { localStorage.setItem('beast.v2.workspace.folders',JSON.stringify(rows)); } catch (_) {} BeastStore.patch('workspace',{roots:rows});return rows; }
-  function setExecutionTarget(target={}) { const next=['local','ssh','container'].includes(target.kind)?{...target,kind:target.kind}:{kind:'local'};try{localStorage.setItem('beast.v2.workspace.execution-target',JSON.stringify(next));}catch(_){}BeastStore.patch('workspace',{executionTarget:next});const api=desktop();if(api?.setExecutionTarget)BeastRuntime.desktopCall('setExecutionTarget',[next]).then(result=>{if(result?.target){try{localStorage.setItem('beast.v2.workspace.execution-target',JSON.stringify(result.target));}catch(_){}BeastStore.patch('workspace',{executionTarget:result.target});}}).catch(error=>BeastStore.patch('workspace',{error:String(error.message||error)}));return next; }
-  async function listExecutionTargets(payload={}) { const api=desktop();if(!api?.listExecutionTargets)return {ok:true,active:BeastStore.get().workspace.executionTarget,targets:[{kind:'local',label:'Local workspace',root:workspaceRoot(),active:true}]};const result=await BeastRuntime.desktopCall('listExecutionTargets',[payload],{required:true});if(result?.active){try{localStorage.setItem('beast.v2.workspace.execution-target',JSON.stringify(result.active));}catch(_){}BeastStore.patch('workspace',{executionTarget:result.active});}return result; }
-  async function executionTargetSessions() { const api=desktop(); if(!api?.executionTargetSessions) return {ok:true,sessions:[],active:BeastStore.get().workspace.executionTarget || {kind:'local'}}; return await BeastRuntime.desktopCall('executionTargetSessions',[],{required:true}); }
-  function setRoot(root, options = {}) {
-    const value = String(root || '').trim();
-    const explicitFolders = Array.isArray(options.folders) ? options.folders.filter(item => item && item.path) : [];
-    const rootName = value ? value.replace(/[\/]+$/, '').split(/[\/]/).pop() || 'workspace' : 'workspace';
-    const activeFolders = explicitFolders.length ? explicitFolders : (value ? [{ id:'active-workspace', name:rootName, path:value, primary:true }] : []);
-    if (value === workspaceRoot()) { if(activeFolders.length)setWorkspaceFolders(activeFolders); return value; }
-    window.BeastAICoding?.cancel?.();
+  function setRoot(root) {
+    // Normalize the native chooser result before it reaches stored workspace state.
+    const candidate = typeof root === 'string' ? root
+      : root && typeof root === 'object'
+        ? (root.path || root.root || root.workspaceRoot || '') : '';
+    if (typeof candidate !== 'string' || !candidate.trim() || candidate === '[object Object]') {
+      throw new Error('Workspace chooser returned no valid root path.');
+    }
+    const value = candidate;
     localStorage.setItem('beast.v2.workspace.root', value);
     BeastStore.transaction(next => {
-      next.workspace = { ...next.workspace, root: value, roots:activeFolders, selectedPath: '', currentText: '', originalText: '', dirty: false, error: '', indexedAt: 0 };
+      next.workspace = { ...next.workspace, root: value, selectedPath: '', currentText: '', originalText: '', dirty: false, error: '', indexedAt: 0 };
       next.editor = { ...next.editor, openTabs: [], activePath: '', dirtyPaths: [], outline: [], owner: 'unmounted' };
       next.sourcePlan = { ...next.sourcePlan, status: 'idle', message: 'No editor draft yet.', plan: null, lifecycle: null, selectedOperationIds: [], previewText: '', originalText: '', proposedText: '', activeOperationId: '', stale: false, error: '', lastApply: null };
-      next.aiCoding = { ...next.aiCoding, sessionId:'', streaming:false, status:'idle', error:'', messages:[], trace:[], contextFiles:[], selection:null, sourcePlanReady:false, sourcePlanId:'', crystal:{ action:'', source:'', confidence:0, reused:false, avoidedTokens:0, decisionId:'', recorded:false } };
-      if (!options.preserveWorktreeRegistry && next.worktrees) next.worktrees = { ...next.worktrees, registryRoot: '', root: '', items: [], selectedId: '', diff: '' };
     });
     window.workspaceRoot = value;
-    if(Array.isArray(options.folders))setWorkspaceFolders(options.folders);
     return value;
   }
 
@@ -74,18 +120,14 @@
     if (demoMode) return setRoot('/demo/BEAST');
     const api = desktop();
     if (!api?.chooseWorkspace) throw new Error('Workspace chooser is available only inside the BEAST desktop shell.');
-    const selected = await BeastRuntime.desktopCall('chooseWorkspace',[],{required:true});
-    const root=typeof selected==='string'?selected:selected?.root;
-    if (root) {
-      setRoot(root,{folders:selected?.folders||[]});
-      listeners.workspace.forEach(listener => listener(root));
-      BeastStore.addLedger(`Workspace selected: ${root}`);
+    const selected = await api.chooseWorkspace();
+    if (selected) {
+      setRoot(selected);
+      listeners.workspace.forEach(listener => listener(selected));
+      BeastStore.addLedger(`Workspace selected: ${selected}`);
     }
-    return root||'';
+    return selected;
   }
-  async function refreshWorkspaceFolders(){const result=await BeastRuntime.desktopCall('workspaceFolders',[],{required:true});if(result?.root)setRoot(result.root,{folders:result.folders||[]});return result||{root:workspaceRoot(),folders:BeastStore.get().workspace.roots||[]};}
-  async function addWorkspaceFolder(){const result=await BeastRuntime.desktopCall('addWorkspaceFolder',[],{required:true});if(result?.root)setRoot(result.root,{folders:result.folders||[]});return result;}
-  async function removeWorkspaceFolder(id){const result=await BeastRuntime.desktopCall('removeWorkspaceFolder',[id],{required:true});if(result?.ok&&result.root)setRoot(result.root,{folders:result.folders||[]});return result;}
 
   function normalizeFiles(payload) {
     const rows = Array.isArray(payload) ? payload : payload?.files || payload?.items || payload?.entries || [];
@@ -106,13 +148,7 @@
       else {
         const api = desktop();
         let payload;
-        const target=BeastStore.get().workspace.executionTarget || {kind:'local'};
-        // Local worktrees must be listed by their absolute active root. Using the
-        // previous workspace-folder ID here makes a freshly created worktree look
-        // empty even though Git checked out every tracked file correctly.
-        if (target.kind === 'local' && api?.listFiles) payload = await BeastRuntime.desktopCall('listFiles',[root, options.limit || 2000],{required:true});
-        else if (api?.listTargetFiles) payload = await BeastRuntime.desktopCall('listTargetFiles',[{rootId:workspaceFolderForPath('').folder?.id || '',rootPath:root,limit:options.limit || 2000,target}],{required:true});
-        else if (api?.listFiles) payload = await BeastRuntime.desktopCall('listFiles',[root, options.limit || 2000],{required:true});
+        if (api?.listFiles) payload = await api.listFiles(root, options.limit || 2000);
         else payload = await fetchJson(`/edgek/workspace/files?${new URLSearchParams({ root_path: root, limit: String(options.limit || 1000) })}`, options);
         files = normalizeFiles(payload);
       }
@@ -127,38 +163,14 @@
 
   async function loadFile(path, options = {}) {
     const root = workspaceRoot();
-    const remote=parseRemoteRef(path);
-    if ((!root && !remote) || !path) return null;
+    if (!root || !path) return null;
     if (demoMode) return { path, text: DEMO_FILES[path] ?? '', payload: { content: DEMO_FILES[path] ?? '', demo: true } };
     const api = desktop();
     let payload;
-    if (remote) {
-      if (!api?.readRemoteFile) throw new Error('Remote file access is available only in the BEAST desktop shell.');
-      payload=await BeastRuntime.desktopCall('readRemoteFile',[{host:remote.host,path:remote.path}],{required:true});
-    } else if (api?.readTargetFile) payload = await BeastRuntime.desktopCall('readTargetFile',[{rootId:workspaceFolderForPath(path).folder?.id || '',path:workspaceFolderForPath(path).path,maxChars:options.maxChars || 1000000,target:BeastStore.get().workspace.executionTarget || {kind:'local'}}]);
-    else if (api?.readFile) payload = await BeastRuntime.desktopCall('readFile',[root, path, options.maxChars || 1000000]);
+    if (api?.readFile) payload = await api.readFile(root, path, options.maxChars || 1000000);
     else payload = await fetchJson(`/edgek/workspace/file?${new URLSearchParams({ root_path: root, path, max_chars: String(options.maxChars || 1000000) })}`, options);
     const text = typeof payload === 'string' ? payload : payload?.content ?? payload?.text ?? '';
-    if (payload?.ok===false) throw new Error(payload.error || 'Unable to read remote file.');
-    return { path, text, payload, remote };
-  }
-
-  async function sha256(value) { if(!globalThis.crypto?.subtle)return '';const bytes=new TextEncoder().encode(String(value||''));const digest=await globalThis.crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(digest)].map(byte=>byte.toString(16).padStart(2,'0')).join(''); }
-
-  async function saveRemoteFile(reference, content, originalContent) {
-    const remote=parseRemoteRef(reference);if(!remote)throw new Error('Active editor tab is not a remote file.');
-    const api=desktop();if(!api?.writeRemoteFile)throw new Error('Remote file saves are available only in the BEAST desktop shell.');
-    const expectedDigest=originalContent===undefined?'':await sha256(originalContent);const result=await BeastRuntime.desktopCall('writeRemoteFile',[{host:remote.host,path:remote.path,content:String(content || ''),expectedDigest}],{required:true});if(!result?.ok){const error=new Error(result?.error || 'Remote file save failed.');error.conflict=Boolean(result?.conflict);throw error;}return result;
-  }
-
-  async function saveTargetFile(reference, content, originalContent) {
-    const target=BeastStore.get().workspace.executionTarget || {kind:'local'}; const folder=workspaceFolderForPath(reference); const api=desktop();
-    if (target.kind==='local') throw new Error('Local files remain SourcePlan-governed.');
-    if (!api?.writeTargetFile) throw new Error('Target-aware file saves are available only in the BEAST desktop shell.');
-    const expectedDigest=originalContent===undefined?'':`sha256:${await sha256(originalContent)}`;
-    const result=await BeastRuntime.desktopCall('writeTargetFile',[{rootId:folder.folder?.id || '',path:folder.path,content:String(content ?? ''),expectedDigest,target}],{required:true});
-    if (!result?.ok) { const error=new Error(result?.error || 'Target file save failed.'); error.conflict=Boolean(result?.conflict); throw error; }
-    return result;
+    return { path, text, payload };
   }
 
   async function readFile(path, options = {}) {
@@ -176,9 +188,8 @@
 
   function inferLanguage(path) {
     const ext = String(path || '').split('.').pop().toLowerCase();
-    return ({ js:'javascript', jsx:'javascript', ts:'typescript', tsx:'typescript', py:'python', json:'json', ipynb:'jupyter-notebook', md:'markdown', html:'html', css:'css', yml:'yaml', yaml:'yaml', sh:'shell', rs:'rust', go:'go', java:'java', c:'c', cpp:'cpp' })[ext] || 'plaintext';
+    return ({ js:'javascript', jsx:'javascript', ts:'typescript', tsx:'typescript', py:'python', json:'json', md:'markdown', html:'html', css:'css', yml:'yaml', yaml:'yaml', sh:'shell', rs:'rust', go:'go', java:'java', c:'c', cpp:'cpp' })[ext] || 'plaintext';
   }
-  function workspaceFolderForPath(reference){const value=String(reference||'');const match=value.match(/^@([^/]+)\/(.+)$/);const folders=BeastStore.get().workspace.roots||[];if(!match)return {root:workspaceRoot(),path:value,folder:folders.find(item=>item.primary)||folders[0]||null};const folder=folders.find(item=>item.id===match[1]);return {root:folder?.path||workspaceRoot(),path:match[2],folder:folder||null};}
 
   function normalizeMission(snapshot = {}, route = {}) {
     const current = BeastStore.get().mission;
@@ -217,19 +228,9 @@
       const params = new URLSearchParams();
       if (root) params.set('root_path', root);
       const selected = BeastStore.get().workspace.selectedPath;
-      const fullSnapshot = options.full === true;
       if (selected) params.set('active_file', selected);
-      // The IDE boot path is an availability probe.  The full Mission Cockpit
-      // and Code Cortex aggregation can take tens of seconds on a large repo;
-      // those subsystems have their own interactive surfaces and must not block
-      // the entire desktop shell.
-      params.set('objective', fullSnapshot ? (selected ? `Work on ${selected}` : 'BEAST desktop mission') : 'desktop-health');
+      params.set('objective', selected ? `Work on ${selected}` : 'BEAST desktop mission');
       const snap = await fetchJson(`/edgek/ide/snapshot?${params}`, options);
-      if (snap?.mode === 'lightweight_health_probe') {
-        BeastStore.patch('mission', { loading: false, error: '', lastRefreshAt: Date.now() });
-        BeastStore.addLedger('Gateway health snapshot refreshed');
-        return snap;
-      }
       let route = {};
       try { route = await fetchJson(`/edgek/mission/route?${params}`, { ...options, timeoutMs: 3000 }); } catch (_) {}
       const normalized = normalizeMission(snap, route || {});
@@ -263,133 +264,54 @@
 
   async function classifyFileOperation(operation, options = {}) {
     if (demoMode || BeastStore.get().connection.status !== 'online') return { decision: 'warn', risk_level: 'local', reasons: [{ detail: 'Gateway unavailable or demo mode; operator confirmation required.' }] };
-    return await fetchJson('/edgek/safety-governor/classify-command', { ...options, method: 'POST', body: { root_path: workspaceRoot(), command: operationCommand(operation), mode: 'operator', task_id: '', operator_override: 'Desktop IDE file mutation requires explicit operator confirmation.' } });
+    return await fetchJson('/edgek/safety-governor/classify-command', { ...options, method: 'POST', body: { root_path: workspaceRoot(), command: operationCommand(operation), mode: 'operator', task_id: '', operator_override: 'BEAST Phase 2 file mutation requires explicit operator confirmation.' } });
   }
 
   async function fileOperation(operation, options = {}) {
     const api = desktop();
     if (demoMode) return { ok: false, error: 'Demo workspace is read-only.' };
     if (!api?.fileOperation) throw new Error('Desktop fileOperation API is unavailable.');
-    return await BeastRuntime.desktopCall('fileOperation',[workspaceRoot(), operation, options],{required:true});
+    return await api.fileOperation(workspaceRoot(), operation, options);
   }
 
   async function draftSourcePlan({ path, originalText, newText, selectedHunks = [] }, options = {}) {
     if (!path) throw new Error('Select a file before drafting SourcePlan.');
-    const localPreview = () => {
+    if (demoMode || BeastStore.get().connection.status !== 'online') {
       const opId = `op-${Date.now().toString(36)}`;
-      const changed = String(originalText || '') !== String(newText || '');
-      const diff = localDiff(originalText, newText);
       return {
-        ok: true,
-        local: true,
-        plan: {
-          plan_id: `LOCAL-${Date.now().toString(36).toUpperCase()}`,
-          status: changed ? 'local_preview_requires_gateway' : 'local_preview',
-          path,
-          operations: [{
-            operation_id: opId,
-            op: changed ? 'replace_file' : 'inspect_file',
-            path,
-            selected: true,
-            risk: changed ? 'medium' : 'low',
-            summary: changed
-              ? 'Replace active editor buffer through governed apply.'
-              : 'Inspect the active file and compile a no-op SourcePlan.'
-          }],
-          selected_operations: [opId]
-        },
-        preview_text: diff,
-        preview: { operations: [{ operation_id: opId, diff_lines: diff.split('\n') }] },
-        error: 'Gateway is unavailable. The diff is local preview only; no SourcePlan was verified or applied.'
+        ok: true, local: true,
+        plan: { plan_id: `LOCAL-${Date.now().toString(36).toUpperCase()}`, status: 'draft_requires_gateway', path, operations: [{ operation_id: opId, op: 'replace_file', path, selected: true, risk: 'medium', summary: 'Replace active editor buffer through governed apply.' }], selected_operations: [opId] },
+        preview_text: localDiff(originalText, newText),
+        preview: { operations: [{ operation_id: opId, diff_lines: localDiff(originalText, newText).split('\n') }] }
       };
-    };
-    if (demoMode) return localPreview();
-    if (BeastStore.get().connection.status !== 'online') return localPreview();
-    const target=workspaceFolderForPath(path);
-    try {
-      const result = await fetchJson('/edgek/ide/sourceplan/from-editor', {
-        ...options,
-        method: 'POST', timeoutMs: options.timeoutMs || 60000,
-        body: {
-          root_path: target.root,
-          path: target.path,
-          original_text: originalText,
-          new_text: newText,
-          objective: `Apply governed BEAST editor changes to ${path}`,
-          provider: localStorage.getItem('beast.provider') || 'nvidia_nim',
-          model: localStorage.getItem('beast.model') || 'meta/llama-3.1-8b-instruct',
-          selected_hunks: selectedHunks
-        }
-      });
-      if (!result) throw new Error('Gateway returned no SourcePlan draft.');
-      if (result.ok === false) {
-        const fallback = localPreview();
-        fallback.gatewayError = String(result.error || 'Gateway rejected the SourcePlan draft.');
-        fallback.error = fallback.gatewayError;
-        return fallback;
-      }
-      if(result.plan&&typeof result.plan==='object')result.plan.__beastWorkspaceRoot=target.root;else if(typeof result==='object')result.__beastWorkspaceRoot=target.root;
-      return result;
-    } catch (error) {
-      const fallback = localPreview();
-      fallback.gatewayError = String(error.message || error);
-      fallback.error = `Gateway confirmation unavailable: ${fallback.gatewayError}`;
-      return fallback;
     }
+    return await fetchJson('/edgek/ide/sourceplan/from-editor', { ...options, method: 'POST', body: { root_path: workspaceRoot(), path, original_text: originalText, new_text: newText, objective: `Apply governed BEAST editor changes to ${path}`, provider: localStorage.getItem('beast.provider') || 'nvidia_nim', model: localStorage.getItem('beast.model') || 'meta/llama-3.1-8b-instruct', selected_hunks: selectedHunks } });
   }
 
   async function sourcePlanLifecycle(plan, options = {}) {
     if (!plan) return null;
-    const unavailable = {
-      plan_id: plan.plan_id,
-      status: 'gateway_unavailable',
-      can_verify: false,
-      can_apply: false,
-      score: 0,
-      risk: 'unverified',
-      stale_operations: [],
-      operations: plan.operations || [],
-      checks: [
-        { label: 'Gateway verification', status: 'missing' },
-        { label: 'Rollback receipt', status: 'missing' }
-      ],
-      action_contract: { requires_approval: true, evidence_closure: true, rollback_required: true }
-    };
-    if (demoMode || BeastStore.get().connection.status !== 'online') return unavailable;
-    try {
-      return await fetchJson('/edgek/ide/sourceplan/lifecycle', { ...options, method: 'POST', timeoutMs: options.timeoutMs ?? 30000, body: { root_path: plan.__beastWorkspaceRoot||workspaceRoot(), plan, verification: options.verification || null, include_verification: Boolean(options.includeVerification) } });
-    } catch (error) {
-      throw new Error(`SourcePlan lifecycle requires gateway confirmation: ${String(error.message || error)}`);
+    if (demoMode || BeastStore.get().connection.status !== 'online') {
+      const ops = plan.operations || [];
+      return { plan_id: plan.plan_id, status: 'draft_requires_gateway', can_verify: false, can_apply: false, score: 72, risk: 'medium', stale_operations: [], operations: ops, checks: [{ label: 'Editor diff compiled', status: 'pass' }, { label: 'Gateway verification', status: 'pending' }, { label: 'Rollback receipt', status: 'pending' }], action_contract: { requires_approval: true, evidence_closure: true, rollback_required: true } };
     }
+    return await fetchJson('/edgek/ide/sourceplan/lifecycle', { ...options, method: 'POST', body: { root_path: workspaceRoot(), plan } });
   }
 
   async function verifySourcePlan(plan, options = {}) {
     if (!plan) throw new Error('No SourcePlan draft to verify.');
-    if (demoMode || BeastStore.get().connection.status !== 'online') throw new Error('SourcePlan verification requires a live gateway.');
-    try {
-      return await fetchJson('/edgek/sourceplan/verify', { ...options, method: 'POST', timeoutMs: options.timeoutMs || 90000, body: { root_path: plan.__beastWorkspaceRoot||workspaceRoot(), plan } });
-    } catch (error) {
-      throw new Error(`SourcePlan verification failed: ${String(error.message || error)}`);
-    }
+    if (demoMode || BeastStore.get().connection.status !== 'online') throw new Error('Verification requires the BEAST gateway.');
+    return await fetchJson('/edgek/sourceplan/verify', { ...options, method: 'POST', body: { root_path: workspaceRoot(), plan } });
   }
 
   async function applySourcePlan(plan, options = {}) {
     if (!plan) throw new Error('No SourcePlan draft to apply.');
-    if (demoMode || BeastStore.get().connection.status !== 'online') throw new Error('SourcePlan apply requires a live gateway.');
-    try {
-      return await fetchJson('/edgek/sourceplan/apply', { ...options, method: 'POST', timeoutMs: options.timeoutMs || 90000, body: { root_path: plan.__beastWorkspaceRoot||workspaceRoot(), plan, approved: true, approval_source: options.approval_source || 'sourceplan_apply_button' } });
-    } catch (error) {
-      throw new Error(`SourcePlan apply failed: ${String(error.message || error)}`);
-    }
+    if (demoMode || BeastStore.get().connection.status !== 'online') throw new Error('Apply requires the BEAST gateway.');
+    return await fetchJson('/edgek/sourceplan/apply', { ...options, method: 'POST', body: { root_path: workspaceRoot(), plan, approved: true } });
   }
 
   async function rollbackLatestSourcePlan(options = {}) {
-    if (demoMode || BeastStore.get().connection.status !== 'online') throw new Error('SourcePlan rollback requires a live gateway.');
-    try {
-      return await fetchJson('/edgek/sourceplan/rollback-latest', { ...options, method: 'POST', timeoutMs: options.timeoutMs || 90000, body: { root_path: workspaceRoot() } });
-    } catch (error) {
-      throw new Error(`SourcePlan rollback failed: ${String(error.message || error)}`);
-    }
+    if (demoMode || BeastStore.get().connection.status !== 'online') throw new Error('Rollback requires the BEAST gateway.');
+    return await fetchJson('/edgek/sourceplan/rollback-latest', { ...options, method: 'POST', body: { root_path: workspaceRoot() } });
   }
 
   function localDiff(originalText = '', newText = '') {
@@ -405,27 +327,20 @@
     return out.join('\n');
   }
 
-  let desktopEventsBound = false;
   function bindDesktopEvents() {
-    if (desktopEventsBound) return;
-    desktopEventsBound = true;
-    BeastRuntime.on('workspace', payload => {
-      const root=typeof payload==='string'?payload:payload?.root;
-      if (!root) return;
-      if (String(root) === workspaceRoot()) { if(Array.isArray(payload?.folders))setWorkspaceFolders(payload.folders); return; }
-      setRoot(root,{folders:payload?.folders||[]}); listeners.workspace.forEach(listener => listener(root));
-    });
-    BeastRuntime.on('refresh', () => listeners.refresh.forEach(listener => listener()));
-    BeastRuntime.on('log', lines => listeners.log.forEach(listener => listener(lines)));
-    BeastRuntime.bindDesktopEvents?.();
+    const api = desktop();
+    api?.onWorkspaceSelected?.(root => { setRoot(root); listeners.workspace.forEach(listener => listener(root)); });
+    api?.onRefresh?.(() => listeners.refresh.forEach(listener => listener()));
+    api?.onGatewayLog?.(lines => listeners.log.forEach(listener => listener(lines)));
   }
 
   function on(type, listener) { listeners[type]?.add(listener); return () => listeners[type]?.delete(listener); }
 
   window.BeastDesktopBridge = {
-    status, chooseWorkspace, setRoot, setWorkspaceFolders, setExecutionTarget, listExecutionTargets, executionTargetSessions, refreshWorkspaceFolders, addWorkspaceFolder, removeWorkspaceFolder, listFiles, loadFile, readFile, snapshot, actionsManifest,
-    inferLanguage, workspaceFolderForPath, remoteRef, parseRemoteRef, saveRemoteFile, saveTargetFile, classifyFileOperation, fileOperation, draftSourcePlan, sourcePlanLifecycle,
+    status, chooseWorkspace, setRoot, listFiles, loadFile, readFile, snapshot, actionsManifest,
+    inferLanguage, classifyFileOperation, fileOperation, draftSourcePlan, sourcePlanLifecycle,
     verifySourcePlan, applySourcePlan, rollbackLatestSourcePlan, localDiff, bindDesktopEvents, on, fetchJson,
+    executionTarget, setExecutionTarget, listExecutionTargets,
     get workspaceRoot() { return workspaceRoot(); }, get gatewayUrl() { return gatewayUrl(); }, get demoMode() { return demoMode; }
   };
 })();

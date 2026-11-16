@@ -6,6 +6,7 @@ optional live provider teachers.
 """
 
 from __future__ import annotations
+from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 
 import ast
 import hashlib
@@ -269,7 +270,7 @@ class HardCodingTeacher:
             f"Broken source:\n{spec.broken_source}\nTests:\n{spec.tests_source}"
         )
         started = time.perf_counter()
-        response = self.client.post(
+        response = _egress.post(self.client, "hard_coding_crystallization_gauntlet", 
             self.ollama_host + "/api/generate",
             json={
                 "model": self.ollama_model,

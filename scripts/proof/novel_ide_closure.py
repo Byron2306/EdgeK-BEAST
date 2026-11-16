@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 """End-to-end novel IDE task: Ollama residual -> bounded edit -> proof."""
 from __future__ import annotations
+try:  # closure-2026-11-16: governed egress shim
+    from app.kernel.compute import governed_egress as _egress
+except ModuleNotFoundError:  # run as a script: repo root not on sys.path yet
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _sys.path.insert(0, str(_Path(__file__).resolve().parents[2]))
+    from app.kernel.compute import governed_egress as _egress
 
 import argparse
 import hashlib
@@ -37,7 +45,7 @@ def request_ollama(prompt: str, schema: dict, *, timeout: float) -> tuple[dict, 
     endpoint = os.environ.get("OLLAMA_BASE_URL", "http://127.0.0.1:11434").rstrip("/") + "/api/generate"
     request = urllib.request.Request(endpoint, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"}, method="POST")
     started = time.perf_counter()
-    with urllib.request.urlopen(request, timeout=timeout) as response:
+    with _egress.urlopen("novel_ide_closure", request, timeout=timeout) as response:
         body = json.loads(response.read().decode())
     raw = body.get("response") or "{}"
     candidate = json.loads(raw) if isinstance(raw, str) else raw

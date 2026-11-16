@@ -1,0 +1,268 @@
+{
+  "actions": [
+    {
+      "pid_file": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/deploy/run/gateway.pid",
+      "service": "gateway",
+      "status": "would_stop_managed"
+    },
+    {
+      "pid_file": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/deploy/run/mcp-http.pid",
+      "service": "mcp_http",
+      "status": "would_stop_managed"
+    },
+    {
+      "pid_file": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/deploy/run/litellm.pid",
+      "service": "litellm",
+      "status": "would_stop_managed"
+    },
+    {
+      "pid_file": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/deploy/run/ollama.pid",
+      "service": "ollama",
+      "status": "would_stop_managed"
+    },
+    {
+      "address": "127.0.0.1:8101",
+      "pids": [
+        1068209
+      ],
+      "port": 8101,
+      "service": "gateway",
+      "status": "would_kill"
+    },
+    {
+      "address": "127.0.0.1:8765",
+      "pids": [
+        830156
+      ],
+      "port": 8765,
+      "service": "mcp_http",
+      "status": "would_kill"
+    },
+    {
+      "address": "127.0.0.1:4000",
+      "pids": [
+        830027
+      ],
+      "port": 4000,
+      "service": "litellm",
+      "status": "would_kill"
+    },
+    {
+      "address": "127.0.0.1:8080",
+      "pids": [],
+      "port": 8080,
+      "service": "nginx",
+      "status": "would_check_no_listener"
+    },
+    {
+      "address": "127.0.0.1:11434",
+      "pids": [],
+      "port": 11434,
+      "service": "ollama",
+      "status": "would_check_no_listener"
+    },
+    {
+      "service": "ollama",
+      "status": "would_restart"
+    },
+    {
+      "service": "litellm",
+      "status": "would_restart"
+    },
+    {
+      "service": "gateway",
+      "status": "would_restart"
+    },
+    {
+      "service": "mcp_http",
+      "status": "would_restart"
+    },
+    {
+      "service": "nginx",
+      "status": "would_restart"
+    }
+  ],
+  "after": {
+    "gateway": {
+      "ok": true,
+      "path": "/health",
+      "payload": {
+        "active_sessions": 0,
+        "service": "edgek-beast-gateway",
+        "status": "healthy",
+        "total_requests": 672,
+        "version": "0.1.0"
+      }
+    },
+    "litellm": {
+      "ok": true
+    },
+    "mcp_gateway": {
+      "ok": true,
+      "path": "/mcp/health",
+      "payload": {
+        "service": "edgek-beast-mcp-http",
+        "status": "healthy",
+        "transport": "http-facade",
+        "version": "1.0.0"
+      }
+    },
+    "mcp_http": {
+      "ok": true
+    },
+    "nginx": {
+      "ok": false,
+      "path": "http://127.0.0.1:8080/health"
+    },
+    "ollama": {
+      "ok": true
+    },
+    "proxy": {
+      "ok": true,
+      "path": "/proxy/health",
+      "payload": {
+        "backend_classes": [
+          "litellm",
+          "native_anthropic",
+          "native_gemini",
+          "native_huggingface",
+          "native_replicate",
+          "ollama",
+          "openai_compatible"
+        ],
+        "base_url": "http://127.0.0.1:8000/proxy",
+        "governance": "BEAST proxy remains in front of native, OpenAI-compatible, LiteLLM, and Ollama lanes.",
+        "lanes": {
+          "compatibility": "/v1/*",
+          "mcp_governance": "stdio beast mcp or HTTP /mcp/*",
+          "provider_explicit": "/proxy/<provider>/*"
+        },
+        "providers": [
+          "anthropic",
+          "cerebras",
+          "codex",
+          "cohere",
+          "deepinfra",
+          "fal",
+          "featherless",
+          "google",
+          "groq",
+          "huggingface",
+          "hyperbolic",
+          "litellm",
+          "llama_cpp",
+          "local_nim",
+          "novita",
+          "nscale",
+          "nvidia_nim",
+          "ollama",
+          "openai",
+          "openrouter",
+          "ovhcloud",
+          "replicate",
+          "sglang",
+          "tensorrt_llm",
+          "tgi",
+          "vllm",
+          "xai"
+        ],
+        "service": "edgek-beast-proxy",
+        "status": "healthy"
+      }
+    }
+  },
+  "before": {
+    "gateway": {
+      "ok": true,
+      "path": "/health",
+      "payload": {
+        "active_sessions": 0,
+        "service": "edgek-beast-gateway",
+        "status": "healthy",
+        "total_requests": 672,
+        "version": "0.1.0"
+      }
+    },
+    "litellm": {
+      "ok": true
+    },
+    "mcp_gateway": {
+      "ok": true,
+      "path": "/mcp/health",
+      "payload": {
+        "service": "edgek-beast-mcp-http",
+        "status": "healthy",
+        "transport": "http-facade",
+        "version": "1.0.0"
+      }
+    },
+    "mcp_http": {
+      "ok": true
+    },
+    "nginx": {
+      "ok": false,
+      "path": "http://127.0.0.1:8080/health"
+    },
+    "ollama": {
+      "ok": true
+    },
+    "proxy": {
+      "ok": true,
+      "path": "/proxy/health",
+      "payload": {
+        "backend_classes": [
+          "litellm",
+          "native_anthropic",
+          "native_gemini",
+          "native_huggingface",
+          "native_replicate",
+          "ollama",
+          "openai_compatible"
+        ],
+        "base_url": "http://127.0.0.1:8000/proxy",
+        "governance": "BEAST proxy remains in front of native, OpenAI-compatible, LiteLLM, and Ollama lanes.",
+        "lanes": {
+          "compatibility": "/v1/*",
+          "mcp_governance": "stdio beast mcp or HTTP /mcp/*",
+          "provider_explicit": "/proxy/<provider>/*"
+        },
+        "providers": [
+          "anthropic",
+          "cerebras",
+          "codex",
+          "cohere",
+          "deepinfra",
+          "fal",
+          "featherless",
+          "google",
+          "groq",
+          "huggingface",
+          "hyperbolic",
+          "litellm",
+          "llama_cpp",
+          "local_nim",
+          "novita",
+          "nscale",
+          "nvidia_nim",
+          "ollama",
+          "openai",
+          "openrouter",
+          "ovhcloud",
+          "replicate",
+          "sglang",
+          "tensorrt_llm",
+          "tgi",
+          "vllm",
+          "xai"
+        ],
+        "service": "edgek-beast-proxy",
+        "status": "healthy"
+      }
+    }
+  },
+  "changed": true,
+  "command": "heal",
+  "mode": "full_restart",
+  "status": "dry_run",
+  "timestamp": 1794807947.4731207
+}

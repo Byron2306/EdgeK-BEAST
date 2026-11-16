@@ -1,0 +1,133 @@
+{
+  "all_refused_correctly": true,
+  "case_count": 12,
+  "cases": [
+    {
+      "authority_consumed": true,
+      "case_id": "capability_replay",
+      "evidence_digest": "sha256:395fcabdda544abcdbc6ecb03538512e11ea456738cd40d1b57d893be5ff07be",
+      "expected_refusal": "capability replay",
+      "observed_refusal": "capability replay",
+      "physical_effects": 0,
+      "refused": true,
+      "residue_detected": false
+    },
+    {
+      "authority_consumed": false,
+      "case_id": "stale_process_lease",
+      "evidence_digest": "sha256:ebff52465df62d779efa3009f478b170c09d5a30332a5d2a4d27814d04949765",
+      "expected_refusal": "stale_process_lease",
+      "observed_refusal": "stale_process_lease",
+      "physical_effects": 0,
+      "refused": true,
+      "residue_detected": false
+    },
+    {
+      "authority_consumed": false,
+      "case_id": "arda_refusal",
+      "evidence_digest": "sha256:26f672590c2d9d80560eac636025fe3b959eac7d5dcd2df3a661b789fba2932c",
+      "expected_refusal": "arda_refused",
+      "observed_refusal": "arda_refused",
+      "physical_effects": 0,
+      "refused": true,
+      "residue_detected": false
+    },
+    {
+      "authority_consumed": false,
+      "case_id": "wrong_peer",
+      "evidence_digest": "sha256:92439e92310c5221c24ccfff10142cff491f8e4c0b2ab1817920a40c893b3d26",
+      "expected_refusal": "uid",
+      "observed_refusal": "uid_mismatch",
+      "physical_effects": 0,
+      "refused": true,
+      "residue_detected": false
+    },
+    {
+      "authority_consumed": false,
+      "case_id": "missing_seals",
+      "evidence_digest": "sha256:0ac96d3c72caac1d8c55bb710ae101d177e11d8658730a43f5c11ad0307fe126",
+      "expected_refusal": "required kernel seals missing",
+      "observed_refusal": "required kernel seals missing",
+      "physical_effects": 0,
+      "refused": true,
+      "residue_detected": false
+    },
+    {
+      "authority_consumed": false,
+      "case_id": "policy_drift",
+      "evidence_digest": "sha256:d30e5b9d51965af27d3ef4c0873aab465cc54b94b406933ff94815329386c6c2",
+      "expected_refusal": "policy drift",
+      "observed_refusal": "policy drift",
+      "physical_effects": 0,
+      "refused": true,
+      "residue_detected": false
+    },
+    {
+      "authority_consumed": false,
+      "case_id": "source_state_drift",
+      "evidence_digest": "sha256:6edd9a822a2df52b9d75455fe5f812a097ced3513041b38f59cdb524811cdb46",
+      "expected_refusal": "source-state drift",
+      "observed_refusal": "source-state drift",
+      "physical_effects": 0,
+      "refused": true,
+      "residue_detected": false
+    },
+    {
+      "authority_consumed": false,
+      "case_id": "workspace_escape",
+      "evidence_digest": "sha256:627e5333f2355f29f4fa2ef2a51a73a9486fe0160afdce25a24ffbc086d04c75",
+      "expected_refusal": "escapes bounded workspace",
+      "observed_refusal": "target escapes bounded workspace",
+      "physical_effects": 0,
+      "refused": true,
+      "residue_detected": false
+    },
+    {
+      "authority_consumed": false,
+      "case_id": "message_fd_substitution",
+      "evidence_digest": "sha256:af7dad9f7db8ee05fc2c755dca78739cb26ae884d60d08a2a26f5422109fd31e",
+      "expected_refusal": "does not bind",
+      "observed_refusal": "control message does not bind received capsule",
+      "physical_effects": 0,
+      "refused": true,
+      "residue_detected": false
+    },
+    {
+      "authority_consumed": false,
+      "case_id": "revoked_promotion",
+      "evidence_digest": "sha256:cec962761385b9eedb5e95c139baa84e9c9eea3b786621e0e49aa60dd9439fde",
+      "expected_refusal": "promotion revoked",
+      "observed_refusal": "promotion revoked or unknown",
+      "physical_effects": 0,
+      "refused": true,
+      "residue_detected": false
+    },
+    {
+      "authority_consumed": false,
+      "case_id": "sequence_replay",
+      "evidence_digest": "sha256:25b219430f218958a3c83c476cb413be8b9b6181ba2b1fa76a501c25dcc5e37b",
+      "expected_refusal": "replay",
+      "observed_refusal": "sequence gap or replay",
+      "physical_effects": 0,
+      "refused": true,
+      "residue_detected": false
+    },
+    {
+      "authority_consumed": true,
+      "case_id": "postcondition_failure",
+      "evidence_digest": "sha256:0b64986fdfc341ea151542647c4c4a3966f72eeaa8bff59c757c3bebbe2071ca",
+      "expected_refusal": "verification_failed",
+      "observed_refusal": "verification_failed",
+      "physical_effects": 0,
+      "refused": true,
+      "residue_detected": false
+    }
+  ],
+  "created_at": "2026-07-20T10:32:05.930194+00:00",
+  "evidence_digest": "sha256:18297e7ce8d056a43c64b2d3f7840ad16601a9c968764222c27bfbd760913e4d",
+  "gauntlet_id": "grand-closure-g6-hostile-refusal",
+  "raw_payload_retained": false,
+  "residue_detected": false,
+  "total_authorities_consumed": 2,
+  "total_physical_effects": 0
+}

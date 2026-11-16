@@ -1,0 +1,253 @@
+{
+  "governor_chain": {
+    "count": 4,
+    "errors": [],
+    "valid": true
+  },
+  "model_calls": [
+    {
+      "at": 1794806051.2157276,
+      "billable": "unknown",
+      "failed": true,
+      "latency_ms": 300820.245,
+      "model": "deepseek-ai/deepseek-v4.1-flash",
+      "phase": "h2h-retry300",
+      "provider": "nim:deepseek",
+      "status": "ReadTimeout",
+      "task": "const-cold",
+      "tokens_total": 0
+    },
+    {
+      "at": 1794806352.3121727,
+      "billable": "unknown",
+      "failed": true,
+      "latency_ms": 300679.049,
+      "model": "openai/gpt-oss-20b",
+      "phase": "h2h-retry300",
+      "provider": "nim:gpt-oss",
+      "status": "ReadTimeout",
+      "task": "const-cold",
+      "tokens_total": 0
+    },
+    {
+      "at": 1794806653.3561716,
+      "billable": "unknown",
+      "failed": true,
+      "latency_ms": 300684.653,
+      "model": "deepseek-ai/deepseek-v4.1-flash",
+      "phase": "h2h-retry300",
+      "provider": "nim:deepseek",
+      "status": "ReadTimeout",
+      "task": "ren-cold",
+      "tokens_total": 0
+    },
+    {
+      "at": 1794806954.3300655,
+      "billable": "unknown",
+      "failed": true,
+      "latency_ms": 300652.019,
+      "model": "openai/gpt-oss-20b",
+      "phase": "h2h-retry300",
+      "provider": "nim:gpt-oss",
+      "status": "ReadTimeout",
+      "task": "ren-cold",
+      "tokens_total": 0
+    }
+  ],
+  "rows": {
+    "const-cold": {
+      "deepseek": {
+        "attempts": [
+          {
+            "check": {
+              "applied": false,
+              "passed": false,
+              "reason": "no_parseable_edit"
+            },
+            "edits": null
+          }
+        ],
+        "budget": {
+          "model_turns": 0.0,
+          "tokens_completion": 0.0,
+          "tokens_estimated_turns": 0.0,
+          "tokens_prompt": 0.0,
+          "tokens_total": 0.0,
+          "tool_calls": 5.0,
+          "tool_calls_crystal": 0.0,
+          "tool_calls_model": 0.0,
+          "tool_calls_runtime": 5.0,
+          "tool_failures": 0.0,
+          "wall_ms": 301488.015
+        },
+        "calls": [
+          {
+            "billable": "unknown",
+            "failed": true,
+            "governor": "gov_0d4e9b2f68730d6f9a4c956d",
+            "latency_ms": 300820.245,
+            "model": "deepseek-ai/deepseek-v4.1-flash",
+            "provider": "nim:deepseek",
+            "status": "ReadTimeout",
+            "tokens_total": 0
+          }
+        ],
+        "edits": null,
+        "independent": null,
+        "latency_ms": 300820.245,
+        "model": "deepseek-ai/deepseek-v4.1-flash",
+        "passed": false,
+        "provider": "deepseek",
+        "reasoning_tokens": 0,
+        "tokens_total": 0,
+        "wall_ms": 301488.015,
+        "worktree": ""
+      },
+      "gpt-oss": {
+        "attempts": [
+          {
+            "check": {
+              "applied": false,
+              "passed": false,
+              "reason": "no_parseable_edit"
+            },
+            "edits": null
+          }
+        ],
+        "budget": {
+          "model_turns": 0.0,
+          "tokens_completion": 0.0,
+          "tokens_estimated_turns": 0.0,
+          "tokens_prompt": 0.0,
+          "tokens_total": 0.0,
+          "tool_calls": 5.0,
+          "tool_calls_crystal": 0.0,
+          "tool_calls_model": 0.0,
+          "tool_calls_runtime": 5.0,
+          "tool_failures": 0.0,
+          "wall_ms": 301069.053
+        },
+        "calls": [
+          {
+            "billable": "unknown",
+            "failed": true,
+            "governor": "gov_67c87ba7f2f1b05dd787a593",
+            "latency_ms": 300679.049,
+            "model": "openai/gpt-oss-20b",
+            "provider": "nim:gpt-oss",
+            "status": "ReadTimeout",
+            "tokens_total": 0
+          }
+        ],
+        "edits": null,
+        "independent": null,
+        "latency_ms": 300679.049,
+        "model": "openai/gpt-oss-20b",
+        "passed": false,
+        "provider": "gpt-oss",
+        "reasoning_tokens": 0,
+        "tokens_total": 0,
+        "wall_ms": 301069.053,
+        "worktree": ""
+      }
+    },
+    "ren-cold": {
+      "deepseek": {
+        "attempts": [
+          {
+            "check": {
+              "applied": false,
+              "passed": false,
+              "reason": "no_parseable_edit"
+            },
+            "edits": null
+          }
+        ],
+        "budget": {
+          "model_turns": 0.0,
+          "tokens_completion": 0.0,
+          "tokens_estimated_turns": 0.0,
+          "tokens_prompt": 0.0,
+          "tokens_total": 0.0,
+          "tool_calls": 5.0,
+          "tool_calls_crystal": 0.0,
+          "tool_calls_model": 0.0,
+          "tool_calls_runtime": 5.0,
+          "tool_failures": 0.0,
+          "wall_ms": 301039.633
+        },
+        "calls": [
+          {
+            "billable": "unknown",
+            "failed": true,
+            "governor": "gov_97ff2fe8ad13f19a03ea5b8a",
+            "latency_ms": 300684.653,
+            "model": "deepseek-ai/deepseek-v4.1-flash",
+            "provider": "nim:deepseek",
+            "status": "ReadTimeout",
+            "tokens_total": 0
+          }
+        ],
+        "edits": null,
+        "independent": null,
+        "latency_ms": 300684.653,
+        "model": "deepseek-ai/deepseek-v4.1-flash",
+        "passed": false,
+        "provider": "deepseek",
+        "reasoning_tokens": 0,
+        "tokens_total": 0,
+        "wall_ms": 301039.633,
+        "worktree": ""
+      },
+      "gpt-oss": {
+        "attempts": [
+          {
+            "check": {
+              "applied": false,
+              "passed": false,
+              "reason": "no_parseable_edit"
+            },
+            "edits": null
+          }
+        ],
+        "budget": {
+          "model_turns": 0.0,
+          "tokens_completion": 0.0,
+          "tokens_estimated_turns": 0.0,
+          "tokens_prompt": 0.0,
+          "tokens_total": 0.0,
+          "tool_calls": 5.0,
+          "tool_calls_crystal": 0.0,
+          "tool_calls_model": 0.0,
+          "tool_calls_runtime": 5.0,
+          "tool_failures": 0.0,
+          "wall_ms": 300946.134
+        },
+        "calls": [
+          {
+            "billable": "unknown",
+            "failed": true,
+            "governor": "gov_4aa62043233291092c6999dc",
+            "latency_ms": 300652.019,
+            "model": "openai/gpt-oss-20b",
+            "provider": "nim:gpt-oss",
+            "status": "ReadTimeout",
+            "tokens_total": 0
+          }
+        ],
+        "edits": null,
+        "independent": null,
+        "latency_ms": 300652.019,
+        "model": "openai/gpt-oss-20b",
+        "passed": false,
+        "provider": "gpt-oss",
+        "reasoning_tokens": 0,
+        "tokens_total": 0,
+        "wall_ms": 300946.134,
+        "worktree": ""
+      }
+    }
+  },
+  "started_at": 1794805749.8049452,
+  "timeout_s": 300
+}

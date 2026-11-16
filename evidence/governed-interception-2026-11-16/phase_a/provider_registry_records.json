@@ -1,0 +1,496 @@
+[
+ {
+  "provider_id": "anthropic",
+  "enabled": true,
+  "backend": "native_anthropic",
+  "env": [
+   "ANTHROPIC_API_KEY"
+  ],
+  "proxy_path": "/proxy/anthropic",
+  "litellm_model_prefix": "anthropic/",
+  "base_url": null,
+  "default_model": "anthropic",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": true,
+  "openai_compatible": false
+ },
+ {
+  "provider_id": "cerebras",
+  "enabled": true,
+  "backend": "litellm",
+  "env": [
+   "CEREBRAS_API_KEY"
+  ],
+  "proxy_path": "/proxy/cerebras",
+  "litellm_model_prefix": "cerebras/",
+  "base_url": "https://api.cerebras.ai/v1",
+  "default_model": "gpt-oss-120b",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "codex",
+  "enabled": true,
+  "backend": "openai_compatible",
+  "env": [
+   "OPENAI_API_KEY"
+  ],
+  "proxy_path": "/proxy/codex",
+  "litellm_model_prefix": "openai/",
+  "base_url": "https://api.openai.com/v1",
+  "default_model": "gpt-5-codex",
+  "risk_level": "high",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "cohere",
+  "enabled": true,
+  "backend": "litellm",
+  "env": [
+   "COHERE_API_KEY"
+  ],
+  "proxy_path": "/proxy/cohere",
+  "litellm_model_prefix": "cohere/",
+  "base_url": null,
+  "default_model": "cohere",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "deepinfra",
+  "enabled": true,
+  "backend": "litellm",
+  "env": [
+   "DEEPINFRA_API_KEY"
+  ],
+  "proxy_path": "/proxy/deepinfra",
+  "litellm_model_prefix": "deepinfra/",
+  "base_url": null,
+  "default_model": "deepinfra",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "fal",
+  "enabled": true,
+  "backend": "litellm",
+  "env": [
+   "FAL_KEY"
+  ],
+  "proxy_path": "/proxy/fal",
+  "litellm_model_prefix": "fal/",
+  "base_url": null,
+  "default_model": "fal",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "featherless",
+  "enabled": true,
+  "backend": "litellm",
+  "env": [
+   "FEATHERLESS_API_KEY"
+  ],
+  "proxy_path": "/proxy/featherless",
+  "litellm_model_prefix": "featherless_ai/",
+  "base_url": null,
+  "default_model": "featherless",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "google",
+  "enabled": true,
+  "backend": "native_gemini",
+  "env": [
+   "GEMINI_API_KEY",
+   "GOOGLE_API_KEY"
+  ],
+  "proxy_path": "/proxy/gemini",
+  "litellm_model_prefix": "gemini/",
+  "base_url": "https://generativelanguage.googleapis.com",
+  "default_model": "gemini-3.5-flash",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": true,
+  "openai_compatible": false
+ },
+ {
+  "provider_id": "groq",
+  "enabled": true,
+  "backend": "litellm",
+  "env": [
+   "GROQ_API_KEY"
+  ],
+  "proxy_path": "/proxy/groq",
+  "litellm_model_prefix": "groq/",
+  "base_url": null,
+  "default_model": "groq",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "huggingface",
+  "enabled": true,
+  "backend": "native_huggingface",
+  "env": [
+   "HF_TOKEN",
+   "HUGGINGFACE_API_KEY"
+  ],
+  "proxy_path": "/proxy/huggingface",
+  "litellm_model_prefix": "huggingface/",
+  "base_url": "https://router.huggingface.co/hf-inference/models",
+  "default_model": "openai/gpt-oss-120b",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": true,
+  "openai_compatible": false
+ },
+ {
+  "provider_id": "hyperbolic",
+  "enabled": true,
+  "backend": "litellm",
+  "env": [
+   "HYPERBOLIC_API_KEY"
+  ],
+  "proxy_path": "/proxy/hyperbolic",
+  "litellm_model_prefix": "hyperbolic/",
+  "base_url": null,
+  "default_model": "hyperbolic",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "litellm",
+  "enabled": true,
+  "backend": "litellm",
+  "env": [
+   "LITELLM_API_KEY",
+   "LITELLM_BASE_URL"
+  ],
+  "proxy_path": "/proxy/huggingface/litellm",
+  "litellm_model_prefix": "",
+  "base_url": null,
+  "default_model": "ollama",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast_managed_backend_lane",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "llama_cpp",
+  "enabled": true,
+  "backend": "openai_compatible",
+  "env": [
+   "LLAMA_CPP_BASE_URL"
+  ],
+  "proxy_path": "/proxy/llama-cpp",
+  "litellm_model_prefix": "openai/",
+  "base_url": null,
+  "default_model": "llama_cpp",
+  "risk_level": "local",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "local_nim",
+  "enabled": true,
+  "backend": "openai_compatible",
+  "env": [
+   "LOCAL_NIM_BASE_URL",
+   "LOCAL_NIM_API_KEY"
+  ],
+  "proxy_path": "/proxy/local-nim",
+  "litellm_model_prefix": "openai/",
+  "base_url": "http://127.0.0.1:8000/v1",
+  "default_model": "local-nim-model",
+  "risk_level": "local",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "novita",
+  "enabled": true,
+  "backend": "litellm",
+  "env": [
+   "NOVITA_API_KEY"
+  ],
+  "proxy_path": "/proxy/novita",
+  "litellm_model_prefix": "novita/",
+  "base_url": null,
+  "default_model": "novita",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "nscale",
+  "enabled": true,
+  "backend": "litellm",
+  "env": [
+   "NSCALE_API_KEY"
+  ],
+  "proxy_path": "/proxy/nscale",
+  "litellm_model_prefix": "nscale/",
+  "base_url": null,
+  "default_model": "nscale",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "nvidia_nim",
+  "enabled": true,
+  "backend": "openai_compatible",
+  "env": [
+   "NVIDIA_API_KEY"
+  ],
+  "proxy_path": "/proxy/nvidia-nim",
+  "litellm_model_prefix": "openai/",
+  "base_url": "https://integrate.api.nvidia.com/v1",
+  "default_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "ollama",
+  "enabled": true,
+  "backend": "ollama",
+  "env": [
+   "OLLAMA_BASE_URL"
+  ],
+  "proxy_path": "/proxy/ollama",
+  "litellm_model_prefix": "",
+  "base_url": "http://127.0.0.1:11434",
+  "default_model": "qwen3:4b",
+  "risk_level": "local",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": false
+ },
+ {
+  "provider_id": "openai",
+  "enabled": true,
+  "backend": "openai_compatible",
+  "env": [
+   "OPENAI_API_KEY"
+  ],
+  "proxy_path": "/proxy/openai",
+  "litellm_model_prefix": "openai/",
+  "base_url": null,
+  "default_model": "gpt-4o-mini",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": true,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "openrouter",
+  "enabled": true,
+  "backend": "litellm",
+  "env": [
+   "OPENROUTER_API_KEY"
+  ],
+  "proxy_path": "/proxy/openrouter",
+  "litellm_model_prefix": "openrouter/",
+  "base_url": null,
+  "default_model": "openrouter/auto",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "ovhcloud",
+  "enabled": true,
+  "backend": "litellm",
+  "env": [
+   "OVHCLOUD_APP_KEY",
+   "OVHCLOUD_APP_SECRET",
+   "OVHCLOUD_CONSUMER_KEY"
+  ],
+  "proxy_path": "/proxy/ovhcloud",
+  "litellm_model_prefix": "ovhcloud/",
+  "base_url": null,
+  "default_model": "ovhcloud",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "replicate",
+  "enabled": true,
+  "backend": "native_replicate",
+  "env": [
+   "REPLICATE_API_TOKEN",
+   "REPLICATE_API_KEY"
+  ],
+  "proxy_path": "/proxy/replicate",
+  "litellm_model_prefix": "",
+  "base_url": null,
+  "default_model": "meta/meta-llama-3-70b-instruct",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": false
+ },
+ {
+  "provider_id": "sglang",
+  "enabled": true,
+  "backend": "openai_compatible",
+  "env": [
+   "SGLANG_BASE_URL"
+  ],
+  "proxy_path": "/proxy/sglang",
+  "litellm_model_prefix": "openai/",
+  "base_url": null,
+  "default_model": "sglang",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "tensorrt_llm",
+  "enabled": true,
+  "backend": "openai_compatible",
+  "env": [
+   "TENSORRT_LLM_BASE_URL"
+  ],
+  "proxy_path": "/proxy/tensorrt-llm",
+  "litellm_model_prefix": "openai/",
+  "base_url": null,
+  "default_model": "tensorrt_llm",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "tgi",
+  "enabled": true,
+  "backend": "openai_compatible",
+  "env": [
+   "TGI_BASE_URL",
+   "HF_TOKEN"
+  ],
+  "proxy_path": "/proxy/huggingface/tgi",
+  "litellm_model_prefix": "openai/",
+  "base_url": null,
+  "default_model": "tgi",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "vllm",
+  "enabled": true,
+  "backend": "openai_compatible",
+  "env": [
+   "VLLM_BASE_URL"
+  ],
+  "proxy_path": "/proxy/vllm",
+  "litellm_model_prefix": "openai/",
+  "base_url": null,
+  "default_model": "vllm",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ },
+ {
+  "provider_id": "xai",
+  "enabled": true,
+  "backend": "openai_compatible",
+  "env": [
+   "XAI_API_KEY"
+  ],
+  "proxy_path": "/proxy/xai",
+  "litellm_model_prefix": "openai/",
+  "base_url": "https://api.x.ai/v1",
+  "default_model": "grok-build-0.1",
+  "risk_level": "medium",
+  "requires_approval": false,
+  "gateway_lane": "provider_explicit",
+  "managed_by": "beast",
+  "native_adapter": false,
+  "openai_compatible": true
+ }
+]

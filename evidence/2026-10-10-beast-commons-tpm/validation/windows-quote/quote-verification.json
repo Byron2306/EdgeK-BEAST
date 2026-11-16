@@ -1,0 +1,36 @@
+{
+  "schema": "beast.windows.quote-verification.v1",
+  "verified_at": 1791617071.713728,
+  "source_digest": "sha256:5ff06ed281fd4bd92099e5ad469d184e042ff14f2e6d8d75669c65b76032698e",
+  "checks": {
+    "signature_valid": true,
+    "quote_magic_valid": true,
+    "quote_type_valid": true,
+    "nonce_and_subject_binding_valid": true,
+    "challenge_matches_server": true,
+    "challenge_active_at_verification": true,
+    "collection_within_challenge": true,
+    "pcr_selection_valid": true,
+    "pcr_values_count_valid": true,
+    "pcr_digest_matches": true,
+    "public_name_valid": true,
+    "qualified_signer_matches": true,
+    "key_attributes_valid": true
+  },
+  "negative_controls": {
+    "tampered_quote_refused": true,
+    "tampered_binding_refused": true,
+    "tampered_pcr_refused": true
+  },
+  "nonce_bound_quote_verified": true,
+  "hardware_rooted_identity_proven": false,
+  "eligible_for_commons": false,
+  "remaining": [
+    "EK-to-AK credential activation",
+    "trusted EK certificate-chain and revocation verification",
+    "Windows measured-boot replay and accepted baseline",
+    "independent authenticated ARDA appraisal",
+    "host-to-container workload identity assurance"
+  ],
+  "claim_boundary": "Signature, server challenge, public-key name and PCR digest verified; no hardware-rooted execution admission"
+}

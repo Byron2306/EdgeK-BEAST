@@ -1,0 +1,276 @@
+{
+  "approved_by": "Byron",
+  "crystal_digest": "sha256:4720e3bdaa55dd552f88cdad6d3edd3b5ca78273d7399b69d5adc64df81125e3",
+  "crystal_id": "coding-crystal:4720e3bdaa55dd552f88cdad",
+  "heldout_receipt": {
+    "attempts": 3,
+    "candidate_id": "coding-crystal:4720e3bdaa55dd552f88cdad",
+    "episode_envelope_digest": "sha256:2edae81cd934058610abea980902841713743520e5f21f2f8a1fd1ae2e94e0aa",
+    "evidence_root": "sha256:eed87888211250325695bd8632aadbbc4cd2755b25493f234486885860f531a3",
+    "promoted": true,
+    "reason": "held-out replay passed",
+    "reproduction_record_digest": "sha256:194718d8933f76ce3cf46c8b0b9c2de49b10635f62365e5d7fff4639bfde389b",
+    "structured": false,
+    "successes": 3,
+    "variant_ids": [
+      "heldout-scheduler",
+      "heldout-auth",
+      "heldout-cache"
+    ],
+    "variant_results": [
+      true,
+      true,
+      true
+    ],
+    "variant_results_digest": "sha256:de78912c85aa4ed2b66edfaed9142bcdcb223af82fc6f3d12b50b2b3e3910cf8"
+  },
+  "heldout_rows": [
+    {
+      "model_calls_during_replay": 0,
+      "passed": true,
+      "postcondition": {
+        "checks": {
+          "returncode": true,
+          "tests_run": true
+        },
+        "passed": true,
+        "returncode": 0,
+        "target_sha256": "sha256:9904dc289310819010aa6725c202085252eb920d64c7b4765ff247723ed39e0f",
+        "tests_run": 2,
+        "verify_ms": 45.287
+      },
+      "replay": {
+        "edit": {
+          "new_text": "MAX_WORKERS = 8",
+          "old_text": "MAX_WORKERS = 4"
+        },
+        "model_calls": 0,
+        "ok": true,
+        "tool_calls": 5,
+        "trace": [
+          {
+            "index": 0,
+            "ms": 0.05,
+            "opcode": "worktree.inspect",
+            "sha256": "sha256:494fb835f4e49fa5feee4353e98aec4640cf261da710d4d809d9d2b7dcb8eaf8",
+            "tool_id": "workspace.read_range"
+          },
+          {
+            "index": 1,
+            "ms": 0.427,
+            "opcode": "worktree.bind",
+            "tool_id": "worktree.bind"
+          },
+          {
+            "expect": "fail",
+            "index": 2,
+            "ms": 45.214,
+            "opcode": "worktree.verify",
+            "returncode": 1,
+            "tests_run": 2,
+            "tool_id": "worktree.verify"
+          },
+          {
+            "edit": {
+              "new_text": "MAX_WORKERS = 8",
+              "old_text": "MAX_WORKERS = 4"
+            },
+            "index": 3,
+            "ms": 0.135,
+            "opcode": "repair.resolve_constant",
+            "tool_id": ""
+          },
+          {
+            "index": 4,
+            "ms": 0.325,
+            "opcode": "worktree.replace_exact",
+            "tool_id": "worktree.replace_exact"
+          },
+          {
+            "expect": "pass",
+            "index": 5,
+            "ms": 42.916,
+            "opcode": "worktree.verify",
+            "returncode": 0,
+            "tests_run": 2,
+            "tool_id": "worktree.verify"
+          },
+          {
+            "index": 6,
+            "ms": 0.003,
+            "opcode": "crystal.complete",
+            "tool_id": ""
+          }
+        ],
+        "wall_ms": 89.117
+      },
+      "task": "heldout-scheduler"
+    },
+    {
+      "model_calls_during_replay": 0,
+      "passed": true,
+      "postcondition": {
+        "checks": {
+          "returncode": true,
+          "tests_run": true
+        },
+        "passed": true,
+        "returncode": 0,
+        "target_sha256": "sha256:c826c20c1acdade237b5db3ea1cad8cc2c32082b12de60d3af6fc6afb0a37477",
+        "tests_run": 2,
+        "verify_ms": 43.505
+      },
+      "replay": {
+        "edit": {
+          "new_text": "TOKEN_TTL_MINUTES = 30",
+          "old_text": "TOKEN_TTL_MINUTES = 15"
+        },
+        "model_calls": 0,
+        "ok": true,
+        "tool_calls": 5,
+        "trace": [
+          {
+            "index": 0,
+            "ms": 0.063,
+            "opcode": "worktree.inspect",
+            "sha256": "sha256:80ce94953e0161b005d14fe8d40afe57cb3f2d5823cc09e2abc2f68cf7d9bfe6",
+            "tool_id": "workspace.read_range"
+          },
+          {
+            "index": 1,
+            "ms": 0.404,
+            "opcode": "worktree.bind",
+            "tool_id": "worktree.bind"
+          },
+          {
+            "expect": "fail",
+            "index": 2,
+            "ms": 44.533,
+            "opcode": "worktree.verify",
+            "returncode": 1,
+            "tests_run": 2,
+            "tool_id": "worktree.verify"
+          },
+          {
+            "edit": {
+              "new_text": "TOKEN_TTL_MINUTES = 30",
+              "old_text": "TOKEN_TTL_MINUTES = 15"
+            },
+            "index": 3,
+            "ms": 0.171,
+            "opcode": "repair.resolve_constant",
+            "tool_id": ""
+          },
+          {
+            "index": 4,
+            "ms": 0.33,
+            "opcode": "worktree.replace_exact",
+            "tool_id": "worktree.replace_exact"
+          },
+          {
+            "expect": "pass",
+            "index": 5,
+            "ms": 43.39,
+            "opcode": "worktree.verify",
+            "returncode": 0,
+            "tests_run": 2,
+            "tool_id": "worktree.verify"
+          },
+          {
+            "index": 6,
+            "ms": 0.003,
+            "opcode": "crystal.complete",
+            "tool_id": ""
+          }
+        ],
+        "wall_ms": 88.937
+      },
+      "task": "heldout-auth"
+    },
+    {
+      "model_calls_during_replay": 0,
+      "passed": true,
+      "postcondition": {
+        "checks": {
+          "returncode": true,
+          "tests_run": true
+        },
+        "passed": true,
+        "returncode": 0,
+        "target_sha256": "sha256:f17249b2f365a7d37c70546612babc278c7d104af39aedc39f4d2227484bdddd",
+        "tests_run": 2,
+        "verify_ms": 45.61
+      },
+      "replay": {
+        "edit": {
+          "new_text": "CACHE_MAX_ENTRIES = 1024",
+          "old_text": "CACHE_MAX_ENTRIES = 512"
+        },
+        "model_calls": 0,
+        "ok": true,
+        "tool_calls": 5,
+        "trace": [
+          {
+            "index": 0,
+            "ms": 0.053,
+            "opcode": "worktree.inspect",
+            "sha256": "sha256:09aa9c62e92a9bd401ae68ebff3119abad9c6d78ac2a32c6537466bacae90941",
+            "tool_id": "workspace.read_range"
+          },
+          {
+            "index": 1,
+            "ms": 0.387,
+            "opcode": "worktree.bind",
+            "tool_id": "worktree.bind"
+          },
+          {
+            "expect": "fail",
+            "index": 2,
+            "ms": 44.297,
+            "opcode": "worktree.verify",
+            "returncode": 1,
+            "tests_run": 2,
+            "tool_id": "worktree.verify"
+          },
+          {
+            "edit": {
+              "new_text": "CACHE_MAX_ENTRIES = 1024",
+              "old_text": "CACHE_MAX_ENTRIES = 512"
+            },
+            "index": 3,
+            "ms": 0.127,
+            "opcode": "repair.resolve_constant",
+            "tool_id": ""
+          },
+          {
+            "index": 4,
+            "ms": 0.34,
+            "opcode": "worktree.replace_exact",
+            "tool_id": "worktree.replace_exact"
+          },
+          {
+            "expect": "pass",
+            "index": 5,
+            "ms": 44.052,
+            "opcode": "worktree.verify",
+            "returncode": 0,
+            "tests_run": 2,
+            "tool_id": "worktree.verify"
+          },
+          {
+            "index": 6,
+            "ms": 0.002,
+            "opcode": "crystal.complete",
+            "tool_id": ""
+          }
+        ],
+        "wall_ms": 89.299
+      },
+      "task": "heldout-cache"
+    }
+  ],
+  "promoted_at": 1794800461.1774747,
+  "record_digest": "sha256:8c7c61aa23f4590379d199f41eb5acf269268318547c0db71765577f4cd23e3d",
+  "source_envelope_digest": "sha256:2edae81cd934058610abea980902841713743520e5f21f2f8a1fd1ae2e94e0aa",
+  "status": "promoted"
+}

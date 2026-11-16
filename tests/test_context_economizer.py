@@ -1,5 +1,7 @@
 from copy import deepcopy
 
+import pytest
+
 from app.context.economizer import ContextEconomizer
 from app.kernel.compute.perceive import EdgeKIR
 
@@ -84,7 +86,9 @@ def test_structured_message_content_is_not_silently_dropped():
     assert any(message.get("content") == structured_content for message in compressed)
 
 
-def test_oversized_message_is_trimmed_but_retained():
+def test_oversized_message_is_retained_unchanged_within_target():
+    # Safer coding-lane behaviour: messages are never rewritten (no whitespace collapse or middle-trimming);
+    # only eligible older history may be dropped, so a within-target long message survives byte-for-byte.
     economizer = ContextEconomizer(_policies())
     long_content = "A" * 500
     messages = [
@@ -102,12 +106,10 @@ def test_oversized_message_is_trimmed_but_retained():
     )
 
     assert removed == 0
-    assert chars_removed > 0
-    assert notes == ["Whitespace and long-message trimming reached target"]
-    trimmed = compressed[1]["content"]
-    assert "characters omitted from middle" in trimmed
-    assert trimmed.startswith("A")
-    assert trimmed.endswith("A")
+    assert chars_removed == 0
+    assert notes == []
+    assert compressed == messages
+    assert compressed[1]["content"] == long_content
 
 
 def test_economizer_does_not_mutate_original_messages():
@@ -119,7 +121,10 @@ def test_economizer_does_not_mutate_original_messages():
     original = deepcopy(messages)
     ir = EdgeKIR(messages=messages, model="gpt-3.5-turbo")
 
-    ContextEconomizer(_policies()).economize(ir)
+    # The only user turn is the latest request and is protected, so the economizer refuses rather than
+    # rewriting it; refusal must still leave the caller's messages untouched.
+    with pytest.raises(ValueError, match="protected_context_exceeds_input_budget"):
+        ContextEconomizer(_policies()).economize(ir)
 
     assert messages == original
     assert ir.messages == original
@@ -179,7 +184,9 @@ def test_system_message_is_preserved_when_compression_removes_old_messages():
 def test_metadata_records_final_economy_state():
     messages = [
         {"role": "system", "content": "System"},
-        {"role": "user", "content": "old context " * 200},
+        {"role": "user", "content": "old context " * 200},  # eligible older history
+        {"role": "assistant", "content": "old answer"},
+        {"role": "user", "content": "recent question"},  # latest user turn stays protected
         {"role": "assistant", "content": "recent answer"},
     ]
     ir = EdgeKIR(messages=messages, model="gpt-3.5-turbo", metadata={"trace": "abc"})

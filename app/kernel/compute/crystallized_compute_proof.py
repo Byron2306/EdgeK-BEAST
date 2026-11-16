@@ -1,6 +1,7 @@
 """End-to-end proof that repeated provider compute can become local crystals."""
 
 from __future__ import annotations
+from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 
 import hashlib
 import json
@@ -562,7 +563,7 @@ class NvidiaNIMOpusCaseExecutor:
         model = self._select_model(cfg, api_key)
         prompt = self._prompt(iteration)
         started = time.perf_counter()
-        response = self.client.post(
+        response = _egress.post(self.client, "crystallized_compute_proof", 
             cfg.base_url + "/chat/completions",
             headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
             json={

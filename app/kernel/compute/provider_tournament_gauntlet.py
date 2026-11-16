@@ -1,6 +1,7 @@
 """Provider tournament gauntlet for Ollama BEAST versus configured endpoints."""
 
 from __future__ import annotations
+from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 
 import hashlib
 import importlib.util
@@ -253,7 +254,7 @@ class ProviderTournamentGauntlet:
         prompt = _coding_smoke_prompt(row["provider_id"])
         started = time.perf_counter()
         try:
-            response = self.client.post(
+            response = _egress.post(self.client, "provider_tournament_gauntlet", 
                 f"https://generativelanguage.googleapis.com/v1beta/models/{self.google_model}:generateContent",
                 headers={"Content-Type": "application/json", "x-goog-api-key": api_key or ""},
                 json={
@@ -301,7 +302,7 @@ class ProviderTournamentGauntlet:
         api_key = os.environ.get("ANTHROPIC_API_KEY", "")
         started = time.perf_counter()
         try:
-            response = self.client.post(
+            response = _egress.post(self.client, "provider_tournament_gauntlet", 
                 "https://api.anthropic.com/v1/messages",
                 headers={
                     "Content-Type": "application/json",
@@ -329,7 +330,7 @@ class ProviderTournamentGauntlet:
         if api_key:
             headers["Authorization"] = f"Bearer {api_key}"
         try:
-            response = self.client.post(
+            response = _egress.post(self.client, "provider_tournament_gauntlet", 
                 row["base_url"].rstrip("/") + "/chat/completions",
                 headers=headers,
                 json={

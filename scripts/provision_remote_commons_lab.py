@@ -6,12 +6,12 @@ import argparse
 import base64
 import hashlib
 import json
-from pathlib import Path
 import stat
+from pathlib import Path
 
+import yaml
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
-import yaml
 
 
 def private_pem(key: Ed25519PrivateKey) -> bytes:
@@ -101,6 +101,17 @@ def main() -> None:
         "BEAST_COMMONS_REMOTE_ALLOWED_HOSTS": "127.0.0.1",
         "BEAST_COMMONS_REMOTE_ALLOW_HTTP_LOOPBACK": "1",
     }
+    compose_override = root / "docker-compose.ports.yml"
+    compose_override.write_text(
+        "services:\n"
+        + "".join(
+            f"  {node['node_id']}:\n"
+            "    ports: !override\n"
+            f"      - \"127.0.0.1:{node['port']}:8000\"\n"
+            for node in nodes
+        ),
+        encoding="utf-8",
+    )
     (root / "gateway.env").write_text(
         "\n".join(f"{key}={value}" for key, value in gateway_env.items()) + "\n",
         encoding="utf-8",
@@ -112,6 +123,11 @@ def main() -> None:
         "client_public_key_sha256": "sha256:" + hashlib.sha256(public_pem(client_key)).hexdigest(),
         "nodes": nodes,
         "gateway_env": gateway_env,
+        "topology": {
+            "compose_base": str(Path(__file__).resolve().parents[1] / "docker-compose.commons-lab.yml"),
+            "compose_override": str(compose_override),
+            "source": "manifest.nodes",
+        },
     }
     (root / "manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps(manifest, indent=2, sort_keys=True))

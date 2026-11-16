@@ -50,6 +50,29 @@ def test_capability_registry_filters_by_kind():
     assert all(item["kind"] == "workflow" for item in inventory["capabilities"])
 
 
+def test_python_verifier_modules_are_exposed_as_available_linters():
+    inventory = CapabilityRegistry().list_capabilities(kind="linter")
+    by_id = {item["capability_id"]: item for item in inventory["capabilities"]}
+
+    assert by_id["linter:pytest_collect"]["status"] == "available"
+    assert "-m pytest --collect-only" in by_id["linter:pytest_collect"]["command"]
+    assert by_id["linter:ruff"]["status"] == "available"
+    assert "-m ruff check" in by_id["linter:ruff"]["command"]
+
+
+@pytest.mark.asyncio
+async def test_tooling_snapshot_reports_gateway_pytest_and_ruff():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.get("/edgek/ide/tooling-snapshot")
+
+    assert response.status_code == 200
+    linting = response.json()["linting"]
+    assert linting["has_pytest"] is True
+    assert linting["has_ruff"] is True
+    assert {"pytest", "ruff"} <= set(linting["available_tools"])
+
+
 def test_capability_registry_rolls_up_families():
     families = CapabilityRegistry().list_families()
 

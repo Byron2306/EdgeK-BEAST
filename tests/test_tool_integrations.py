@@ -147,3 +147,25 @@ def test_native_documented_compression_backends_are_ready_without_binaries(monke
     )
     assert result["backend"] == f"beast_native_{algorithm}"
     assert result["content"]
+
+
+@pytest.mark.parametrize("name", ["rtk", "sqz"])
+def test_native_rtk_and_sqz_stubs_are_not_ready_without_binaries(monkeypatch, name):
+    monkeypatch.setattr("app.kernel.registry.tool_integrations.shutil.which", lambda _name: None)
+    registry = RequiredIntegrationRegistry()
+    item = next(i for i in registry.status()["required_integrations"] if i["name"] == name)
+    assert item["ready"] is False
+    assert item["detail"]["native_stub"] == f"beast_native_{name}"
+    backend = next(b for b in registry.compressor_status()["backends"] if b["name"] == name)
+    assert backend["ready"] is False and backend["kind"] == "native_stub_fallback"
+    assert name in registry.status()["not_ready"]
+
+
+@pytest.mark.parametrize("name", ["rtk", "sqz"])
+def test_rtk_and_sqz_ready_when_binary_present(monkeypatch, name):
+    monkeypatch.setattr("app.kernel.registry.tool_integrations.shutil.which", lambda n: f"/usr/bin/{n}")
+    registry = RequiredIntegrationRegistry()
+    item = next(i for i in registry.status()["required_integrations"] if i["name"] == name)
+    assert item["ready"] is True
+    backend = next(b for b in registry.compressor_status()["backends"] if b["name"] == name)
+    assert backend["ready"] is True

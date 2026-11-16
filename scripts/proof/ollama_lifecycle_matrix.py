@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 """Diagnose Ollama 3B lifecycle stability independently of BEAST execution."""
 from __future__ import annotations
+try:  # closure-2026-11-16: governed egress shim
+    from app.kernel.compute import governed_egress as _egress
+except ModuleNotFoundError:  # run as a script: repo root not on sys.path yet
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _sys.path.insert(0, str(_Path(__file__).resolve().parents[2]))
+    from app.kernel.compute import governed_egress as _egress
 
 import argparse
 import json
@@ -20,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[2]
 def json_post(model: str, prompt: str, num_ctx: int, timeout: float) -> dict:
     payload = {"model": model, "prompt": prompt, "stream": False, "format": "json", "keep_alive": "30m", "options": {"temperature": 0, "num_ctx": num_ctx, "num_predict": 64, "num_thread": 2, "num_batch": 128}}
     request = urllib.request.Request("http://127.0.0.1:11434/api/generate", data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"}, method="POST")
-    with urllib.request.urlopen(request, timeout=timeout) as response:
+    with _egress.urlopen("ollama_lifecycle_matrix", request, timeout=timeout) as response:
         body = json.loads(response.read().decode())
     return {"response_present": bool(body.get("response")), "prompt_eval_count": body.get("prompt_eval_count"), "eval_count": body.get("eval_count"), "total_duration_ns": body.get("total_duration"), "load_duration_ns": body.get("load_duration"), "prompt_eval_duration_ns": body.get("prompt_eval_duration"), "eval_duration_ns": body.get("eval_duration")}
 
@@ -28,7 +36,7 @@ def json_post(model: str, prompt: str, num_ctx: int, timeout: float) -> dict:
 def health() -> dict:
     started = time.perf_counter()
     try:
-        with urllib.request.urlopen("http://127.0.0.1:11434/api/ps", timeout=5) as response:
+        with _egress.urlopen("ollama_lifecycle_matrix", "http://127.0.0.1:11434/api/ps", timeout=5) as response:
             body = json.loads(response.read().decode())
         return {"ok": True, "latency_ms": round((time.perf_counter() - started) * 1000, 2), "models": [item.get("name") for item in body.get("models", [])]}
     except Exception as exc:

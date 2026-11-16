@@ -1169,6 +1169,24 @@ class BeastToolRuntime:
             "beast_capability_exchange",
         }
 
+    def _mutation_requested(self, name: str, arguments: Dict[str, Any]) -> bool:
+        """Action-aware mutation check (closure 2026-11-16).
+
+        Read/dry-run actions of mixed tools are not mutations: the handlers keep their own approval checks
+        (otel export needs approved=True; capability-exchange submit needs approved and dry_run=False).
+        beast_tool_laziness_record is a local learning-ledger write with no workspace or network effect.
+        """
+        if name not in self._mutating_tools():
+            return False
+        if name == "beast_capability_exchange":
+            action = str(arguments.get("action") or "state")
+            return action == "submit" and not bool(arguments.get("dry_run", True))
+        if name == "beast_otel_export":
+            return bool(arguments.get("approved", False))
+        if name == "beast_tool_laziness_record":
+            return False
+        return True
+
     def _tool_visible(self, name: str) -> bool:
         if name == "beast_tool_profile":
             return True
@@ -1224,7 +1242,9 @@ class BeastToolRuntime:
         arguments = arguments or {}
         logger.info("MCP tool call: %s", name)
         mutation_authority = None
-        if name in self._mutating_tools():
+        if name != "beast_tool_profile" and (blocked := self._blocked_by_profile(name)):
+            return blocked  # profile visibility is decided before least-authority mutation gating (closure 2026-11-16)
+        if self._mutation_requested(name, arguments):
             plan = arguments.get("plan") if isinstance(arguments.get("plan"), dict) else {}
             sourceplan_bound = bool(
                 (plan.get("plan_id") and (plan.get("operations") or []))

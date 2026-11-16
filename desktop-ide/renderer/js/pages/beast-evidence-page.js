@@ -29,7 +29,7 @@
           <header class="beast-panel-head"><div><h3>Selected Artifact</h3><span data-evidence-path>none</span></div><div class="evidence-detail-actions"><button class="beast-button secondary" data-evidence-action="toggle">Toggle Selection</button><button class="beast-button" data-evidence-action="preview">Load Preview</button></div></header>
           <article class="evidence-artifact-hero" data-evidence-hero></article>
           <section class="evidence-metric-grid" data-evidence-metrics></section>
-          <div class="evidence-preview-tabs" aria-label="Evidence detail fields"><span class="active">Content Preview</span><span>Trace Context</span><span>Metadata</span></div>
+          <div class="evidence-preview-tabs"><button class="active">Content Preview</button><button>Trace Context</button><button>Metadata</button></div>
           <pre class="evidence-content-preview" data-evidence-preview>Select an artifact and load its preview.</pre>
           <section class="evidence-trace-strip" data-evidence-trace-strip></section>
         </section>
