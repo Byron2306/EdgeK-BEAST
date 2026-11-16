@@ -875,7 +875,10 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                             "You are BEAST's implementation planner. Use the supplied read-only Code Cortex observations "
                             "and the exact selected source context to produce one reviewable source edit plan. "
                             "Return ONE JSON object only, with this contract:\n"
-                            f'{{"kind":"{ACTION_IR_KIND}","objective":"...","actions":[{{"id":"a1","type":"replace_exact","target":{{"path":"selected/file.py","anchor_ref":"A1"}},"old":"exact current source (optional only when anchor_ref is supplied)","new":"complete replacement source","intent":"..."}},{{"id":"v1","type":"run_verifier","intent":"run focused checks","parameters":{{"command":"python -m pytest path/to/test.py -q"}}}}],"verify":["python -m pytest path/to/test.py -q"]}}\n'
+                            f'{{"kind":"{ACTION_IR_KIND}","objective":"...","actions":[{{"id":"a1","type":"replace_exact","target":{{"path":"selected/file.py","anchor_ref":"A1","anchor_line":12}},"old":"only the exact lines being changed","new":"the replacement for those lines","intent":"..."}},{{"id":"v1","type":"run_verifier","intent":"run focused checks","parameters":{{"command":"python -m pytest path/to/test.py -q"}}}}],"verify":["python -m pytest path/to/test.py -q"]}}\n'
+                            "Prefer line-anchored, minimal-span edits: `old`/`new` must be the smallest unique snippet, "
+                            "and `target.anchor_line` (1-based) or a supplied `anchor_ref` should disambiguate repeats. "
+                            "Do not emit a whole-file `new` unless the change is essentially a rewrite. "
                             "Every source-edit action MUST include a non-empty `new`; it must include non-empty `old` unless "
                             "it uses one of the supplied anchor_ref values. Never emit an intent-only action. Use at most one "
                             "source edit per file. You MAY include non-mutating `run_verifier` or `ask_for_context` actions when "
@@ -909,7 +912,7 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                         "context_files": context_file_list,
                         "max_tokens": run_max_tokens,
                         "context_max_chars_each": context_char_limit,
-                        "max_continuations": 1 if is_chat_session else 0,
+                        "max_continuations": 1 if is_chat_session else 3,
                         "governance_level": "ide_agent_session",
                         "action_ir_required": not is_chat_session,
                     }
@@ -1126,7 +1129,7 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                                 max_context_chars=min(context_char_limit, 60000),
                                 diagnostics=(
                                     "The previous replacement failed Python syntax preflight. "
-                                    "Return a smaller complete replacement; preserve the exact "
+                                    "Return a smaller line-anchored span (old/new + anchor_line), not a whole file; preserve the exact "
                                     "old anchor and do not rewrite surrounding code.\n"
                                     + str(compile_result.get("error") or "")
                                 ),

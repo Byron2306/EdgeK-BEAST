@@ -1,0 +1,302 @@
+[
+  {
+    "doc": "superpowers/plans/2026-10-28-beast-coder-tli.md",
+    "title": "BEAST Coder TLI Implementation Plan",
+    "tasks": [
+      "Global Constraints",
+      "Review Focus",
+      "Task 1: Runtime client and event projection",
+      "Task 2: Persistent Coder state and commands",
+      "Task 3: Focused Textual interface",
+      "Task 4: Staged real-runtime acceptance",
+      "Task 5: Default launcher switch and rollback"
+    ],
+    "modules": [
+      "app/cli/coder.py",
+      "app/cli/coder_client.py",
+      "app/cli/coder_state.py"
+    ],
+    "bytes": 5834
+  },
+  {
+    "doc": "superpowers/plans/2026-11-15-physical-crystal-fabric-phase1.md",
+    "title": "Physical Crystal Fabric Phase 1 Implementation Plan",
+    "tasks": [
+      "Global Constraints",
+      "Review Focus",
+      "Task 1: Atomic Registry Endpoint Reconciliation",
+      "Task 2: Signed Candidate Verification",
+      "Task 3: Local Operator API and Topology Contract",
+      "Task 4: Live Recovery and Verification"
+    ],
+    "modules": [
+      "app/kernel/commons/remote_client.py",
+      "app/main.py",
+      "app/routes/commons_remote.py"
+    ],
+    "bytes": 7860
+  },
+  {
+    "doc": "superpowers/plans/2026-11-15-physical-crystal-fabric-phase2-health.md",
+    "title": "Physical Crystal Fabric Phase 2 Health Implementation Plan",
+    "tasks": [
+      "Global Constraints",
+      "Review Focus",
+      "Task 1: Signed Container Health Verifier",
+      "Task 2: Control-Plane Fabric Health",
+      "Task 3: Discovery Supersession",
+      "Task 4: Live Health and IDE Evidence"
+    ],
+    "modules": [
+      "app/kernel/commons/discovery.py",
+      "app/kernel/commons/node_health.py",
+      "app/kernel/commons/remote_client.py",
+      "app/routes/commons_remote.py"
+    ],
+    "bytes": 4883
+  },
+  {
+    "doc": "superpowers/plans/2026-11-15-physical-crystal-fabric-phase3-guardian.md",
+    "title": "Physical Crystal Fabric Phase 3 Guardian Implementation Plan",
+    "tasks": [
+      "Global Constraints",
+      "Review Focus",
+      "Operator Decisions (ruled 2026-11-15)",
+      "Task 1: Fabric Topology Contract (decision-independent)",
+      "Task 2: Topology-Bound Guardian Daemon with Host Roots (D3.1, D3.2)",
+      "Task 3: Guardian-Owned Gateway Listener (D3.1, D3.2)",
+      "Task 4: Commons Signed Custody Records and Live Verification (D3.3)"
+    ],
+    "modules": [
+      "app/kernel/commons/remote_client.py",
+      "app/kernel/execution/guardian_uvicorn.py",
+      "app/kernel/execution/socket_guardian_daemon.py",
+      "app/kernel/networking/fabric_topology.py"
+    ],
+    "bytes": 7142
+  },
+  {
+    "doc": "superpowers/plans/2026-11-15-physical-crystal-fabric-phase5-episode-envelope.md",
+    "title": "Physical Crystal Fabric Phase 5 Episode Envelope Implementation Plan",
+    "tasks": [
+      "Global Constraints",
+      "Review Focus",
+      "Task 1: Budget Tracker and Envelope Contract",
+      "Task 2: Planner Runtime Wiring"
+    ],
+    "modules": [
+      "app/kernel/agents/planner_runtime.py",
+      "app/kernel/sensorium/episode_envelope.py"
+    ],
+    "bytes": 3977
+  },
+  {
+    "doc": "superpowers/plans/2026-11-15-physical-crystal-fabric-phase6-crystal-loop.md",
+    "title": "Physical Crystal Fabric Phase 6 Crystal Loop Implementation Plan",
+    "tasks": [
+      "Global Constraints",
+      "Review Focus",
+      "Task 1: Reviewed Coding Opcodes and Resolver",
+      "Task 2: Extraction, Negative Evidence and Registry",
+      "Task 3: Held-Out Replay, Promotion and Planning-Time Reuse",
+      "Task 4: Closed-Loop Acceptance Test",
+      "Enabling Coding Crystals (production wiring, default OFF)",
+      "Paper alignment (operator ruling 2026-11-15)",
+      "Enabling Coding Crystals \u2014 promotion and economy addendum"
+    ],
+    "modules": [
+      "app/kernel/agents/planner_runtime.py",
+      "app/kernel/compute/coding_crystals.py",
+      "app/routes/agent_runs.py",
+      "app/routes/ide_routes/agent_runs.py"
+    ],
+    "bytes": 9230
+  },
+  {
+    "doc": "superpowers/plans/2026-11-15-physical-crystal-fabric-phase7-crystal-publication.md",
+    "title": "Physical Crystal Fabric \u2014 Delivery 7: Commons publication, quarantine, reproduction and shadow economy",
+    "tasks": [
+      "Flow",
+      "Paper principles applied",
+      "Credit model (operator ruling 23:41 / 23:47)",
+      "Tasks",
+      "Live lab procedure (Byron's own Commons lab; 8101 not restarted)",
+      "Open decisions for the operator"
+    ],
+    "modules": [],
+    "bytes": 6843
+  },
+  {
+    "doc": "superpowers/plans/2026-11-15-physical-crystal-fabric-roadmap.md",
+    "title": "Physical Crystal Fabric Integration Roadmap (Deliveries 3-8)",
+    "tasks": [
+      "Global Constraints",
+      "Current State Map",
+      "Critical Path to the Closed Loop",
+      "Delivery Plans (in spec order)",
+      "Delivery 3: Live Socket Guardian ownership",
+      "Delivery 4: Consolidated Crystal Bus",
+      "Delivery 5: Canonical Episode Envelope",
+      "Delivery 6: Extraction, negative evidence, held-out replay, promotion, reuse",
+      "Delivery 7: ForgeKV/Commons publication and local quarantine/reproduction",
+      "Delivery 8: IDE observability",
+      "End-to-End Acceptance Test (proves the loop)",
+      "Execution Order (operator ruling 2026-11-15)",
+      "Decisions Needed From the Operator",
+      "Alignment with the source papers (operator ruling 2026-11-15)"
+    ],
+    "modules": [
+      "app/context/economizer.py",
+      "app/kernel/agents/run_store.py",
+      "app/kernel/compute/agent_run_crystallizer.py",
+      "app/kernel/compute/crystal_bus.py",
+      "app/kernel/sensorium/episode_envelope.py"
+    ],
+    "bytes": 15139
+  },
+  {
+    "doc": "superpowers/plans/2026-11-16-physical-crystal-fabric-compute-governor-spine.md",
+    "title": "Physical Crystal Fabric \u2014 Compute Governor Spine (PREC integration)",
+    "tasks": [
+      "Goal",
+      "Survey (read-only, before edits)",
+      "Decision order in `admit`",
+      "Tasks",
+      "Claim boundary",
+      "Addendum (2026-11-16 02:07\u201302:16): execution-path wiring, swarm specialist, RTK, memory contract, promotion evidence"
+    ],
+    "modules": [
+      "app/kernel/agents/swarm_specialist.py",
+      "app/kernel/data_processing/cascade_output_compressor.py",
+      "app/kernel/governance/governor_spine.py",
+      "app/kernel/governance/memory_contract.py"
+    ],
+    "bytes": 7855
+  },
+  {
+    "doc": "superpowers/plans/2026-11-16-physical-crystal-fabric-d4-crystal-bus.md",
+    "title": "Delivery 4: Consolidated Crystal Bus \u2014 Plan",
+    "tasks": [
+      "Goal",
+      "Constraints",
+      "Tasks",
+      "Exit"
+    ],
+    "modules": [
+      "app/kernel/compute/crystal_bus.py",
+      "app/kernel/crystal_bus/__init__.py",
+      "app/kernel/crystal_bus/bus.py"
+    ],
+    "bytes": 2397
+  },
+  {
+    "doc": "superpowers/plans/2026-11-16-physical-crystal-fabric-experimental-tiers.md",
+    "title": "Physical Crystal Fabric \u2014 Experimental Tiers (second-last batch) \u2014 Plan",
+    "tasks": [
+      "Flags",
+      "Task 1 \u2014 Real context compression tiers (`app/context/compression_tiers.py`)",
+      "Task 2 \u2014 Local Adapter Compiler (`app/kernel/compute/local_adapter_compiler.py`)",
+      "Task 3 \u2014 Defragmentation Daemon (`app/kernel/compute/defrag_daemon.py`)",
+      "Task 4 \u2014 Zero-copy KV transport (`app/kernel/compute/kv_transport.py`)",
+      "Task 5 \u2014 XDP admitted-flow fast path (plan + userspace simulation)",
+      "Exit",
+      "Follow-up (2026-11-16 04:35 SAST, Byron feedback)"
+    ],
+    "modules": [
+      "app/context/compression_tiers.py",
+      "app/context/economizer.py",
+      "app/kernel/agents/swarm_specialist.py",
+      "app/kernel/compute/coding_crystals.py",
+      "app/kernel/compute/defrag_daemon.py",
+      "app/kernel/compute/kv_transport.py",
+      "app/kernel/compute/local_adapter_compiler.py",
+      "app/kernel/crystal_bus/bus.py",
+      "app/kernel/data_processing/cascade_output_compressor.py",
+      "app/kernel/governance/governor_spine.py",
+      "app/kernel/networking/xdp_fastpath_sim.py",
+      "app/kernel/registry/tool_integrations.py",
+      "app/kernel/sensorium/episode_envelope.py"
+    ],
+    "bytes": 10136
+  },
+  {
+    "doc": "superpowers/plans/2026-11-16-physical-crystal-fabric-lattice-spine.md",
+    "title": "Physical Crystal Fabric \u2014 Lattice Spine (governed, fail-closed composition graph)",
+    "tasks": [
+      "Sources",
+      "Model",
+      "Admission (PGEC \u00a72.4, \u00a78.1(4))",
+      "Demotion (IEI \u00a77.13.1)",
+      "Credits (D7 shadow ledger; PGEC eq. 6; operator formula 2026-11-16)",
+      "Router (D9)",
+      "Tasks"
+    ],
+    "modules": [],
+    "bytes": 6130
+  },
+  {
+    "doc": "superpowers/plans/2026-11-16-physical-crystal-fabric-phase9-adaptive-router.md",
+    "title": "Physical Crystal Fabric \u2014 Delivery 9: Unified Adaptive Router (proposal-only)",
+    "tasks": [
+      "Survey (read-only, 2026-11-16)",
+      "Decision bands (Table 15)",
+      "D6/D5 fingerprints for coding crystals",
+      "Tasks",
+      "Claim boundary"
+    ],
+    "modules": [
+      "app/kernel/compute/adaptive_router.py"
+    ],
+    "bytes": 4167
+  },
+  {
+    "doc": "superpowers/plans/2026-11-16-physical-crystal-fabric-swarm-specialist-cascade.md",
+    "title": "Physical Crystal Fabric \u2014 Swarm specialist runner, cascade-gated admit, PSI shrink, RTK cascade compression",
+    "tasks": [
+      "Root cause: why the local Ollama swarm runners are broken (read-only survey)",
+      "Fix",
+      "Install commands (documented only \u2014 not run)",
+      "Tasks"
+    ],
+    "modules": [
+      "app/kernel/agents/swarm_specialist.py"
+    ],
+    "bytes": 4673
+  },
+  {
+    "doc": "superpowers/specs/2026-10-28-beast-coder-tli-design.md",
+    "title": "BEAST Coder TLI Design",
+    "tasks": [
+      "Intent",
+      "Goals",
+      "Non-goals",
+      "Constraints and anti-goals",
+      "Existing runtime trace",
+      "Approaches considered",
+      "Components",
+      "Interaction and failure behavior",
+      "Acceptance and rollout"
+    ],
+    "modules": [
+      "app/cli/coder.py",
+      "app/cli/coder_client.py",
+      "app/cli/coder_state.py"
+    ],
+    "bytes": 5670
+  },
+  {
+    "doc": "superpowers/specs/2026-11-15-physical-crystal-fabric-spine-design.md",
+    "title": "Physical Crystal Fabric Spine Design",
+    "tasks": [
+      "Purpose",
+      "Architecture",
+      "Trust and Identity",
+      "Topology Contract",
+      "Crystal Authority Classes",
+      "Delivery Sequence",
+      "Explicit Non-Goals"
+    ],
+    "modules": [],
+    "bytes": 4174
+  }
+]

@@ -1,0 +1,3526 @@
+{
+  "gateway": "http://127.0.0.1:8199",
+  "workspace": "/tmp/beast-audit-ws-20261116",
+  "tgi_model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+  "spend_usd": 0.0,
+  "cap_usd": 0.03,
+  "session_id": "implementer-c17b0faf",
+  "run_id": "implementer-c17b0faf-6287242d2187",
+  "state": "failed",
+  "approved_ids": [
+    "cap_bb3a0f0d6d73"
+  ],
+  "event_count": 43,
+  "event_texts": [
+    "agent.run.created",
+    "agent.run.worker.started",
+    "agent.run.registered",
+    "agent.stage.updated",
+    "agent.run.started",
+    "agent.context.ready",
+    "agent.stage.updated",
+    "agent.tool.started",
+    "agent.tool.completed",
+    "agent.approval.requested",
+    "agent.stage.updated",
+    "agent.stage.updated",
+    "audit.approval",
+    "agent.approval.resolved",
+    "agent.stage.updated",
+    "agent.stage.updated",
+    "agent.tool.started",
+    "agent.stage.updated",
+    "agent.tool.started",
+    "agent.tool.completed",
+    "agent.tool.completed",
+    "agent.stage.updated",
+    "agent.plan.preflight",
+    "agent.tool.started",
+    "agent.tool.completed",
+    "agent.tool.started",
+    "agent.tool.completed",
+    "agent.compute.observed",
+    "agent.stage.updated",
+    "agent.tool.completed",
+    "agent.stage.updated",
+    "agent.tool.completed",
+    "agent.tool.completed",
+    "agent.stage.updated",
+    "agent.tool.completed",
+    "agent.stage.updated",
+    "agent.tool.completed",
+    "agent.compute.observed",
+    "agent.stage.updated",
+    "agent.tool.completed",
+    "agent.tool.completed",
+    "agent.run.error",
+    "agent.run.failed"
+  ],
+  "probes": {
+    "health": {
+      "status": 200,
+      "elapsed": 0.015,
+      "error": null,
+      "payload": {
+        "status": "healthy",
+        "service": "edgek-beast-gateway",
+        "version": "0.1.0",
+        "active_sessions": 0,
+        "total_requests": 4
+      }
+    },
+    "proxy_health": {
+      "status": 200,
+      "elapsed": 0.008,
+      "error": null,
+      "payload": {
+        "status": "healthy",
+        "providers": [
+          "anthropic",
+          "cerebras",
+          "codex",
+          "cohere",
+          "deepinfra",
+          "fal",
+          "featherless",
+          "fireworks",
+          "google",
+          "groq",
+          "huggingface",
+          "hyperbolic",
+          "litellm",
+          "llama_cpp",
+          "local_nim",
+          "novita",
+          "nscale",
+          "nvidia_nim",
+          "ollama",
+          "openai",
+          "openrouter",
+          "ovhcloud",
+          "replicate",
+          "sambanova",
+          "sglang",
+          "tensorrt_llm",
+          "tgi",
+          "vllm",
+          "xai"
+        ]
+      }
+    },
+    "mcp_health": {
+      "status": 200,
+      "elapsed": 0.004,
+      "error": null,
+      "payload": {
+        "status": "healthy",
+        "service": "edgek-beast-mcp-http",
+        "transport": "http-facade",
+        "version": "1.0.0"
+      }
+    },
+    "mcp_tools": {
+      "status": 200,
+      "elapsed": 0.005,
+      "error": null,
+      "payload": {
+        "count": 69,
+        "has_symbol_surgeon": true
+      }
+    },
+    "model_inventory": {
+      "status": 200,
+      "elapsed": 0.072,
+      "error": null,
+      "payload": {
+        "count": 38,
+        "providers_present": [
+          "fal_llm",
+          "fireworks",
+          "hf",
+          "hyperbolic",
+          "nim",
+          "ollama",
+          "replicate",
+          "sambanova",
+          "tgi"
+        ],
+        "blocked_providers": [
+          "fal_llm",
+          "hyperbolic",
+          "replicate",
+          "sambanova"
+        ],
+        "live": {
+          "tgi": {
+            "up": true
+          },
+          "ollama": {
+            "up": true
+          }
+        }
+      }
+    },
+    "model_route_auto_rename": {
+      "status": 200,
+      "elapsed": 0.061,
+      "error": null,
+      "payload": {
+        "ok": true,
+        "requested": {
+          "id": "auto",
+          "provider": "beast",
+          "model": "auto",
+          "auto": true,
+          "family": "refactor-rename-symbol"
+        },
+        "resolved": {
+          "id": "fireworks::accounts/fireworks/models/glm-5p3-flash",
+          "provider": "fireworks",
+          "model": "accounts/fireworks/models/glm-5p3-flash",
+          "placement": "cloud",
+          "kind": "openai",
+          "via": "capability_router",
+          "family": "refactor-rename-symbol",
+          "score": {
+            "key": "fireworks|accounts/fireworks/models/glm-5p3-flash|refactor-rename-symbol|cloud",
+            "value": 0.975052,
+            "quality": 0.853105,
+            "cost": 0.107953,
+            "explore_bonus": 0.229901,
+            "demoted": false,
+            "source": "family",
+            "pass_rate": 0.8986,
+            "json_rate": 0.8986,
+            "attempts": 7.866
+          },
+          "blocked": false,
+          "block": null
+        },
+        "called": false,
+        "spend_usd": 0.0,
+        "latency_ms": null,
+        "call_status": "",
+        "error": ""
+      }
+    },
+    "crystal_reuse": {
+      "status": 200,
+      "elapsed": 0.005,
+      "error": null,
+      "payload": {
+        "beast_object_type": "crystal_reuse_gateway_inventory",
+        "version": "1.0",
+        "reuse_threshold": 0.82,
+        "storage": {
+          "beast_object_type": "durable_inference_storage_metrics",
+          "version": "1.0",
+          "total_credits": 17,
+          "active_credits": 16,
+          "stale_credits": 1,
+          "retired_credits": 0,
+          "total_avoided_tokens": 6780,
+          "total_reuse_count": 26,
+          "measured_reuse_tokens_saved": 0,
+          "stored_by_type": {
+            "kv_prefill": 3,
+            "cached_answer": 6,
+            "route_card": 0,
+            "test_impact_map": 0
+          },
+          "crystallized_by_type": {
+            "verified_capability": 7,
+            "deterministic_transform": 0
+          },
+          "kv_prefill_credits": 3,
+          "load_error_count": 0,
+          "load_errors": [],
+          "artifact_blob_count": 25,
+          "indexed_blob_count": 17,
+          "storage_path": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/app/data/durable_inference"
+        },
+        "credits": [
+          {
+            "beast_object_type": "semantic_compute_credit_summary",
+            "version": "1.0",
+            "credit_id": "cache_4335ed9fa27f043a",
+            "id": "cache_4335ed9fa27f043a",
+            "artifact_type": "cached_answer",
+            "kind": "cached_answer",
+            "category": "cached_answer",
+            "task_class": "chat_completion",
+            "name": "chat_completion",
+            "title": "chat_completion",
+            "domain": "cached_answer",
+            "reuse_state": "active",
+            "status": "active",
+            "value": "active",
+            "confidence": 0.5,
+            "score": 0.5,
+            "readiness": 50,
+            "avoided_tokens_estimate": 0,
+            "reuse_count": 24,
+            "created_at": "2026-10-11T23:03:52.906443+00:00",
+            "last_reused_at": "2026-11-16T15:16:14.037405+00:00",
+            "verified_tests": [],
+            "checks": 0,
+            "artifacts": 0,
+            "traces": 24,
+            "reusable": true,
+            "description": "chat_completion \u00b7 cached_answer \u00b7 0 tokens avoided \u00b7 24 reuse(s)"
+          },
+          {
+            "beast_object_type": "semantic_compute_credit_summary",
+            "version": "1.0",
+            "credit_id": "scc_a30083469dd71abe",
+            "id": "scc_a30083469dd71abe",
+            "artifact_type": "verified_capability",
+            "kind": "verified_capability",
+            "category": "verified_capability",
+            "task_class": "nim_endpoint_crystallize_test",
+            "name": "nim_endpoint_crystallize_test",
+            "title": "nim_endpoint_crystallize_test",
+            "domain": "verified_capability",
+            "reuse_state": "active",
+            "status": "active",
+            "value": "active",
+            "confidence": 0.88,
+            "score": 0.88,
+            "readiness": 88,
+            "avoided_tokens_estimate": 7,
+            "reuse_count": 1,
+            "created_at": "2026-11-16T08:04:48.314735+00:00",
+            "last_reused_at": "2026-11-16T08:04:48.327838+00:00",
+            "verified_tests": [
+              "visible",
+              "hidden"
+            ],
+            "checks": 2,
+            "artifacts": 1,
+            "traces": 1,
+            "reusable": true,
+            "description": "nim_endpoint_crystallize_test \u00b7 verified_capability \u00b7 7 tokens avoided \u00b7 1 reuse(s)"
+          },
+          {
+            "beast_object_type": "semantic_compute_credit_summary",
+            "version": "1.0",
+            "credit_id": "scc_5a51141ade9c991e",
+            "id": "scc_5a51141ade9c991e",
+            "artifact_type": "verified_capability",
+            "kind": "verified_capability",
+            "category": "verified_capability",
+            "task_class": "test",
+            "name": "test",
+            "title": "test",
+            "domain": "verified_capability",
+            "reuse_state": "active",
+            "status": "active",
+            "value": "active",
+            "confidence": 0.8,
+            "score": 0.8,
+            "readiness": 80,
+            "avoided_tokens_estimate": 100,
+            "reuse_count": 1,
+            "created_at": "2026-11-16T08:03:13.748234+00:00",
+            "last_reused_at": "2026-11-16T08:03:13.749889+00:00",
+            "verified_tests": [
+              "visible",
+              "hidden"
+            ],
+            "checks": 2,
+            "artifacts": 1,
+            "traces": 1,
+            "reusable": true,
+            "description": "test \u00b7 verified_capability \u00b7 100 tokens avoided \u00b7 1 reuse(s)"
+          },
+          {
+            "beast_object_type": "semantic_compute_credit_summary",
+            "version": "1.0",
+            "credit_id": "cache_eca5e0fab79be2e4",
+            "id": "cache_eca5e0fab79be2e4",
+            "artifact_type": "cached_answer",
+            "kind": "cached_answer",
+            "category": "cached_answer",
+            "task_class": "chat_completion",
+            "name": "chat_completion",
+            "title": "chat_completion",
+            "domain": "cached_answer",
+            "reuse_state": "active",
+            "status": "active",
+            "value": "active",
+            "confidence": 0.5,
+            "score": 0.5,
+            "readiness": 50,
+            "avoided_tokens_estimate": 0,
+            "reuse_count": 0,
+            "created_at": "2026-11-16T08:04:48.312722+00:00",
+            "last_reused_at": null,
+            "verified_tests": [],
+            "checks": 0,
+            "artifacts": 0,
+            "traces": 0,
+            "reusable": true,
+            "description": "chat_completion \u00b7 cached_answer \u00b7 0 tokens avoided \u00b7 0 reuse(s)"
+          },
+          {
+            "beast_object_type": "semantic_compute_credit_summary",
+            "version": "1.0",
+            "credit_id": "prefill_912bdeb323f345bd",
+            "id": "prefill_912bdeb323f345bd",
+            "artifact_type": "kv_prefill",
+            "kind": "kv_prefill",
+            "category": "kv_prefill",
+            "task_class": "prefill_preparation",
+            "name": "prefill_preparation",
+            "title": "prefill_preparation",
+            "domain": "kv_prefill",
+            "reuse_state": "active",
+            "status": "active",
+            "value": "active",
+            "confidence": 0.7,
+            "score": 0.7,
+            "readiness": 70,
+            "avoided_tokens_estimate": 0,
+            "reuse_count": 0,
+            "created_at": "2026-11-16T08:04:14.137598+00:00",
+            "last_reused_at": null,
+            "verified_tests": [],
+            "checks": 0,
+            "artifacts": 0,
+            "traces": 0,
+            "reusable": true,
+            "description": "prefill_preparation \u00b7 kv_prefill \u00b7 0 tokens avoided \u00b7 0 reuse(s)"
+          },
+          {
+            "beast_object_type": "semantic_compute_credit_summary",
+            "version": "1.0",
+            "credit_id": "scc_3bb344ea9a86a9a5",
+            "id": "scc_3bb344ea9a86a9a5",
+            "artifact_type": "verified_capability",
+            "kind": "verified_capability",
+            "category": "verified_capability",
+            "task_class": "chat_completion",
+            "name": "chat_completion",
+            "title": "chat_completion",
+            "domain": "verified_capability",
+            "reuse_state": "active",
+            "status": "active",
+            "value": "active",
+            "confidence": 0.88,
+            "score": 0.88,
+            "readiness": 88,
+            "avoided_tokens_estimate": 123,
+            "reuse_count": 0,
+            "created_at": "2026-11-16T08:04:14.116653+00:00",
+            "last_reused_at": null,
+            "verified_tests": [
+              "visible",
+              "hidden"
+            ],
+            "checks": 2,
+            "artifacts": 1,
+            "traces": 0,
+            "reusable": true,
+            "description": "chat_completion \u00b7 verified_capability \u00b7 123 tokens avoided \u00b7 0 reuse(s)"
+          },
+          {
+            "beast_object_type": "semantic_compute_credit_summary",
+            "version": "1.0",
+            "credit_id": "cache_269ca1cdbf567d59",
+            "id": "cache_269ca1cdbf567d59",
+            "artifact_type": "cached_answer",
+            "kind": "cached_answer",
+            "category": "cached_answer",
+            "task_class": "chat_completion",
+            "name": "chat_completion",
+            "title": "chat_completion",
+            "domain": "cached_answer",
+            "reuse_state": "active",
+            "status": "active",
+            "value": "active",
+            "confidence": 0.5,
+            "score": 0.5,
+            "readiness": 50,
+            "avoided_tokens_estimate": 0,
+            "reuse_count": 0,
+            "created_at": "2026-11-16T08:04:14.114933+00:00",
+            "last_reused_at": null,
+            "verified_tests": [],
+            "checks": 0,
+            "artifacts": 0,
+            "traces": 0,
+            "reusable": true,
+            "description": "chat_completion \u00b7 cached_answer \u00b7 0 tokens avoided \u00b7 0 reuse(s)"
+          },
+          {
+            "beast_object_type": "semantic_compute_credit_summary",
+            "version": "1.0",
+            "credit_id": "scc_8df26bf181c9a39f",
+            "id": "scc_8df26bf181c9a39f",
+            "artifact_type": "verified_capability",
+            "kind": "verified_capability",
+            "category": "verified_capability",
+            "task_class": "provider_id_parser",
+            "name": "provider_id_parser",
+            "title": "provider_id_parser",
+            "domain": "verified_capability",
+            "reuse_state": "active",
+            "status": "active",
+            "value": "active",
+            "confidence": 0.92,
+            "score": 0.92,
+            "readiness": 92,
+            "avoided_tokens_estimate": 3600,
+            "reuse_count": 0,
+            "created_at": "2026-11-16T08:03:13.789468+00:00",
+            "last_reused_at": null,
+            "verified_tests": [
+              "visible",
+              "hidden"
+            ],
+            "checks": 2,
+            "artifacts": 1,
+            "traces": 0,
+            "reusable": true,
+            "description": "provider_id_parser \u00b7 verified_capability \u00b7 3600 tokens avoided \u00b7 0 reuse(s)"
+          },
+          {
+            "beast_object_type": "semantic_compute_credit_summary",
+            "version": "1.0",
+            "credit_id": "prefill_448428c3b0b61b4d",
+            "id": "prefill_448428c3b0b61b4d",
+            "artifact_type": "kv_prefill",
+            "kind": "kv_prefill",
+            "category": "kv_prefill",
+            "task_class": "prefill_preparation",
+            "name": "prefill_preparation",
+            "title": "prefill_preparation",
+            "domain": "kv_prefill",
+            "reuse_state": "active",
+            "status": "active",
+            "value": "active",
+            "confidence": 0.7,
+            "score": 0.7,
+            "readiness": 70,
+            "avoided_tokens_estimate": 50,
+            "reuse_count": 0,
+            "created_at": "2026-11-16T08:03:13.756473+00:00",
+            "last_reused_at": null,
+            "verified_tests": [],
+            "checks": 0,
+            "artifacts": 0,
+            "traces": 0,
+            "reusable": true,
+            "description": "prefill_preparation \u00b7 kv_prefill \u00b7 50 tokens avoided \u00b7 0 reuse(s)"
+          },
+          {
+            "beast_object_type": "semantic_compute_credit_summary",
+            "version": "1.0",
+            "credit_id": "scc_57bad34d16a59631",
+            "id": "scc_57bad34d16a59631",
+            "artifact_type": "verified_capability",
+            "kind": "verified_capability",
+            "category": "verified_capability",
+            "task_class": "cap",
+            "name": "cap",
+            "title": "cap",
+            "domain": "verified_capability",
+            "reuse_state": "active",
+            "status": "active",
+            "value": "active",
+            "confidence": 0.9,
+            "score": 0.9,
+            "readiness": 90,
+            "avoided_tokens_estimate": 100,
+            "reuse_count": 0,
+            "created_at": "2026-11-16T08:03:13.755026+00:00",
+            "last_reused_at": null,
+            "verified_tests": [
+              "visible",
+              "hidden"
+            ],
+            "checks": 2,
+            "artifacts": 1,
+            "traces": 0,
+            "reusable": true,
+            "description": "cap \u00b7 verified_capability \u00b7 100 tokens avoided \u00b7 0 reuse(s)"
+          },
+          {
+            "beast_object_type": "semantic_compute_credit_summary",
+            "version": "1.0",
+            "credit_id": "scc_a66961162013202c",
+            "id": "scc_a66961162013202c",
+            "artifact_type": "verified_capability",
+            "kind": "verified_capability",
+            "category": "verified_capability",
+            "task_class": "test",
+            "name": "test",
+            "title": "test",
+            "domain": "verified_capability",
+            "reuse_state": "stale",
+            "status": "stale",
+            "value": "stale",
+            "confidence": 0.7,
+            "score": 0.7,
+            "readiness": 70,
+            "avoided_tokens_estimate": 100,
+            "reuse_count": 0,
+            "created_at": "2026-11-16T08:03:13.742069+00:00",
+            "last_reused_at": null,
+            "verified_tests": [
+              "visible",
+              "hidden"
+            ],
+            "checks": 2,
+            "artifacts": 1,
+            "traces": 0,
+            "reusable": false,
+            "description": "test \u00b7 verified_capability \u00b7 100 tokens avoided \u00b7 0 reuse(s)"
+          },
+          {
+            "beast_object_type": "semantic_compute_credit_summary",
+            "version": "1.0",
+            "credit_id": "scc_20bfaafb66d97b3a",
+            "id": "scc_20bfaafb66d97b3a",
+            "artifact_type": "verified_capability",
+            "kind": "verified_capability",
+            "category": "verified_capability",
+            "task_class": "provider_routing",
+            "name": "provider_routing",
+            "title": "provider_routing",
+            "domain": "verified_capability",
+            "reuse_state": "active",
+            "status": "active",
+            "value": "active",
+            "confidence": 0.85,
+            "score": 0.85,
+            "readiness": 85,
+            "avoided_tokens_estimate": 500,
+            "reuse_count": 0,
+            "created_at": "2026-11-16T08:03:13.737935+00:00",
+            "last_reused_at": null,
+            "verified_tests": [
+              "visible",
+              "hidden"
+            ],
+            "checks": 2,
+            "artifacts": 1,
+            "traces": 0,
+            "reusable": true,
+            "description": "provider_routing \u00b7 verified_capability \u00b7 500 tokens avoided \u00b7 0 reuse(s)"
+          },
+          {
+            "beast_object_type": "semantic_compute_credit_summary",
+            "version": "1.0",
+            "credit_id": "prefill_1bb2bb08c32ff81c",
+            "id": "prefill_1bb2bb08c32ff81c",
+            "artifact_type": "kv_prefill",
+            "kind": "kv_prefill",
+            "category": "kv_prefill",
+            "task_class": "prefill_preparation",
+            "name": "prefill_preparation",
+            "title": "prefill_preparation",
+            "domain": "kv_prefill",
+            "reuse_state": "active",
+            "status": "active",
+            "value": "active",
+            "confidence": 0.7,
+            "score": 0.7,
+            "readiness": 70,
+            "avoided_tokens_estimate": 800,
+            "reuse_count": 0,
+            "created_at": "2026-11-16T08:03:13.733063+00:00",
+            "last_reused_at": null,
+            "verified_tests": [],
+            "checks": 0,
+            "artifacts": 0,
+            "traces": 0,
+            "reusable": true,
+            "description": "prefill_preparation \u00b7 kv_prefill \u00b7 800 tokens avoided \u00b7 0 reuse(s)"
+          },
+          {
+            "beast_object_type": "semantic_compute_credit_summary",
+            "version": "1.0",
+            "credit_id": "cache_166525f85dac87bc",
+            "id": "cache_166525f85dac87bc",
+            "artifact_type": "cached_answer",
+            "kind": "cached_answer",
+            "category": "cached_answer",
+            "task_class": "chat_completion",
+            "name": "chat_completion",
+            "title": "chat_completion",
+            "domain": "cached_answer",
+            "reuse_state": "active",
+            "status": "active",
+            "value": "active",
+            "confidence": 0.5,
+            "score": 0.5,
+            "readiness": 50,
+            "avoided_tokens_estimate": 0,
+            "reuse_count": 0,
+            "created_at": "2026-11-16T08:03:13.728599+00:00",
+            "last_reused_at": null,
+            "verified_tests": [],
+            "checks": 0,
+            "artifacts": 0,
+            "traces": 0,
+            "reusable": true,
+            "description": "chat_completion \u00b7 cached_answer \u00b7 0 tokens avoided \u00b7 0 reuse(s)"
+          },
+          {
+            "beast_object_type": "semantic_compute_credit_summary",
+            "version": "1.0",
+            "credit_id": "scc_2d8c59744b5d9721",
+            "id": "scc_2d8c59744b5d9721",
+            "artifact_type": "verified_capability",
+            "kind": "verified_capability",
+            "category": "verified_capability",
+            "task_class": "schema_validation",
+            "name": "schema_validation",
+            "title": "schema_validation",
+            "domain": "verified_capability",
+            "reuse_state": "active",
+            "status": "active",
+            "value": "active",
+            "confidence": 0.92,
+            "score": 0.92,
+            "readiness": 92,
+            "avoided_tokens_estimate": 1500,
+            "reuse_count": 0,
+            "created_at": "2026-11-16T08:03:13.721456+00:00",
+            "last_reused_at": null,
+            "verified_tests": [
+              "visible",
+              "hidden"
+            ],
+            "checks": 2,
+            "artifacts": 1,
+            "traces": 0,
+            "reusable": true,
+            "description": "schema_validation \u00b7 verified_capability \u00b7 1500 tokens avoided \u00b7 0 reuse(s)"
+          },
+          {
+            "beast_object_type": "semantic_compute_credit_summary",
+            "version": "1.0",
+            "credit_id": "cache_c3edd5e2d16e21e3",
+            "id": "cache_c3edd5e2d16e21e3",
+            "artifact_type": "cached_answer",
+            "kind": "cached_answer",
+            "category": "cached_answer",
+            "task_class": "chat_completion",
+            "name": "chat_completion",
+            "title": "chat_completion",
+            "domain": "cached_answer",
+            "reuse_state": "active",
+            "status": "active",
+            "value": "active",
+            "confidence": 0.5,
+            "score": 0.5,
+            "readiness": 50,
+            "avoided_tokens_estimate": 0,
+            "reuse_count": 0,
+            "created_at": "2026-10-20T04:47:48.749972+00:00",
+            "last_reused_at": null,
+            "verified_tests": [],
+            "checks": 0,
+            "artifacts": 0,
+            "traces": 0,
+            "reusable": true,
+            "description": "chat_completion \u00b7 cached_answer \u00b7 0 tokens avoided \u00b7 0 reuse(s)"
+          },
+          {
+            "beast_object_type": "semantic_compute_credit_summary",
+            "version": "1.0",
+            "credit_id": "cache_694db7d81409a3ec",
+            "id": "cache_694db7d81409a3ec",
+            "artifact_type": "cached_answer",
+            "kind": "cached_answer",
+            "category": "cached_answer",
+            "task_class": "chat_completion",
+            "name": "chat_completion",
+            "title": "chat_completion",
+            "domain": "cached_answer",
+            "reuse_state": "active",
+            "status": "active",
+            "value": "active",
+            "confidence": 0.5,
+            "score": 0.5,
+            "readiness": 50,
+            "avoided_tokens_estimate": 0,
+            "reuse_count": 0,
+            "created_at": "2026-10-20T04:40:20.308027+00:00",
+            "last_reused_at": null,
+            "verified_tests": [],
+            "checks": 0,
+            "artifacts": 0,
+            "traces": 0,
+            "reusable": true,
+            "description": "chat_completion \u00b7 cached_answer \u00b7 0 tokens avoided \u00b7 0 reuse(s)"
+          }
+        ],
+        "kv_transport": {
+          "beast_object_type": "kv_cache_transport_stats",
+          "version": "1.0",
+          "total_blocks": 0,
+          "pinned_blocks": 0,
+          "compressed_blocks": 0,
+          "reusable_blocks": 0,
+          "metadata_only_blocks": 0,
+          "total_size_bytes": 0,
+          "compressed_size_bytes": 0,
+          "memory_utilization": 0.0,
+          "blocks_by_location": {},
+          "blocks_by_engine": {},
+          "operations_logged": 0,
+          "max_memory_bytes": 536870912,
+          "storage_dir": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/app/data/kv_cache",
+          "network_sender_count": 0
+        },
+        "integration_health": {
+          "beast_object_type": "beast_local_capability_health",
+          "version": "1.0",
+          "checked_at": "2026-11-16T16:04:57.505448+00:00",
+          "capability_count": 7,
+          "configured_count": 7,
+          "ready_count": 0,
+          "integration_count": 7,
+          "probe_enabled": false,
+          "probe_timeout_seconds": 0.45,
+          "capabilities": [
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_semantic_cache",
+              "role": "semantic answer reuse",
+              "storage": "sqlite + optional local embeddings",
+              "cpu_first": true,
+              "hot_path": true,
+              "capabilities": {
+                "exact": true,
+                "semantic": true,
+                "repo_scoped": true,
+                "verified_only": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_prefix_kv_store",
+              "role": "prompt-prefix and KV reuse",
+              "storage": "beast kv transport",
+              "cpu_first": true,
+              "hot_path": true,
+              "capabilities": {
+                "prefix_cache": true,
+                "compatibility_guard": true,
+                "raw_tensor_optional": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_execution_gateway",
+              "role": "CPU model routing",
+              "storage": "ollama / llama.cpp via InferenceEngineFabric",
+              "cpu_first": true,
+              "hot_path": true,
+              "capabilities": {
+                "local_cpu": true,
+                "cloud_disabled_by_default": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_trace_ledger",
+              "role": "trace and observation ledger",
+              "storage": "jsonl + sqlite",
+              "cpu_first": true,
+              "hot_path": false,
+              "capabilities": {
+                "spans": true,
+                "observations": true,
+                "costs": true,
+                "offline_export": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_route_optimizer",
+              "role": "route feedback optimization",
+              "storage": "sqlite",
+              "cpu_first": true,
+              "hot_path": false,
+              "capabilities": {
+                "route_scores": true,
+                "model_scores": true,
+                "threshold_tuning": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_eval_gate",
+              "role": "assertion and promotion gate",
+              "storage": "json/yaml test specs",
+              "cpu_first": true,
+              "hot_path": false,
+              "capabilities": {
+                "assertions": true,
+                "regression": true,
+                "promotion_blocking": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "compute_forge",
+              "role": "idle CPU inference preparation",
+              "storage": "forge snapshots + local ledgers",
+              "cpu_first": true,
+              "hot_path": false,
+              "capabilities": {
+                "fingerprint": true,
+                "secret_scan": "<redacted>",
+                "semantic_seed": true,
+                "handoff_prep": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            }
+          ],
+          "integrations": [
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_semantic_cache",
+              "role": "semantic answer reuse",
+              "storage": "sqlite + optional local embeddings",
+              "cpu_first": true,
+              "hot_path": true,
+              "capabilities": {
+                "exact": true,
+                "semantic": true,
+                "repo_scoped": true,
+                "verified_only": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_prefix_kv_store",
+              "role": "prompt-prefix and KV reuse",
+              "storage": "beast kv transport",
+              "cpu_first": true,
+              "hot_path": true,
+              "capabilities": {
+                "prefix_cache": true,
+                "compatibility_guard": true,
+                "raw_tensor_optional": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_execution_gateway",
+              "role": "CPU model routing",
+              "storage": "ollama / llama.cpp via InferenceEngineFabric",
+              "cpu_first": true,
+              "hot_path": true,
+              "capabilities": {
+                "local_cpu": true,
+                "cloud_disabled_by_default": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_trace_ledger",
+              "role": "trace and observation ledger",
+              "storage": "jsonl + sqlite",
+              "cpu_first": true,
+              "hot_path": false,
+              "capabilities": {
+                "spans": true,
+                "observations": true,
+                "costs": true,
+                "offline_export": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_route_optimizer",
+              "role": "route feedback optimization",
+              "storage": "sqlite",
+              "cpu_first": true,
+              "hot_path": false,
+              "capabilities": {
+                "route_scores": true,
+                "model_scores": true,
+                "threshold_tuning": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_eval_gate",
+              "role": "assertion and promotion gate",
+              "storage": "json/yaml test specs",
+              "cpu_first": true,
+              "hot_path": false,
+              "capabilities": {
+                "assertions": true,
+                "regression": true,
+                "promotion_blocking": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "compute_forge",
+              "role": "idle CPU inference preparation",
+              "storage": "forge snapshots + local ledgers",
+              "cpu_first": true,
+              "hot_path": false,
+              "capabilities": {
+                "fingerprint": true,
+                "secret_scan": "<redacted>",
+                "semantic_seed": true,
+                "handoff_prep": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            }
+          ],
+          "claim_boundary": "BEAST-native local CPU capability registry; no external service dependency."
+        },
+        "local_capability_health": {
+          "beast_object_type": "beast_local_capability_health",
+          "version": "1.0",
+          "checked_at": "2026-11-16T16:04:57.505507+00:00",
+          "capability_count": 7,
+          "configured_count": 7,
+          "ready_count": 0,
+          "integration_count": 7,
+          "probe_enabled": false,
+          "probe_timeout_seconds": 0.45,
+          "capabilities": [
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_semantic_cache",
+              "role": "semantic answer reuse",
+              "storage": "sqlite + optional local embeddings",
+              "cpu_first": true,
+              "hot_path": true,
+              "capabilities": {
+                "exact": true,
+                "semantic": true,
+                "repo_scoped": true,
+                "verified_only": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_prefix_kv_store",
+              "role": "prompt-prefix and KV reuse",
+              "storage": "beast kv transport",
+              "cpu_first": true,
+              "hot_path": true,
+              "capabilities": {
+                "prefix_cache": true,
+                "compatibility_guard": true,
+                "raw_tensor_optional": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_execution_gateway",
+              "role": "CPU model routing",
+              "storage": "ollama / llama.cpp via InferenceEngineFabric",
+              "cpu_first": true,
+              "hot_path": true,
+              "capabilities": {
+                "local_cpu": true,
+                "cloud_disabled_by_default": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_trace_ledger",
+              "role": "trace and observation ledger",
+              "storage": "jsonl + sqlite",
+              "cpu_first": true,
+              "hot_path": false,
+              "capabilities": {
+                "spans": true,
+                "observations": true,
+                "costs": true,
+                "offline_export": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_route_optimizer",
+              "role": "route feedback optimization",
+              "storage": "sqlite",
+              "cpu_first": true,
+              "hot_path": false,
+              "capabilities": {
+                "route_scores": true,
+                "model_scores": true,
+                "threshold_tuning": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_eval_gate",
+              "role": "assertion and promotion gate",
+              "storage": "json/yaml test specs",
+              "cpu_first": true,
+              "hot_path": false,
+              "capabilities": {
+                "assertions": true,
+                "regression": true,
+                "promotion_blocking": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "compute_forge",
+              "role": "idle CPU inference preparation",
+              "storage": "forge snapshots + local ledgers",
+              "cpu_first": true,
+              "hot_path": false,
+              "capabilities": {
+                "fingerprint": true,
+                "secret_scan": "<redacted>",
+                "semantic_seed": true,
+                "handoff_prep": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            }
+          ],
+          "integrations": [
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_semantic_cache",
+              "role": "semantic answer reuse",
+              "storage": "sqlite + optional local embeddings",
+              "cpu_first": true,
+              "hot_path": true,
+              "capabilities": {
+                "exact": true,
+                "semantic": true,
+                "repo_scoped": true,
+                "verified_only": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_prefix_kv_store",
+              "role": "prompt-prefix and KV reuse",
+              "storage": "beast kv transport",
+              "cpu_first": true,
+              "hot_path": true,
+              "capabilities": {
+                "prefix_cache": true,
+                "compatibility_guard": true,
+                "raw_tensor_optional": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_execution_gateway",
+              "role": "CPU model routing",
+              "storage": "ollama / llama.cpp via InferenceEngineFabric",
+              "cpu_first": true,
+              "hot_path": true,
+              "capabilities": {
+                "local_cpu": true,
+                "cloud_disabled_by_default": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_trace_ledger",
+              "role": "trace and observation ledger",
+              "storage": "jsonl + sqlite",
+              "cpu_first": true,
+              "hot_path": false,
+              "capabilities": {
+                "spans": true,
+                "observations": true,
+                "costs": true,
+                "offline_export": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_route_optimizer",
+              "role": "route feedback optimization",
+              "storage": "sqlite",
+              "cpu_first": true,
+              "hot_path": false,
+              "capabilities": {
+                "route_scores": true,
+                "model_scores": true,
+                "threshold_tuning": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "local_eval_gate",
+              "role": "assertion and promotion gate",
+              "storage": "json/yaml test specs",
+              "cpu_first": true,
+              "hot_path": false,
+              "capabilities": {
+                "assertions": true,
+                "regression": true,
+                "promotion_blocking": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            },
+            {
+              "beast_object_type": "beast_local_capability_profile",
+              "version": "1.0",
+              "capability_id": "compute_forge",
+              "role": "idle CPU inference preparation",
+              "storage": "forge snapshots + local ledgers",
+              "cpu_first": true,
+              "hot_path": false,
+              "capabilities": {
+                "fingerprint": true,
+                "secret_scan": "<redacted>",
+                "semantic_seed": true,
+                "handoff_prep": true
+              },
+              "configured": true,
+              "local_native": true,
+              "status": "configured",
+              "live_probe": {
+                "status": "not_attempted",
+                "ready": false,
+                "reason": "probe_not_requested"
+              },
+              "claim_boundary": "BEAST-native local capability; no external service required."
+            }
+          ],
+          "claim_boundary": "BEAST-native local CPU capability registry; no external service dependency."
+        },
+        "integrations": [
+          {
+            "beast_object_type": "beast_local_capability_profile",
+            "version": "1.0",
+            "capability_id": "local_semantic_cache",
+            "role": "semantic answer reuse",
+            "storage": "sqlite + optional local embeddings",
+            "cpu_first": true,
+            "hot_path": true,
+            "capabilities": {
+              "exact": true,
+              "semantic": true,
+              "repo_scoped": true,
+              "verified_only": true
+            }
+          },
+          {
+            "beast_object_type": "beast_local_capability_profile",
+            "version": "1.0",
+            "capability_id": "local_prefix_kv_store",
+            "role": "prompt-prefix and KV reuse",
+            "storage": "beast kv transport",
+            "cpu_first": true,
+            "hot_path": true,
+            "capabilities": {
+              "prefix_cache": true,
+              "compatibility_guard": true,
+              "raw_tensor_optional": true
+            }
+          },
+          {
+            "beast_object_type": "beast_local_capability_profile",
+            "version": "1.0",
+            "capability_id": "local_execution_gateway",
+            "role": "CPU model routing",
+            "storage": "ollama / llama.cpp via InferenceEngineFabric",
+            "cpu_first": true,
+            "hot_path": true,
+            "capabilities": {
+              "local_cpu": true,
+              "cloud_disabled_by_default": true
+            }
+          },
+          {
+            "beast_object_type": "beast_local_capability_profile",
+            "version": "1.0",
+            "capability_id": "local_trace_ledger",
+            "role": "trace and observation ledger",
+            "storage": "jsonl + sqlite",
+            "cpu_first": true,
+            "hot_path": false,
+            "capabilities": {
+              "spans": true,
+              "observations": true,
+              "costs": true,
+              "offline_export": true
+            }
+          },
+          {
+            "beast_object_type": "beast_local_capability_profile",
+            "version": "1.0",
+            "capability_id": "local_route_optimizer",
+            "role": "route feedback optimization",
+            "storage": "sqlite",
+            "cpu_first": true,
+            "hot_path": false,
+            "capabilities": {
+              "route_scores": true,
+              "model_scores": true,
+              "threshold_tuning": true
+            }
+          },
+          {
+            "beast_object_type": "beast_local_capability_profile",
+            "version": "1.0",
+            "capability_id": "local_eval_gate",
+            "role": "assertion and promotion gate",
+            "storage": "json/yaml test specs",
+            "cpu_first": true,
+            "hot_path": false,
+            "capabilities": {
+              "assertions": true,
+              "regression": true,
+              "promotion_blocking": true
+            }
+          },
+          {
+            "beast_object_type": "beast_local_capability_profile",
+            "version": "1.0",
+            "capability_id": "compute_forge",
+            "role": "idle CPU inference preparation",
+            "storage": "forge snapshots + local ledgers",
+            "cpu_first": true,
+            "hot_path": false,
+            "capabilities": {
+              "fingerprint": true,
+              "secret_scan": "<redacted>",
+              "semantic_seed": true,
+              "handoff_prep": true
+            }
+          }
+        ],
+        "runtime_order": [
+          "exact_answer",
+          "verified_semantic_credit",
+          "local_semantic_cache_match",
+          "memory_hull_recall",
+          "prompt_prefix_prefill",
+          "local_cpu_execution",
+          "local_quality_gate",
+          "governed_cloud_escalation"
+        ]
+      }
+    },
+    "crystal_lattice": {
+      "status": 200,
+      "elapsed": 0.003,
+      "error": null,
+      "payload": {
+        "beast_object_type": "crystal_lattice_ledger_state",
+        "version": "1.0",
+        "root": "benchmarks/results/crystal_lattice_ledger",
+        "ledger_path": "benchmarks/results/crystal_lattice_ledger/lattice_checkpoints.jsonl",
+        "verification": {
+          "beast_object_type": "crystal_lattice_ledger_verification",
+          "version": "1.0",
+          "valid": true,
+          "checkpoint_count": 21,
+          "head_hash": "sha256:dee58125e52b81dce48eba9d256ccffc87622bfe51ac9197820e1b85cf47996d",
+          "errors": [],
+          "claim_boundary": "append_only_hash_history_for_lattice_metadata_not_model_weight_authority"
+        },
+        "latest_defrag": {}
+      }
+    },
+    "crystal_chain": {
+      "status": 200,
+      "elapsed": 0.003,
+      "error": null,
+      "payload": {
+        "beast_object_type": "crystal_chain_verification",
+        "version": "1.0",
+        "valid": true,
+        "block_count": 8,
+        "head_hash": "sha256:ba5ddf0841223def8b135db6fcbf9964b308a4b5bb528cdcf4d10fb62fd697a9",
+        "errors": [],
+        "consensus": "local_hash_chain_no_distributed_consensus",
+        "path": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/data/commons_spaces/.crystal_chain/blocks.jsonl",
+        "authority": "tamper_evident_local_ledger",
+        "financial_asset": false,
+        "immutable_claim": "append-only hash chain; filesystem administrator can replace the entire chain",
+        "blocks": [
+          {
+            "artifact_id": "sha256:8337f3a0a22325833246e296888086199700f41023367b8edfc787119a393c0f",
+            "beast_object_type": "crystallized_compute_block",
+            "block_hash": "sha256:3617ee35afebc9c37ade508d522561b0d04b5b8e300e9c98857bc094e3bf9409",
+            "event_type": "lattice_checkpoint_appended",
+            "index": 0,
+            "node_id": "local-commons",
+            "payload": {
+              "checkpoint_hash": "sha256:8337f3a0a22325833246e296888086199700f41023367b8edfc787119a393c0f",
+              "lattice_head_hash": "sha256:8337f3a0a22325833246e296888086199700f41023367b8edfc787119a393c0f",
+              "private_payload_exported": false
+            },
+            "payload_hash": "sha256:2ec8aff20ac71332858f1608167d69dc538f4d35f745a317614fc80d4ab52990",
+            "previous_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+            "timestamp": "2026-10-16T10:50:01.583169+00:00",
+            "version": "1.0"
+          },
+          {
+            "artifact_id": "sha256:d2ddf4e77361e890aa8f76725e6f493c75ce8e2ae7e14f95f932829ae23d5fb8",
+            "beast_object_type": "crystallized_compute_block",
+            "block_hash": "sha256:8efaeef67f702b697edbff2a1c218cc7adbde994b1362428e90bddf96c868b89",
+            "event_type": "lattice_checkpoint_appended",
+            "index": 1,
+            "node_id": "local-commons",
+            "payload": {
+              "checkpoint_hash": "sha256:d2ddf4e77361e890aa8f76725e6f493c75ce8e2ae7e14f95f932829ae23d5fb8",
+              "lattice_head_hash": "sha256:d2ddf4e77361e890aa8f76725e6f493c75ce8e2ae7e14f95f932829ae23d5fb8",
+              "private_payload_exported": false
+            },
+            "payload_hash": "sha256:03f1aea5804b23e1135a4e947e73558cbdfbc61871f30a40daf5ac1415047b7d",
+            "previous_hash": "sha256:3617ee35afebc9c37ade508d522561b0d04b5b8e300e9c98857bc094e3bf9409",
+            "timestamp": "2026-10-16T14:48:04.070244+00:00",
+            "version": "1.0"
+          },
+          {
+            "artifact_id": "sha256:790cf68b53c68ec0f90b84e2b389bec76583c6b39922bdffec31dfedf94df31a",
+            "beast_object_type": "crystallized_compute_block",
+            "block_hash": "sha256:241c1de13f8410e7c947e652412f82f4e71148a8fa23ba61f53b422583164ba5",
+            "event_type": "lattice_checkpoint_appended",
+            "index": 2,
+            "node_id": "local-commons",
+            "payload": {
+              "checkpoint_hash": "sha256:790cf68b53c68ec0f90b84e2b389bec76583c6b39922bdffec31dfedf94df31a",
+              "lattice_head_hash": "sha256:790cf68b53c68ec0f90b84e2b389bec76583c6b39922bdffec31dfedf94df31a",
+              "private_payload_exported": false
+            },
+            "payload_hash": "sha256:46eafc0073a169da230dca908455b6c7a9f19ae9d5975fcea5685ae0f8ed9d74",
+            "previous_hash": "sha256:8efaeef67f702b697edbff2a1c218cc7adbde994b1362428e90bddf96c868b89",
+            "timestamp": "2026-10-16T14:48:05.554571+00:00",
+            "version": "1.0"
+          },
+          {
+            "artifact_id": "sha256:3b572307a1187f391a59369e3cad07b8cdef2de9ca1c80f4f6d1ec686bcb6e91",
+            "beast_object_type": "crystallized_compute_block",
+            "block_hash": "sha256:9d150d9761ebfcfbb6c2e1ee730c518444de4460d53892cf68cdbf6ae109f3a8",
+            "event_type": "lattice_checkpoint_appended",
+            "index": 3,
+            "node_id": "local-commons",
+            "payload": {
+              "checkpoint_hash": "sha256:3b572307a1187f391a59369e3cad07b8cdef2de9ca1c80f4f6d1ec686bcb6e91",
+              "lattice_head_hash": "sha256:3b572307a1187f391a59369e3cad07b8cdef2de9ca1c80f4f6d1ec686bcb6e91",
+              "private_payload_exported": false
+            },
+            "payload_hash": "sha256:43ee231cccffbfac07148aacc204b3c569c671c5eb4dd6ae40646da26cc0c1c8",
+            "previous_hash": "sha256:241c1de13f8410e7c947e652412f82f4e71148a8fa23ba61f53b422583164ba5",
+            "timestamp": "2026-10-18T14:52:45.880905+00:00",
+            "version": "1.0"
+          },
+          {
+            "artifact_id": "sha256:09b5587a9284abcaecd3eb145571cd9e89564f0f615e1f19ca2f030206ae29bf",
+            "beast_object_type": "crystallized_compute_block",
+            "block_hash": "sha256:b161fc245557674a622a05b1927c1cf3824e7bb3a8d1ee9eaa2b31e51db71bef",
+            "event_type": "lattice_checkpoint_appended",
+            "index": 4,
+            "node_id": "local-commons",
+            "payload": {
+              "checkpoint_hash": "sha256:09b5587a9284abcaecd3eb145571cd9e89564f0f615e1f19ca2f030206ae29bf",
+              "lattice_head_hash": "sha256:09b5587a9284abcaecd3eb145571cd9e89564f0f615e1f19ca2f030206ae29bf",
+              "private_payload_exported": false
+            },
+            "payload_hash": "sha256:5632c23bc3a324cae66306ad5582ae9b2fe5ccd90faae5c8d940c5b2f546f98e",
+            "previous_hash": "sha256:9d150d9761ebfcfbb6c2e1ee730c518444de4460d53892cf68cdbf6ae109f3a8",
+            "timestamp": "2026-11-15T15:13:58.773826+00:00",
+            "version": "1.0"
+          },
+          {
+            "artifact_id": "sha256:99a84d7b6ebd53ac8ab31f725aecd6c191b86fae5d77929c8791f109f475ba43",
+            "beast_object_type": "crystallized_compute_block",
+            "block_hash": "sha256:ac323871cc2ceecf7311ec73eca5a5c9d1119d9343f58d029fa0cc95d7513981",
+            "event_type": "lattice_checkpoint_appended",
+            "index": 5,
+            "node_id": "local-commons",
+            "payload": {
+              "checkpoint_hash": "sha256:99a84d7b6ebd53ac8ab31f725aecd6c191b86fae5d77929c8791f109f475ba43",
+              "lattice_head_hash": "sha256:99a84d7b6ebd53ac8ab31f725aecd6c191b86fae5d77929c8791f109f475ba43",
+              "private_payload_exported": false
+            },
+            "payload_hash": "sha256:997a11d38f1e1f43728eadbb6181f19bc6c5a75ce73b745a7098023a22547cfe",
+            "previous_hash": "sha256:b161fc245557674a622a05b1927c1cf3824e7bb3a8d1ee9eaa2b31e51db71bef",
+            "timestamp": "2026-11-16T14:08:32.538451+00:00",
+            "version": "1.0"
+          },
+          {
+            "artifact_id": "sha256:72430a95c7625f606373c80b1d02929cd37255e9a857deb126ff496e64e8b953",
+            "beast_object_type": "crystallized_compute_block",
+            "block_hash": "sha256:d7f2eb1ba79a56d27a401495c9c50c7d608c364253cbb9109eb597cc6ac786c8",
+            "event_type": "lattice_checkpoint_appended",
+            "index": 6,
+            "node_id": "local-commons",
+            "payload": {
+              "checkpoint_hash": "sha256:72430a95c7625f606373c80b1d02929cd37255e9a857deb126ff496e64e8b953",
+              "lattice_head_hash": "sha256:72430a95c7625f606373c80b1d02929cd37255e9a857deb126ff496e64e8b953",
+              "private_payload_exported": false
+            },
+            "payload_hash": "sha256:9b420a4a1d750d147d474306b3b7cfe3200fe4af48a023c766d9e0aac4581acb",
+            "previous_hash": "sha256:ac323871cc2ceecf7311ec73eca5a5c9d1119d9343f58d029fa0cc95d7513981",
+            "timestamp": "2026-11-16T14:08:48.434507+00:00",
+            "version": "1.0"
+          },
+          {
+            "artifact_id": "sha256:dee58125e52b81dce48eba9d256ccffc87622bfe51ac9197820e1b85cf47996d",
+            "beast_object_type": "crystallized_compute_block",
+            "block_hash": "sha256:ba5ddf0841223def8b135db6fcbf9964b308a4b5bb528cdcf4d10fb62fd697a9",
+            "event_type": "lattice_checkpoint_appended",
+            "index": 7,
+            "node_id": "local-commons",
+            "payload": {
+              "checkpoint_hash": "sha256:dee58125e52b81dce48eba9d256ccffc87622bfe51ac9197820e1b85cf47996d",
+              "lattice_head_hash": "sha256:dee58125e52b81dce48eba9d256ccffc87622bfe51ac9197820e1b85cf47996d",
+              "private_payload_exported": false
+            },
+            "payload_hash": "sha256:cc31d03d3c97c4bd582d9ad3841a86bdb2c0daa40d60b36219d75cc46d79c88d",
+            "previous_hash": "sha256:d7f2eb1ba79a56d27a401495c9c50c7d608c364253cbb9109eb597cc6ac786c8",
+            "timestamp": "2026-11-16T14:09:13.277528+00:00",
+            "version": "1.0"
+          }
+        ]
+      }
+    },
+    "commons_economy": {
+      "status": 200,
+      "elapsed": 0.002,
+      "error": null,
+      "payload": {
+        "beast_object_type": "compute_reduction_economy_state",
+        "version": "1.0",
+        "mode": "non_financial_simulation",
+        "credits": [],
+        "credit_count": 0,
+        "issued_units": 0,
+        "duplicates": {
+          "beast_object_type": "compute_reduction_duplicate_report",
+          "version": "1.0",
+          "groups": [],
+          "duplicate_spaces": 0,
+          "policy": "exact semantic evidence duplicates receive zero additional credit",
+          "fast_summary": true,
+          "source": "issued_credit_evidence_fingerprints"
+        },
+        "adoption_history": {
+          "beast_object_type": "verified_commons_adoption_history",
+          "version": "1.0",
+          "count": 0,
+          "verified_count": 0,
+          "adoptions": [],
+          "truncated": false
+        },
+        "full_analysis": false,
+        "anti_gaming_rules": [
+          "local live reproduction required",
+          "verified local adoption required",
+          "counterfactual tokens excluded from observed credit",
+          "exact semantic duplicates receive no additional credit",
+          "one issuance per evidence fingerprint",
+          "credits are capped, non-transferable, and non-redeemable"
+        ]
+      }
+    },
+    "memory_security": {
+      "status": 200,
+      "elapsed": 0.006,
+      "error": null,
+      "payload": {
+        "beast_object_type": "beast_memory_security_state",
+        "version": "1.0",
+        "memory_hull": {
+          "beast_object_type": "memory_hull_inventory",
+          "version": "2.0",
+          "root": "/tmp/beast-audit-8199-20261116/vault",
+          "sections": {
+            "projects": {
+              "markdown": 0,
+              "sidecars": 0,
+              "verified": 0,
+              "failed": 0
+            },
+            "tasks": {
+              "markdown": 0,
+              "sidecars": 0,
+              "verified": 0,
+              "failed": 0
+            },
+            "decisions": {
+              "markdown": 0,
+              "sidecars": 0,
+              "verified": 0,
+              "failed": 0
+            },
+            "provider_receipts": {
+              "markdown": 0,
+              "sidecars": 0,
+              "verified": 0,
+              "failed": 0
+            },
+            "quality_cascade": {
+              "markdown": 0,
+              "sidecars": 0,
+              "verified": 0,
+              "failed": 0
+            },
+            "residue": {
+              "markdown": 0,
+              "sidecars": 0,
+              "verified": 0,
+              "failed": 0
+            },
+            "policies": {
+              "markdown": 0,
+              "sidecars": 0,
+              "verified": 0,
+              "failed": 0
+            }
+          },
+          "editable": true,
+          "sidecar_sealed": true,
+          "index_path": "/tmp/beast-audit-8199-20261116/vault/.index/residue_index.json",
+          "verified_sidecars": 0,
+          "failed_sidecars": 0
+        },
+        "residue_seal": {
+          "beast_object_type": "beast_residue_seal_health",
+          "version": "1.0",
+          "key_dir": "/tmp/beast-audit-8199-20261116/keys/residue",
+          "private_key": "/tmp/beast-audit-8199-20261116/keys/residue/residue_ed25519.pem",
+          "key_exists": false,
+          "key_mode": null,
+          "native_crypto_available": true
+        },
+        "agent_passport": {
+          "policy_lint": {
+            "beast_object_type": "beast_agent_passport_policy_lint",
+            "version": "1.0",
+            "valid": true,
+            "policy_count": 6,
+            "errors": [],
+            "policy_hash": "sha256:85b5c595867f737998d574ce884232347fa669e0a42b5c3aba49966b7ba29bce"
+          },
+          "sample_passports": [
+            {
+              "beast_object_type": "beast_agent_passport",
+              "version": "2.0",
+              "component": "scout/repo-reader",
+              "spiffe_id": "spiffe://beast.local/scout/repo-reader",
+              "public_key_hash": "sha256:928841ad65fd1dc7dca21c50aa070872be92e8dd226203def5bda140ecf96413",
+              "cert_fingerprint": "",
+              "issuer": "beast.local/bootstrap",
+              "issued_at": "2026-11-16T16:04:57.519708+00:00",
+              "expires_at": "2026-11-17T04:04:57.519708+00:00",
+              "audiences": [
+                "beast"
+              ],
+              "claims": {},
+              "identity_boundary": "local_passport_claim_ready_for_mtls_or_spire_binding"
+            },
+            {
+              "beast_object_type": "beast_agent_passport",
+              "version": "2.0",
+              "component": "runtime-governor",
+              "spiffe_id": "spiffe://beast.local/runtime-governor",
+              "public_key_hash": "sha256:e454e15fb7049373e7564d7dcdb3f3c8fa88e2d5764a432e4159b03646ebaeae",
+              "cert_fingerprint": "",
+              "issuer": "beast.local/bootstrap",
+              "issued_at": "2026-11-16T16:04:57.519744+00:00",
+              "expires_at": "2026-11-17T04:04:57.519744+00:00",
+              "audiences": [
+                "beast"
+              ],
+              "claims": {},
+              "identity_boundary": "local_passport_claim_ready_for_mtls_or_spire_binding"
+            },
+            {
+              "beast_object_type": "beast_agent_passport",
+              "version": "2.0",
+              "component": "proxy/gateway",
+              "spiffe_id": "spiffe://beast.local/proxy/gateway",
+              "public_key_hash": "sha256:2a69dbeda093a8381874d12998690f90d9c2a2a1fd448c4c28a173f008dce710",
+              "cert_fingerprint": "",
+              "issuer": "beast.local/bootstrap",
+              "issued_at": "2026-11-16T16:04:57.519760+00:00",
+              "expires_at": "2026-11-17T04:04:57.519760+00:00",
+              "audiences": [
+                "beast"
+              ],
+              "claims": {},
+              "identity_boundary": "local_passport_claim_ready_for_mtls_or_spire_binding"
+            }
+          ],
+          "sample_decisions": {
+            "scout_memory_append": {
+              "beast_object_type": "beast_agent_passport_policy_decision",
+              "version": "2.0",
+              "allowed": true,
+              "caller": "spiffe://beast.local/scout/repo-reader",
+              "target": "spiffe://beast.local/memory/vault",
+              "action": "append",
+              "reason": "explicit_allow",
+              "matched_policy_count": 1,
+              "matched_policy_ids": [
+                "memory-hull-scout-read-append"
+              ],
+              "policy_hash": "sha256:45909712c7cc091779c47ec9a521b2ae371e4529dfe70a2dca956d1b78660cec",
+              "policy_set_hash": "sha256:85b5c595867f737998d574ce884232347fa669e0a42b5c3aba49966b7ba29bce",
+              "facts_hash": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+              "decided_at": "2026-11-16T16:04:57.520506+00:00",
+              "decision_id": "passport_decision_4ff475e68536aa83e5ed",
+              "policy_gate": {
+                "beast_object_type": "beast_policy_gate_result",
+                "version": "1.0",
+                "decision": "allow",
+                "mutation_allowed": true,
+                "reasons": [
+                  "str"
+                ],
+                "receipts": {
+                  "agent_passport": "dict"
+                },
+                "verification_required": false,
+                "approval_required": false,
+                "rollback_required": false,
+                "worktree_required": false
+              },
+              "residue_seal": {
+                "beast_object_type": "beast_residue_seal",
+                "version": "2.0",
+                "purpose": "agent_passport_policy_decision",
+                "algorithm": "Ed25519",
+                "provider": "cryptography",
+                "created_at": "2026-11-16T16:04:57.521239+00:00",
+                "payload_sha256": "sha256:09aba2ea7010eaf92ece701481cc7ab62f9cef85a232c4a68f8dbbbc9c0b6fc0",
+                "message_sha256": "sha256:ab4f93d39aa6ddcda13b049e673989bda00ae8ec7aa1d59988e7cf20497d2221",
+                "public_key_pem_b64": "<redacted>",
+                "public_key_hash": "sha256:fd4fd51e27def01d9a730b73eeba759e198eeea2ee60dc10d44b7c103cccd72c",
+                "signature_b64": "5+mcSwErxLTPzmZQbsbTwbEXHe02UoozWCVIlkh5q7zVFdQSDfjYGeSrN0nsc5zxddpfMwEI7IykCaBJL2byDw==",
+                "key_boundary": "purpose_specific_residue_key_not_mtls_not_federation"
+              }
+            },
+            "governor_cloud_call_approved": {
+              "beast_object_type": "beast_agent_passport_policy_decision",
+              "version": "2.0",
+              "allowed": true,
+              "caller": "spiffe://beast.local/runtime-governor",
+              "target": "spiffe://beast.local/provider/cloud",
+              "action": "call",
+              "reason": "explicit_allow",
+              "matched_policy_count": 2,
+              "matched_policy_ids": [
+                "runtime-governor-cloud-escalation",
+                "deny-unapproved-cloud-calls"
+              ],
+              "policy_hash": "sha256:0e91dff8a86562f0559a888f78593e407df001ea1787f48549225f1c5669530a",
+              "policy_set_hash": "sha256:85b5c595867f737998d574ce884232347fa669e0a42b5c3aba49966b7ba29bce",
+              "facts_hash": "sha256:da150c52ce47812c34003c7f3b2ee1fb122efcce635726747a8076d74656cd58",
+              "decided_at": "2026-11-16T16:04:57.521517+00:00",
+              "decision_id": "passport_decision_10d48293a219bb4f581a",
+              "policy_gate": {
+                "beast_object_type": "beast_policy_gate_result",
+                "version": "1.0",
+                "decision": "allow",
+                "mutation_allowed": true,
+                "reasons": [
+                  "str"
+                ],
+                "receipts": {
+                  "agent_passport": "dict"
+                },
+                "verification_required": false,
+                "approval_required": false,
+                "rollback_required": false,
+                "worktree_required": false
+              },
+              "residue_seal": {
+                "beast_object_type": "beast_residue_seal",
+                "version": "2.0",
+                "purpose": "agent_passport_policy_decision",
+                "algorithm": "Ed25519",
+                "provider": "cryptography",
+                "created_at": "2026-11-16T16:04:57.521780+00:00",
+                "payload_sha256": "sha256:9e661a59e9cede3c67acecfb31c7217e9350ff2cc700505d7fd2a6feea7acd7d",
+                "message_sha256": "sha256:c66133acfb525b8c17040db53a55a16a52880a4fca7f24923eeb37161783c259",
+                "public_key_pem_b64": "<redacted>",
+                "public_key_hash": "sha256:fd4fd51e27def01d9a730b73eeba759e198eeea2ee60dc10d44b7c103cccd72c",
+                "signature_b64": "vy5O5DowmJx9GiNUbdFQvkLxJuR9/1Kok/F41rRDjm/gMTMwS5H0N8zLVyFcc/AdWeFQCO9CTHOfaIzo963NAg==",
+                "key_boundary": "purpose_specific_residue_key_not_mtls_not_federation"
+              }
+            },
+            "proxy_cloud_call_unapproved": {
+              "beast_object_type": "beast_agent_passport_policy_decision",
+              "version": "2.0",
+              "allowed": false,
+              "caller": "spiffe://beast.local/proxy/gateway",
+              "target": "spiffe://beast.local/provider/cloud",
+              "action": "call",
+              "reason": "explicit_deny",
+              "matched_policy_count": 2,
+              "matched_policy_ids": [
+                "proxy-provider-local-first",
+                "deny-unapproved-cloud-calls"
+              ],
+              "policy_hash": "sha256:bf30e73ddb88ec4bbe2a6f452ed7308ba92879e405499b946ffcc4cd54d2cf14",
+              "policy_set_hash": "sha256:85b5c595867f737998d574ce884232347fa669e0a42b5c3aba49966b7ba29bce",
+              "facts_hash": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+              "decided_at": "2026-11-16T16:04:57.522083+00:00",
+              "decision_id": "passport_decision_758cf209b9063faa28a1",
+              "policy_gate": {
+                "beast_object_type": "beast_policy_gate_result",
+                "version": "1.0",
+                "decision": "block",
+                "mutation_allowed": false,
+                "reasons": [
+                  "str"
+                ],
+                "receipts": {
+                  "agent_passport": "dict"
+                },
+                "verification_required": false,
+                "approval_required": true,
+                "rollback_required": false,
+                "worktree_required": false
+              },
+              "residue_seal": {
+                "beast_object_type": "beast_residue_seal",
+                "version": "2.0",
+                "purpose": "agent_passport_policy_decision",
+                "algorithm": "Ed25519",
+                "provider": "cryptography",
+                "created_at": "2026-11-16T16:04:57.522315+00:00",
+                "payload_sha256": "sha256:578a1b21405b352e64236f014ccdd737e70adb294ee5cd6e6f24a3a25739ef4c",
+                "message_sha256": "sha256:0c33028ee6a614ecb7f81dda9893b4ff726e4f90078c8e878e65bbf22fee9c00",
+                "public_key_pem_b64": "<redacted>",
+                "public_key_hash": "sha256:fd4fd51e27def01d9a730b73eeba759e198eeea2ee60dc10d44b7c103cccd72c",
+                "signature_b64": "FlD0DHVac43adtGKxea9UGgoENT+bP9Gy79kjsCaF7aKOFJhRPJ21w2wfo8ssbZjmEtWuksii8BlEglV9KuhAQ==",
+                "key_boundary": "purpose_specific_residue_key_not_mtls_not_federation"
+              }
+            }
+          }
+        },
+        "layers": [
+          {
+            "layer": "agent_passport",
+            "status": "active",
+            "purpose": "workload identity and policy decisions"
+          },
+          {
+            "layer": "memory_hull",
+            "status": "active",
+            "purpose": "editable sealed operational residue"
+          },
+          {
+            "layer": "residue_seal",
+            "status": "active",
+            "purpose": "purpose-specific Ed25519 artifact signing"
+          }
+        ]
+      }
+    },
+    "ide_snapshot": {
+      "status": 200,
+      "elapsed": 0.003,
+      "error": null,
+      "payload": {
+        "beast_object_type": "beast_ide_snapshot",
+        "version": "1.0",
+        "status": "ready",
+        "mode": "lightweight_health_probe",
+        "workspace_root": "/tmp/beast-audit-ws-20261116",
+        "active_file": "",
+        "objective": "BEAST IDE mission",
+        "mission_cockpit": {
+          "status": "ready",
+          "workspace_root": "/tmp/beast-audit-ws-20261116",
+          "objective": "BEAST IDE mission"
+        },
+        "sourceplan_queue": [],
+        "worktrees": {},
+        "policy": {
+          "mode_route": {},
+          "reintegration_health": {},
+          "architecture_decisions": []
+        },
+        "code_cortex": {
+          "status": "deferred"
+        },
+        "evidence_bus": {
+          "status": "deferred",
+          "receipts": []
+        },
+        "mission_lattice": {
+          "status": "deferred"
+        },
+        "agent_sessions": [],
+        "operator_actions": []
+      }
+    },
+    "system_snapshot": {
+      "status": 200,
+      "elapsed": 0.734,
+      "error": null,
+      "payload": {
+        "ok": true,
+        "beast_object_type": "beast_ide_system_snapshot",
+        "version": "1.0",
+        "workspace_root": "/tmp/beast-audit-ws-20261116",
+        "psutil_available": true,
+        "capabilities": {
+          "ports": true,
+          "processes": true,
+          "process_kill": true,
+          "port_free": true,
+          "environment": true,
+          "packages": true,
+          "extensions": true
+        },
+        "summary": {
+          "listening_ports": 60,
+          "processes_total": 503,
+          "python": "3.13.5",
+          "in_virtualenv": true,
+          "python_dependencies": 0,
+          "node_manifests": 0,
+          "vscode_commands": 0,
+          "resources": {
+            "cpu": {
+              "percent": 4.9,
+              "available": true,
+              "source": "psutil"
+            },
+            "memory": {
+              "percent": 29.0,
+              "available": true,
+              "source": "/proc/meminfo"
+            },
+            "disk": {
+              "percent": 96.2,
+              "available": true,
+              "source": "statvfs"
+            },
+            "network": {
+              "percent": null,
+              "health_percent": null,
+              "available": true,
+              "measurement": "interface_presence_only",
+              "source": "/sys/class/net",
+              "interfaces": [
+                "tailscale0",
+                "veth58ddc6a",
+                "veth96510ab",
+                "br-0afc4d28d583",
+                "docker0",
+                "wlp4s0",
+                "veth815bf27",
+                "br-32eb5be0fb5a",
+                "seraph-br0",
+                "veth5821b9f",
+                "vethe53bb8e",
+                "veth0ce1898",
+                "veth5135a4c",
+                "eno1",
+                "vethf4a56dd",
+                "veth6486aaf"
+              ]
+            }
+          }
+        },
+        "ports": {
+          "ok": true,
+          "beast_object_type": "beast_ide_ports",
+          "version": "1.0",
+          "source": "psutil",
+          "count": 60,
+          "ports": [
+            {
+              "proto": "tcp",
+              "address": "::",
+              "port": 22,
+              "status": "LISTEN",
+              "pid": null,
+              "process": "",
+              "cmdline": "",
+              "user": ""
+            },
+            {
+              "proto": "tcp",
+              "address": "0.0.0.0",
+              "port": 22,
+              "status": "LISTEN",
+              "pid": null,
+              "process": "",
+              "cmdline": "",
+              "user": ""
+            },
+            {
+              "proto": "tcp",
+              "address": "::",
+              "port": 80,
+              "status": "LISTEN",
+              "pid": null,
+              "process": "",
+              "cmdline": "",
+              "user": ""
+            },
+            {
+              "proto": "tcp",
+              "address": "0.0.0.0",
+              "port": 80,
+              "status": "LISTEN",
+              "pid": null,
+              "process": "",
+              "cmdline": "",
+              "user": ""
+            },
+            {
+              "proto": "tcp",
+              "address": "::1",
+              "port": 631,
+              "status": "LISTEN",
+              "pid": null,
+              "process": "",
+              "cmdline": "",
+              "user": ""
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 631,
+              "status": "LISTEN",
+              "pid": null,
+              "process": "",
+              "cmdline": "",
+              "user": ""
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 3000,
+              "status": "LISTEN",
+              "pid": null,
+              "process": "",
+              "cmdline": "",
+              "user": ""
+            },
+            {
+              "proto": "tcp",
+              "address": "0.0.0.0",
+              "port": 4000,
+              "status": "LISTEN",
+              "pid": 830027,
+              "process": "litellm",
+              "cmdline": "/home/byron/GitHub/EdgeK-BEAST/.venv/bin/python /data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.venv/bin/litellm --config /data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/deploy/generated/litellm.config.yaml --port 4000",
+              "user": "byron"
+            },
+            {
+              "proto": "tcp",
+              "address": "0.0.0.0",
+              "port": 5000,
+              "status": "LISTEN",
+              "pid": null,
+              "process": "",
+              "cmdline": "",
+              "user": ""
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8000,
+              "status": "LISTEN",
+              "pid": 1475,
+              "process": "pocket-tts",
+              "cmdline": "/home/byron/.local/share/dio-pocket-tts/venv/bin/python /home/byron/.local/share/dio-pocket-tts/venv/bin/pocket-tts serve --host 127.0.0.1 --port 8000 --language english --default-voice vera",
+              "user": "byron"
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8001,
+              "status": "LISTEN",
+              "pid": null,
+              "process": "",
+              "cmdline": "",
+              "user": ""
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8088,
+              "status": "LISTEN",
+              "pid": null,
+              "process": "",
+              "cmdline": "",
+              "user": ""
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8090,
+              "status": "LISTEN",
+              "pid": null,
+              "process": "",
+              "cmdline": "",
+              "user": ""
+            },
+            {
+              "proto": "tcp",
+              "address": "0.0.0.0",
+              "port": 8094,
+              "status": "LISTEN",
+              "pid": 2421,
+              "process": "python",
+              "cmdline": "/home/byron/.local/share/arda-verifier-acer-r15/venv/bin/python -m uvicorn backend.services.arda_phase4_verifier_service:app --host 0.0.0.0 --port 8094",
+              "user": "byron"
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8101,
+              "status": "LISTEN",
+              "pid": 2128605,
+              "process": "python",
+              "cmdline": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8101",
+              "user": "byron"
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8111,
+              "status": "LISTEN",
+              "pid": null,
+              "process": "",
+              "cmdline": "",
+              "user": ""
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8112,
+              "status": "LISTEN",
+              "pid": null,
+              "process": "",
+              "cmdline": "",
+              "user": ""
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8113,
+              "status": "LISTEN",
+              "pid": null,
+              "process": "",
+              "cmdline": "",
+              "user": ""
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8131,
+              "status": "LISTEN",
+              "pid": 2128583,
+              "process": "python",
+              "cmdline": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.venv/bin/python /data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/bin/beast gateway --socket-mode guardian --guardian-service beast",
+              "user": "byron"
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8199,
+              "status": "LISTEN",
+              "pid": 2162080,
+              "process": "python",
+              "cmdline": ".venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8199",
+              "user": "byron"
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8764,
+              "status": "LISTEN",
+              "pid": 1547,
+              "process": "python",
+              "cmdline": "/data/byron/dio-wsl-restored-20261015/home/byron/DIO-Full-Audit/.venv/bin/python -u /data/byron/dio-wsl-restored-20261015/home/byron/DIO-Full-Audit/scripts/serve_dio_launcher.py --host 127.0.0.1 --port 8764",
+              "user": "byron"
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8765,
+              "status": "LISTEN",
+              "pid": 2128606,
+              "process": "python",
+              "cmdline": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.venv/bin/python /data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/bin/beast mcp-http --host 127.0.0.1 --port 8765",
+              "user": "byron"
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8766,
+              "status": "LISTEN",
+              "pid": 1528,
+              "process": "python",
+              "cmdline": "/data/byron/dio-wsl-restored-20261015/home/byron/DIO-Full-Audit/.venv/bin/python -u /data/byron/dio-wsl-restored-20261015/home/byron/DIO-Full-Audit/scripts/serve_goldeneye_portfolio.py --host 127.0.0.1 --port 8766",
+              "user": "byron"
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8767,
+              "status": "LISTEN",
+              "pid": 1546,
+              "process": "python",
+              "cmdline": "/data/byron/dio-wsl-restored-20261015/home/byron/DIO-Full-Audit/.venv/bin/python -u /data/byron/dio-wsl-restored-20261015/home/byron/DIO-Full-Audit/scripts/serve_business_workbench.py --host 127.0.0.1 --port 8767 --market-port 8771",
+              "user": "byron"
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8768,
+              "status": "LISTEN",
+              "pid": 1558,
+              "process": "python",
+              "cmdline": "/data/byron/dio-wsl-restored-20261015/home/byron/DIO-Full-Audit/.venv/bin/python -u /data/byron/dio-wsl-restored-20261015/home/byron/DIO-Full-Audit/scripts/serve_canonical_portfolio.py --host 127.0.0.1 --port 8768",
+              "user": "byron"
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8770,
+              "status": "LISTEN",
+              "pid": 1552,
+              "process": "python",
+              "cmdline": "/data/byron/dio-wsl-restored-20261015/home/byron/DIO-Full-Audit/.venv/bin/python -u /data/byron/dio-wsl-restored-20261015/home/byron/DIO-Full-Audit/scripts/serve_vesper_web_chat.py --host 127.0.0.1 --port 8770 --site-root /data/byron/dio-wsl-restored-20261015/home/byron/dio-r4e-website",
+              "user": "byron"
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8771,
+              "status": "LISTEN",
+              "pid": 1549,
+              "process": "python",
+              "cmdline": "/data/byron/dio-wsl-restored-20261015/home/byron/DIO-Full-Audit/.venv/bin/python -u /data/byron/dio-wsl-restored-20261015/home/byron/DIO-Full-Audit/scripts/serve_market_command_ms10.py --host 127.0.0.1 --port 8771 --business-port 8767",
+              "user": "byron"
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8772,
+              "status": "LISTEN",
+              "pid": 1555,
+              "process": "python",
+              "cmdline": "/data/byron/dio-wsl-restored-20261015/home/byron/DIO-Full-Audit/.venv/bin/python -u /data/byron/dio-wsl-restored-20261015/home/byron/DIO-Full-Audit/scripts/serve_vesper_public_api.py --host 127.0.0.1 --port 8772",
+              "user": "byron"
+            },
+            {
+              "proto": "tcp",
+              "address": "127.0.0.1",
+              "port": 8787,
+              "status": "LISTEN",
+              "pid": 1533,
+              "process": "python",
+              "cmdline": "/data/byron/dio-wsl-restored-20261015/home/byron/DIO-Full-Audit/.venv/bin/python -u /data/byron/dio-wsl-restored-20261015/home/byron/DIO-Full-Audit/scripts/serve_presence_bridge.py --host 127.0.0.1 --port 8787",
+              "user": "byron"
+            },
+            {
+              "proto": "tcp",
+              "address": "::",
+              "port": 9800,
+              "status": "LISTEN",
+              "pid": 1577,
+              "process": "fluidsynth",
+              "cmdline": "/usr/bin/fluidsynth -is -r 48000 -z 512 /usr/share/sounds/sf3/default-GM.sf3",
+              "user": "byron"
+            },
+            "...60"
+          ],
+          "read_only": true
+        },
+        "processes": {
+          "ok": true,
+          "beast_object_type": "beast_ide_processes",
+          "version": "1.0",
+          "source": "psutil",
+          "query": "",
+          "total": 503,
+          "count": 30,
+          "processes": [
+            {
+              "pid": 23747,
+              "ppid": 23437,
+              "name": "chatgpt-desktop",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 588779520,
+              "rss_mb": 561.5,
+              "cmdline": "/snap/chatgpt-desktop/8/chatgpt-desktop --type=renderer --enable-crash-reporter=71ca99be-2a0f-4b45-845c-60971a8d5834,no_channel --user-data-dir=/home/byron/snap/chatgpt-desktop/8/.config/ChatGPT Desktop --app-path=/snap/chatgpt-desktop/8/resources/app.asar --no-sandbox --no-zygote --no-sandbox --disable-gpu-compositing --lang=en-GB --num-raster-threads=4 --enable-main-frame-before-activation --ren..."
+            },
+            {
+              "pid": 2114780,
+              "ppid": 2970,
+              "name": "firefox-esr",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 452587520,
+              "rss_mb": 431.6,
+              "cmdline": "/usr/lib/firefox-esr/firefox-esr"
+            },
+            {
+              "pid": 2071501,
+              "ppid": 2071435,
+              "name": "grok-bot",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 266194944,
+              "rss_mb": 253.9,
+              "cmdline": "/opt/Grok Bot/grok-bot --type=renderer --crashpad-handler-pid=2071450 --enable-crash-reporter=c4ca45f9-455d-4b14-91d5-0d926fb7d490,no_channel --user-data-dir=/home/byron/.config/Grok Bot --standard-schemes=sand-media,sand-canvas,sand-html-preview,sand-avatar,sand-favicon,sand-product-image,sand-mcp-app,sand-visualization,file --secure-schemes=sand-media,sand-canvas,sand-html-preview,sand-avatar,sa..."
+            },
+            {
+              "pid": 2118908,
+              "ppid": 2114905,
+              "name": "Isolated Web Co",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 263106560,
+              "rss_mb": 250.9,
+              "cmdline": "/usr/lib/firefox-esr/firefox-esr -contentproc -isForBrowser -prefsHandle 0:46375 -prefMapHandle 1:291251 -jsInitHandle 2:156236 -parentBuildID 20261022211647 -sandboxReporter 3 -chrootClient 4 -ipcHandle 5 -initialChannelId {b5563b30-2409-4e75-9514-569e026e2e87} -parentPid 2114780 -crashHelperPid 2114788 -crashHelper 6 -crashReporter 7 -greomni /usr/lib/firefox-esr/omni.ja -appomni /usr/lib/firefo..."
+            },
+            {
+              "pid": 2128605,
+              "ppid": 1378,
+              "name": "python",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 251449344,
+              "rss_mb": 239.8,
+              "cmdline": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8101"
+            },
+            {
+              "pid": 2071419,
+              "ppid": 2970,
+              "name": "grok-bot",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 226652160,
+              "rss_mb": 216.2,
+              "cmdline": "/opt/Grok Bot/grok-bot --"
+            },
+            {
+              "pid": 2162080,
+              "ppid": 1378,
+              "name": "python",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 204574720,
+              "rss_mb": 195.1,
+              "cmdline": ".venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8199"
+            },
+            {
+              "pid": 1666685,
+              "ppid": 1666340,
+              "name": "text-generation",
+              "user": "root",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 194674688,
+              "rss_mb": 185.7,
+              "cmdline": "/usr/src/.venv/bin/python3 /usr/src/.venv/bin/text-generation-server serve Qwen/Qwen2.5-Coder-3B-Instruct-AWQ --uds-path /tmp/text-generation-server --logger-level INFO --json-output --quantize awq --otlp-service-name text-generation-inference.router --max-input-tokens 3072"
+            },
+            {
+              "pid": 2115107,
+              "ppid": 2114905,
+              "name": "Isolated Web Co",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 192974848,
+              "rss_mb": 184.0,
+              "cmdline": "/usr/lib/firefox-esr/firefox-esr -contentproc -isForBrowser -prefsHandle 0:46158 -prefMapHandle 1:291251 -jsInitHandle 2:156236 -parentBuildID 20261022211647 -sandboxReporter 3 -chrootClient 4 -ipcHandle 5 -initialChannelId {01e6f34c-577f-4a94-b4e2-27bcdb74991d} -parentPid 2114780 -crashHelperPid 2114788 -crashHelper 6 -crashReporter 7 -greomni /usr/lib/firefox-esr/omni.ja -appomni /usr/lib/firefo..."
+            },
+            {
+              "pid": 2128583,
+              "ppid": 1378,
+              "name": "python",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 135655424,
+              "rss_mb": 129.4,
+              "cmdline": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.venv/bin/python /data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/bin/beast gateway --socket-mode guardian --guardian-service beast"
+            },
+            {
+              "pid": 2970,
+              "ppid": 1378,
+              "name": "gnome-shell",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 132988928,
+              "rss_mb": 126.8,
+              "cmdline": "/usr/bin/gnome-shell"
+            },
+            {
+              "pid": 2114960,
+              "ppid": 2114905,
+              "name": "Privileged Cont",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 125788160,
+              "rss_mb": 120.0,
+              "cmdline": "/usr/lib/firefox-esr/firefox-esr -contentproc -isForBrowser -prefsHandle 0:35537 -prefMapHandle 1:291251 -jsInitHandle 2:156236 -parentBuildID 20261022211647 -sandboxReporter 3 -chrootClient 4 -ipcHandle 5 -initialChannelId {2612a740-eedf-42de-a401-73b68df5e948} -parentPid 2114780 -crashHelperPid 2114788 -crashHelper 6 -crashReporter 7 -greomni /usr/lib/firefox-esr/omni.ja -appomni /usr/lib/firefo..."
+            },
+            {
+              "pid": 2071609,
+              "ppid": 2071419,
+              "name": "grok-bot",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 105799680,
+              "rss_mb": 100.9,
+              "cmdline": "/opt/Grok Bot/grok-bot --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-GB --service-sandbox-type=none --render-node-override=/dev/dri/renderD128 --crashpad-handler-pid=2071450 --enable-crash-reporter=c4ca45f9-455d-4b14-91d5-0d926fb7d490,no_channel --user-data-dir=/home/byron/.config/Grok Bot --standard-schemes=sand-media,sand-canvas,sand-html-preview,sand-avatar,sand-favicon,san..."
+            },
+            {
+              "pid": 2118905,
+              "ppid": 2114905,
+              "name": "Isolated Web Co",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 98856960,
+              "rss_mb": 94.3,
+              "cmdline": "/usr/lib/firefox-esr/firefox-esr -contentproc -isForBrowser -prefsHandle 0:46375 -prefMapHandle 1:291251 -jsInitHandle 2:156236 -parentBuildID 20261022211647 -sandboxReporter 3 -chrootClient 4 -ipcHandle 5 -initialChannelId {ee446f96-ffb9-4b6b-93ba-49571c0f7579} -parentPid 2114780 -crashHelperPid 2114788 -crashHelper 6 -crashReporter 7 -greomni /usr/lib/firefox-esr/omni.ja -appomni /usr/lib/firefo..."
+            },
+            {
+              "pid": 2071479,
+              "ppid": 2071432,
+              "name": "grok-bot",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 96169984,
+              "rss_mb": 91.7,
+              "cmdline": "/opt/Grok Bot/grok-bot --type=gpu-process --ozone-platform=wayland --render-node-override=/dev/dri/renderD128 --crashpad-handler-pid=2071450 --enable-crash-reporter=c4ca45f9-455d-4b14-91d5-0d926fb7d490,no_channel --user-data-dir=/home/byron/.config/Grok Bot --gpu-preferences=WAAAAAAAAAAgAQAEAAAAAAAAAAAAAGAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAgAAAAA..."
+            },
+            {
+              "pid": 2128606,
+              "ppid": 1378,
+              "name": "python",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 88629248,
+              "rss_mb": 84.5,
+              "cmdline": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.venv/bin/python /data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/bin/beast mcp-http --host 127.0.0.1 --port 8765"
+            },
+            {
+              "pid": 2071544,
+              "ppid": 2071419,
+              "name": "grok-bot",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 88006656,
+              "rss_mb": 83.9,
+              "cmdline": "/opt/Grok Bot/grok-bot --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-GB --service-sandbox-type=none --render-node-override=/dev/dri/renderD128 --crashpad-handler-pid=2071450 --enable-crash-reporter=c4ca45f9-455d-4b14-91d5-0d926fb7d490,no_channel --user-data-dir=/home/byron/.config/Grok Bot --standard-schemes=sand-media,sand-canvas,sand-html-preview,sand-avatar,sand-favicon,san..."
+            },
+            {
+              "pid": 2115039,
+              "ppid": 2114905,
+              "name": "WebExtensions",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 85397504,
+              "rss_mb": 81.4,
+              "cmdline": "/usr/lib/firefox-esr/firefox-esr -contentproc -isForBrowser -prefsHandle 0:35714 -prefMapHandle 1:291251 -jsInitHandle 2:156236 -parentBuildID 20261022211647 -sandboxReporter 3 -chrootClient 4 -ipcHandle 5 -initialChannelId {74bccdcb-fc9e-4427-b679-423cf080ae15} -parentPid 2114780 -crashHelperPid 2114788 -crashHelper 6 -crashReporter 7 -greomni /usr/lib/firefox-esr/omni.ja -appomni /usr/lib/firefo..."
+            },
+            {
+              "pid": 2104377,
+              "ppid": 23443,
+              "name": "chatgpt-desktop",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 83566592,
+              "rss_mb": 79.7,
+              "cmdline": "/snap/chatgpt-desktop/8/chatgpt-desktop --type=renderer --enable-crash-reporter=71ca99be-2a0f-4b45-845c-60971a8d5834,no_channel --user-data-dir=/home/byron/snap/chatgpt-desktop/8/.config/ChatGPT Desktop --app-path=/snap/chatgpt-desktop/8/resources/app.asar --enable-sandbox --no-sandbox --disable-gpu-compositing --lang=en-GB --num-raster-threads=4 --enable-main-frame-before-activation --renderer-cl..."
+            },
+            {
+              "pid": 2118737,
+              "ppid": 2114905,
+              "name": "Isolated Web Co",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 82350080,
+              "rss_mb": 78.5,
+              "cmdline": "/usr/lib/firefox-esr/firefox-esr -contentproc -isForBrowser -prefsHandle 0:46375 -prefMapHandle 1:291251 -jsInitHandle 2:156236 -parentBuildID 20261022211647 -sandboxReporter 3 -chrootClient 4 -ipcHandle 5 -initialChannelId {2f9b071d-ce63-47ca-87f6-de588643cd5b} -parentPid 2114780 -crashHelperPid 2114788 -crashHelper 6 -crashReporter 7 -greomni /usr/lib/firefox-esr/omni.ja -appomni /usr/lib/firefo..."
+            },
+            {
+              "pid": 2119303,
+              "ppid": 2114905,
+              "name": "Isolated Web Co",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 81870848,
+              "rss_mb": 78.1,
+              "cmdline": "/usr/lib/firefox-esr/firefox-esr -contentproc -isForBrowser -prefsHandle 0:46375 -prefMapHandle 1:291251 -jsInitHandle 2:156236 -parentBuildID 20261022211647 -sandboxReporter 3 -chrootClient 4 -ipcHandle 5 -initialChannelId {150b84ec-cc21-4f86-adf5-6fef58a8f24c} -parentPid 2114780 -crashHelperPid 2114788 -crashHelper 6 -crashReporter 7 -greomni /usr/lib/firefox-esr/omni.ja -appomni /usr/lib/firefo..."
+            },
+            {
+              "pid": 23437,
+              "ppid": 1378,
+              "name": "chatgpt-desktop",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 81219584,
+              "rss_mb": 77.5,
+              "cmdline": "/snap/chatgpt-desktop/8/chatgpt-desktop --no-sandbox"
+            },
+            {
+              "pid": 2119010,
+              "ppid": 2114905,
+              "name": "Isolated Web Co",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 80814080,
+              "rss_mb": 77.1,
+              "cmdline": "/usr/lib/firefox-esr/firefox-esr -contentproc -isForBrowser -prefsHandle 0:46375 -prefMapHandle 1:291251 -jsInitHandle 2:156236 -parentBuildID 20261022211647 -sandboxReporter 3 -chrootClient 4 -ipcHandle 5 -initialChannelId {3daec03a-d00e-4c6d-aa46-f58a88c4db63} -parentPid 2114780 -crashHelperPid 2114788 -crashHelper 6 -crashReporter 7 -greomni /usr/lib/firefox-esr/omni.ja -appomni /usr/lib/firefo..."
+            },
+            {
+              "pid": 830027,
+              "ppid": 1378,
+              "name": "litellm",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 80191488,
+              "rss_mb": 76.5,
+              "cmdline": "/home/byron/GitHub/EdgeK-BEAST/.venv/bin/python /data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.venv/bin/litellm --config /data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/deploy/generated/litellm.config.yaml --port 4000"
+            },
+            {
+              "pid": 23530,
+              "ppid": 23442,
+              "name": "chatgpt-desktop",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 77193216,
+              "rss_mb": 73.6,
+              "cmdline": "/snap/chatgpt-desktop/8/chatgpt-desktop --type=gpu-process --no-sandbox --enable-crash-reporter=71ca99be-2a0f-4b45-845c-60971a8d5834,no_channel --user-data-dir=/home/byron/snap/chatgpt-desktop/8/.config/ChatGPT Desktop --gpu-preferences=WAAAAAAAAAAgAAAEAAAAAAAAAAAAAAAAAABgAAAAAAA4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAGAAAAAAAAAAYAAAAAAAAAAgAAAAAAAAACAAAAAAAAAAIAAAAAAAAAA== --use-gl=a..."
+            },
+            {
+              "pid": 2430,
+              "ppid": 1,
+              "name": "dockerd",
+              "user": "root",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 76722176,
+              "rss_mb": 73.2,
+              "cmdline": "/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock"
+            },
+            {
+              "pid": 3726,
+              "ppid": 2970,
+              "name": "mutter-x11-frames",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 76431360,
+              "rss_mb": 72.9,
+              "cmdline": "/usr/libexec/mutter-x11-frames"
+            },
+            {
+              "pid": 888169,
+              "ppid": 1378,
+              "name": "codex",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 67997696,
+              "rss_mb": 64.8,
+              "cmdline": "/home/byron/.codex/packages/app-server-daemon/releases/0.169.0-x86_64-unknown-linux-musl/bin/codex app-server --remote-control --listen unix:// --analytics-default-enabled --managed-daemon"
+            },
+            {
+              "pid": 443,
+              "ppid": 1,
+              "name": "systemd-journald",
+              "user": "root",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 66088960,
+              "rss_mb": 63.0,
+              "cmdline": "/usr/lib/systemd/systemd-journald"
+            },
+            {
+              "pid": 16629,
+              "ppid": 16602,
+              "name": "WebKitWebProcess",
+              "user": "byron",
+              "status": "sleeping",
+              "cpu_percent": 0.0,
+              "rss_bytes": 63029248,
+              "rss_mb": 60.1,
+              "cmdline": "/usr/lib/x86_64-linux-gnu/webkit2gtk-4.1/WebKitWebProcess 4 26"
+            }
+          ],
+          "read_only": true
+        },
+        "environment": {
+          "ok": true,
+          "beast_object_type": "beast_ide_environment",
+          "version": "1.0",
+          "platform": {
+            "system": "Linux",
+            "release": "6.12.111-valinor",
+            "machine": "x86_64",
+            "node": "debian"
+          },
+          "python": {
+            "version": "3.13.5",
+            "full_version": "3.13.5 (main, Aug 10 2026, 12:06:59) [GCC 14.2.0]",
+            "executable": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.venv/bin/python",
+            "prefix": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.venv",
+            "base_prefix": "/usr",
+            "in_virtualenv": true,
+            "virtualenv": "",
+            "implementation": "CPython"
+          },
+          "interpreters": [
+            {
+              "ok": true,
+              "command": "python3",
+              "installed": true,
+              "path": "/usr/bin/python3",
+              "version": "Python 3.13.5",
+              "returncode": 0
+            },
+            {
+              "ok": true,
+              "command": "python",
+              "installed": true,
+              "path": "/usr/bin/python",
+              "version": "Python 3.13.5",
+              "returncode": 0
+            },
+            {
+              "ok": true,
+              "command": "node",
+              "installed": true,
+              "path": "/home/byron/.nvm/versions/node/v24.22.2/bin/node",
+              "version": "v24.22.2",
+              "returncode": 0
+            },
+            {
+              "ok": true,
+              "command": "npm",
+              "installed": true,
+              "path": "/home/byron/.nvm/versions/node/v24.22.2/bin/npm",
+              "version": "11.19.1",
+              "returncode": 0
+            },
+            {
+              "ok": false,
+              "command": "pnpm",
+              "installed": false,
+              "error": "not found on PATH"
+            },
+            {
+              "ok": false,
+              "command": "yarn",
+              "installed": false,
+              "error": "not found on PATH"
+            },
+            {
+              "ok": true,
+              "command": "pip3",
+              "installed": true,
+              "path": "/usr/bin/pip3",
+              "version": "pip 25.1.1 from /usr/lib/python3/dist-packages/pip (python 3.13)",
+              "returncode": 0
+            },
+            {
+              "ok": true,
+              "command": "git",
+              "installed": true,
+              "path": "/usr/bin/git",
+              "version": "git version 2.47.3",
+              "returncode": 0
+            },
+            {
+              "ok": true,
+              "command": "docker",
+              "installed": true,
+              "path": "/usr/bin/docker",
+              "version": "Docker version 29.9.3, build 5457199",
+              "returncode": 0
+            },
+            {
+              "ok": true,
+              "command": "rustc",
+              "installed": true,
+              "path": "/usr/bin/rustc",
+              "version": "rustc 1.85.1 (4eb161250 2025-03-15) (built from a source tarball)",
+              "returncode": 0
+            },
+            {
+              "ok": true,
+              "command": "go",
+              "installed": true,
+              "path": "/home/byron/.local/opt/go1.27.2/go/bin/go",
+              "version": "go version go1.27.2 linux/amd64",
+              "returncode": 0
+            }
+          ],
+          "path_entries": [
+            "/home/byron/.local/opt/go1.27.2/go/bin",
+            "/home/byron/.local/bin",
+            "/home/byron/.nvm/versions/node/v24.22.2/bin",
+            "/home/byron/.opencode/bin",
+            "/home/byron/.opencode/bin",
+            "/home/byron/.local/bin",
+            "/usr/local/bin",
+            "/usr/bin",
+            "/bin",
+            "/usr/local/games",
+            "/usr/games",
+            "/snap/bin"
+          ],
+          "env_vars": [
+            {
+              "name": "BEAST_COMMONS_REMOTE_CLIENT_KEY",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "BEAST_COMMONS_REMOTE_CLIENT_KEY_ID",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "BEAST_GUARDIAN_AUTHORITY",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "BEAST_GUARDIAN_AUTHORIZATION_URL",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "DBUS_SESSION_BUS_ADDRESS",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "DESKTOP_SESSION",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "FAL_KEY",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "FIREWORKS_API_KEY",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "GDMSESSION",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "GIT_CONFIG_KEY_0",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "GNOME_DESKTOP_SESSION_ID",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "HOME",
+              "value": "/home/byron",
+              "redacted": false
+            },
+            {
+              "name": "HYPERBOLIC_API_KEY",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "LANG",
+              "value": "en_ZA.UTF-8",
+              "redacted": false
+            },
+            {
+              "name": "LOGNAME",
+              "value": "byron",
+              "redacted": false
+            },
+            {
+              "name": "NVIDIA_API_KEY",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "NVM_DIR",
+              "value": "/home/byron/.nvm",
+              "redacted": false
+            },
+            {
+              "name": "PATH",
+              "value": "/home/byron/.local/opt/go1.27.2/go/bin:/home/byron/.local/bin:/home/byron/.nvm/versions/node/v24.22.2/bin:/home/byron/.opencode/bin:/home/byron/.opencode/bin:/home/byron/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/snap/bin",
+              "redacted": false
+            },
+            {
+              "name": "PWD",
+              "value": "/home/byron/GitHub/EdgeK-BEAST",
+              "redacted": false
+            },
+            {
+              "name": "REPLICATE_API_TOKEN",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "SAMBANOVA_API_KEY",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "SESSION_MANAGER",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "SHELL",
+              "value": "/bin/bash",
+              "redacted": false
+            },
+            {
+              "name": "SSH_AUTH_SOCK",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "TERM",
+              "value": "dumb",
+              "redacted": false
+            },
+            {
+              "name": "TOKENIZERS_PARALLELISM",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "USER",
+              "value": "byron",
+              "redacted": false
+            },
+            {
+              "name": "XAUTHORITY",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "XDG_SESSION_CLASS",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            {
+              "name": "XDG_SESSION_DESKTOP",
+              "value": "***redacted***",
+              "redacted": true
+            },
+            "...31"
+          ],
+          "env_var_note": "Secret-like variables are redacted; only an allowlist of non-secret vars is shown.",
+          "read_only": true
+        },
+        "packages": {
+          "ok": true,
+          "beast_object_type": "beast_ide_packages",
+          "version": "1.0",
+          "workspace_root": "/tmp/beast-audit-ws-20261116",
+          "python": {
+            "requirement_files": [],
+            "has_pyproject": false,
+            "declared_count": 0,
+            "installed_distribution_count": 256,
+            "dependencies": []
+          },
+          "node": {
+            "manifests": [],
+            "root_scripts": {},
+            "dependencies": []
+          },
+          "suggested_commands": [],
+          "execution_note": "Suggested commands are advisory; run them only through the governed terminal (/edgek/safety-governor/execute-command).",
+          "read_only": true
+        },
+        "extensions": {
+          "ok": true,
+          "beast_object_type": "beast_ide_extensions",
+          "version": "1.0",
+          "workspace_root": "/tmp/beast-audit-ws-20261116",
+          "vscode_extension": {
+            "present": false,
+            "name": "",
+            "display_name": "",
+            "version": "",
+            "publisher": "",
+            "engine": "",
+            "main": "",
+            "activation_events": [],
+            "command_count": 0,
+            "commands": []
+          },
+          "desktop_ide": {
+            "present": false,
+            "name": "",
+            "version": "",
+            "main": "",
+            "scripts": []
+          },
+          "plugins": {
+            "directory": "/tmp/beast-audit-ws-20261116/plugins",
+            "count": 0,
+            "names": []
+          },
+          "mcp": {
+            "configured": false,
+            "configs": [],
+            "servers": []
+          },
+          "read_only": true
+        },
+        "read_only": true
+      }
+    },
+    "tooling_snapshot": {
+      "status": 200,
+      "elapsed": 0.199,
+      "error": null,
+      "payload": {
+        "ok": true,
+        "beast_object_type": "beast_ide_tooling_snapshot",
+        "version": "1.0",
+        "source": "gateway",
+        "repoRoot": "/tmp/beast-audit-ws-20261116",
+        "activeFile": "",
+        "syntax": {
+          "ok": true,
+          "status": "idle",
+          "detail": "No active file selected."
+        },
+        "linting": {
+          "scripts": {
+            "root": [],
+            "desktop": []
+          },
+          "tools": [
+            {
+              "ok": true,
+              "command": "pytest",
+              "invocation": [
+                "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.venv/bin/python",
+                "-m",
+                "pytest"
+              ],
+              "version": "pytest 9.1.1",
+              "returncode": 0
+            },
+            {
+              "ok": true,
+              "command": "ruff",
+              "invocation": [
+                "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.venv/bin/python",
+                "-m",
+                "ruff"
+              ],
+              "version": "ruff 0.17.1",
+              "returncode": 0
+            },
+            {
+              "ok": false,
+              "command": "eslint",
+              "error": "not found"
+            }
+          ],
+          "available_tools": [
+            "pytest",
+            "ruff"
+          ],
+          "has_pytest": true,
+          "has_ruff": true,
+          "has_eslint": false,
+          "has_root_lint": false,
+          "has_desktop_smoke": false,
+          "has_launch_smoke": false,
+          "recommendation": "Available verifier tools: pytest, ruff. Agent runs may invoke them through worktree.verify."
+        },
+        "mcp": {
+          "configured": false,
+          "cursor_config": "/tmp/beast-audit-ws-20261116/.cursor/mcp.json",
+          "configured_servers": [],
+          "configured_server_count": 0,
+          "tool_discovery": "MCP config declares launchable servers; tool count is available only after a server is started and introspected by the broker.",
+          "expected_routes": [
+            "/edgek/mcp/state",
+            "/edgek/mcp/servers",
+            "/edgek/mcp/audit",
+            "/edgek/mcp/executions",
+            "/edgek/mcp/approvals"
+          ],
+          "status": "no local .cursor/mcp.json"
+        },
+        "plugins": {
+          "vscode_extension_present": false,
+          "desktop_ide_present": false,
+          "expected_routes": [
+            "/edgek/plugins",
+            "/edgek/plugins/manifest/prepare",
+            "/edgek/plugins/manifest/validate",
+            "/edgek/plugins/install"
+          ],
+          "status": "no local plugin surfaces detected"
+        },
+        "environments": [
+          {
+            "ok": true,
+            "command": "python3",
+            "version": "Python 3.13.5",
+            "returncode": 0
+          },
+          {
+            "ok": true,
+            "command": "pytest",
+            "invocation": [
+              "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.venv/bin/python",
+              "-m",
+              "pytest"
+            ],
+            "version": "pytest 9.1.1",
+            "returncode": 0
+          },
+          {
+            "ok": true,
+            "command": "ruff",
+            "invocation": [
+              "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/.venv/bin/python",
+              "-m",
+              "ruff"
+            ],
+            "version": "ruff 0.17.1",
+            "returncode": 0
+          },
+          {
+            "ok": false,
+            "command": "eslint",
+            "error": "not found"
+          },
+          {
+            "ok": true,
+            "command": "node",
+            "version": "v24.22.2",
+            "returncode": 0
+          },
+          {
+            "ok": true,
+            "command": "npm",
+            "version": "11.19.1",
+            "returncode": 0
+          },
+          {
+            "ok": true,
+            "command": "git",
+            "version": "git version 2.47.3",
+            "returncode": 0
+          }
+        ],
+        "read_only": true
+      }
+    },
+    "chronicle": {
+      "status": 200,
+      "elapsed": 0.016,
+      "error": null,
+      "payload": {
+        "chronicles": [
+          {
+            "task_id": "ev_intercept_2d8720ad9093b6f5",
+            "chronicle_type": "evidence_envelope",
+            "task_class": "payload",
+            "provider": "local",
+            "category": "tool_interception",
+            "summary": "Payload compressed with beast_native_perplexity_code_filter using perplexity_code_filter",
+            "root_cause": "interception_evidence",
+            "confidence": 0.86,
+            "memory_candidate": false,
+            "created_at": "2026-11-16T13:32:47.512958+00:00",
+            "artifacts": {
+              "json_path": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/app/data/evidence_chronicles/ev_intercept_2d8720ad9093b6f5.json"
+            }
+          },
+          {
+            "task_id": "ev_intercept_0f3e040dbcdce95f",
+            "chronicle_type": "evidence_envelope",
+            "task_class": "payload",
+            "provider": "local",
+            "category": "tool_interception",
+            "summary": "Payload compressed with beast_native_reporelay using reporelay",
+            "root_cause": "interception_evidence",
+            "confidence": 0.86,
+            "memory_candidate": false,
+            "created_at": "2026-11-16T13:32:47.511385+00:00",
+            "artifacts": {
+              "json_path": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/app/data/evidence_chronicles/ev_intercept_0f3e040dbcdce95f.json"
+            }
+          },
+          {
+            "task_id": "ev_intercept_5e587c226541e5ae",
+            "chronicle_type": "evidence_envelope",
+            "task_class": "payload",
+            "provider": "local",
+            "category": "tool_interception",
+            "summary": "Payload compressed with beast_native_longcodezip using longcodezip",
+            "root_cause": "interception_evidence",
+            "confidence": 0.86,
+            "memory_candidate": false,
+            "created_at": "2026-11-16T13:32:47.509475+00:00",
+            "artifacts": {
+              "json_path": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/app/data/evidence_chronicles/ev_intercept_5e587c226541e5ae.json"
+            }
+          },
+          {
+            "task_id": "ev_intercept_ecb9fb133c4387cd",
+            "chronicle_type": "evidence_envelope",
+            "task_class": "payload",
+            "provider": "local",
+            "category": "tool_interception",
+            "summary": "Payload compressed with beast_native_sqz using sqz",
+            "root_cause": "interception_evidence",
+            "confidence": 0.86,
+            "memory_candidate": false,
+            "created_at": "2026-11-16T13:32:47.508026+00:00",
+            "artifacts": {
+              "json_path": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/app/data/evidence_chronicles/ev_intercept_ecb9fb133c4387cd.json"
+            }
+          },
+          {
+            "task_id": "ev_intercept_edee7f33d4f0c62e",
+            "chronicle_type": "evidence_envelope",
+            "task_class": "payload",
+            "provider": "local",
+            "category": "tool_interception",
+            "summary": "Payload compressed with beast_native_rtk using rtk",
+            "root_cause": "interception_evidence",
+            "confidence": 0.86,
+            "memory_candidate": false,
+            "created_at": "2026-11-16T13:32:47.506310+00:00",
+            "artifacts": {
+              "json_path": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/app/data/evidence_chronicles/ev_intercept_edee7f33d4f0c62e.json"
+            }
+          },
+          {
+            "task_id": "ev_intercept_f520d0c2e138c07f",
+            "chronicle_type": "evidence_envelope",
+            "task_class": "payload",
+            "provider": "local",
+            "category": "tool_interception",
+            "summary": "Payload compressed with beast_native_perplexity_code_filter using perplexity_code_filter",
+            "root_cause": "interception_evidence",
+            "confidence": 0.86,
+            "memory_candidate": false,
+            "created_at": "2026-11-16T13:32:47.501533+00:00",
+            "artifacts": {
+              "json_path": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/app/data/evidence_chronicles/ev_intercept_f520d0c2e138c07f.json"
+            }
+          },
+          {
+            "task_id": "ev_intercept_657dc99939cf275a",
+            "chronicle_type": "evidence_envelope",
+            "task_class": "payload",
+            "provider": "local",
+            "category": "tool_interception",
+            "summary": "Payload compressed with beast_native_sqz using sqz",
+            "root_cause": "interception_evidence",
+            "confidence": 0.86,
+            "memory_candidate": false,
+            "created_at": "2026-11-16T13:32:47.496765+00:00",
+            "artifacts": {
+              "json_path": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/app/data/evidence_chronicles/ev_intercept_657dc99939cf275a.json"
+            }
+          },
+          {
+            "task_id": "ev_intercept_d4edebfe80c80edf",
+            "chronicle_type": "evidence_envelope",
+            "task_class": "payload",
+            "provider": "local",
+            "category": "tool_interception",
+            "summary": "Payload compressed with beast_native_rtk using rtk",
+            "root_cause": "interception_evidence",
+            "confidence": 0.86,
+            "memory_candidate": false,
+            "created_at": "2026-11-16T13:32:47.004415+00:00",
+            "artifacts": {
+              "json_path": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/app/data/evidence_chronicles/ev_intercept_d4edebfe80c80edf.json"
+            }
+          },
+          {
+            "task_id": "ev_intercept_12d69ba99c61ed76",
+            "chronicle_type": "evidence_envelope",
+            "task_class": "file",
+            "provider": "local",
+            "category": "tool_interception",
+            "summary": "Read intercepted and reduced via basic_semantic_grep: service.py",
+            "root_cause": "interception_evidence",
+            "confidence": 0.88,
+            "memory_candidate": true,
+            "created_at": "2026-11-16T13:32:46.998235+00:00",
+            "artifacts": {
+              "json_path": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/app/data/evidence_chronicles/ev_intercept_12d69ba99c61ed76.json"
+            }
+          },
+          {
+            "task_id": "ev_intercept_b7e51971da8c22de",
+            "chronicle_type": "evidence_envelope",
+            "task_class": "payload",
+            "provider": "local",
+            "category": "tool_interception",
+            "summary": "Payload compressed with beast_native_perplexity_code_filter using perplexity_code_filter",
+            "root_cause": "interception_evidence",
+            "confidence": 0.86,
+            "memory_candidate": false,
+            "created_at": "2026-11-16T08:05:13.056611+00:00",
+            "artifacts": {
+              "json_path": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/app/data/evidence_chronicles/ev_intercept_b7e51971da8c22de.json"
+            }
+          }
+        ],
+        "count": 10,
+        "total_matches": 215,
+        "chronicle_dir": "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/app/data/chronicles",
+        "chronicle_sources": [
+          "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/app/data/chronicles",
+          "/data/byron/dio-wsl-restored-20261015/home/byron/GitHub/EdgeK-BEAST/app/data/evidence_chronicles"
+        ]
+      }
+    },
+    "socket_guardian_8131": {
+      "status": 200,
+      "elapsed": 0.29,
+      "error": null,
+      "payload": {
+        "status": "healthy",
+        "service": "edgek-beast-gateway",
+        "version": "0.1.0",
+        "active_sessions": 0,
+        "total_requests": 1
+      }
+    },
+    "mcp_live_8765": {
+      "status": 200,
+      "error": null,
+      "count": 69
+    },
+    "live_8101": {
+      "status": 200,
+      "payload": {
+        "status": "healthy",
+        "service": "edgek-beast-gateway",
+        "version": "0.1.0",
+        "active_sessions": 0,
+        "total_requests": 165
+      },
+      "error": null
+    }
+  }
+}

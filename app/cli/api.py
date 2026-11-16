@@ -145,30 +145,58 @@ def provider_stream_read_timeout(provider: str) -> float:
     return 210.0 if normalized in {"nvidia", "nvidia_nim", "nim"} else 90.0
 
 
-def provider_stream_max_tokens(provider: str) -> int:
-    """Return the per-request streamed output budget for the TUI provider lane."""
+def provider_stream_max_tokens(provider: str, model: str = "") -> int:
+    """Return the per-request streamed output budget for a live coding/chat turn."""
     configured = os.environ.get("BEAST_TUI_STREAM_MAX_TOKENS") or os.environ.get(
         "BEAST_TUI_MAX_TOKENS"
     )
-    default = 2000
+    requested = None
     if configured:
         try:
-            return max(128, min(int(configured), 16000))
+            requested = int(configured)
         except ValueError:
-            pass
-    return default
+            requested = None
+    from app.context.budget import MAX_CODING_OUTPUT, output_token_budget
+
+    return max(128, min(int(output_token_budget(provider=provider, model=model, requested=requested)), MAX_CODING_OUTPUT))
 
 
 def provider_stream_continuations(provider: str) -> int:
     """Return bounded continuation attempts after provider finish_reason=length."""
     configured = os.environ.get("BEAST_TUI_STREAM_CONTINUATIONS")
-    default = 2
+    default = 3
     if configured:
         try:
             return max(0, min(int(configured), 5))
         except ValueError:
             pass
     return default
+
+
+def continuation_user_message(*, action_ir_required: bool, yielded: str) -> str:
+    """Prompt used when finish_reason=length and we request another chunk."""
+    if action_ir_required:
+        if str(yielded or "").strip():
+            return (
+                "Continue the previous JSON Action IR from the exact next character. "
+                "Do not repeat earlier text, do not add markdown or analysis, and do not start over."
+            )
+        return (
+            "The previous attempt used the output budget before a visible JSON Action IR was emitted "
+            "(hidden reasoning may have consumed the limit). Now output ONLY the complete JSON Action IR. "
+            "No analysis, no reasoning preface, no markdown."
+        )
+    if str(yielded or "").strip():
+        return (
+            "Continue the previous answer directly from the next word only. "
+            "Do not repeat earlier text. Do not quote or discuss these instructions. "
+            "Do not include analysis; output only the visible final answer text."
+        )
+    return (
+        "The previous attempt used the output budget before a visible final answer was emitted "
+        "(hidden reasoning may have consumed the limit). Continue with only the visible final answer. "
+        "Do not repeat earlier text or these instructions."
+    )
 
 
 def classify_stream_failure(exc: Exception | str) -> Dict[str, Any]:
@@ -7160,6 +7188,28 @@ class BeastApiClient:
         return ""
 
     @staticmethod
+    def _extract_stream_reasoning(data: Dict[str, Any]) -> str:
+        """Extract hidden reasoning/thinking text from a streaming chunk.
+
+        Reasoning must never be treated as the visible answer or Action IR, but
+        it is used to detect a length-stop that produced no visible tokens.
+        """
+        try:
+            choices = data.get("choices")
+            if isinstance(choices, list) and choices:
+                choice = choices[0] or {}
+                delta = choice.get("delta") if isinstance(choice.get("delta"), dict) else {}
+                message = choice.get("message") if isinstance(choice.get("message"), dict) else {}
+                for blob in (delta, message, data):
+                    for key in ("reasoning_content", "reasoning", "thinking", "reasoning_text"):
+                        value = blob.get(key) if isinstance(blob, dict) else None
+                        if isinstance(value, str) and value:
+                            return value
+        except Exception:
+            return ""
+        return ""
+
+    @staticmethod
     def _gemini_request_payload(
         messages: List[Dict[str, str]], max_tokens: int
     ) -> Dict[str, Any]:
@@ -7363,8 +7413,13 @@ class BeastApiClient:
             return
 
         resolved_model = self._chat_model_for_provider(provider, model)
+        from app.context.budget import MAX_CODING_OUTPUT, output_token_budget
         max_tokens = max(
-            128, min(int(max_tokens or provider_stream_max_tokens(provider)), 16000)
+            128,
+            min(
+                int(output_token_budget(provider=provider, model=resolved_model, requested=max_tokens)),
+                MAX_CODING_OUTPUT,
+            ),
         )
         max_continuations = max(
             0,
@@ -7487,6 +7542,7 @@ class BeastApiClient:
                     saw_done = False
                     finish_reason = ""
                     attempt_parts: List[str] = []
+                    reasoning_chars = 0
                     sse_event_type = ""
                     # Native providers must use their explicit adapter lane.
                     # Hugging Face is not served by the registry compatibility
@@ -7627,6 +7683,9 @@ class BeastApiClient:
                                         yield {"type": "error", "error": json.dumps(error, default=str)[:1200]}
                                     return
                                 delta = self._extract_stream_delta(data)
+                                reasoning = self._extract_stream_reasoning(data)
+                                if reasoning:
+                                    reasoning_chars += len(reasoning)
                                 if delta:
                                     token_count += 1
                                     attempt_parts.append(delta)
@@ -7650,23 +7709,24 @@ class BeastApiClient:
                                         finish_reason = str(reason)
                     if finish_reason == "length" and attempt < max_continuations:
                         yielded = "".join(attempt_parts).strip()
+                        yield {
+                            "type": "tool",
+                            "text": (
+                                f"provider hit output limit ({max_tokens} tokens"
+                                + (f", {reasoning_chars} hidden reasoning chars" if reasoning_chars else "")
+                                + f"); requesting continuation {attempt + 1}/{max_continuations}"
+                            ),
+                        }
+                        follow_up = continuation_user_message(
+                            action_ir_required=action_ir_required,
+                            yielded=yielded,
+                        )
+                        extra_messages = []
                         if yielded:
-                            yield {
-                                "type": "tool",
-                                "text": f"provider hit output limit ({max_tokens} tokens); requesting continuation {attempt + 1}/{max_continuations}",
-                            }
-                            attempt_messages = attempt_messages + [
-                                {"role": "assistant", "content": yielded},
-                                {
-                                    "role": "user",
-                                    "content": (
-                                        "Continue the previous answer directly from the next word only. "
-                                        "Do not repeat earlier text. Do not quote or discuss these instructions. "
-                                        "Do not include analysis; output only the visible final answer text."
-                                    ),
-                                },
-                            ]
-                            continue
+                            extra_messages.append({"role": "assistant", "content": yielded})
+                        extra_messages.append({"role": "user", "content": follow_up})
+                        attempt_messages = attempt_messages + extra_messages
+                        continue
                     completed = (
                         bool(saw_done or finish_reason) and finish_reason != "length"
                     )
@@ -8058,7 +8118,17 @@ class BeastApiClient:
         ).strip().lower() not in {"0", "false", "no", "off"}
         if direct_provider_stream and not provider_completed:
             yield {"type": "stage", "text": "provider stream"}
-            tool_events.append(f"provider stream: {provider or DEFAULT_PROVIDER}")
+            tool_events.append(
+                f"provider stream: {provider or DEFAULT_PROVIDER} model={model} "
+                f"max_tokens={max_tokens} continuations={max_continuations}"
+            )
+            yield {
+                "type": "tool",
+                "text": (
+                    f"provider stream: {provider or DEFAULT_PROVIDER} model={model} "
+                    f"max_tokens={max_tokens} continuations={max_continuations}"
+                ),
+            }
             async for event in self.stream_chat_completion(
                 provider,
                 chat_history,
@@ -8354,8 +8424,13 @@ class BeastApiClient:
                 False, "Provider chat", "", error="httpx is not installed"
             )
         resolved_model = self._chat_model_for_provider(provider, model)
+        from app.context.budget import MAX_CODING_OUTPUT, output_token_budget
         max_tokens = max(
-            128, min(int(max_tokens or provider_stream_max_tokens(provider)), 16000)
+            128,
+            min(
+                int(output_token_budget(provider=provider, model=resolved_model, requested=max_tokens)),
+                MAX_CODING_OUTPUT,
+            ),
         )
         normalized_provider = str(provider or "").strip().lower().replace("-", "_")
         if normalized_provider in {"google", "gemini", "google_ai_studio"}:

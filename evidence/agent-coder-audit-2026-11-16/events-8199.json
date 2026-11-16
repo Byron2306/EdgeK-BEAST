@@ -1,0 +1,1016 @@
+[
+  {
+    "event": "agent.run.created",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845098.8239152,
+      "event_hash": "sha256:3ee05457e3beeaf881be6bea1121695546782fa41466103896af2fb5ff767241",
+      "event_id": "evt-64d1dc2d62fcb33871c315d0",
+      "event_type": "agent.run.created",
+      "legacy_type": "",
+      "payload": {
+        "mode": "implementer",
+        "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+        "objective": "Add a decrement(value, step=1) function to src/counters.py that subtracts step from value and returns it. Do not change increment or total. Use a minimal line-anchored edit, not a whole-file rewrite.",
+        "provider": "tgi",
+        "session_id": "implementer-c17b0faf"
+      },
+      "previous_hash": "",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 1,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.run.worker.started",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845098.8280094,
+      "event_hash": "sha256:ab50bfaf0d8f012e740617cc0ec3f5c18d42820b7d66b6db2f99ea56337d147c",
+      "event_id": "evt-68922e152473532064c4ad13",
+      "event_type": "agent.run.worker.started",
+      "legacy_type": "",
+      "payload": {
+        "adapter": "legacy_pair_programmer_v2",
+        "session_id": "implementer-c17b0faf"
+      },
+      "previous_hash": "sha256:3ee05457e3beeaf881be6bea1121695546782fa41466103896af2fb5ff767241",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 2,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.run.registered",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845098.8420587,
+      "event_hash": "sha256:d6565d2ce30f388f89fe3a8760356d7c1f172a3894d587c121fca04aad471d17",
+      "event_id": "evt-51aca8db53a9073cb5a67aaa",
+      "event_type": "agent.run.registered",
+      "legacy_type": "agent_run_registered",
+      "payload": {
+        "ok": true,
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "state": "scoping"
+      },
+      "previous_hash": "sha256:ab50bfaf0d8f012e740617cc0ec3f5c18d42820b7d66b6db2f99ea56337d147c",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 3,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.stage.updated",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845098.8456683,
+      "event_hash": "sha256:5a4cd8f2ba1744cb6c24d9d5fe5e1a46000d9953ec4956180ec984d0515c6c0e",
+      "event_id": "evt-315f41a31731148ca8c42f1f",
+      "event_type": "agent.stage.updated",
+      "legacy_type": "agent_run_stage",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "preparing bounded repository context (1 file(s))"
+      },
+      "previous_hash": "sha256:d6565d2ce30f388f89fe3a8760356d7c1f172a3894d587c121fca04aad471d17",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 4,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.run.started",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845098.851447,
+      "event_hash": "sha256:a954a2fac51592759f12a96bfbae4710dc4a1919f828adef65ac167fa98337b4",
+      "event_id": "evt-3eb43fd47c9c6250df2c1735",
+      "event_type": "agent.run.started",
+      "legacy_type": "agent_run_started",
+      "payload": {
+        "execution_target": "local",
+        "execution_target_payload": {},
+        "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+        "ok": true,
+        "prompt": "Add a decrement(value, step=1) function to src/counters.py that subtracts step from value and returns it. Do not change increment or total. Use a minimal line-anchored edit, not a whole-file rewrite.",
+        "provider": "tgi",
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "simulate": false
+      },
+      "previous_hash": "sha256:5a4cd8f2ba1744cb6c24d9d5fe5e1a46000d9953ec4956180ec984d0515c6c0e",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 5,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.context.ready",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845098.855964,
+      "event_hash": "sha256:152b0f5bb3669192311c6f6629a986d1eb55d977a9131b8cb97a64f72d650607",
+      "event_id": "evt-027766a8fdf5f2693f9ff2b5",
+      "event_type": "agent.context.ready",
+      "legacy_type": "agent_run_context",
+      "payload": {
+        "active_file": "src/counters.py",
+        "content_loaded": true,
+        "file_aliases": [],
+        "file_count": 1,
+        "files": [
+          "src/counters.py"
+        ],
+        "ok": true,
+        "requested_files": [
+          "src/counters.py"
+        ],
+        "resolved_requested_files": [
+          "src/counters.py"
+        ],
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "unreadable_files": []
+      },
+      "previous_hash": "sha256:a954a2fac51592759f12a96bfbae4710dc4a1919f828adef65ac167fa98337b4",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 6,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.stage.updated",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845098.8584442,
+      "event_hash": "sha256:6f21bb86ab3b52f1b81684993ae61a60f48827a03919d145269b3905ad2a1ccd",
+      "event_id": "evt-4d0398303764d3dccbbd7bd0",
+      "event_type": "agent.stage.updated",
+      "legacy_type": "agent_run_stage",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "repository observation"
+      },
+      "previous_hash": "sha256:152b0f5bb3669192311c6f6629a986d1eb55d977a9131b8cb97a64f72d650607",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 7,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.tool.started",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845098.8611674,
+      "event_hash": "sha256:5eec636e5e5b7b18e3405d125c40e6c399e6c1f831b61fe5b94f1ed17bbae972",
+      "event_id": "evt-2854a8e69ae699cc4b192606",
+      "event_type": "agent.tool.started",
+      "legacy_type": "agent_run_tool",
+      "payload": {
+        "authority": "read-only/governed",
+        "parameters": {
+          "files": [
+            "src/counters.py"
+          ]
+        },
+        "phase": "repository_observation",
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "status": "started",
+        "text": "Inspecting 1 selected file(s) and their direct dependents.",
+        "tool": "Code Cortex",
+        "type": "tool_call"
+      },
+      "previous_hash": "sha256:6f21bb86ab3b52f1b81684993ae61a60f48827a03919d145269b3905ad2a1ccd",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 8,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.tool.completed",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845098.9206543,
+      "event_hash": "sha256:e3ecb95d9b0bbc300a29bc7fb7edeb16ea63ed25dbaa54e5d5f477b17850827f",
+      "event_id": "evt-40c147149b6efe1b90a65304",
+      "event_type": "agent.tool.completed",
+      "legacy_type": "agent_run_tool",
+      "payload": {
+        "authority": "read-only/governed",
+        "phase": "repository_observation",
+        "result": {
+          "selected_files": 1,
+          "symbols": 2
+        },
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "status": "completed",
+        "text": "Code Cortex observed 1 selected file(s), 2 symbols, and direct dependents",
+        "tool": "Code Cortex",
+        "type": "tool_result"
+      },
+      "previous_hash": "sha256:5eec636e5e5b7b18e3405d125c40e6c399e6c1f831b61fe5b94f1ed17bbae972",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 9,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.approval.requested",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845098.9248767,
+      "event_hash": "sha256:11c85e281d0e2c5cdf03ce75b48f138b911a1889b84ad63a67da7a8f8556cec8",
+      "event_id": "evt-999a60493740c042c57312ee",
+      "event_type": "agent.approval.requested",
+      "legacy_type": "agent_run_permission_request",
+      "payload": {
+        "applies": "this agent turn when approved before dispatch",
+        "capabilities": [
+          {
+            "id": "workspace_search",
+            "label": "Search workspace symbols and references",
+            "scope": "read-only source index"
+          },
+          {
+            "id": "read_related_files",
+            "label": "Read linked files discovered by Code Cortex",
+            "paths": [
+              "tests/test_counters.py"
+            ],
+            "scope": "tests/test_counters.py"
+          },
+          {
+            "id": "run_isolated_verifier",
+            "label": "Run allowlisted tests for the proposed patch",
+            "scope": "temporary isolated workspace only; never the working tree"
+          }
+        ],
+        "message": "The agent can expand its investigation before provider dispatch. Source writes still require SourcePlan approval; any verifier command is allowlisted and isolated.",
+        "request_id": "cap_bb3a0f0d6d73",
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf"
+      },
+      "previous_hash": "sha256:e3ecb95d9b0bbc300a29bc7fb7edeb16ea63ed25dbaa54e5d5f477b17850827f",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 10,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.stage.updated",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845098.9275625,
+      "event_hash": "sha256:5d9dfe090762a30b6772fb34f7821c8ddacc1f24385bc260cbb70f2a0ecb8ecc",
+      "event_id": "evt-88e2184ce8007acd7533ad95",
+      "event_type": "agent.stage.updated",
+      "legacy_type": "agent_run_stage",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "waiting for operator-approved tools"
+      },
+      "previous_hash": "sha256:11c85e281d0e2c5cdf03ce75b48f138b911a1889b84ad63a67da7a8f8556cec8",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 11,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.stage.updated",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845098.9307387,
+      "event_hash": "sha256:103e2ae223a8cdca57e4d94baed187a2aa0d135ef2d372b0431135d6f8c7642c",
+      "event_id": "evt-15797e57e7ec26ffcc5005e5",
+      "event_type": "agent.stage.updated",
+      "legacy_type": "agent_run_stage",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "waiting for durable operator approval"
+      },
+      "previous_hash": "sha256:5d9dfe090762a30b6772fb34f7821c8ddacc1f24385bc260cbb70f2a0ecb8ecc",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 12,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "audit.approval",
+    "data": {
+      "approval_id": "cap_bb3a0f0d6d73",
+      "http": 200
+    }
+  },
+  {
+    "event": "agent.approval.resolved",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845108.8427796,
+      "event_hash": "sha256:51d76ddab53284e82e6e15eb391fc431e49f4fb6bbffdb2c85dc74c4f79b73e9",
+      "event_id": "evt-78680fdc6c1f05233c24f7df",
+      "event_type": "agent.approval.resolved",
+      "legacy_type": "",
+      "payload": {
+        "approval_id": "cap_bb3a0f0d6d73",
+        "approved": true,
+        "scope": "once"
+      },
+      "previous_hash": "sha256:103e2ae223a8cdca57e4d94baed187a2aa0d135ef2d372b0431135d6f8c7642c",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 13,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.stage.updated",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845108.9936543,
+      "event_hash": "sha256:765098d5d412e84f6a0465926592b533f0af712ece7c9e5d8306f90df35c2673",
+      "event_id": "evt-56b27baddb9077c43c0875dc",
+      "event_type": "agent.stage.updated",
+      "legacy_type": "agent_run_stage",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "operator-approved tools ready"
+      },
+      "previous_hash": "sha256:51d76ddab53284e82e6e15eb391fc431e49f4fb6bbffdb2c85dc74c4f79b73e9",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 14,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.stage.updated",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845108.9964986,
+      "event_hash": "sha256:43fb35f88345152a0ea325fe330a6d3992092a36f77b4a5e548c584ee3a07ed9",
+      "event_id": "evt-64a06577d62695df4956792a",
+      "event_type": "agent.stage.updated",
+      "legacy_type": "agent_run_stage",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "reading 1 approved linked file(s)"
+      },
+      "previous_hash": "sha256:765098d5d412e84f6a0465926592b533f0af712ece7c9e5d8306f90df35c2673",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 15,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.tool.started",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845108.9995692,
+      "event_hash": "sha256:ad03dc177f0759bf2027d68bdf5addfc36d5d5a1acda9d469370e6a79c4d5b4c",
+      "event_id": "evt-5b90fde6d12c6abf3e9df4e1",
+      "event_type": "agent.tool.started",
+      "legacy_type": "agent_run_tool",
+      "payload": {
+        "authority": "operator-approved read-only",
+        "parameters": {
+          "files": [
+            "tests/test_counters.py"
+          ]
+        },
+        "phase": "approved_context_read",
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "status": "started",
+        "text": "Reading 1 operator-approved linked file(s).",
+        "tool": "Related File Read",
+        "type": "tool_call"
+      },
+      "previous_hash": "sha256:43fb35f88345152a0ea325fe330a6d3992092a36f77b4a5e548c584ee3a07ed9",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 16,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.stage.updated",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.0027263,
+      "event_hash": "sha256:32514ef7fa5910dfe683e16fc37b1f93316f42939d6952f6dc6d009146738fcb",
+      "event_id": "evt-80c1a7b844cfd5dfe3fd3f29",
+      "event_type": "agent.stage.updated",
+      "legacy_type": "agent_run_stage",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "approved workspace search"
+      },
+      "previous_hash": "sha256:ad03dc177f0759bf2027d68bdf5addfc36d5d5a1acda9d469370e6a79c4d5b4c",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 17,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.tool.started",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.0054443,
+      "event_hash": "sha256:267e3f35b3578f91884c24252eca36935a7cd6f2b5f83d563c5e5b6ebdba3826",
+      "event_id": "evt-cf9f4c147b9c02cddfffcee2",
+      "event_type": "agent.tool.started",
+      "legacy_type": "agent_run_tool",
+      "payload": {
+        "authority": "operator-approved read-only",
+        "parameters": {
+          "query": "Add a decrement(value, step=1) function to src/counters.py that subtracts step from value and returns it. Do not change increment or total. Use a minimal line-anchored edit, not a whole-file rewrite."
+        },
+        "phase": "approved_search",
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "status": "started",
+        "text": "Searching workspace symbols and editing context for this request.",
+        "tool": "Workspace Search",
+        "type": "tool_call"
+      },
+      "previous_hash": "sha256:32514ef7fa5910dfe683e16fc37b1f93316f42939d6952f6dc6d009146738fcb",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 18,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.tool.completed",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.0144734,
+      "event_hash": "sha256:139592d98c92385e55dc53f7a30703ecfb1de74e1f00ebf7b3a3843774f7d447",
+      "event_id": "evt-9d94b0f13ecf3c8aa27b73f5",
+      "event_type": "agent.tool.completed",
+      "legacy_type": "agent_run_tool",
+      "payload": {
+        "authority": "read-only/governed",
+        "phase": "approved_search",
+        "result": {
+          "editing_context": 0,
+          "symbols": 0
+        },
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "status": "completed",
+        "text": "Workspace Search completed: 0 symbol result(s), 0 editing-context result(s)",
+        "tool": "Workspace Search",
+        "type": "tool_result"
+      },
+      "previous_hash": "sha256:267e3f35b3578f91884c24252eca36935a7cd6f2b5f83d563c5e5b6ebdba3826",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 19,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.tool.completed",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.0172627,
+      "event_hash": "sha256:cfd053caace01f5b19fb24638ba1debe236cbd12c4076bfa4c19d5c41aba108a",
+      "event_id": "evt-f82bf331994fd2de2b8bcef7",
+      "event_type": "agent.tool.completed",
+      "legacy_type": "agent_run_tool",
+      "payload": {
+        "authority": "operator-approved read-only",
+        "phase": "approved_context_read",
+        "result": {
+          "files": 1
+        },
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "status": "completed",
+        "text": "Related File Read completed: 1 approved linked file(s) added to this turn",
+        "tool": "Related File Read",
+        "type": "tool_result"
+      },
+      "previous_hash": "sha256:139592d98c92385e55dc53f7a30703ecfb1de74e1f00ebf7b3a3843774f7d447",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 20,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.stage.updated",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.0200367,
+      "event_hash": "sha256:597992183cd11a75ba5be097fc2e266022931a4570f1e96425c6a1980e978e2a",
+      "event_id": "evt-d1d5bc6ee01072bbb16aac74",
+      "event_type": "agent.stage.updated",
+      "legacy_type": "agent_run_stage",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "implementation planning"
+      },
+      "previous_hash": "sha256:cfd053caace01f5b19fb24638ba1debe236cbd12c4076bfa4c19d5c41aba108a",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 21,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.plan.preflight",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.0291486,
+      "event_hash": "sha256:43337ea8f5c5270910154e7dbc1f904f36217a3eb0c4e7fd772827ba7449823e",
+      "event_id": "evt-a9f6bf0d2d68c953c132e044",
+      "event_type": "agent.plan.preflight",
+      "legacy_type": "agent_run_preflight",
+      "payload": {
+        "authority": "advisory_only",
+        "insight_evidence": 0,
+        "recipes": [],
+        "required_tools": [
+          "context_packet",
+          "provider"
+        ],
+        "route_id": "route_quality_live_coding",
+        "route_name": "Generic quality cascade route",
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "skipped_tools": []
+      },
+      "previous_hash": "sha256:597992183cd11a75ba5be097fc2e266022931a4570f1e96425c6a1980e978e2a",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 22,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.tool.started",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.0330217,
+      "event_hash": "sha256:ba58ab4b451330b0a0f9956a9184b6f319a16cf0413a457e52333d2d45b6fbc2",
+      "event_id": "evt-17969b53a79cbf57ab55bfbb",
+      "event_type": "agent.tool.started",
+      "legacy_type": "agent_run_tool",
+      "payload": {
+        "authority": "local evidence mirror",
+        "parameters": {
+          "context_packet_id": "pkt_a4fcb032a4faad75"
+        },
+        "phase": "context_packet_mirror",
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "status": "started",
+        "text": "Mirroring the exact context packet into local evidence storage.",
+        "tool": "Semantic RAID",
+        "type": "tool_call"
+      },
+      "previous_hash": "sha256:43337ea8f5c5270910154e7dbc1f904f36217a3eb0c4e7fd772827ba7449823e",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 23,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.tool.completed",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.0424194,
+      "event_hash": "sha256:e40dbc51689bb70a075070874df2f701c7d3f85889ffe7a9c63b593c452017a1",
+      "event_id": "evt-41cc4a08136e79cb61e49705",
+      "event_type": "agent.tool.completed",
+      "legacy_type": "agent_run_tool",
+      "payload": {
+        "authority": "local evidence mirror",
+        "phase": "context_packet_mirror",
+        "result": {
+          "shard_id": "raid_d489c97de9ced63d8bda"
+        },
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "status": "completed",
+        "text": "semantic RAID: context packet mirrored as raid_d489c97de9ced63d8bda",
+        "tool": "Semantic RAID",
+        "type": "tool_result"
+      },
+      "previous_hash": "sha256:ba58ab4b451330b0a0f9956a9184b6f319a16cf0413a457e52333d2d45b6fbc2",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 24,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.tool.started",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.0470302,
+      "event_hash": "sha256:18ec8bb053b025129e5451469801a091a99353db4c0af423e926d7db0a8dab3d",
+      "event_id": "evt-6c4417f5cb2ced3f8e8a7c2d",
+      "event_type": "agent.tool.started",
+      "legacy_type": "agent_run_tool",
+      "payload": {
+        "authority": "selected files only",
+        "parameters": {
+          "model": "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+          "provider": "tgi"
+        },
+        "phase": "provider_input",
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "status": "started",
+        "text": "Handing the selected files and governed context packet to the model.",
+        "tool": "Provider Handoff",
+        "type": "tool_call"
+      },
+      "previous_hash": "sha256:e40dbc51689bb70a075070874df2f701c7d3f85889ffe7a9c63b593c452017a1",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 25,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.tool.completed",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.050937,
+      "event_hash": "sha256:7b2493e838142ea470634e667b9ed1735098e184e46f97f1d6b8a0e509501ea8",
+      "event_id": "evt-edcd980e7b0d568ba0c670d7",
+      "event_type": "agent.tool.completed",
+      "legacy_type": "agent_run_tool",
+      "payload": {
+        "authority": "selected files only",
+        "phase": "provider_input",
+        "result": {
+          "context_packet_id": "pkt_a4fcb032a4faad75"
+        },
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "status": "completed",
+        "text": "provider input: direct governed context packet pkt_a4fcb032a4faad75",
+        "tool": "Provider Handoff",
+        "type": "tool_result"
+      },
+      "previous_hash": "sha256:18ec8bb053b025129e5451469801a091a99353db4c0af423e926d7db0a8dab3d",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 26,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.compute.observed",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.055438,
+      "event_hash": "sha256:8f79ff52517d6b1d9ce99d97ceedf1592fd2e4e6d2bc3cee53593127f44f005d",
+      "event_id": "evt-82f4f90e0e9bd072b279e0ad",
+      "event_type": "agent.compute.observed",
+      "legacy_type": "agent_run_compute",
+      "payload": {
+        "context": {
+          "crystal": "preflight",
+          "kv_cache": "provider_managed",
+          "policy": "bounded_selected_context",
+          "readable_files": 2,
+          "selected_files": 2,
+          "source_chars": 348,
+          "supplied_chars": 348,
+          "truncated_files": 0
+        },
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf"
+      },
+      "previous_hash": "sha256:7b2493e838142ea470634e667b9ed1735098e184e46f97f1d6b8a0e509501ea8",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 27,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.stage.updated",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.0896883,
+      "event_hash": "sha256:31491f91cfea525894c18104cf5e996543eb5d0357bc3bb12b8e2045bf2ea1d9",
+      "event_id": "evt-fe206040b6cc1108cb820641",
+      "event_type": "agent.stage.updated",
+      "legacy_type": "agent_run_stage",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "crystal reuse preflight"
+      },
+      "previous_hash": "sha256:8f79ff52517d6b1d9ce99d97ceedf1592fd2e4e6d2bc3cee53593127f44f005d",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 28,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.tool.completed",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.0919333,
+      "event_hash": "sha256:80bb84b08f5dfdd7cb5ce8ad5375424510bfc995457ba9f21b195551f0f8b39e",
+      "event_id": "evt-1119472cfc05d692351c0ab6",
+      "event_type": "agent.tool.completed",
+      "legacy_type": "agent_run_tool",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "crystal reuse: id=crystal_reuse_2fb2b79fb00cbf action=execute_local_cpu source=local_execution_gateway confidence=0.00 reason=no_reusable_crystal_found"
+      },
+      "previous_hash": "sha256:31491f91cfea525894c18104cf5e996543eb5d0357bc3bb12b8e2045bf2ea1d9",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 29,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.stage.updated",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.094212,
+      "event_hash": "sha256:70e1cfbb5058c12e0d77350f5bbad0104982c7400be19f2580dd517eea4a3d59",
+      "event_id": "evt-769c1d498f0b0451de120ab4",
+      "event_type": "agent.stage.updated",
+      "legacy_type": "agent_run_stage",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "PREC perceive"
+      },
+      "previous_hash": "sha256:80bb84b08f5dfdd7cb5ce8ad5375424510bfc995457ba9f21b195551f0f8b39e",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 30,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.tool.completed",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.1360195,
+      "event_hash": "sha256:894a5c92d990c65d2f58b3c76fe3442a4d8da57908186ae2b59be9735c4bc8da",
+      "event_id": "evt-9b9a88840d742c7a29324848",
+      "event_type": "agent.tool.completed",
+      "legacy_type": "agent_run_tool",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "task envelope: ok"
+      },
+      "previous_hash": "sha256:70e1cfbb5058c12e0d77350f5bbad0104982c7400be19f2580dd517eea4a3d59",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 31,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.tool.completed",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.1385078,
+      "event_hash": "sha256:3a5ed4b04aa1d93d669cc043aa04a76739a73aa94a23d0d751db1cdcc1421684",
+      "event_id": "evt-45f819d8978b476acfb4025f",
+      "event_type": "agent.tool.completed",
+      "legacy_type": "agent_run_tool",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "context files: 2"
+      },
+      "previous_hash": "sha256:894a5c92d990c65d2f58b3c76fe3442a4d8da57908186ae2b59be9735c4bc8da",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 32,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.stage.updated",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.1406958,
+      "event_hash": "sha256:ab03c3e6dce75736c1db88069358f54cb08c0c2cf23cfad54a8bd520046ee551",
+      "event_id": "evt-bd62052f33e6efc904ced2a5",
+      "event_type": "agent.stage.updated",
+      "legacy_type": "agent_run_stage",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "PREC reason"
+      },
+      "previous_hash": "sha256:3a5ed4b04aa1d93d669cc043aa04a76739a73aa94a23d0d751db1cdcc1421684",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 33,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.tool.completed",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.1995022,
+      "event_hash": "sha256:febaedfb96f8226efd1b0a86fdea7a803d4d10faa06327b302988ff11061a8fb",
+      "event_id": "evt-0f191c988334af399030d250",
+      "event_type": "agent.tool.completed",
+      "legacy_type": "agent_run_tool",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "insight compile: ok"
+      },
+      "previous_hash": "sha256:ab03c3e6dce75736c1db88069358f54cb08c0c2cf23cfad54a8bd520046ee551",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 34,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.stage.updated",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.2024999,
+      "event_hash": "sha256:6dbe0938a83e5bd16f8664e40dc6de3f5ab23633bd724a0c51bfb674acaceada",
+      "event_id": "evt-60271f5ed423d105f51ac0ef",
+      "event_type": "agent.stage.updated",
+      "legacy_type": "agent_run_stage",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "PREC economize"
+      },
+      "previous_hash": "sha256:febaedfb96f8226efd1b0a86fdea7a803d4d10faa06327b302988ff11061a8fb",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 35,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.tool.completed",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.2562063,
+      "event_hash": "sha256:d29b3c68ff4d37e46e399c2415471d6eb296b7af2b4d31e13b9bb2f944f65da6",
+      "event_id": "evt-1948c536a6b75d57ca3d6369",
+      "event_type": "agent.tool.completed",
+      "legacy_type": "agent_run_tool",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "handoff precheck: ready"
+      },
+      "previous_hash": "sha256:6dbe0938a83e5bd16f8664e40dc6de3f5ab23633bd724a0c51bfb674acaceada",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 36,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.compute.observed",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.2577188,
+      "event_hash": "sha256:4779c04fa3b285371bcd06730d2688e9b7661612429dfba904be6ed11c73cba2",
+      "event_id": "evt-da55a1e53fead48a64c9d61c",
+      "event_type": "agent.compute.observed",
+      "legacy_type": "agent_run_compute",
+      "payload": {
+        "context": {
+          "budget_source": "model_family",
+          "crystal": "preflight",
+          "history_changed": false,
+          "history_final_tokens": 1003,
+          "history_original_tokens": 1003,
+          "input_budget": 28672,
+          "kv_cache": "provider_managed",
+          "policy": "full_turn_economized_target_preserved",
+          "readable_files": 2,
+          "selected_files": 2,
+          "source_chars": 348,
+          "supplied_chars": 348,
+          "truncated_files": 0
+        },
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf"
+      },
+      "previous_hash": "sha256:d29b3c68ff4d37e46e399c2415471d6eb296b7af2b4d31e13b9bb2f944f65da6",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 37,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.stage.updated",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.2588263,
+      "event_hash": "sha256:f23986681f8f79a8590477fc317612bc3e922bd4a9b51c4399e75f1343afe000",
+      "event_id": "evt-b75ee754a8e2667548a95797",
+      "event_type": "agent.stage.updated",
+      "legacy_type": "agent_run_stage",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "provider stream"
+      },
+      "previous_hash": "sha256:4779c04fa3b285371bcd06730d2688e9b7661612429dfba904be6ed11c73cba2",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 38,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.tool.completed",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.260366,
+      "event_hash": "sha256:3df898f74a4efb3a45e3463318a3d2cbe1b766f750ab19837ba26a1134d98f8e",
+      "event_id": "evt-3b112506db1d5e25cda19b54",
+      "event_type": "agent.tool.completed",
+      "legacy_type": "agent_run_tool",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "provider stream: tgi model=Qwen/Qwen2.5-Coder-3B-Instruct-AWQ max_tokens=16384 continuations=3"
+      },
+      "previous_hash": "sha256:f23986681f8f79a8590477fc317612bc3e922bd4a9b51c4399e75f1343afe000",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 39,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.tool.completed",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.4118226,
+      "event_hash": "sha256:802ebf168fd08200078560c775f08483519fdc665ca19bd778f101364407a624",
+      "event_id": "evt-9e761bd6d982007b80ca4db8",
+      "event_type": "agent.tool.completed",
+      "legacy_type": "agent_run_tool",
+      "payload": {
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf",
+        "text": "provider stream error: {\"message\": \"litellm API error: 400: {'error': '/chat/completions: Invalid model name passed in model=Qwen/Qwen2.5-Coder-3B-Instruct-AWQ. Call `/v1/models` to v"
+      },
+      "previous_hash": "sha256:3df898f74a4efb3a45e3463318a3d2cbe1b766f750ab19837ba26a1134d98f8e",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 40,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.run.error",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.4139357,
+      "event_hash": "sha256:fcd8dd46c412752949caed6353e3061913cf4e7f371069faea5e643edab54210",
+      "event_id": "evt-3848910ff8834b0e0fdeae3d",
+      "event_type": "agent.run.error",
+      "legacy_type": "agent_run_error",
+      "payload": {
+        "error": "{\"message\": \"litellm API error: 400: {'error': '/chat/completions: Invalid model name passed in model=Qwen/Qwen2.5-Coder-3B-Instruct-AWQ. Call `/v1/models` to view available models for your key.'}\", \"type\": \"PROVIDER_ERROR\", \"code\": \"provider_error\", \"param\": null, \"status\": 400, \"provider\": \"litellm\", \"upstream_error\": \"{'error': '/chat/completions: Invalid model name passed in model=Qwen/Qwen2.5-Coder-3B-Instruct-AWQ. Call `/v1/models` to view available models for your key.'}\", \"model\": \"Qwen/Qwen2.5-Coder-3B-Instruct-AWQ\"}",
+        "ok": false,
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session_id": "implementer-c17b0faf"
+      },
+      "previous_hash": "sha256:802ebf168fd08200078560c775f08483519fdc665ca19bd778f101364407a624",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 41,
+      "version": "2.0"
+    }
+  },
+  {
+    "event": "agent.run.failed",
+    "data": {
+      "beast_object_type": "beast_agent_run_event",
+      "created_at": 1794845109.4154966,
+      "event_hash": "sha256:2e39961b41efe141d6928ed3c2785b1f0e1ff085bf484723ebbd011904352ce1",
+      "event_id": "evt-5abdef408e93cf74f8275bb4",
+      "event_type": "agent.run.failed",
+      "legacy_type": "agent_run_done",
+      "payload": {
+        "chars": 0,
+        "ok": false,
+        "run_id": "implementer-c17b0faf-6287242d2187",
+        "session": {},
+        "session_id": "implementer-c17b0faf",
+        "sourceplan_status": "provider_error"
+      },
+      "previous_hash": "sha256:fcd8dd46c412752949caed6353e3061913cf4e7f371069faea5e643edab54210",
+      "run_id": "implementer-c17b0faf-6287242d2187",
+      "sequence": 42,
+      "version": "2.0"
+    }
+  }
+]

@@ -41,24 +41,27 @@ def pair_programmer_limits(
     requested_tokens: int,
     requested_context_chars: int,
 ) -> tuple[int, int, int]:
-    """Return bounded output, context, and file limits for a coding turn."""
-    if is_compact_local_coder(provider, model):
-        return (
-            min(max(128, int(requested_tokens)), 1024),
-            min(max(1200, int(requested_context_chars)), 2400),
-            3,
-        )
-    if str(provider or "").strip().lower().replace("-", "_") in {"nvidia_nim", "nvidia", "nim"}:
-        return (
-            min(max(512, int(requested_tokens)), 4096),
-            min(max(2400, int(requested_context_chars)), 12000),
-            3,
-        )
-    return (
-        min(max(256, int(requested_tokens)), 3072),
-        min(max(1600, int(requested_context_chars)), 12000),
-        4,
-    )
+    """Return bounded output, context, and file limits for a coding turn.
+
+    Output max_tokens is model-aware (16k–32k for Fireworks/HF Kimi, GLM,
+    DeepSeek, gpt-oss). The old generic 3072 cap (and provider-lane 2048
+    cost defaults) are not used as the model limit.
+    """
+    from app.context.budget import resolve_output_budget
+
+    compact = is_compact_local_coder(provider, model)
+    output = int(resolve_output_budget(
+        model=model,
+        provider=provider,
+        requested=requested_tokens,
+        compact_local=compact,
+    )["max_tokens"])
+    if compact:
+        return output, min(max(1200, int(requested_context_chars)), 2400), 3
+    # Large-window coding models can attach more source per file.
+    context_chars = min(max(1600, int(requested_context_chars)), 50000)
+    file_limit = 5
+    return output, context_chars, file_limit
 
 
 def bounded_workspace_files(root: Path, suffixes: set[str], max_files: int) -> Iterator[Path]:

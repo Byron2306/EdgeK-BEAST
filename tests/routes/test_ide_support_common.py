@@ -22,8 +22,20 @@ from app.routes.ide_support.worktree_routes import register_worktree_mission_rou
 
 def test_pair_programmer_limits_are_route_specific() -> None:
     assert pair_programmer_limits("ollama", "qwen2.5:3b", 9999, 999999) == (1024, 2400, 3)
-    assert pair_programmer_limits("nvidia_nim", "coder", 9999, 999999) == (4096, 12000, 3)
-    assert pair_programmer_limits("openai", "coder", 9999, 999999) == (3072, 12000, 4)
+    fireworks_kimi = pair_programmer_limits("fireworks", "accounts/fireworks/models/kimi-k3", 16000, 50000)
+    assert fireworks_kimi[0] >= 16384
+    assert fireworks_kimi[0] <= 32768
+    assert fireworks_kimi[1] >= 12000
+    glm = pair_programmer_limits("fireworks", "accounts/fireworks/models/glm-5p3-flash", 16000, 50000)
+    assert glm[0] >= 16384
+    deepseek = pair_programmer_limits("fireworks", "accounts/fireworks/models/deepseek-v4p1-flash", 8000, 50000)
+    assert deepseek[0] >= 16384
+    gpt_oss = pair_programmer_limits("hf", "openai/gpt-oss-120b:deepinfra", 16000, 50000)
+    assert gpt_oss[0] >= 16384
+    # Unknown models must beat the old 3072 hard cap, but stay within the policy window.
+    generic = pair_programmer_limits("openai", "coder", 9999, 999999)
+    assert generic[0] > 3072
+    assert generic[0] <= 16384
 
 
 def test_extract_json_object_accepts_fenced_object_and_list() -> None:

@@ -171,9 +171,99 @@ def input_token_budget(
     )["max_input_tokens"])
 
 
+
+# Published / conservative max *output* tokens for coding families.
+# Never treat provider-lane max_tokens (often 2048, a cost default) as this cap.
+DEFAULT_CODING_OUTPUT = 16384
+MAX_CODING_OUTPUT = 32768
+MIN_CODING_OUTPUT = 256
+FAMILY_OUTPUT_CAPS = (
+    ("kimi", 32768),
+    ("deepseek", 32768),
+    ("glm", 32768),
+    ("gpt-oss", 32768),
+    ("gptoss", 32768),
+    ("llama-3.3", 16384),
+    ("llama3.3", 16384),
+    ("qwen", 16384),
+)
+
+
+def _family_output_cap(model: str, provider: str = "") -> Optional[int]:
+    blob = f"{model or ''} {provider or ''}".lower()
+    blob = re.sub(r"(?i)(\d)p(\d)", r"\1.\2", blob)
+    for token, cap in FAMILY_OUTPUT_CAPS:
+        if token in blob:
+            return int(cap)
+    return None
+
+
+def resolve_output_budget(
+    *,
+    model: str = "",
+    provider: str = "",
+    requested: Optional[int] = None,
+    input_tokens: Optional[int] = None,
+    metadata: Optional[Mapping[str, Any]] = None,
+    compact_local: bool = False,
+    policies: Optional[Mapping[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Return the output max_tokens for an Agent Coder / live stream turn.
+
+    Coding turns need a high default (16k–32k), capped by the model's output
+    limit and by remaining context (window minus input). Provider-lane
+    ``max_tokens: 2048`` values are cost defaults, not model limits, and are
+    not used as the cap.
+    """
+    window_info = resolve_input_budget(model=model, provider=provider, policies=policies, metadata=metadata)
+    window = int(window_info["context_window"])
+    family_cap = _family_output_cap(model, provider) or MAX_CODING_OUTPUT
+    # Leave room for the already-assembled prompt when we know it.
+    headroom = window
+    if input_tokens is not None:
+        try:
+            used = max(0, int(input_tokens))
+        except (TypeError, ValueError):
+            used = 0
+        headroom = max(MIN_CODING_OUTPUT, window - used)
+    cap = min(MAX_CODING_OUTPUT, int(family_cap), int(headroom))
+    if compact_local:
+        cap = min(cap, 1024)
+    if requested is None:
+        target = min(DEFAULT_CODING_OUTPUT, cap) if not compact_local else min(1024, cap)
+    else:
+        try:
+            target = int(requested)
+        except (TypeError, ValueError):
+            target = DEFAULT_CODING_OUTPUT
+    # For full-size coding models, never let a small requested/policy value
+    # (or the old 3072 route cap) under-budget a turn that can legally use
+    # the family output cap. Compact local models stay tightly bounded.
+    if not compact_local:
+        target = max(target, min(DEFAULT_CODING_OUTPUT, cap))
+    max_tokens = max(MIN_CODING_OUTPUT, min(int(target), int(cap)))
+    return {
+        "max_tokens": int(max_tokens),
+        "context_window": int(window),
+        "family_output_cap": int(family_cap),
+        "headroom": int(headroom),
+        "source": window_info.get("source") or "default",
+        "model": model or "",
+        "provider": provider or "",
+        "compact_local": bool(compact_local),
+    }
+
+
+def output_token_budget(**kwargs: Any) -> int:
+    return int(resolve_output_budget(**kwargs)["max_tokens"])
+
 __all__ = [
     "POLICY_DEFAULT_INPUT",
+    "DEFAULT_CODING_OUTPUT",
+    "MAX_CODING_OUTPUT",
     "input_token_budget",
     "normalize_model_name",
+    "output_token_budget",
     "resolve_input_budget",
+    "resolve_output_budget",
 ]
