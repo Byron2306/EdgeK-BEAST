@@ -9,6 +9,7 @@ import copy
 import logging
 import re
 
+from app.context.budget import resolve_input_budget
 from app.kernel.compute.perceive import EdgeKIR
 
 logger = logging.getLogger(__name__)
@@ -66,20 +67,63 @@ class ContextEconomizer:
     def _protected_messages_present(self, messages: List[Dict[str, Any]]) -> bool:
         return any(self._is_protected_message(message) for message in messages)
 
+    def input_budget_for(self, ir: EdgeKIR) -> Dict[str, Any]:
+        metadata = ir.metadata or {}
+        return resolve_input_budget(
+            model=str(ir.model or metadata.get("model") or ""),
+            provider=str(metadata.get("provider") or ""),
+            policies=self.policies,
+            metadata=metadata,
+            max_output_tokens=ir.max_tokens,
+        )
+
     def economize(self, ir: EdgeKIR) -> ContextEconomyResult:
         meta_rules = self.policies.get("meta_rules", {})
         enabled = meta_rules.get("context_economizer_enabled", True)
         original_tokens = self._estimate_tokens(ir.messages or [])
-        # Envelope-level exactness is an explicit contract: never alter it.
+        budget = self.input_budget_for(ir)
+        max_input = int(budget["max_input_tokens"])
+        target_paths = self._target_paths(ir)
+        # Envelope-level exactness is an explicit contract for the *target*.
+        # Linked (non-target) files may still be summarised to fit the model window.
         envelope_exact = (ir.metadata or {}).get("content_integrity") in (
             "exact", "byte_exact", "protected"
         )
         if envelope_exact:
-            max_input = int(meta_rules.get("max_input_tokens_per_request", 8000))
             if original_tokens > max_input:
-                raise ValueError("protected_context_exceeds_input_budget")
+                messages, removed, chars_removed, notes = self._summarise_linked_context(
+                    list(ir.messages or []), max_input, target_paths
+                )
+                final = self._estimate_tokens(messages)
+                if final > max_input:
+                    raise ValueError("protected_context_exceeds_input_budget")
+                metadata = copy.deepcopy(ir.metadata or {})
+                metadata["context_economy"] = {
+                    "changed": True,
+                    "original_tokens": original_tokens,
+                    "final_tokens": final,
+                    "target_tokens": max_input,
+                    "within_input_budget": True,
+                    "messages_removed": removed,
+                    "chars_removed": chars_removed,
+                    "strategy": "summarise_linked_keep_target",
+                    "budget": budget,
+                    "notes": notes,
+                }
+                economized = EdgeKIR(
+                    messages=messages, model=ir.model, max_tokens=ir.max_tokens,
+                    temperature=ir.temperature, top_p=ir.top_p, stream=ir.stream,
+                    tools=ir.tools, tool_choice=ir.tool_choice, stop=ir.stop,
+                    metadata=metadata,
+                )
+                return ContextEconomyResult(
+                    ir=economized, changed=True, original_tokens=original_tokens,
+                    final_tokens=final, strategy="summarise_linked_keep_target",
+                    messages_removed=removed, chars_removed=chars_removed, notes=notes,
+                )
             return self._unchanged(ir, original_tokens, "protected_exact_content", [
-                "Exact envelope preserved byte-for-byte"
+                "Exact envelope preserved byte-for-byte",
+                f"Input budget {max_input} from {budget['source']}",
             ])
 
         ir = self._apply_compression_tiers(ir)
@@ -88,7 +132,6 @@ class ContextEconomizer:
         if not enabled:
             return self._unchanged(ir, original_tokens, "disabled", ["Context economizer disabled"])
 
-        max_input = int(meta_rules.get("max_input_tokens_per_request", 8000))
         trigger_ratio = float(meta_rules.get("context_compression_trigger_ratio", 0.85))
         trigger_tokens = max(1, int(max_input * trigger_ratio))
 
@@ -118,7 +161,9 @@ class ContextEconomizer:
             target_tokens=target_tokens,
             min_recent_messages=min_recent_messages,
             max_message_chars=max_message_chars,
-            preserve_system=preserve_system
+            preserve_system=preserve_system,
+            target_paths=target_paths,
+            hard_budget=max_input,
         )
         final_tokens = self._estimate_tokens(messages)
 
@@ -135,6 +180,7 @@ class ContextEconomizer:
             "strategy": "deterministic_trim",
             "token_count_kind": "estimated_chars_div_4",
             "provider_tokens_measured": False,
+            "budget": budget,
             "notes": notes
         }
 
@@ -174,7 +220,9 @@ class ContextEconomizer:
         target_tokens: int,
         min_recent_messages: int,
         max_message_chars: int,
-        preserve_system: bool
+        preserve_system: bool,
+        target_paths: Optional[set] = None,
+        hard_budget: Optional[int] = None,
     ) -> Tuple[List[Dict[str, Any]], int, int, List[str]]:
         notes = []
         chars_removed = 0
@@ -211,11 +259,141 @@ class ContextEconomizer:
             messages_removed += 1
             chars_removed += len(str(normalized[i].get("content", "")))
         compressed = [m for i, m in enumerate(normalized) if i not in removed]
+        limit = int(hard_budget or target_tokens)
         if self._estimate_tokens(compressed) > target_tokens:
+            linked_msgs, linked_removed, linked_chars, linked_notes = self._summarise_linked_context(
+                compressed, limit, target_paths or set()
+            )
+            compressed = linked_msgs
+            messages_removed += linked_removed
+            chars_removed += linked_chars
+            notes.extend(linked_notes)
+        if self._estimate_tokens(compressed) > limit:
             raise ValueError("protected_context_exceeds_input_budget")
-        if messages_removed:
+        if messages_removed and not any("Linked file" in n or "Omitted" in n for n in notes):
+            notes.append(f"Omitted {messages_removed} eligible historical messages; protected content unchanged")
+        elif messages_removed and not notes:
             notes.append(f"Omitted {messages_removed} eligible historical messages; protected content unchanged")
         return compressed, messages_removed, chars_removed, notes
+
+    def _target_paths(self, ir: EdgeKIR) -> set:
+        metadata = ir.metadata or {}
+        paths = []
+        for key in ("target_file", "target_path", "selected_file", "active_file"):
+            if metadata.get(key):
+                paths.append(str(metadata.get(key)))
+        selection = metadata.get("selection") if isinstance(metadata.get("selection"), dict) else {}
+        for key in ("path", "file", "file_path"):
+            if selection.get(key):
+                paths.append(str(selection.get(key)))
+        files = metadata.get("context_files") or metadata.get("target_files") or []
+        if isinstance(files, list) and files:
+            first = files[0]
+            paths.append(str(first.get("path") if isinstance(first, dict) else first))
+        return {self._norm_path(path) for path in paths if path}
+
+    @staticmethod
+    def _norm_path(path: str) -> str:
+        return str(path or "").replace("\\", "/").lstrip("./").lower()
+
+    def _message_path(self, message: Dict[str, Any]) -> str:
+        for key in ("path", "source", "file_path", "target_path"):
+            if message.get(key):
+                return self._norm_path(str(message.get(key)))
+        return ""
+
+    def _is_target_message(self, message: Dict[str, Any], target_paths: set) -> bool:
+        role = str(message.get("context_role") or "")
+        if role in {"workspace_files", "context_copy", "linked"}:
+            # These carriers may contain both the target and linked files.
+            return False
+        if role in {"target", "selection", "user_prompt"}:
+            return True
+        if message.get("is_target") is True:
+            return True
+        path = self._message_path(message)
+        return bool(path and path in target_paths)
+
+    def _summarise_section(self, path: str, body: str, keep_chars: int = 800) -> str:
+        lines = str(body or "").splitlines()
+        head = "\n".join(lines[:40])
+        if len(head) > keep_chars:
+            head = head[:keep_chars]
+        return (
+            f"### {path}\n"
+            f"[Linked file summarised to fit the model input budget; "
+            f"{len(lines)} lines, {len(body)} chars. The target file and selection stay in full.]\n"
+            f"{head}\n…"
+        )
+
+    def _summarise_message_content(self, content: str, target_paths: set, keep_chars: int = 800) -> Tuple[str, int]:
+        """Summarise ###-delimited linked file sections; leave the target section intact."""
+        text = str(content or "")
+        pattern = re.compile(r"(?m)^### (.+)$")
+        hits = list(pattern.finditer(text))
+        if not hits:
+            return self._summarise_section("linked", text, keep_chars), max(0, len(text) - keep_chars)
+        parts = []
+        removed = 0
+        for index, hit in enumerate(hits):
+            start = hit.end()
+            end = hits[index + 1].start() if index + 1 < len(hits) else len(text)
+            path = hit.group(1).strip()
+            body = text[start:end]
+            if self._norm_path(path) in target_paths or not target_paths:
+                # When we cannot tell, keep the first section as the target if it is the only one
+                # actually marked; otherwise summarise non-matching paths.
+                if self._norm_path(path) in target_paths or (not target_paths and index == 0):
+                    parts.append(f"### {path}{body}")
+                    continue
+            summarised = self._summarise_section(path, body, keep_chars)
+            removed += max(0, len(body) - len(summarised))
+            parts.append(summarised if not summarised.startswith("###") else summarised)
+            # _summarise_section already includes the heading
+        return "\n".join(parts), removed
+
+    def _summarise_linked_context(
+        self,
+        messages: List[Dict[str, Any]],
+        target_tokens: int,
+        target_paths: set,
+    ) -> Tuple[List[Dict[str, Any]], int, int, List[str]]:
+        notes: List[str] = []
+        chars_removed = 0
+        messages_removed = 0
+        updated = [copy.deepcopy(m) for m in messages]
+        originals = [str(m.get("content") or "") if isinstance(m, dict) else "" for m in messages]
+        keep = 800
+        while self._estimate_tokens(updated) > target_tokens and keep >= 40:
+            for index, message in enumerate(updated):
+                if self._estimate_tokens(updated) <= target_tokens:
+                    break
+                if self._is_target_message(message, target_paths):
+                    continue
+                role = str(message.get("context_role") or "")
+                content = message.get("content")
+                if not isinstance(content, str) or not content:
+                    continue
+                if role in {"user_prompt"}:
+                    continue
+                is_last_user = (
+                    message.get("role") == "user"
+                    and all(updated[j].get("role") != "user" for j in range(index + 1, len(updated)))
+                    and role not in {"linked", "context_copy", "workspace_files"}
+                )
+                if is_last_user:
+                    continue
+                source = originals[index] if index < len(originals) else content
+                new_content, removed = self._summarise_message_content(source, target_paths, keep_chars=keep)
+                if removed <= 0 and "### " not in source:
+                    new_content = self._summarise_section(self._message_path(message) or "linked", source, keep)
+                    removed = max(0, len(source) - len(new_content))
+                if new_content != content:
+                    updated[index] = {**message, "content": new_content, "context_summarised": True}
+                    chars_removed += max(0, len(content) - len(new_content))
+                    notes.append("Summarised linked (non-target) file context to fit the model input budget")
+            keep //= 2
+        return updated, messages_removed, chars_removed, notes
 
     def _force_trim_recent(
         self,
@@ -341,3 +519,58 @@ class ContextEconomizer:
     def _estimate_tokens(self, messages: List[Dict[str, Any]]) -> int:
         total_chars = sum(len(str(message.get("content", ""))) for message in messages or [])
         return max(1, total_chars // 4)
+
+
+def precheck_context_messages(
+    messages,
+    *,
+    model: str = "",
+    provider: str = "",
+    policies: Optional[Dict[str, Any]] = None,
+    metadata: Optional[Dict[str, Any]] = None,
+    max_tokens: Optional[int] = None,
+) -> Dict[str, Any]:
+    """Run the same economize path the provider stream will run; never raises on budget.
+
+    Returns a ready flag, token counts, and the economy result so the handoff
+    precheck and the stream cannot disagree on the budget.
+    """
+    meta = dict(metadata or {})
+    if provider:
+        meta.setdefault("provider", provider)
+    ir = EdgeKIR(
+        messages=[dict(item) for item in (messages or []) if isinstance(item, dict)],
+        model=model, max_tokens=max_tokens, temperature=0.2, stream=True,
+        metadata=meta,
+    )
+    economizer = ContextEconomizer(policies)
+    budget = economizer.input_budget_for(ir)
+    try:
+        economy = economizer.economize(ir)
+        return {
+            "ready": True,
+            "ok": True,
+            "changed": economy.changed,
+            "original_tokens": economy.original_tokens,
+            "final_tokens": economy.final_tokens,
+            "max_input_tokens": budget["max_input_tokens"],
+            "context_window": budget["context_window"],
+            "budget_source": budget["source"],
+            "reason": "",
+            "economy": economy,
+        }
+    except ValueError as exc:
+        if "protected_context_exceeds_input_budget" not in str(exc):
+            raise
+        return {
+            "ready": False,
+            "ok": False,
+            "changed": False,
+            "original_tokens": economizer._estimate_tokens(ir.messages or []),
+            "final_tokens": economizer._estimate_tokens(ir.messages or []),
+            "max_input_tokens": budget["max_input_tokens"],
+            "context_window": budget["context_window"],
+            "budget_source": budget["source"],
+            "reason": "protected_context_exceeds_input_budget",
+            "economy": None,
+        }

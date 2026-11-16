@@ -16,6 +16,7 @@ import logging
 import re
 
 from app.kernel.compute.perceive import EdgeKIR
+from app.context.budget import input_token_budget
 from app.kernel.data_processing.workspace_graph import WorkspaceGraph
 
 logger = logging.getLogger(__name__)
@@ -321,8 +322,14 @@ class Reasoner:
         meta_rules = self.policies.get("meta_rules", {})
         policies_applied = []
         
-        # Check input token limits
-        max_input = meta_rules.get("max_input_tokens_per_request", 8000)
+        # Check input token limits (same model-aware budget as the economizer)
+        max_input = input_token_budget(
+            model=str(ir.model or ""),
+            provider=str((ir.metadata or {}).get("provider") or ""),
+            policies=self.policies,
+            metadata=ir.metadata or {},
+            max_output_tokens=ir.max_tokens,
+        )
         estimated_input = self._estimate_tokens(ir.messages)
         
         if estimated_input > max_input:

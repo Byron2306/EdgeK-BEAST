@@ -1471,10 +1471,16 @@ class BeastApiClient:
     def crystal_decision_event(decision: Dict[str, Any]) -> str:
         if not decision:
             return "crystal reuse: unavailable"
+        family = ((decision.get("payload") or {}).get("family_crystal") or {})
+        crystal_id = str(family.get("crystal_id") or "")
+        suffix = f" reason={decision.get('reason')}"
+        if crystal_id:
+            suffix += f" crystal_id={crystal_id} tool={family.get('tool') or ''}"
         return (
             f"crystal reuse: id={str(decision.get('decision_id') or '')[:28]} "
             f"action={decision.get('action')} source={decision.get('source')} "
             f"confidence={float(decision.get('confidence') or 0.0):.2f}"
+            f"{suffix}"
         )
 
     @staticmethod
@@ -7609,7 +7615,16 @@ class BeastApiClient:
                                     continue
                                 if sse_event_type == "edgek_error":
                                     error = data.get("error") if isinstance(data, dict) else data
-                                    yield {"type": "error", "error": json.dumps(error, default=str)[:1200]}
+                                    if isinstance(error, dict):
+                                        yield {
+                                            "type": "error",
+                                            "error": str(error.get("message") or json.dumps(error, default=str))[:1200],
+                                            "code": error.get("code"),
+                                            "error_type": error.get("type"),
+                                            "governed_error": error,
+                                        }
+                                    else:
+                                        yield {"type": "error", "error": json.dumps(error, default=str)[:1200]}
                                     return
                                 delta = self._extract_stream_delta(data)
                                 if delta:
@@ -7809,17 +7824,23 @@ class BeastApiClient:
             "governance_level": governance_level,
         }
         try:
+            from app.kernel.compute.family_crystals import infer_task_family
+
+            base_task_class = "ide_coding_completion" if governance_level.startswith("ide_") else "chat_completion"
+            reuse_task_class = infer_task_family(text, {}, base_task_class)
             crystal_decision = await self.crystal_reuse_decision(
                 reuse_prompt,
                 provider,
                 model,
                 parameters=reuse_parameters,
-                task_class="ide_coding_completion" if governance_level.startswith("ide_") else "chat_completion",
+                task_class=reuse_task_class,
                 repo_fingerprint=repo_fingerprint,
                 metadata={
                     "visible_prompt_hash": hashlib.sha256(text.encode("utf-8")).hexdigest(),
                     "context_files": [item["path"] for item in context_identity],
                     "history_count": len(history[-12:]),
+                    "family": reuse_task_class,
+                    "visible_prompt": text[:500],
                 },
             )
         except TypeError:
@@ -7930,10 +7951,72 @@ class BeastApiClient:
                 signals=["insight_compiler"],
             )
 
+        context_message = ""
+        target_file = ""
+        if context_records:
+            snippets = []
+            for rec in context_records[: max(1, int(context_max_files or 64))]:
+                if rec.get("ok"):
+                    if not target_file:
+                        target_file = str(rec.get("path") or "")
+                    snippets.append(
+                        f"### {rec.get('path')}\n{str(rec.get('preview') or '')[: max(800, int(context_max_chars_each or 4200))]}"
+                    )
+            context_message = "\n\n".join(snippets)
+        if not target_file and context_files:
+            target_file = str(context_files[0])
+
+        planned_messages = [dict(item) for item in history[-12:] if isinstance(item, dict)]
+        if context_message:
+            planned_messages = planned_messages + [
+                {
+                    "role": "system",
+                    "content": "Selected BEAST workspace context follows. These files were successfully read from the active workspace and are authoritative for this turn. Use their contents directly. Never claim that an attached file was not provided or ask the operator to share it again; if the answer is genuinely absent from the text, say what information is insufficient instead. Stay within this scope unless the user expands it.\n"
+                    + context_message,
+                    "context_role": "workspace_files",
+                    "target_path": target_file,
+                }
+            ]
+            planned_messages = planned_messages + [
+                {
+                    "role": "user",
+                    "content": "AUTHORITATIVE SOURCE EVIDENCE. Use this exact file for the next answer; do not claim it is unavailable or speculate beyond it:\n\n"
+                    + context_message,
+                    "context_role": "context_copy",
+                    "target_path": target_file,
+                }
+            ]
+        planned_messages = planned_messages + [{"role": "user", "content": text, "context_role": "user_prompt"}]
+
+        from app.context.economizer import ContextEconomizer, precheck_context_messages
+        from app.kernel.governance.reason import reasoner as _reasoner_for_budget
+        economy_meta = {
+            "surface": "ide_pair_programmer",
+            "provider": provider,
+            "target_file": target_file,
+            "context_files": list(context_files or []),
+        }
+        # Same calculation the provider stream will run inside PREC.
+        budget_precheck = precheck_context_messages(
+            planned_messages,
+            model=model,
+            provider=provider,
+            policies=getattr(_reasoner_for_budget, "policies", None),
+            metadata=economy_meta,
+            max_tokens=max_tokens,
+        )
+
         yield {"type": "stage", "text": "PREC economize"}
         handoff = await self.prepare_handoff(text, provider)
-        ready = bool(handoff.data.get("ready"))
+        ready = bool(handoff.data.get("ready")) and bool(budget_precheck.get("ready"))
         event = "handoff precheck: " + ("ready" if ready else "not ready")
+        if not budget_precheck.get("ready"):
+            event += f" (context budget: {budget_precheck.get('reason') or 'exceeded'})"
+        elif budget_precheck.get("changed"):
+            event += (
+                f" (context budget: trimmed {budget_precheck.get('original_tokens')} to "
+                f"{budget_precheck.get('final_tokens')} for a {budget_precheck.get('max_input_tokens')} token window)"
+            )
         tool_events.append(event)
         yield {"type": "tool", "text": event}
         if lifecycle_id:
@@ -7942,58 +8025,26 @@ class BeastApiClient:
                 "economize",
                 "Prepared bounded context/handoff packet for provider turn.",
                 "completed" if ready else "active",
-                artifacts={"handoff": handoff.data if handoff.ok else handoff.error},
+                artifacts={
+                    "handoff": handoff.data if handoff.ok else handoff.error,
+                    "context_budget": budget_precheck,
+                },
                 signals=["handoff_precheck"],
             )
 
-        context_message = ""
-        if context_records:
-            snippets = []
-            for rec in context_records[: max(1, int(context_max_files or 64))]:
-                if rec.get("ok"):
-                    snippets.append(
-                        f"### {rec.get('path')}\n{str(rec.get('preview') or '')[: max(800, int(context_max_chars_each or 4200))]}"
-                    )
-            context_message = "\n\n".join(snippets)
-
-        # Economize dialogue history, but never trim the explicit source text
-        # attached below: exact source anchors are essential for SourcePlans.
-        history_ir = EdgeKIR(
-            messages=[dict(item) for item in history[-12:] if isinstance(item, dict)],
-            model=model, max_tokens=max_tokens, temperature=0.2, stream=True,
-            metadata={"surface": "ide_pair_programmer", "provider": provider},
-        )
-        economy = ContextEconomizer().economize(history_ir)
-        chat_history = economy.ir.messages
+        economy = budget_precheck.get("economy")
+        chat_history = list((economy.ir.messages if economy is not None else planned_messages))
         yield {"type": "compute", "context": {
             "selected_files": len(context_files), "readable_files": len(readable_records),
             "source_chars": source_chars, "supplied_chars": supplied_chars,
             "truncated_files": sum(1 for record in readable_records if record.get("truncated")),
-            "policy": "history_economized_selected_source_preserved", "kv_cache": "provider_managed", "crystal": "preflight",
-            "history_original_tokens": economy.original_tokens, "history_final_tokens": economy.final_tokens,
-            "history_changed": economy.changed,
+            "policy": "full_turn_economized_target_preserved", "kv_cache": "provider_managed", "crystal": "preflight",
+            "history_original_tokens": budget_precheck.get("original_tokens"),
+            "history_final_tokens": budget_precheck.get("final_tokens"),
+            "history_changed": budget_precheck.get("changed"),
+            "input_budget": budget_precheck.get("max_input_tokens"),
+            "budget_source": budget_precheck.get("budget_source"),
         }}
-        if context_message:
-            chat_history = chat_history + [
-                {
-                    "role": "system",
-                    "content": "Selected BEAST workspace context follows. These files were successfully read from the active workspace and are authoritative for this turn. Use their contents directly. Never claim that an attached file was not provided or ask the operator to share it again; if the answer is genuinely absent from the text, say what information is insufficient instead. Stay within this scope unless the user expands it.\n"
-                    +context_message,
-                }
-            ]
-            # Gemini can be overly conservative when source is supplied only
-            # as a system attachment. Repeat the same bounded, authoritative
-            # context as an explicit user evidence turn so ASK answers are
-            # grounded in the file rather than a generic uncertainty script.
-            chat_history = chat_history + [
-                {
-                    "role": "user",
-                    "content": "AUTHORITATIVE SOURCE EVIDENCE. Use this exact file for the next answer; do not claim it is unavailable or speculate beyond it:\n\n"
-                    + context_message,
-                }
-            ]
-        chat_history = chat_history + [{"role": "user", "content": text}]
-
         provider_error = ""
         provider_ok = False
         provider_completed = False

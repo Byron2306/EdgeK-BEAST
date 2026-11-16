@@ -954,6 +954,21 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                             transport_receipt = event.get("transport_receipt")
                             if not isinstance(transport_receipt, dict):
                                 transport_receipt = {}
+                            if not (transport_receipt.get("http_status") or transport_receipt.get("content_type") or transport_receipt.get("requested_url")):
+                                transport_receipt = {}
+                            governed_error = event.get("governed_error")
+                            if not isinstance(governed_error, dict):
+                                governed_error = None
+                                raw = event.get("error")
+                                if isinstance(raw, dict) and (raw.get("type") == "governed_execution_error" or raw.get("code")):
+                                    governed_error = raw
+                                elif isinstance(raw, str) and "governed_execution_error" in raw:
+                                    try:
+                                        parsed = json.loads(raw)
+                                    except (TypeError, ValueError):
+                                        parsed = {}
+                                    if isinstance(parsed, dict):
+                                        governed_error = parsed.get("error") if isinstance(parsed.get("error"), dict) else parsed
                             # Preserve a partial coding response long enough
                             # for the bounded Action-IR repair pass below. A
                             # chat response, or an empty coding response, is a
@@ -983,12 +998,20 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                                     "timestamp": time.time(),
                                 }],
                             )
-                            yield _event("agent_run_error", {
+                            error_event = {
                                 "session_id": session_id,
                                 "ok": False,
                                 "error": failure,
-                                "provider_transport": transport_receipt,
-                            })
+                            }
+                            if event.get("code") or (governed_error or {}).get("code"):
+                                error_event["code"] = event.get("code") or (governed_error or {}).get("code")
+                            if event.get("error_type") or (governed_error or {}).get("type"):
+                                error_event["error_type"] = event.get("error_type") or (governed_error or {}).get("type")
+                            if governed_error:
+                                error_event["governed_error"] = governed_error
+                            if transport_receipt:
+                                error_event["provider_transport"] = transport_receipt
+                            yield _event("agent_run_error", error_event)
                             yield _event("agent_run_done", {
                                 "ok": False,
                                 "session_id": session_id,

@@ -720,6 +720,120 @@ def route(registry: FamilyRegistry, crystal: FamilyCrystal | None, similarity: f
                         envelope_digest=crystal.source_envelope_digest)
 
 
-__all__ = ["CATALOG_VERSION", "FAMILIES", "FAMILY_ENV", "FamilyCrystal", "FamilyRegistry", "RESOLVERS", "applicability",
+
+
+# -- IDE preflight lookup (read-only; does not create or migrate databases) ------------------------------------------
+
+FAMILY_DB_ENV = "BEAST_FAMILY_CRYSTALS_DB"
+FAMILY_TOOL_IDS = {
+    "refactor-rename-symbol": "code.rename_symbol",
+    "fix-config-constant": "structured_edit.apply_one_edit",
+    "fix-logic-operator": "structured_edit.apply_one_edit",
+    "fix-off-by-one": "structured_edit.apply_one_edit",
+    "fix-unhandled-exception": "structured_edit.apply_one_edit",
+    "toolchain-regenerate": "structured_edit.apply_one_edit",
+}
+
+_CHAT_CLASSES = {"", "chat_completion", "ide_coding_completion", "ide_agent_completion", "ide_agent"}
+
+
+def infer_task_family(prompt: str = "", metadata: Mapping[str, Any] | None = None, task_class: str = "") -> str:
+    """Map an IDE prompt / decide request onto a family catalog id when one is explicit or obvious."""
+    meta = metadata or {}
+    for key in ("task_family", "family"):
+        value = str(meta.get(key) or "").strip()
+        if value and value not in _CHAT_CLASSES:
+            return value
+    tool = str(meta.get("tool") or "").strip()
+    if tool == "code.rename_symbol":
+        return "refactor-rename-symbol"
+    raw = str(task_class or "").strip()
+    if raw and raw not in _CHAT_CLASSES:
+        return raw
+    text = str(prompt or "")
+    lowered = text.lower()
+    if (re.search(r"\brename\b", lowered) and
+            (re.search(r"\b(to|into)\b", lowered) or "rename_symbol" in lowered
+             or "code.rename_symbol" in lowered)):
+        return "refactor-rename-symbol"
+    return raw or "chat_completion"
+
+
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parents[3]
+
+
+def family_crystal_db_paths(env: Mapping[str, str] | None = None) -> list[Path]:
+    """Existing family-crystal databases, env path first, then newest gauntlet stores."""
+    env = os.environ if env is None else env
+    found: list[Path] = []
+    seen: set[Path] = set()
+
+    def _add(path: Path) -> None:
+        try:
+            resolved = path.resolve()
+        except OSError:
+            return
+        if resolved in seen or not resolved.is_file():
+            return
+        seen.add(resolved)
+        found.append(resolved)
+
+    explicit = str(env.get(FAMILY_DB_ENV) or "").strip()
+    if explicit:
+        _add(Path(explicit).expanduser())
+    root = _repo_root()
+    _add(root / ".beast" / "crystals" / "family_crystals.sqlite3")
+    gauntlets = sorted(
+        (root / ".beast" / "gauntlets").glob("*/family_crystals.sqlite3"),
+        key=lambda p: p.stat().st_mtime if p.exists() else 0,
+        reverse=True,
+    )
+    for path in gauntlets:
+        _add(path)
+    return found
+
+
+def lookup_promoted_family_crystal(task_family: str, *, env: Mapping[str, str] | None = None) -> dict[str, Any] | None:
+    """Read-only lookup of a promoted family crystal for ``task_family``. Never writes."""
+    family = str(task_family or "").strip()
+    if not family or family in _CHAT_CLASSES:
+        return None
+    for db in family_crystal_db_paths(env):
+        hit = _lookup_promoted_in_db(db, family)
+        if hit is not None:
+            return hit
+    return None
+
+
+def _lookup_promoted_in_db(path: Path, task_family: str) -> dict[str, Any] | None:
+    uri = f"file:{path}?mode=ro"
+    try:
+        with sqlite3.connect(uri, uri=True, timeout=5) as conn:
+            conn.row_factory = sqlite3.Row
+            rows = conn.execute(
+                "SELECT crystal_id, task_family, status, payload FROM family_crystals "
+                "WHERE status='promoted' AND (task_family=? OR task_family LIKE ? OR task_family LIKE ?) "
+                "ORDER BY updated_at DESC",
+                (task_family, f"composite:{task_family}+%", f"composite:%+{task_family}"),
+            ).fetchall()
+    except sqlite3.Error:
+        return None
+    exact = [row for row in rows if row["task_family"] == task_family]
+    chosen = (exact or list(rows) or [None])[0]
+    if chosen is None:
+        return None
+    tool = FAMILY_TOOL_IDS.get(task_family) or (
+        "code.rename_symbol" if "rename" in task_family else "structured_edit.apply_one_edit"
+    )
+    return {
+        "crystal_id": chosen["crystal_id"],
+        "task_family": chosen["task_family"],
+        "status": chosen["status"],
+        "tool": tool,
+        "storage_path": str(path),
+    }
+
+__all__ = ["CATALOG_VERSION", "FAMILIES", "FAMILY_ENV", "FAMILY_DB_ENV", "FAMILY_TOOL_IDS", "FamilyCrystal", "FamilyRegistry", "RESOLVERS", "applicability",
            "apply_plan", "catalog_digest", "compose", "discover", "replay_stage", "stage_steps", "recipe_authority", "extract_family", "failure_count", "family_crystals_enabled",
-           "family_opcode_registry", "recipe", "replay_family", "route", "run_verify", "tree_digest"]
+           "family_crystal_db_paths", "family_opcode_registry", "infer_task_family", "lookup_promoted_family_crystal", "recipe", "replay_family", "route", "run_verify", "tree_digest"]

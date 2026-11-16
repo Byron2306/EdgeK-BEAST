@@ -47,13 +47,62 @@
   const updateProgress = (...args) => api.updateProgress(...args);
   const handlePermissionRequest = (...args) => api.handlePermissionRequest(...args);
 
+  function parseGovernedExecutionError(payload = {}) {
+    const candidates = [
+      payload && payload.governed_error,
+      payload && payload.error,
+      payload && payload.message,
+    ];
+    if (payload && payload.provider_transport && payload.provider_transport.body_preview) {
+      candidates.push(payload.provider_transport.body_preview);
+    }
+    for (const raw of candidates) {
+      let value = raw;
+      if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (!trimmed) continue;
+        try { value = JSON.parse(trimmed); } catch (_) {
+          // A string like `{"type": "governed_execution_error", ...}` or a bare message.
+          const match = trimmed.match(/governed_execution_error/i);
+          if (match) {
+            try { value = JSON.parse(trimmed); } catch (__) { continue; }
+          } else {
+            continue;
+          }
+        }
+      }
+      if (!value || typeof value !== 'object') continue;
+      const inner = value.error && typeof value.error === 'object' ? value.error : value;
+      const type = String(inner.type || value.type || '');
+      const code = String(inner.code || payload.code || payload.error_code || '');
+      const message = String(inner.message || '');
+      if (type === 'governed_execution_error' || code) {
+        return { type: type || 'governed_execution_error', code: code || 'GOVERNED_EXECUTION_FAILED', message: message || code };
+      }
+    }
+    return null;
+  }
+
+  function transportReceiptIsUseful(receipt) {
+    if (!receipt || typeof receipt !== 'object' || Array.isArray(receipt)) return false;
+    return Boolean(receipt.http_status || receipt.content_type || receipt.requested_url);
+  }
+
   function providerTransportFailure(payload = {}, fallback = 'AI coding stream failed.') {
-    const receipt = payload && typeof payload.provider_transport === 'object'
+    const governed = parseGovernedExecutionError(payload);
+    if (governed) {
+      return [
+        'The Pair Programmer stopped before it produced a safe result. No files were changed.',
+        '',
+        governed.code + ': ' + governed.message
+      ].join('\n');
+    }
+    const receipt = payload && typeof payload.provider_transport === 'object' && transportReceiptIsUseful(payload.provider_transport)
       ? payload.provider_transport
-      : payload && typeof payload.transport_receipt === 'object'
+      : payload && typeof payload.transport_receipt === 'object' && transportReceiptIsUseful(payload.transport_receipt)
         ? payload.transport_receipt
         : null;
-    if (!receipt) return String(payload?.error || fallback);
+    if (!receipt) return String((payload && payload.error) || fallback);
     const status = receipt.http_status ? `HTTP ${receipt.http_status}` : 'an invalid HTTP response';
     const contentType = String(receipt.content_type || 'unknown content type');
     const url = String(receipt.requested_url || 'the configured provider route');

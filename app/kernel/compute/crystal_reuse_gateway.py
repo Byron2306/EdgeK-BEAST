@@ -77,7 +77,7 @@ class CrystalReuseRequest:
 @dataclass(frozen=True)
 class CrystalReuseDecision:
     decision_id: str
-    action: str  # "reuse_answer" | "reuse_semantic_credit" | "reuse_kv_prefill" | "execute_local_cpu" | "execute_litellm_cloud" | "deny_or_require_approval"
+    action: str  # "reuse_answer" | "reuse_semantic_credit" | "reuse_kv_prefill" | "reuse_family_crystal" | "execute_local_cpu" | "execute_litellm_cloud" | "deny_or_require_approval"
     source: str
     confidence: float
     reason: str
@@ -186,6 +186,10 @@ class CrystalReuseGateway:
                 reason="kv_cache_block_reused",
             )
             return self._decision_from_replay(request, replay, started, source="kv_transport", seal_decision=seal_decision)
+
+        family_hit = self._lookup_family_crystal(request)
+        if family_hit is not None:
+            return self._decision_from_family_crystal(request, family_hit, started, seal_decision=seal_decision)
 
         return self._execute_local_cpu_decision(request, started, seal_decision=seal_decision, proposal=proposal)
 
@@ -534,6 +538,58 @@ class CrystalReuseGateway:
         if block is None or not self.kv_transport.has_reusable_payload(block.block_id):
             return None
         return block
+
+
+    def _lookup_family_crystal(self, request: CrystalReuseRequest) -> Optional[Dict[str, Any]]:
+        """Read-only promoted family-crystal hit for rename / family tasks. Never writes."""
+        try:
+            from app.kernel.compute.family_crystals import infer_task_family, lookup_promoted_family_crystal
+        except Exception:
+            return None
+        family = infer_task_family(request.prompt, request.metadata, request.task_class)
+        if not family:
+            return None
+        try:
+            return lookup_promoted_family_crystal(family)
+        except Exception:
+            return None
+
+    def _decision_from_family_crystal(
+        self,
+        request: CrystalReuseRequest,
+        hit: Dict[str, Any],
+        started: float,
+        *,
+        seal_decision: bool,
+    ) -> CrystalReuseDecision:
+        # Informational preflight hit: bind the promoted crystal and its tool, but do not
+        # serve a cached natural-language answer from another workspace.
+        action = "reuse_family_crystal"
+        source = "family_crystal_registry"
+        payload = {
+            "request": request.to_dict(),
+            "reuse": None,
+            "family_crystal": {
+                "crystal_id": hit.get("crystal_id"),
+                "task_family": hit.get("task_family"),
+                "status": hit.get("status"),
+                "tool": hit.get("tool"),
+                "storage_path": hit.get("storage_path"),
+            },
+        }
+        decision = CrystalReuseDecision(
+            decision_id=self._decision_id(action, request, payload),
+            action=action,
+            source=source,
+            confidence=0.9,
+            reason="promoted_family_crystal_hit",
+            payload=payload,
+            avoided_tokens_estimate=0,
+            telemetry=self._telemetry(action, source, started),
+        )
+        final = self._seal_decision(decision) if seal_decision else decision
+        self._record_trace(final.decision_id, "crystal_reuse_decision", final.to_dict())
+        return final
 
     def _decision_from_replay(
         self,
