@@ -866,6 +866,7 @@ def command_ide(args: argparse.Namespace) -> Dict[str, Any]:
             nginx_port=registry_service_port("reverse_proxy", 80),
             ollama_host=os.environ.get("OLLAMA_HOST", "127.0.0.1:11434"),
             dry_run="true",  # beast ide only *reports* stack health; it never restarts or kills anything
+            selective="true",  # preflight only; opening the IDE must not plan a full stack bounce
             restart_all="false",
             kill_address_pids="false",
         ))
@@ -924,15 +925,60 @@ def _atomic_json(path: Path, payload: Dict[str, Any]) -> None:
 
 
 def command_heal(args: argparse.Namespace) -> Dict[str, Any]:
-    """Probe the local stack and recover BEAST-managed services -- SELECTIVE by default.
+    """Default: full BEAST-stack restart (gateway :8101, MCP :8765, 8131 lab units).
 
-    Default: only BEAST-managed (pid-file) services that fail their probe are restarted; nothing is killed by port.
-    ``--restart-all true`` (explicit) also restarts healthy BEAST-managed services; ``--kill-address-pids true``
-    (explicit) additionally kills *unprotected* listeners on the configured ports.  Whatever the flags, heal never
-    stops, kills or restarts: 8101 (live gateway), 8131 (lab units), ARDA, seraph, the system Ollama service, docker /
-    system.slice / foreign-uid processes (``app.kernel.execution.heal_guard``); for those it reports the operator
-    command instead.  nginx is checked on :80 (``/health`` must be served by BEAST's generated config).
+    ``--dry-run`` prints the plan without touching processes.  ``--selective`` restores the
+    previous behaviour (restart only unhealthy BEAST-managed services; never 8101/8131).
+    Whatever the mode, heal never stops ARDA, seraph, docker/containerd, system Ollama,
+    beast-tgi, LiteLLM on :4000, foreign uids or PID 1.  ``beast ide`` calls this as a
+    dry run only.
     """
+    from app.kernel.execution import heal_guard as guard
+
+    if bool_value(getattr(args, "selective", "false")):
+        return _command_heal_selective(args)
+
+    host = str(args.host)
+    gateway_port = int(args.gateway_port)
+    mcp_port = int(args.mcp_port)
+    litellm_port = int(args.litellm_port)
+    nginx_port = int(args.nginx_port)
+    ollama_host = str(args.ollama_host)
+    dry_run = bool_value(getattr(args, "dry_run", "false"))
+    before = stack_checks(host, gateway_port, mcp_port, litellm_port, nginx_port, ollama_host)
+    from app.kernel.execution.heal_restart import format_summary_table, run_full_heal
+
+    payload = run_full_heal(
+        root=ROOT,
+        host=host,
+        gateway_port=gateway_port,
+        mcp_port=mcp_port,
+        dry_run=dry_run,
+        python=beast_python(),
+        beast_bin=BEAST,
+        listeners=listening_pids_on_port,
+        stack_before=before,
+        stack_after_fn=(None if dry_run else (lambda: stack_checks(host, gateway_port, mcp_port, litellm_port, nginx_port, ollama_host))),
+    )
+    nginx = before.get("nginx", {})
+    if not nginx.get("ok"):
+        if not dry_run:
+            gen = ensure_nginx(nginx_port, apply=False)
+        else:
+            gen = {"service": "nginx", "status": "would_generate_config"}
+        action = {**gen, "service": "nginx", "diagnosis": nginx.get("diagnosis"),
+                  "operator_command": nginx.get("operator_command")}
+        payload.setdefault("actions", []).append(action)
+        if nginx.get("operator_command"):
+            payload.setdefault("operator_commands", []).append(nginx["operator_command"])
+        payload["summary_table"] = format_summary_table(payload)
+    if not dry_run:
+        _atomic_json(run_dir() / "heal-report.json", {k: v for k, v in payload.items() if k != "summary_table"})
+    return payload
+
+
+def _command_heal_selective(args: argparse.Namespace) -> Dict[str, Any]:
+    """Previous default: only BEAST-managed (pid-file) services that fail their probe are restarted."""
     from app.kernel.execution import heal_guard as guard
 
     host = str(args.host)
@@ -959,7 +1005,7 @@ def command_heal(args: argparse.Namespace) -> Dict[str, Any]:
     def guarded_stop(pid_name: str, service: str, port: int) -> Dict[str, Any]:
         running, pid = pid_running(run_dir() / pid_name, service)
         if running and pid is not None:
-            is_protected, reason = guard.pid_protection(pid, port=port)
+            is_protected, reason = guard.pid_protection(pid, port=port, mode="selective")
             if is_protected:
                 return {"service": service, "status": "protected_not_touched", "pid": pid, "reason": reason}
         if dry_run:
@@ -968,7 +1014,7 @@ def command_heal(args: argparse.Namespace) -> Dict[str, Any]:
 
     def guarded_kill(service: str, listen_host: str, port: int) -> Dict[str, Any]:
         pids = listening_pids_on_port(port)
-        allowed, refused = guard.filter_killable(pids, port=port)
+        allowed, refused = guard.filter_killable(pids, port=port, mode="selective")
         payload: Dict[str, Any] = {"service": service, "address": f"{listen_host}:{int(port)}", "port": int(port),
                                    "pids": allowed, "protected": refused}
         if dry_run:
@@ -990,7 +1036,11 @@ def command_heal(args: argparse.Namespace) -> Dict[str, Any]:
     # -- LiteLLM / MCP HTTP: BEAST-managed, restart only when unhealthy (or --restart-all) ---------------------------------
     for name, pid_name, port, starter in (("litellm", "litellm.pid", litellm_port, lambda: start_litellm_daemon(litellm_port)),
                                          ("mcp_http", "mcp-http.pid", mcp_port, lambda: start_mcp_http_daemon(host, mcp_port))):
-        if port in protected:
+        if port in protected or (name == "litellm"):
+            if name == "litellm":
+                if not before.get(name, {}).get("ok"):
+                    actions.append(operator(name, "litellm_report_only", f"# LiteLLM on :{port} is reported, not restarted by heal"))
+                continue
             if not before.get(name, {}).get("ok"):
                 actions.append(operator(name, f"protected_port:{port}", f"# restart {name} on :{port} yourself"))
             continue
@@ -1006,7 +1056,7 @@ def command_heal(args: argparse.Namespace) -> Dict[str, Any]:
         actions.append({"service": name, "status": "would_restart", "healthy_before": bool(before.get(name, {}).get("ok"))}
                        if dry_run else starter())
 
-    # -- gateway: 8101 is the live operator gateway -> report only ----------------------------------------------------------
+    # -- gateway: 8101 stays protected in selective mode -------------------------------------------------------------------
     gateway_failed = any(not before.get(n, {}).get("ok") for n in ("gateway", "proxy", "mcp_gateway"))
     if gateway_port in protected:
         if gateway_failed:
@@ -1032,7 +1082,7 @@ def command_heal(args: argparse.Namespace) -> Dict[str, Any]:
     ready = all(item.get("ok") for item in after.values())
     payload = {
         "command": "heal",
-        "mode": "full_restart" if restart_all else "selective",
+        "mode": "selective",
         "status": "dry_run" if dry_run else "healed" if ready else "attention",
         "protected_ports": sorted(protected),
         "ollama_system_service": ollama_sys,
@@ -2339,7 +2389,7 @@ def build_parser() -> argparse.ArgumentParser:
     up_parser.add_argument("--install-vscode-extension", default="false", help="true/false; install latest local VSIX with code --install-extension")
     up_parser.add_argument("--force-gateway", default="false", help="true/false; stop managed gateway before starting")
 
-    heal_parser = subparsers.add_parser("heal", help="Selectively recover unhealthy BEAST-managed services (never 8101/8131/ARDA/seraph/system Ollama)")
+    heal_parser = subparsers.add_parser("heal", help="Restart the BEAST stack (gateway :8101, MCP :8765, 8131 lab units). Never touches ARDA, seraph, docker, system Ollama, beast-tgi, or LiteLLM")
     heal_parser.set_defaults(handler=command_heal)
     heal_parser.add_argument("--host", default="127.0.0.1")
     heal_parser.add_argument("--gateway-port", type=int, default=8101)
@@ -2347,9 +2397,10 @@ def build_parser() -> argparse.ArgumentParser:
     heal_parser.add_argument("--litellm-port", type=int, default=4000)
     heal_parser.add_argument("--nginx-port", type=int, default=80)
     heal_parser.add_argument("--ollama-host", default="127.0.0.1:11434")
-    heal_parser.add_argument("--dry-run", default="false", help="true/false; report recovery actions without changing processes")
-    heal_parser.add_argument("--restart-all", default="false", help="true/false (explicit, destructive): also restart healthy BEAST-managed services")
-    heal_parser.add_argument("--kill-address-pids", default="false", help="true/false (explicit, destructive): kill unprotected listeners on configured ports before restart")
+    heal_parser.add_argument("--dry-run", nargs="?", const="true", default="false", help="true/false; report the restart plan without changing processes")
+    heal_parser.add_argument("--selective", nargs="?", const="true", default="false", help="true/false; previous behaviour: only restart unhealthy BEAST-managed services, never 8101/8131")
+    heal_parser.add_argument("--restart-all", default="false", help="true/false (selective mode): also restart healthy BEAST-managed services")
+    heal_parser.add_argument("--kill-address-pids", default="false", help="true/false (selective mode): kill unprotected listeners on configured ports before restart")
 
     start_parser = subparsers.add_parser("start", help="One-command BEAST startup: configure intelligence, refresh clients/plugins, and start services")
     start_parser.set_defaults(handler=command_start)
@@ -2717,7 +2768,10 @@ def main() -> None:
         parser.print_help()
         return
     payload = handler(args)
-    emit(payload, args.agent)
+    human = None
+    if getattr(args, "command", "") == "heal" and not args.agent:
+        human = payload.get("summary_table") if isinstance(payload, dict) else None
+    emit(payload, args.agent, human)
 
 
 if __name__ == "__main__":

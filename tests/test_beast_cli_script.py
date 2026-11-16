@@ -70,8 +70,9 @@ def test_beast_heal_dry_run_is_non_mutating():
     payload = json.loads(result.stdout)
     assert payload["command"] == "heal"
     assert payload["status"] == "dry_run"
-    assert payload["changed"] is True
-    assert all(action["status"].startswith("would_") for action in payload["actions"])
+    assert payload["mode"] == "full_restart"
+    assert payload["changed"] is False
+    assert payload.get("dry_run") is True
 
 
 def test_managed_pid_validation_rejects_unrelated_reused_pid(tmp_path):

@@ -1,24 +1,30 @@
 """Protection policy for ``beast heal`` (and anything else that stops/kills/restarts local services).
 
 Never stopped, killed or restarted by heal, whatever the flags:
-* listeners on protected ports: 8101 (live gateway) and 8131 (lab units), plus ``BEAST_HEAL_PROTECTED_PORTS``;
 * ARDA and seraph processes/units/containers (cmdline, comm or cgroup mentions ``arda`` / ``seraph``);
-* the system Ollama service (``ollama.service`` or any ``ollama`` process not owned by this uid) -- heal never
-  spawns a second ``ollama serve`` while one exists or the system unit is installed;
+* the system Ollama service (``ollama.service`` or any ``ollama`` process);
+* the ``beast-tgi`` container (and any process whose command/cgroup mentions ``beast-tgi``);
+* LiteLLM on :4000 — reported, never killed, even when it is a BEAST-owned user process;
 * anything in ``system.slice``, docker/containerd/libpod cgroups, owned by another uid, PID 1 or this process.
-Each refusal carries a reason and, where useful, the command the operator would run instead.
+
+``--selective`` (the previous default) also refuses listeners on protected ports 8101 and 8131
+(plus ``BEAST_HEAL_PROTECTED_PORTS``).  Default ``beast heal`` is a full BEAST-stack restart and
+may stop BEAST-owned servers on those ports (uvicorn ``app.main:app``, ``bin/beast mcp-http``,
+socket-guardian user units).  ``beast ide`` still calls heal as a dry run only.
 """
 from __future__ import annotations
 
 import os
-import shutil
 import subprocess
 from pathlib import Path
 from typing import Any, Dict, Iterable, Optional, Tuple
 
 DEFAULT_PROTECTED_PORTS = frozenset({8101, 8131})
 PROTECTED_WORDS = ("arda", "seraph")
+TGI_MARKERS = ("beast-tgi",)
+LITELLM_PORT = 4000
 FOREIGN_CGROUP_MARKERS = ("system.slice", "docker", "containerd", "libpod", "machine.slice")
+SELECTIVE_MODES = frozenset({"selective", "select"})
 
 
 def protected_ports(env: Optional[Dict[str, str]] = None) -> frozenset[int]:
@@ -43,11 +49,18 @@ def process_facts(pid: int) -> Dict[str, Any]:
             "cgroup": _read(f"/proc/{pid}/cgroup")[:400]}
 
 
+def normalize_mode(mode: Optional[str]) -> str:
+    raw = str(mode or "full").strip().lower()
+    return "selective" if raw in SELECTIVE_MODES else "full"
+
+
 def pid_protection(pid: int, *, port: Optional[int] = None, facts: Optional[Dict[str, Any]] = None,
-                   env: Optional[Dict[str, str]] = None) -> Tuple[bool, str]:
-    """(protected, reason). Fail closed: unknown processes on protected ports stay protected."""
-    if port is not None and int(port) in protected_ports(env):
-        return True, f"protected_port:{int(port)}"
+                   env: Optional[Dict[str, str]] = None, mode: str = "full") -> Tuple[bool, str]:
+    """(protected, reason). Always-protected owners win before port rules.
+
+    In ``full`` mode a BEAST-owned server on 8101/8131 is not protected by port.
+    Unknown processes fail closed only in ``selective`` mode (those ports stay protected).
+    """
     if pid <= 1 or pid == os.getpid():
         return True, "init_or_self"
     f = facts or process_facts(pid)
@@ -55,19 +68,28 @@ def pid_protection(pid: int, *, port: Optional[int] = None, facts: Optional[Dict
     for word in PROTECTED_WORDS:
         if word in text:
             return True, f"protected_owner:{word}"
+    if any(marker in text for marker in TGI_MARKERS):
+        return True, "beast_tgi"
     if "ollama" in text:
         return True, "system_ollama"
+    if "litellm" in text or (port is not None and int(port) == LITELLM_PORT):
+        return True, "litellm_report_only"
     if f.get("uid") is not None and f["uid"] != os.getuid():
         return True, "foreign_uid"
     if any(m in str(f.get("cgroup") or "") for m in FOREIGN_CGROUP_MARKERS):
         return True, "foreign_cgroup"
+    if normalize_mode(mode) == "selective":
+        if port is not None and int(port) in protected_ports(env):
+            return True, f"protected_port:{int(port)}"
     return False, ""
 
 
-def filter_killable(pids: Iterable[int], *, port: Optional[int] = None) -> Tuple[list[int], list[Dict[str, Any]]]:
+def filter_killable(pids: Iterable[int], *, port: Optional[int] = None, mode: str = "full",
+                    facts_by_pid: Optional[Dict[int, Dict[str, Any]]] = None) -> Tuple[list[int], list[Dict[str, Any]]]:
     allowed, refused = [], []
     for pid in sorted(set(int(p) for p in pids)):
-        protected, reason = pid_protection(pid, port=port)
+        facts = None if not facts_by_pid else facts_by_pid.get(pid)
+        protected, reason = pid_protection(pid, port=port, facts=facts, mode=mode)
         (refused.append({"pid": pid, "reason": reason}) if protected else allowed.append(pid))
     return allowed, refused
 
@@ -130,5 +152,5 @@ def nginx_check(port: int = 80, *, url_ready=None, probe=None) -> Dict[str, Any]
     return out
 
 
-__all__ = ["DEFAULT_PROTECTED_PORTS", "filter_killable", "nginx_check", "ollama_is_system_service", "pid_protection",
-           "process_facts", "protected_ports", "systemd_unit_state"]
+__all__ = ["DEFAULT_PROTECTED_PORTS", "LITELLM_PORT", "filter_killable", "nginx_check", "normalize_mode",
+           "ollama_is_system_service", "pid_protection", "process_facts", "protected_ports", "systemd_unit_state"]
