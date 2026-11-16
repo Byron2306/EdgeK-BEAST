@@ -156,6 +156,22 @@ providers:
       input_cost_per_1k: 0.001
       output_cost_per_1k: 0.002
 
+  fireworks:
+    enabled: true
+    base_url: "https://api.fireworks.ai/inference/v1"
+    default_model: "accounts/fireworks/models/glm-5p3-flash"
+    runtime_max_concurrent: 5
+    runtime_timeout_seconds: 120
+    rate_limit_rpm: 60
+
+  sambanova:
+    enabled: true
+    base_url: "https://api.sambanova.ai/v1"
+    default_model: "gpt-oss-120b"
+    runtime_max_concurrent: 5
+    runtime_timeout_seconds: 120
+    rate_limit_rpm: 60
+
   cerebras:
     enabled: true
     base_url: "https://api.cerebras.ai/v1"
