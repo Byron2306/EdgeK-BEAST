@@ -40,6 +40,12 @@ model_list:
     api_base: https://api.featherless.ai/v1
   rpm: 60
   tpm: 120000
+- model_name: accounts/fireworks/models/glm-5p3-flash
+  litellm_params:
+    model: fireworks_ai/accounts/fireworks/models/glm-5p3-flash
+    api_key: os.environ/FIREWORKS_API_KEY
+    api_base: https://api.fireworks.ai/inference/v1
+  rpm: 60
 - model_name: gemini-flash
   litellm_params:
     model: gemini/gemini-2.5-flash
@@ -136,6 +142,12 @@ model_list:
   litellm_params:
     model: meta/meta-llama-3-70b-instruct
     api_key: os.environ/REPLICATE_API_TOKEN
+- model_name: gpt-oss-120b
+  litellm_params:
+    model: sambanova/gpt-oss-120b
+    api_key: os.environ/SAMBANOVA_API_KEY
+    api_base: https://api.sambanova.ai/v1
+  rpm: 60
 - model_name: sglang
   litellm_params:
     model: openai/sglang

@@ -1047,6 +1047,19 @@ class Executor:
         backend_from_metadata = str((ir.metadata or {}).get("edgek_provider_backend") or "").strip()
         if backend_from_metadata == "ollama":
             return ProviderType.OLLAMA
+        # TGI speaks the OpenAI wire format, but it is not a generic
+        # OpenAI-compatible/LiteLLM lane.  The registry stamps
+        # ``route_provider=openai_compatible`` for protocol shape, while the
+        # explicit provider identity remains ``tgi``.  Honor that identity so
+        # the discovered served model name is sent directly to TGI instead of
+        # being rejected as an unknown LiteLLM model alias.
+        explicit_provider = str(
+            (ir.metadata or {}).get("edgek_provider")
+            or (ir.metadata or {}).get("provider")
+            or ""
+        ).strip().lower().replace("-", "_")
+        if explicit_provider in {"tgi", "llamacpp", "llama_cpp"}:
+            return ProviderType.TGI
         provider_from_metadata = ir.metadata.get("route_provider") or ir.metadata.get("provider")
         if provider_from_metadata:
             try:

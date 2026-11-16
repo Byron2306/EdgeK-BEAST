@@ -61,6 +61,7 @@
 
   function renderer({ signal }) {
     const root = template();
+    const disposeIntegrationRail = BeastIntegrationMap.mountSurface(root,'agents');
     let disposed = false;
     let nodesKey = '';
     let listKey = '';
@@ -174,7 +175,7 @@
       } catch (error) { BeastStore.patch('agents',{loading:false,error:String(error.message || error)}); BeastFX.trigger('warning',event.target,{size:240}); }
     });
     if (!BeastStore.get().agents.lastRefreshAt) queueMicrotask(() => BeastModelAgentBridge.refreshAgents({signal}).catch(() => {}));
-    return { node:root, dispose(){ disposed = true; unsubscribe(); disposeCanvas(); } };
+    return { node:root, dispose(){ disposed = true; unsubscribe(); disposeCanvas(); disposeIntegrationRail(); } };
   }
 
   window.BeastAgentsPage = { renderer };

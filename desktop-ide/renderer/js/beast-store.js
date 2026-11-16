@@ -29,6 +29,16 @@
         extensions: { items: [] }
       }
     },
+    integrations: {
+      loading: false,
+      error: '',
+      status: 'unloaded',
+      updatedAt: 0,
+      selectedId: '',
+      summary: { total: 0, implemented: 0, enabled: 0, withEvidence: 0, live: 0 },
+      baseline: {},
+      capabilities: []
+    },
     workspace: {
       root: localStorage.getItem('beast.v2.workspace.root') || '',
       executionTarget: (() => {

@@ -53,6 +53,7 @@
     const root = document.createElement('div');
     root.className = 'beast-page beast-compute-fabric-page';
     root.innerHTML = `<header class="beast-page-head"><div><h2>Compute Fabric</h2><div class="sub">PRISM ROUTING // KV RESIDUE // CAPSULE ECONOMICS // REMOTE RECONSTRUCTION</div></div><div class="beast-page-actions"><button class="beast-button secondary" data-nav="live-fabric">Live Fabric</button><button class="beast-button secondary" data-nav="reality">Reality Matrix</button><button class="beast-button hot" data-fabric-refresh>Refresh Fabric</button></div></header><div class="cortex-empty-list" data-fabric-status role="status" aria-live="polite"></div><section class="fabric-route-map" data-route-map></section><div class="fabric-grid"><section class="beast-card wide"><header class="beast-panel-head"><div><h3>Decision Trace</h3><span>Why this route won</span></div><span class="beast-pill" data-selected-route>UNRESOLVED</span></header><div data-decision-trace></div></section><section class="beast-card"><header class="beast-panel-head"><div><h3>KV & Context</h3><span>Engine-local residue</span></div></header><div data-kv-stack></div></section><section class="beast-card"><header class="beast-panel-head"><div><h3>Economics</h3><span>Value after real costs</span></div></header><div data-economics></div></section><section class="beast-card"><header class="beast-panel-head"><div><h3>Pressure</h3><span>Retention and eviction</span></div></header><div data-pressure></div></section></div>`;
+    const disposeIntegrationRail = BeastIntegrationMap.mountSurface(root,'compute-fabric');
     let disposed = false;
 
     const render = state => {
@@ -128,7 +129,7 @@
     });
     return {
       node:root,
-      dispose() { disposed = true; unsubscribe?.(); },
+      dispose() { disposed = true; unsubscribe?.(); disposeIntegrationRail(); },
     };
   }
 

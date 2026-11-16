@@ -1,5 +1,5 @@
 import pytest
-from httpx import ASGITransport, AsyncClient
+from httpx import ASGITransport, AsyncClient, MockTransport, Request, Response
 
 from app.kernel.deployment.deployment import DeploymentManager
 from app.kernel.execution.execute import Executor
@@ -142,6 +142,62 @@ def test_executor_honors_ollama_backend_marker_when_route_metadata_is_minimized(
     )
 
     assert executor._determine_provider_type(ir) == ProviderType.OLLAMA
+
+
+def test_executor_keeps_explicit_tgi_lane_out_of_litellm_for_discovered_model_name():
+    executor = Executor()
+    ir = EdgeKIR(
+        messages=[{"role": "user", "content": "return Action IR"}],
+        model="Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+        metadata={
+            "edgek_provider": "tgi",
+            "edgek_provider_backend": "openai_compatible",
+            "route_provider": "openai_compatible",
+            "provider": "tgi",
+            "provider_config": {
+                "provider_id": "tgi",
+                "backend": "openai_compatible",
+                "route_provider": "openai_compatible",
+            },
+        },
+    )
+
+    assert executor._determine_provider_type(ir) == ProviderType.TGI
+    assert executor._provider_model_name(ir.model, "tgi") == "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ"
+
+
+@pytest.mark.asyncio
+async def test_explicit_tgi_lane_sends_discovered_model_directly_to_tgi(monkeypatch):
+    seen = {}
+
+    def handler(request: Request) -> Response:
+        seen["url"] = str(request.url)
+        seen["body"] = __import__("json").loads(request.content)
+        return Response(200, json={"choices": [{"message": {"content": "ok"}, "finish_reason": "stop"}]})
+
+    monkeypatch.setenv("TGI_BASE_URL", "http://127.0.0.1:8090/v1")
+    executor = Executor()
+    await executor.http_client.aclose()
+    executor.http_client = AsyncClient(transport=MockTransport(handler))
+    ir = EdgeKIR(
+        messages=[{"role": "user", "content": "return Action IR"}],
+        model="Qwen/Qwen2.5-Coder-3B-Instruct-AWQ",
+        max_tokens=128,
+        metadata={
+            "edgek_provider": "tgi",
+            "edgek_provider_backend": "openai_compatible",
+            "route_provider": "openai_compatible",
+            "provider": "tgi",
+        },
+    )
+    try:
+        response = await executor._route_to_provider(executor._determine_provider_type(ir), ir)
+    finally:
+        await executor.http_client.aclose()
+
+    assert response["edgek_provider"] == "tgi"
+    assert seen["url"] == "http://127.0.0.1:8090/v1/chat/completions"
+    assert seen["body"]["model"] == "Qwen/Qwen2.5-Coder-3B-Instruct-AWQ"
 
 
 def test_pair_programmer_ollama_context_plan_reuses_only_stable_system_context(monkeypatch):

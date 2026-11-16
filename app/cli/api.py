@@ -7913,6 +7913,23 @@ class BeastApiClient:
         crystal_event = self.crystal_decision_event(crystal_decision)
         tool_events.append(crystal_event)
         yield {"type": "tool", "text": crystal_event}
+        crystal_action = str(crystal_decision.get("action") or "") if isinstance(crystal_decision, dict) else ""
+        crystal_reason = str(crystal_decision.get("reason") or "preflight_completed") if isinstance(crystal_decision, dict) else "preflight_completed"
+        yield {
+            "type": "integration",
+            "event": {
+                "event_type": "agent.integration.fired",
+                "payload": {
+                    "capability": "family_crystal" if crystal_action == "reuse_family_crystal" else "crystal_reuse",
+                    "status": "fired",
+                    "mode": "reuse_preflight",
+                    "reason": crystal_reason[:120],
+                    "metrics": {"hit": crystal_action.startswith("reuse_")},
+                    "artifacts": {},
+                    "authority": "advisory_or_existing_gate_only",
+                },
+            },
+        }
         if cached_response and not governance_level.startswith("ide_agent"):
             reuse_served = True
             tool_events.append("provider route: skipped by crystallized compute reuse")
@@ -8094,6 +8111,30 @@ class BeastApiClient:
 
         economy = budget_precheck.get("economy")
         chat_history = list((economy.ir.messages if economy is not None else planned_messages))
+        tier_receipts = (
+            (economy.ir.metadata or {}).get("context_tiers")
+            if economy is not None and isinstance(economy.ir.metadata, dict)
+            else []
+        )
+        for receipt in tier_receipts or []:
+            if not isinstance(receipt, dict):
+                continue
+            passed = bool(receipt.get("fidelity_passed"))
+            yield {
+                "type": "integration",
+                "event": {
+                    "event_type": "agent.integration.fired" if passed else "agent.integration.skipped",
+                    "payload": {
+                        "capability": "compression." + str(receipt.get("tier") or "unknown")[:40],
+                        "status": "fired" if passed else "skipped",
+                        "mode": "context_economizer",
+                        "reason": "fidelity_passed" if passed else str(receipt.get("refused") or "fidelity_refused")[:120],
+                        "metrics": receipt.get("metrics") if isinstance(receipt.get("metrics"), dict) else {},
+                        "artifacts": {"receipt_id": str(receipt.get("governor_receipt_id") or "")[:160]},
+                        "authority": "advisory_or_existing_gate_only",
+                    },
+                },
+            }
         yield {"type": "compute", "context": {
             "selected_files": len(context_files), "readable_files": len(readable_records),
             "source_chars": source_chars, "supplied_chars": supplied_chars,

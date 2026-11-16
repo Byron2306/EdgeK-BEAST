@@ -65,6 +65,11 @@ def parse_sse_chunk(chunk: str) -> tuple[str, dict[str, Any]] | None:
 
 
 def canonical_event_type(legacy_type: str, payload: dict[str, Any]) -> str:
+    if legacy_type == "agent_run_integration":
+        status = str(payload.get("status") or "observed").strip().lower()
+        if status not in {"fired", "skipped", "failed"}:
+            status = "observed"
+        return f"agent.integration.{status}"
     if legacy_type == "agent_run_tool":
         if str(payload.get("type") or "") == "tool_call":
             return "agent.tool.started"

@@ -66,6 +66,7 @@
 
   function renderer({signal}) {
     const root=template();
+    const disposeIntegrationRail=BeastIntegrationMap.mountSurface(root,'tooling');
     let disposed=false;
     let renderKey='';
 
@@ -150,7 +151,7 @@
       } catch(error){ BeastStore.patch('tooling',{loading:false,error:String(error.message||error)}); BeastFX.trigger('warning',event.target,{size:210}); }
     });
     if (!BeastStore.get().tooling.updatedAt) queueMicrotask(()=>BeastTerminalToolingDoctorBridge.refreshTooling({signal}).catch(()=>{}));
-    return {node:root,dispose(){disposed=true;unsubscribe();}};
+    return {node:root,dispose(){disposed=true;unsubscribe();disposeIntegrationRail();}};
   }
 
   window.BeastToolingPage={renderer};

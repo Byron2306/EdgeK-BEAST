@@ -10,6 +10,9 @@ from typing import Any, Dict
 from fastapi import APIRouter, HTTPException
 
 from app.cli.api import BeastApiClient
+from app.kernel.agents.coder_integrations import CoderIntegrationCoordinator
+from app.kernel.agents.run_engine import AgentRunEngine
+from app.kernel.sensorium.episode_envelope import EpisodeEnvelopeBuilder, EpisodeEnvelopeStore
 from app.kernel.workspaces.agent_session_store import AgentSessionStore
 
 
@@ -124,6 +127,7 @@ def build_sourceplan_router(default_root: str | Path) -> APIRouter:
             raise HTTPException(status_code=400, detail=result.error or result.summary or "apply failed")
         data = result.data if isinstance(result.data, dict) else {}
         session_id = str(plan.get("agent_session_id") or "")
+        run_id = str(plan.get("agent_run_id") or "")
         if session_id:
             # Applying a plan is the decisive point in an agentic coding
             # loop. Record the actual receipt in the originating session so
@@ -140,6 +144,55 @@ def build_sourceplan_router(default_root: str | Path) -> APIRouter:
                 f"Verification: {'passed' if verification.get('ok') else 'recorded'}. "
                 f"Post-apply workspace status: {changed}. Focused test candidates: {test_targets}"
             )
+            integration_events: list[dict[str, Any]] = []
+            if run_id and bool(verification.get("ok")):
+                # The provider turn itself is not verified completion.  Only
+                # the approved SourcePlan apply boundary may seal memory and
+                # offer the episode to coding-crystal learning.
+                try:
+                    engine = AgentRunEngine(root)
+                    run = engine.store.get_run(run_id)
+                    if run is not None:
+                        envelope = EpisodeEnvelopeBuilder().build(engine.store, run_id)
+                        EpisodeEnvelopeStore(root / ".beast" / "sensorium" / "episode_envelopes.sqlite3").put(envelope)
+                        engine.emit(run_id, "agent.episode.sealed", {
+                            "envelope_digest": envelope.envelope_digest,
+                            "verification": dict(envelope.verification),
+                            "source": "approved_sourceplan_apply",
+                        })
+                    completion = CoderIntegrationCoordinator(root).complete(
+                        run_id=run_id,
+                        objective=str(plan.get("objective") or "Applied Agent Coder SourcePlan"),
+                        verified=True,
+                    )
+                    integration_events = [
+                        event for event in (completion.get("events") or []) if isinstance(event, dict)
+                    ]
+                    for event in integration_events:
+                        event_type = str(event.get("event_type") or "agent.integration.failed")
+                        event_payload = event.get("payload") if isinstance(event.get("payload"), dict) else {}
+                        if run is not None:
+                            engine.emit(run_id, event_type, event_payload)
+                except Exception as exc:
+                    integration_events = [{
+                        "event_type": "agent.integration.failed",
+                        "payload": {
+                            "capability": "verified_postflight",
+                            "status": "failed",
+                            "mode": "approved_sourceplan_apply",
+                            "reason": type(exc).__name__,
+                            "metrics": {},
+                            "artifacts": {},
+                            "authority": "advisory_or_existing_gate_only",
+                        },
+                    }]
+            integration_evidence = [
+                {
+                    "beast_object_type": "beast_agent_integration_event",
+                    **dict(event.get("payload") or {}),
+                }
+                for event in integration_events
+            ]
             update = AgentSessionStore(root).update(
                 session_id,
                 status="active",
@@ -159,9 +212,9 @@ def build_sourceplan_router(default_root: str | Path) -> APIRouter:
                     "plan_id": str(plan.get("plan_id") or ""),
                     "applied": applied,
                     "verification_ok": bool(verification.get("ok")),
-                }],
+                }, *integration_evidence],
             )
-            data = {**data, "workspace_feedback": feedback, "agent_session": update.get("session") if update.get("ok") else {"session_id": session_id}, "agent_followup_ready": bool(update.get("ok"))}
+            data = {**data, "workspace_feedback": feedback, "integration_events": integration_events, "agent_session": update.get("session") if update.get("ok") else {"session_id": session_id}, "agent_followup_ready": bool(update.get("ok"))}
         return data
 
     @router.post("/edgek/sourceplan/rollback-latest")

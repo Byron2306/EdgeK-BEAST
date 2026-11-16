@@ -36,6 +36,25 @@ The current desktop tranche adds an explicit developer-runtime workbench: DAP se
 | Trust/tools | Existing Trust, Tooling Forge, MCP approvals and Safety Governor integrated into first-run preflight | Per-workspace trust prompts and capability grants matching every extension/protocol action |
 | Proof/reuse | SourcePlan, Review, Evidence, rollback and Crystal surfaces linked in the journey | One-click handoff state, no dead ends, complete acceptance telemetry and recovery paths |
 
+## Backend integration mapping
+
+The IDE consumes one canonical `/edgek/ide/integrations` catalog rather than
+duplicating capability claims in individual pages. Systems Atlas renders every
+family and its audit components; Agent Constellation, Compute Fabric,
+Crystallization, Commons, and Tooling Forge reuse the catalog through a shared
+surface rail.
+
+The UI deliberately distinguishes code presence, runtime enablement, retained
+evidence, and a current live observation. Disabled systems remain visible, and
+missing planned paths such as `kv_transport.py` are represented as missing
+rather than inferred from adjacent ForgeKV code. Privileged ML-KEM, XDP/eBPF,
+and X7 LSM/ARDA activation is outside the renderer and remains operator owned.
+
+Agent Coder records normalized `agent.integration.*` receipts for every
+integration attempt. Provider completion cannot by itself seal memory or create
+a coding-crystal candidate: those postflight actions require approved,
+successfully verified SourcePlan application, and promotion is still explicit.
+
 ## Foundation architecture
 
 - [`desktop-ide/ide-compatibility-host.js`](../desktop-ide/ide-compatibility-host.js)

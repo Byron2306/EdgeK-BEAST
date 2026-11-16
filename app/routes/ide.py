@@ -17,6 +17,7 @@ from app.routes.ide_routes.agent_sessions import register_agent_sessions_routes
 from app.routes.ide_routes.agent_run_stream import register_agent_run_stream_routes
 from app.routes.ide_routes.agent_runs import register_agent_runs_routes
 from app.routes.ide_routes.editor_sourceplans import register_editor_sourceplans_routes
+from app.routes.ide_routes.integrations import register_integration_routes
 from app.routes.ide_routes.learning import register_learning_routes
 from app.routes.ide_routes.mission import register_mission_routes
 from app.routes.ide_routes.overview import register_overview_routes
@@ -38,5 +39,6 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any, cryst
     register_agent_runs_routes(router, ctx)
     register_agent_run_stream_routes(router, ctx)
     register_editor_sourceplans_routes(router, ctx)
+    register_integration_routes(router, resolve_root=ctx._root)
     register_worktrees_routes(router, ctx)
     return router

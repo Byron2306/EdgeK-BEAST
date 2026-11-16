@@ -27,6 +27,29 @@ The animated matrix background is off by default to keep the desktop responsive;
 select the matrix-grid atmosphere in Settings to enable it. Canvas visualizers
 are throttled and pause while the window is hidden.
 
+## Integration Atlas
+
+Systems Atlas is the source-of-record view for backend integrations exposed to
+the IDE. It reads `GET /edgek/ide/integrations` and keeps four claims separate:
+
+- **Implemented** means the backend code is present.
+- **Enabled** means its runtime flag or default policy is active.
+- **Evidence** means a bounded artifact exists in the current workspace.
+- **Live** requires a current positive runtime observation; historical evidence
+  is never promoted to live state.
+
+Agent Constellation, Compute Fabric, Crystallization, Commons, and Tooling Forge
+show compact rails backed by the same catalog. Selecting an entry opens its full
+Atlas record, including the audited component baseline and claim boundary. An
+unreachable catalog is shown as an error and is not replaced with demo data.
+
+The Agent Coder path emits durable `agent.integration.fired`,
+`agent.integration.skipped`, and `agent.integration.failed` receipts. Context
+compression, Vector RAG, memory recall, crystal lookup, and swarm selection run
+before provider handoff. Memory sealing and crystal learning only run after an
+approved SourcePlan passes verification; crystal promotion remains an operator
+action. ML-KEM, XDP/eBPF, and X7 LSM/ARDA remain operator-loaded infrastructure.
+
 ## Development
 
 ```bash

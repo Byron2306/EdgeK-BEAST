@@ -23,6 +23,7 @@ from fastapi.responses import StreamingResponse
 from app.cli.api import ActionResult, BeastApiClient
 from app.kernel.compute.action_ir import ACTION_IR_KIND, ActionIR
 from app.kernel.agents.run_engine import AgentRunCancelled, AgentRunEngine
+from app.kernel.agents.coder_integrations import CoderIntegrationCoordinator
 from app.kernel.agents.run_state import AgentRunState, normalize_state
 from app.kernel.compute.action_resolver import build_file_references, resolve_action_ir
 from app.kernel.adapters.provider_handoff import build_provider_handoff, render_provider_handoff_prompt
@@ -731,6 +732,7 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
             direct_handoff: dict[str, Any] = {}
             direct_handoff_hash = ""
             preflight_intelligence: dict[str, Any] = {}
+            integration_advisory_context: list[dict[str, Any]] = []
             try:
                 if simulate:
                     yield _event("agent_run_stage", {"session_id": session_id, "text": "desktop simulation"})
@@ -746,6 +748,42 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                     provider_prompt = run_prompt
                     if not is_chat_session:
                         yield _event("agent_run_stage", {"session_id": session_id, "text": "implementation planning"})
+                        source_context = "\n\n".join(
+                            str(record.get("preview") or "")
+                            for record in context_records
+                            if record.get("ok")
+                        )
+                        diagnostic_context = json.dumps(
+                            agent_observation,
+                            sort_keys=True,
+                            separators=(",", ":"),
+                            default=str,
+                        )[:16000]
+                        coordinator = CoderIntegrationCoordinator(root)
+                        integration_result = await asyncio.to_thread(
+                            coordinator.prepare,
+                            objective=run_prompt,
+                            source_context=source_context,
+                            diagnostic_context=diagnostic_context,
+                            task_metadata={
+                                "provider": run_provider,
+                                "model": run_model,
+                                "context_files": context_file_list,
+                                "run_id": durable_run_id,
+                            },
+                        )
+                        integration_advisory_context = list(coordinator.advisory_context)[:8]
+                        for integration in integration_result.get("events") or []:
+                            payload = integration.get("payload") if isinstance(integration, dict) else None
+                            if not isinstance(payload, dict):
+                                continue
+                            durable_payload = {**payload, "session_id": session_id, "run_id": durable_run_id}
+                            store.update(session_id, evidence=[{
+                                "beast_object_type": "beast_agent_integration_event",
+                                **durable_payload,
+                                "timestamp": time.time(),
+                            }])
+                            yield _event("agent_run_integration", durable_payload)
                         # This packet is the exact model input.  It is no
                         # longer merely a parallel preparation artifact, and
                         # its hash is enforced when the returned Action IR is
@@ -822,6 +860,7 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                                 },
                                 "authority": "advisory only; selected_files and task.allowed_paths remain binding",
                             }
+                            direct_handoff["input"]["preflight"]["integration_context"] = integration_advisory_context
                             preflight_digest = _hash_text(json.dumps(direct_handoff["input"]["preflight"], sort_keys=True, default=str))
                             direct_handoff.setdefault("trace", {})["preflight_hash"] = preflight_digest
                             yield _event("agent_run_preflight", {
@@ -871,6 +910,7 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                         # the model to emit sprawling multi-operation plans.
                         anchor_hints = _action_ir_anchor_hints(root, context_file_list)
                         observation_text = json.dumps(agent_observation, separators=(",", ":"), default=str)[:6000]
+                        integration_text = json.dumps(integration_advisory_context, separators=(",", ":"), default=str)[:6000]
                         provider_prompt = (
                             "You are BEAST's implementation planner. Use the supplied read-only Code Cortex observations "
                             "and the exact selected source context to produce one reviewable source edit plan. "
@@ -886,6 +926,7 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                             "Do not emit markdown, prose, a diff, placeholders, or multiple sequential edits.\n\n"
                             f"Objective: {run_prompt[:2400]}\n\n"
                             f"Read-only Code Cortex observations (not edit authority):\n{observation_text}\n\n"
+                            + (f"Advisory Vector RAG / sealed Memory Hull recall (never edit authority):\n{integration_text}\n\n" if integration_advisory_context else "")
                             + (f"Resolvable anchors for selected files (use these exact IDs when useful):\n{anchor_hints}\n\n" if anchor_hints else "")
                             + "Selected source context follows in the system attachment."
                         )
@@ -933,6 +974,15 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                                 "session_id": session_id,
                                 "context": event.get("context") if isinstance(event.get("context"), dict) else {},
                             })
+                        elif event_type == "integration":
+                            integration = event.get("event") if isinstance(event.get("event"), dict) else {}
+                            payload = integration.get("payload") if isinstance(integration.get("payload"), dict) else {}
+                            if payload:
+                                yield _event("agent_run_integration", {
+                                    **payload,
+                                    "session_id": session_id,
+                                    "run_id": durable_run_id,
+                                })
                         elif event_type == "tool":
                             tool_text = str(event.get("text") or "")
                             tool_events.append(tool_text)
@@ -1356,6 +1406,7 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                         # SourcePlan apply/rollback receipts can become the
                         # next turn's grounded tool evidence.
                         plan["agent_session_id"] = session_id
+                        plan["agent_run_id"] = durable_run_id
                         for request_item in (plan.get("non_mutating_requests") or [])[:8]:
                             if not isinstance(request_item, dict):
                                 continue
