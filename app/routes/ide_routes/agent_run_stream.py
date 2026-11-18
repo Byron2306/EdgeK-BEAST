@@ -43,6 +43,7 @@ from app.kernel.data_processing.tool_laziness import ToolLazinessLearner
 from app.kernel.data_processing.tool_laziness_plugin import ToolLazinessPlugin
 from app.kernel.capability.skill_tree import SkillTree
 from app.kernel.data_processing.insight_compiler import InsightCompiler
+from app.kernel.data_processing.quality_cascade import QualityCascade
 from app.routes.ide_support.common import bounded_workspace_files as _bounded_workspace_files, extract_json_object as _extract_json_object, hash_text as _hash_text, is_compact_local_coder as _is_compact_local_coder, is_ignored_workspace_directory as _is_ignored_workspace_directory, pair_programmer_limits as _pair_programmer_limits, raw_hash_text as _raw_hash_text, safe_relative as _safe_relative
 from app.routes.ide_context import IdeRouteContext
 
@@ -748,11 +749,12 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                     provider_prompt = run_prompt
                     if not is_chat_session:
                         yield _event("agent_run_stage", {"session_id": session_id, "text": "implementation planning"})
-                        source_context = "\n\n".join(
-                            str(record.get("preview") or "")
+                        source_files = {
+                            str(record.get("path") or ""): str(record.get("preview") or "")
                             for record in context_records
-                            if record.get("ok")
-                        )
+                            if record.get("ok") and str(record.get("path") or "")
+                        }
+                        source_context = "\n\n".join(source_files.values())
                         diagnostic_context = json.dumps(
                             agent_observation,
                             sort_keys=True,
@@ -765,6 +767,7 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                             objective=run_prompt,
                             source_context=source_context,
                             diagnostic_context=diagnostic_context,
+                            source_files=source_files,
                             task_metadata={
                                 "provider": run_provider,
                                 "model": run_model,
@@ -772,6 +775,15 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                                 "run_id": durable_run_id,
                             },
                         )
+                        compression_overrides = {
+                            str(path): str(content)
+                            for path, content in (integration_result.get("source_files") or {}).items()
+                            if str(path) in source_files
+                        }
+                        provider_diagnostics = str(
+                            integration_result.get("diagnostic_context") or diagnostic_context
+                        )[:16000]
+                        repo_map_context = str(integration_result.get("repo_map") or "")[:6000]
                         integration_advisory_context = list(coordinator.advisory_context)[:8]
                         for integration in integration_result.get("events") or []:
                             payload = integration.get("payload") if isinstance(integration, dict) else None
@@ -796,6 +808,7 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                             task_name="ide_pair_programmer",
                             verification="python -m pytest tests -q",
                             include_scout=False,
+                            context_overrides=compression_overrides,
                         )
                         direct_handoff_hash = str(
                             (direct_handoff.get("trace") or {}).get("provider_handoff_hash") or ""
@@ -810,6 +823,11 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                             preflight_builder = TaskEnvelopeBuilder(data_dir=str(intelligence_dir))
                             route_card = preflight_builder.generic_quality_route_card(
                                 "live_coding", envelope, persist=False
+                            )
+                            # Run Quality Cascade as part of preflight
+                            quality_cascade = QualityCascade(policies=os.environ)
+                            quality_report = await asyncio.to_thread(
+                                quality_cascade.run, envelope, route_card, str(root)
                             )
                             laziness = ToolLazinessPlugin(
                                 ToolLazinessLearner(str(intelligence_dir / "tool_laziness.db"))
@@ -836,6 +854,7 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                                 "tool_laziness": laziness,
                                 "skill_recipes": recipes,
                                 "insight_packet": insight_packet,
+                                "quality_cascade": quality_report,
                                 "boundary": {
                                     "selected_files_only": True,
                                     "recipe_authority": "advisory_only",
@@ -858,11 +877,41 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                                     "tools_to_call": [item.get("name") for item in (laziness.get("tools_to_call") or [])],
                                     "tools_not_to_call": [item.get("name") for item in (laziness.get("tools_not_to_call") or [])],
                                 },
+                                "quality_cascade": quality_report,
                                 "authority": "advisory only; selected_files and task.allowed_paths remain binding",
                             }
                             direct_handoff["input"]["preflight"]["integration_context"] = integration_advisory_context
+                            if repo_map_context:
+                                direct_handoff["input"]["preflight"]["repo_map"] = {
+                                    "content": repo_map_context,
+                                    "content_hash": _hash_text(repo_map_context),
+                                    "authority": "advisory only; not edit authority",
+                                    "implementation": "beast_native_reporelay_style",
+                                }
                             preflight_digest = _hash_text(json.dumps(direct_handoff["input"]["preflight"], sort_keys=True, default=str))
                             direct_handoff.setdefault("trace", {})["preflight_hash"] = preflight_digest
+                            # Emit quality cascade as integration event
+                            if quality_report:
+                                yield _event("agent_run_integration", {
+                                    "session_id": session_id,
+                                    "payload": {
+                                        "capability": "quality_cascade",
+                                        "status": "fired",
+                                        "stage": "preflight",
+                                        "operation": "quality_verification",
+                                        "mode": "local_checks",
+                                        "reason": "quality_cascade_passed" if quality_report.get("verification_accepted") else "quality_cascade_not_passed",
+                                        "metrics": {
+                                            "check_count": quality_report.get("summary", {}).get("check_count", 0),
+                                            "passed": quality_report.get("summary", {}).get("passed", 0),
+                                            "failed": quality_report.get("summary", {}).get("failed", 0),
+                                            "warnings": quality_report.get("summary", {}).get("warnings", 0),
+                                            "verification_accepted": quality_report.get("verification_accepted", False),
+                                        },
+                                        "artifacts": {"route_id": route_card.get("route_id")},
+                                        "authority": "advisory_or_existing_gate_only",
+                                    },
+                                })
                             yield _event("agent_run_preflight", {
                                 "session_id": session_id,
                                 "route_id": route_card.get("route_id"),
@@ -909,7 +958,7 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                         # doubled context, inflated latency, and encouraged
                         # the model to emit sprawling multi-operation plans.
                         anchor_hints = _action_ir_anchor_hints(root, context_file_list)
-                        observation_text = json.dumps(agent_observation, separators=(",", ":"), default=str)[:6000]
+                        observation_text = provider_diagnostics[:6000]
                         integration_text = json.dumps(integration_advisory_context, separators=(",", ":"), default=str)[:6000]
                         provider_prompt = (
                             "You are BEAST's implementation planner. Use the supplied read-only Code Cortex observations "
@@ -927,6 +976,7 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                             f"Objective: {run_prompt[:2400]}\n\n"
                             f"Read-only Code Cortex observations (not edit authority):\n{observation_text}\n\n"
                             + (f"Advisory Vector RAG / sealed Memory Hull recall (never edit authority):\n{integration_text}\n\n" if integration_advisory_context else "")
+                            + (f"Bounded repository map from RepoRelay (advisory navigation only; never edit authority):\n{repo_map_context}\n\n" if repo_map_context else "")
                             + (f"Resolvable anchors for selected files (use these exact IDs when useful):\n{anchor_hints}\n\n" if anchor_hints else "")
                             + "Selected source context follows in the system attachment."
                         )
@@ -957,6 +1007,8 @@ def register_agent_run_stream_routes(router: APIRouter, ctx: IdeRouteContext) ->
                         "governance_level": "ide_agent_session",
                         "action_ir_required": not is_chat_session,
                     }
+                    if compression_overrides:
+                        stream_options["context_overrides"] = compression_overrides
                     if "allow_fallback" in inspect.signature(client.stream_live_turn).parameters:
                         # A coding run needs intact Action IR.  Never append a
                         # conversational fallback to a partial edit contract.

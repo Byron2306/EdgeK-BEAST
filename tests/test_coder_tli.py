@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 from rich.text import Text
+from textual.widget import Widget
 from textual.widgets import Input, Static
 
 from app.cli.coder import BeastCoderApp
@@ -84,6 +85,24 @@ class FakeRuntimeClient:
     async def start_run(self, session_id: str, prompt: str, provider: str, model: str):
         return {"run_id": "run-coder", "state": "planning"}
 
+    async def start_turn(self, run_id: str):
+        return {"run_id": run_id, "state": "completed"}
+
+    def turn_events(
+        self, run_id: str, *, after: int = 0, max_events: int = 50,
+        idle_timeout: float = 2.0, completion=None,
+    ):
+        return self.follow_run(run_id)
+
+    async def list_approvals(self, run_id: str):
+        return []
+
+    async def resolve_approval(
+        self, run_id: str, approval_id: str, *, approved: bool = True,
+        operator: str = "tli-operator",
+    ):
+        return {"ok": True, "approval": {"approval_id": approval_id, "status": "approved"}}
+
     async def follow_run(self, run_id: str):
         yield RuntimeEvent(
             "agent.model.delta",
@@ -153,6 +172,96 @@ class PausedStreamClient(FakeRuntimeClient):
         )
 
 
+class BlockingTurnClient(FakeRuntimeClient):
+    """Expose whether SSE is consumed while the blocking turn POST is active."""
+
+    def __init__(self, workspace: Path):
+        super().__init__(workspace)
+        self.turn_started = asyncio.Event()
+        self.stream_opened = asyncio.Event()
+        self.release_turn = asyncio.Event()
+        self.completion_was_live = False
+
+    async def start_turn(self, run_id: str):
+        self.turn_started.set()
+        await self.release_turn.wait()
+        return {"run_id": run_id, "state": "completed"}
+
+    async def turn_events(
+        self, run_id: str, *, after: int = 0, max_events: int = 50,
+        idle_timeout: float = 2.0, completion=None,
+    ):
+        self.stream_opened.set()
+        self.completion_was_live = completion is not None and not completion.done()
+        yield RuntimeEvent(
+            "agent.model.delta",
+            {"sequence": 1, "payload": {"text": "live now"}},
+            "1",
+        )
+        await self.release_turn.wait()
+
+
+class MultiTurnClient(FakeRuntimeClient):
+    def __init__(self, workspace: Path, *, approval: bool = False):
+        super().__init__(workspace)
+        self.turn_count = 0
+        self.needs_approval = approval
+        self.approved = not approval
+
+    async def start_turn(self, run_id: str):
+        self.turn_count += 1
+        if self.needs_approval and not self.approved:
+            return {"run_id": run_id, "state": "waiting_for_approval"}
+        if self.turn_count == 1 and not self.needs_approval:
+            return {"run_id": run_id, "state": "updating_plan"}
+        return {"run_id": run_id, "state": "completed"}
+
+    async def turn_events(
+        self, run_id: str, *, after: int = 0, max_events: int = 50,
+        idle_timeout: float = 2.0, completion=None,
+    ):
+        await asyncio.sleep(0)
+        if self.needs_approval and not self.approved:
+            yield RuntimeEvent(
+                "agent.model.delta",
+                {"sequence": 1, "payload": {"text": '{"decision_type":"tool","tool_id":"workspace.read"}'}},
+                "1",
+            )
+        elif self.turn_count == 1:
+            yield RuntimeEvent(
+                "agent.model.delta",
+                {"sequence": 1, "payload": {"text": '{"decision_type":"tool","tool_id":"workspace.index"}'}},
+                "1",
+            )
+        else:
+            yield RuntimeEvent(
+                "agent.model.delta",
+                {"sequence": 2, "payload": {"text": "Here is the requested final answer."}},
+                "2",
+            )
+
+    async def list_approvals(self, run_id: str):
+        if self.approved:
+            return []
+        return [{
+            "approval_id": "approval-tap-me",
+            "status": "pending",
+            "request": {
+                "tool_id": "workspace.read",
+                "risk_class": "governed",
+                "summary": "Read the requested source file",
+            },
+        }]
+
+    async def resolve_approval(
+        self, run_id: str, approval_id: str, *, approved: bool = True,
+        operator: str = "tli-operator",
+    ):
+        assert approval_id == "approval-tap-me"
+        self.approved = approved
+        return {"ok": True, "approval": {"approval_id": approval_id, "status": "approved"}}
+
+
 def _plain(renderable) -> str:
     if isinstance(renderable, Text):
         return renderable.plain
@@ -160,18 +269,25 @@ def _plain(renderable) -> str:
 
 
 @pytest.mark.asyncio
-async def test_coder_header_uses_original_wordmark_mascot_and_explicit_workspace(tmp_path: Path):
+async def test_coder_header_keeps_ascii_logo_image_pet_and_workspace_visible(tmp_path: Path):
     app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
 
     async with app.run_test(size=(140, 40)) as pilot:
         await pilot.pause()
         wordmark = app.query_one("#coder-wordmark", Static)
         mascot = app.query_one("#coder-mascot", Static)
+        pet = app.query_one("#coder-pet", Widget)
         identity = app.query_one("#coder-identity", Static)
 
-        assert _plain(wordmark.render()).startswith("██████╗ ███████╗ █████╗")
-        assert _plain(mascot.render()).strip()
+        assert _plain(wordmark.render()).startswith("██████╗ ███████╗")
+        assert mascot.display is False
+        assert pet.display is True
+        assert getattr(pet, "image", None) is not None or _plain(pet.render()).strip()
+        assert app.query_one("#coder-header").region.height <= 7
         assert str(tmp_path.resolve()) in _plain(identity.render())
+        assert _plain(app.query_one("#coder-transcript", Static).render()).startswith(
+            "██████╗ ███████╗"
+        )
         assert app.mascot_state == "idle"
 
 
@@ -203,6 +319,9 @@ async def test_required_commands_switch_real_capability_selections_and_render_di
                 "tools",
                 "workspace",
                 "status",
+                "next",
+                "approvals",
+                "approve",
                 "clear",
                 "exit",
             )
@@ -212,7 +331,7 @@ async def test_required_commands_switch_real_capability_selections_and_render_di
         assert "Review changes" in combined
         assert "remotehub" in combined
         assert "workspace.read_range" in combined
-        assert "run-coder" in combined
+        assert app.settings.last_run_id == "run-coder"
 
 
 @pytest.mark.asyncio
@@ -273,13 +392,13 @@ async def test_responsive_layout_keeps_input_visible_without_overlap(
         assert conversation.region.x + conversation.region.width <= size[0]
         assert tools.display is False
         assert header.display is True
-        assert header.region.height > 0
+        assert header.region.height <= (2 if compact else 7)
         assert app.focused is input_widget
 
         wordmark = _plain(app.query_one("#coder-wordmark", Static).render())
         mascot = _plain(app.query_one("#coder-mascot", Static).render())
-        assert wordmark.startswith("█ BEAST" if app._branding_compact else "██████╗")
-        assert mascot.strip()
+        assert wordmark == "█ BEAST" if compact else wordmark.startswith("██████╗ ███████╗")
+        assert mascot == ""
 
 
 @pytest.mark.asyncio
@@ -353,7 +472,7 @@ async def test_compact_tool_events_render_inline_with_execution_receipt(
 
 
 @pytest.mark.asyncio
-async def test_wide_empty_tool_sidebar_is_removed_until_real_events_exist(tmp_path: Path):
+async def test_tool_receipts_stay_inline_without_opening_a_sidebar(tmp_path: Path):
     app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
 
     async with app.run_test(size=(120, 40)) as pilot:
@@ -364,12 +483,235 @@ async def test_wide_empty_tool_sidebar_is_removed_until_real_events_exist(tmp_pa
 
         await app.submit_text("inspect README")
         await pilot.pause()
-        assert tools.display is True
-        assert conversation.region.width < 120
+        assert tools.display is False
+        assert conversation.region.width == 120
+        inline = _plain(app.query_one("#coder-inline-tools", Static).render())
+        assert "workspace.read_range" in inline
 
 
 @pytest.mark.asyncio
-async def test_resize_restores_original_branding_and_beastie_toggles(tmp_path: Path):
+async def test_expand_and_less_toggle_raw_tool_event_details(tmp_path: Path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+
+    async with app.run_test(size=(120, 40)) as pilot:
+        await app.submit_text("inspect README")
+        collapsed = _plain(app.query_one("#coder-inline-tools", Static).render())
+        assert '"content": "BEAST"' not in collapsed
+        assert "/expand for event details" in collapsed
+
+        await app.submit_text("/expand")
+        await pilot.pause()
+        expanded = _plain(app.query_one("#coder-inline-tools", Static).render())
+        assert '"content": "BEAST"' in expanded
+
+        await app.submit_text("/less")
+        await pilot.pause()
+        collapsed_again = _plain(app.query_one("#coder-inline-tools", Static).render())
+        assert '"content": "BEAST"' not in collapsed_again
+
+
+@pytest.mark.asyncio
+async def test_tool_receipts_expand_when_tapped(tmp_path: Path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+
+    async with app.run_test(size=(120, 40)) as pilot:
+        await app.submit_text("inspect README")
+        await pilot.pause()
+        assert app.details_expanded is False
+
+        await pilot.click("#coder-inline-tools")
+        await pilot.pause()
+
+        assert app.details_expanded is True
+        expanded = _plain(app.query_one("#coder-inline-tools").render())
+        assert '"content": "BEAST"' in expanded
+
+
+def test_planner_decision_json_is_rendered_as_semantic_text(tmp_path: Path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+    app.transcript_entries = [{
+        "role": "assistant",
+        "content": json.dumps({
+            "decision_type": "tool",
+            "tool_id": "workspace.index",
+            "arguments": {"limit": 100},
+        }) * 3,
+    }]
+
+    rendered = app._transcript_text().plain
+    assert '"decision_type"' not in rendered
+    assert "TOOL  workspace.index" in rendered
+    assert rendered.count("workspace.index") == 1
+    assert "limit=100" in rendered
+
+
+def test_complete_planner_decision_renders_its_answer_summary(tmp_path: Path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+    app.transcript_entries = [{
+        "role": "assistant",
+        "content": json.dumps({
+            "decision_type": "complete",
+            "summary": "coder.py contains the interactive BEAST terminal application.",
+        }),
+    }]
+
+    rendered = app._transcript_text().plain
+    assert "coder.py contains the interactive BEAST terminal application." in rendered
+
+
+@pytest.mark.asyncio
+async def test_safe_planner_turns_auto_continue_until_final_answer(tmp_path: Path):
+    client = MultiTurnClient(tmp_path)
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=client)
+
+    async with app.run_test(size=(120, 40)):
+        await app.submit_text("summarize coder.py")
+
+        assert client.turn_count == 2
+        assert sum(row["role"] == "user" for row in app.transcript_entries) == 1
+        assert any(
+            row["role"] == "assistant" and "final answer" in row["content"]
+            for row in app.transcript_entries
+        )
+
+
+@pytest.mark.asyncio
+async def test_new_user_prompt_never_reuses_a_stale_active_run(tmp_path: Path):
+    client = FakeRuntimeClient(tmp_path)
+    started_prompts = []
+
+    async def active_status(run_id: str = ""):
+        return {"ok": True, "run": {"run_id": run_id, "state": "updating_plan"}}
+
+    async def record_start(session_id: str, prompt: str, provider: str, model: str):
+        started_prompts.append(prompt)
+        return {"run_id": "fresh-run", "state": "planning"}
+
+    client.runtime_status = active_status
+    client.start_run = record_start
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=client)
+
+    async with app.run_test(size=(120, 40)):
+        app._save_settings(session_id="session-existing", last_run_id="stale-run")
+        await app.submit_text("find and summarize coder.py")
+
+        assert started_prompts == ["find and summarize coder.py"]
+        assert app.settings.last_run_id == "fresh-run"
+
+
+@pytest.mark.asyncio
+async def test_approval_card_tap_approves_and_resumes_to_answer(tmp_path: Path):
+    client = MultiTurnClient(tmp_path, approval=True)
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=client)
+
+    async with app.run_test(size=(120, 40)) as pilot:
+        await app.submit_text("read coder.py")
+        await pilot.pause()
+        approval = app.query_one("#coder-approvals")
+        assert approval.display is True
+        assert "Tap to approve" in _plain(approval.render())
+
+        await pilot.click("#coder-approvals")
+        await pilot.pause()
+
+        assert client.approved is True
+        assert client.turn_count == 2
+        assert approval.display is False
+        assert any(
+            row["role"] == "assistant" and "final answer" in row["content"]
+            for row in app.transcript_entries
+        )
+
+
+@pytest.mark.asyncio
+async def test_slash_commands_are_echoed_in_the_visible_transcript(tmp_path: Path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+
+    async with app.run_test(size=(120, 40)):
+        await app.submit_text("/approvals")
+
+        assert any(
+            row["role"] == "user"
+            and row["content"] == "/approvals"
+            and row.get("metadata", {}).get("command") is True
+            for row in app.transcript_entries
+        )
+
+
+@pytest.mark.asyncio
+async def test_new_decisions_and_receipts_keep_output_scrolled_to_end(tmp_path: Path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+
+    async with app.run_test(size=(80, 24)) as pilot:
+        app.tool_entries = [
+            {
+                "kind": "tool_result",
+                "tool_id": f"workspace.tool_{index}",
+                "text": f"decision {index} completed",
+                "executed": True,
+                "success": True,
+                "receipt": {"observation_id": f"obs-{index}"},
+                "details": {"index": index},
+            }
+            for index in range(30)
+        ]
+        app._sync()
+        await pilot.pause(0.25)
+
+        viewport = app.query_one("#conversation-scroll")
+        assert viewport.max_scroll_y > 0
+        assert viewport.scroll_y == viewport.max_scroll_y
+
+
+@pytest.mark.asyncio
+async def test_user_scroll_up_pauses_follow_until_returning_to_bottom(tmp_path: Path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+
+    async with app.run_test(size=(80, 24)) as pilot:
+        app.tool_entries = [
+            {
+                "kind": "tool_result",
+                "tool_id": f"workspace.tool_{index}",
+                "text": f"decision {index} completed",
+                "executed": True,
+                "success": True,
+                "receipt": {"observation_id": f"obs-{index}"},
+                "details": {"index": index},
+            }
+            for index in range(30)
+        ]
+        app._sync()
+        await pilot.pause(0.25)
+        viewport = app.query_one("#conversation-scroll")
+        assert viewport.scroll_y == viewport.max_scroll_y
+
+        viewport.scroll_page_up(animate=False)
+        await pilot.pause()
+        held_position = viewport.scroll_y
+        assert held_position < viewport.max_scroll_y
+        assert "OUTPUT PAUSED" in _plain(app.query_one("#coder-identity").render())
+
+        app.tool_entries.append({
+            "kind": "tool_result",
+            "tool_id": "workspace.new_result",
+            "text": "new streamed decision",
+            "executed": True,
+            "success": True,
+            "receipt": {"observation_id": "obs-new"},
+            "details": {"new": True},
+        })
+        app._sync()
+        await pilot.pause(0.25)
+        assert viewport.scroll_y == held_position
+
+        viewport.scroll_end(animate=False)
+        await pilot.pause()
+        assert viewport.scroll_y == viewport.max_scroll_y
+        assert app._follow_output is True
+
+
+@pytest.mark.asyncio
+async def test_resize_keeps_compact_branding_and_beastie_toggles(tmp_path: Path):
     app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
 
     async with app.run_test(size=(120, 40)) as pilot:
@@ -377,12 +719,12 @@ async def test_resize_restores_original_branding_and_beastie_toggles(tmp_path: P
         wordmark = app.query_one("#coder-wordmark", Static)
         beastie = app.query_one("#coder-beastie", Static)
         assert header.display is True
-        assert _plain(wordmark.render()).startswith("██████╗ ███████╗ █████╗")
+        assert _plain(wordmark.render()).startswith("██████╗ ███████╗")
 
         await pilot.resize_terminal(60, 24)
         await pilot.pause()
         assert header.display is True
-        assert _plain(wordmark.render()).startswith("█ BEAST")
+        assert _plain(wordmark.render()) == "█ BEAST"
         assert app.query_one("#tool-scroll").display is False
 
         await app.submit_text("/beastie")
@@ -397,7 +739,7 @@ async def test_resize_restores_original_branding_and_beastie_toggles(tmp_path: P
         await pilot.resize_terminal(120, 40)
         await pilot.pause()
         assert header.display is True
-        assert _plain(wordmark.render()).startswith("██████╗ ███████╗ █████╗")
+        assert _plain(wordmark.render()).startswith("██████╗ ███████╗")
         assert app.query_one("#tool-scroll").display is False
 
 
@@ -440,6 +782,25 @@ async def test_first_model_delta_is_visible_before_stream_completes(tmp_path: Pa
         client.release.set()
         await turn
         assert app.transcript_entries[-1]["content"] == "partial complete"
+
+
+@pytest.mark.asyncio
+async def test_turn_event_stream_opens_before_turn_post_completes(tmp_path: Path):
+    client = BlockingTurnClient(tmp_path)
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=client)
+
+    async with app.run_test(size=(120, 34)) as pilot:
+        turn = asyncio.create_task(app.submit_text("stream concurrently"))
+        await asyncio.wait_for(client.stream_opened.wait(), timeout=1)
+        await pilot.pause()
+
+        assert client.turn_started.is_set()
+        assert client.completion_was_live is True
+        assert turn.done() is False
+        assert app.transcript_entries[-1]["content"] == "live now"
+
+        client.release_turn.set()
+        await turn
 
 
 @pytest.mark.asyncio

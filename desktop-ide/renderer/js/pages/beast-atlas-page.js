@@ -16,6 +16,11 @@
       <section class="beast-card atlas-fault" data-atlas-fault hidden></section>
       <section class="beast-card wide atlas-controls"><header class="beast-panel-head"><div><h3>Integration Families</h3><span>Filter the audited backend inventory without changing its claims.</span></div><span class="beast-pill" data-atlas-state>UNLOADED</span></header><div class="atlas-filter-row">${['all','enabled','evidence','live','disabled'].map(name=>`<button class="beast-button secondary ${name==='all'?'active':''}" data-atlas-filter="${name}">${name}</button>`).join('')}</div></section>
       <div class="atlas-layout"><section class="beast-card atlas-section-list"><header class="beast-panel-head"><div><h3>Capability Map</h3><span>Server-owned catalog grouped by operational domain.</span></div></header><div data-atlas-capabilities></div></section><section class="beast-card atlas-inspector is-active"><header class="beast-panel-head"><div><h3 data-atlas-title>Integration Inspector</h3><span data-atlas-source>Select a capability family.</span></div><button class="beast-button secondary" data-atlas-open>Open Primary Surface</button></header><div class="atlas-status-strip" data-atlas-statuses></div><p class="atlas-claim" data-atlas-claim></p><div class="atlas-facts" data-atlas-facts></div><div class="atlas-component-list" data-atlas-components></div></section></div>`;
+    const lifecycle = document.createElement('section');
+    lifecycle.className = 'beast-card wide';
+    lifecycle.setAttribute('data-atlas-lifecycle', '');
+    lifecycle.innerHTML = '<header class="beast-panel-head"><div><h3>Agent Integration Lifecycle</h3><span>Observed receipts are not independent durability proof.</span></div></header><div data-atlas-lifecycle-events></div>';
+    root.append(lifecycle);
     return root;
   }
 
@@ -39,6 +44,22 @@
       const rows=all.filter(item=>include(item,filter));
       const selected=all.find(item=>item.id===selectedId)||rows[0]||all[0]||null;
       if(selected)selectedId=selected.id;
+      const receipts = Array.isArray(integrations.lifecycleEvents)
+        ? integrations.lifecycleEvents.slice(-30).reverse() : [];
+
+      root.querySelector('[data-atlas-lifecycle-events]').innerHTML =
+        receipts.length
+          ? receipts.map(item => `<article class="atlas-lifecycle-row">
+              <b>${esc(item.capability)}</b>
+              <span>${esc(item.stage)} / ${esc(item.operation)}</span>
+              <em>${esc(item.status)}</em>
+              <small>${esc(item.mode || item.reason)}</small>
+              <strong>${item.effectCommitted
+                ? 'COMMIT CLAIMED · NOT INDEPENDENTLY VERIFIED'
+                : 'NO DURABLE EFFECT PROVEN'}</strong>
+            </article>`).join('')
+          : '<div class="cortex-empty-list">No integration lifecycle receipts observed.</div>';
+
       const summary=integrations.summary||{};
       const componentCount=all.reduce((total,item)=>total+(item.components?.length||0),0);
       root.querySelector('[data-atlas-metrics]').innerHTML=[metric('Implemented',`${summary.implemented||0}/${summary.total||all.length}`,'backend families present'),metric('Enabled',summary.enabled||0,'runtime flags active'),metric('Evidence',summary.withEvidence||0,'families with artifacts'),metric('Live',summary.live||0,`${componentCount} audited components`)].join('');

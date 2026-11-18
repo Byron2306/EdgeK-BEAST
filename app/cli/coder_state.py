@@ -20,6 +20,8 @@ REQUIRED_COMMANDS = (
     "budget",
     "thinking",
     "permission",
+    "expand",
+    "less",
     "beastie",
     "model",
     "provider",
@@ -28,6 +30,9 @@ REQUIRED_COMMANDS = (
     "tools",
     "workspace",
     "status",
+    "next",
+    "approvals",
+    "approve",
     "clear",
     "exit",
 )

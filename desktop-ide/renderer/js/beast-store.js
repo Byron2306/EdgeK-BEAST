@@ -37,7 +37,8 @@
       selectedId: '',
       summary: { total: 0, implemented: 0, enabled: 0, withEvidence: 0, live: 0 },
       baseline: {},
-      capabilities: []
+      capabilities: [],
+      lifecycleEvents: []
     },
     workspace: {
       root: localStorage.getItem('beast.v2.workspace.root') || '',

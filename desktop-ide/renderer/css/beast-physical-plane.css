@@ -1,0 +1,158 @@
+/* Physical Plane surface: pool cards, meters, and the chat/receipt grids. */
+.beast-physical-plane-page .physical-pool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.beast-physical-plane-page .physical-pool-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(126, 255, 126, 0.22);
+  border-radius: 6px;
+  background: rgba(10, 26, 14, 0.55);
+}
+
+.beast-physical-plane-page .physical-pool-card b {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.beast-physical-plane-page .physical-pool-card .pool-free {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--beast-green, #7dff7d);
+  line-height: 1.1;
+  word-break: keep-all;
+}
+
+.beast-physical-plane-page .physical-pool-card em {
+  font-style: normal;
+  font-size: 11px;
+  opacity: 0.8;
+  overflow-wrap: anywhere;
+}
+
+.beast-physical-plane-page .physical-pool-card small {
+  font-size: 10px;
+  opacity: 0.55;
+  overflow-wrap: anywhere;
+}
+
+.beast-physical-plane-page .beast-meter {
+  height: 4px;
+  margin-top: 4px;
+  border-radius: 2px;
+  background: rgba(125, 255, 125, 0.14);
+  overflow: hidden;
+}
+
+.beast-physical-plane-page .beast-meter i {
+  display: block;
+  height: 100%;
+  background: var(--beast-green, #7dff7d);
+}
+
+.beast-physical-plane-page .beast-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.beast-physical-plane-page .beast-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  min-width: 0;
+}
+
+.beast-physical-plane-page .beast-form-grid input,
+.beast-physical-plane-page .beast-form-grid select {
+  min-width: 0;
+  padding: 6px 8px;
+  color: inherit;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(126, 255, 126, 0.25);
+  border-radius: 4px;
+  font: inherit;
+  text-transform: none;
+}
+
+.beast-physical-plane-page .beast-form-grid .beast-checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+.beast-physical-plane-page .beast-ok { color: var(--beast-green, #7dff7d); }
+.beast-physical-plane-page .beast-error { color: #ff8f6b; }
+
+.beast-physical-plane-page [data-leases],
+.beast-physical-plane-page [data-reclaim-out],
+.beast-physical-plane-page [data-kv] {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+/* Terminal chat */
+.terminal-chat-card .terminal-chat-output {
+  min-height: 140px;
+  max-height: 320px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(126, 255, 126, 0.2);
+  border-radius: 4px;
+}
+
+.terminal-chat-card .terminal-chat-trace {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 8px;
+}
+
+/* Chat trace: sequence, event kind, then a full-width detail line. */
+.terminal-chat-trace .fabric-trace-row {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 2px 8px;
+  align-items: start;
+}
+
+.terminal-chat-trace .fabric-trace-row > span { opacity: 0.6; }
+.terminal-chat-trace .fabric-trace-row > b { font-weight: 600; }
+.terminal-chat-trace .fabric-trace-row > em {
+  grid-column: 2;
+  font-style: normal;
+  opacity: 0.75;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.terminal-chat-card input[type="checkbox"],
+.beast-physical-plane-page input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  margin: 0;
+  accent-color: var(--beast-green, #7dff7d);
+}
+
+.terminal-chat-card .beast-checkbox,
+.beast-physical-plane-page .beast-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}

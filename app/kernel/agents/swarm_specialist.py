@@ -64,8 +64,20 @@ class OllamaSwarmRunner:
 
     async def generate(self, *, model: str, system: str, prompt: str, max_tokens: int = 512,
                        format: Any = None) -> dict[str, Any]:  # noqa: A002 - Ollama's field name
-        payload: dict[str, Any] = {"model": model, "system": system, "prompt": prompt, "stream": False,
-                                   "options": {"temperature": 0.0, "num_predict": int(max_tokens)}}
+        payload: dict[str, Any] = {
+            "model": model,
+            "system": system,
+            "prompt": prompt,
+            "stream": False,
+            "options": {
+                "temperature": 0.0,
+                "top_p": 0.0,
+                "top_k": 1,
+                "seed": 42,
+                "num_predict": int(max_tokens),
+                "repeat_penalty": 1.0,
+            }
+        }
         if format is not None:  # Ollama structured output: "json" or a JSON schema (grammar-constrained decoding)
             payload["format"] = format
         if model.lower().startswith("qwen3"):
@@ -98,13 +110,70 @@ def resolve_runner_model(model_ref: str, installed: Sequence[str], *,
     return "", "no_installed_model"
 
 
-def _messages(ir: Any) -> tuple[str, str]:
-    system, turns = [], []
-    for message in getattr(ir, "messages", None) or []:
-        role, content = str(message.get("role") or "user"), message.get("content")
-        text = content if isinstance(content, str) else json.dumps(content, default=str)
-        (system if role == "system" else turns).append(text if role == "system" else f"{role}: {text}")
-    return "\n".join(system), "\n".join(turns)
+def _crystal_task_spec(ir: Any) -> tuple[str, str, dict[str, Any] | None]:
+    """
+    Extract a structured task specification from the IR for crystalline specialist execution.
+    
+    Returns (system_directive, task_specification_json, response_schema)
+    """
+    metadata = getattr(ir, "metadata", None) or {}
+    messages = getattr(ir, "messages", None) or []
+    
+    # Extract the actual task from metadata (set by integration harness / dispatcher)
+    objective = metadata.get("objective") or metadata.get("task_objective") or ""
+    source_context = metadata.get("source_context") or ""
+    diagnostic_context = metadata.get("diagnostic_context") or ""
+    task_family = metadata.get("task_family") or "general"
+    response_schema = metadata.get("response_schema")
+    
+    # Default schema for structured specialist output: forces JSON, no reasoning
+    default_schema = {
+        "type": "object",
+        "properties": {
+            "result": {"type": "string", "description": "The raw result (code fix, analysis, etc.)"},
+        },
+        "required": ["result"],
+        "additionalProperties": False,
+    }
+    
+    # Build the crystal directive - the specialist's immutable role definition
+    # NO reasoning, NO explanation. Output ONLY the result (code fix, etc.)
+    # Inference/reasoning ONLY happens on RETRY after gate failure
+    crystal_directive = (
+        f"# CRYSTAL SPECIALIST: {task_family.upper()}\n"
+        f"# Deterministic specialist function. Output ONLY the result.\n"
+        f"# NO reasoning, NO explanation, NO conversation. Raw output only.\n"
+        f"# Gates verify output. Failed gates trigger retry with minimal feedback."
+    )
+    
+    # Build structured task spec
+    task_spec = {
+        "task_family": task_family,
+        "objective": objective,
+        "source_context": source_context,
+        "diagnostic_context": diagnostic_context,
+        "constraints": {
+            "max_tokens": getattr(ir, "max_tokens", None),
+            "deterministic": True,
+            "schema_enforced": True,
+            "output_raw_result_only": True,
+        }
+    }
+    
+    # If no metadata objective, fall back to extracting from messages
+    if not objective and messages:
+        # Last user message is typically the task
+        user_msgs = [m for m in messages if m.get("role") == "user"]
+        if user_msgs:
+            task_spec["objective"] = str(user_msgs[-1].get("content", ""))
+        system_msgs = [m for m in messages if m.get("role") == "system"]
+        if system_msgs:
+            crystal_directive = str(system_msgs[0].get("content", crystal_directive))
+    
+    # Use provided schema or default structured output schema
+    schema = response_schema if response_schema is not None else default_schema
+    
+    return crystal_directive, json.dumps(task_spec, separators=(",", ":"), default=str), schema
 
 
 # -- default gates ---------------------------------------------------------------------------------------
@@ -204,17 +273,18 @@ class SwarmSpecialistDispatch:
                         "token_budget": token_budget})
         if not model:
             return self._refuse("no_installed_model", receipt)
-        system, prompt = _messages(ir)
+        system_directive, task_spec_json, schema = _crystal_task_spec(ir)
         attempts: list[dict[str, Any]] = []
         usage = {"prompt_tokens": 0, "completion_tokens": 0}
         receipt["attempts"], receipt["usage"] = attempts, usage
+        receipt["task_spec"] = json.loads(task_spec_json)
         reason = "no_attempt"
         for attempt in range(1 + retries):
             spent = usage["prompt_tokens"] + usage["completion_tokens"]
             if attempt and attempts and spent + attempts[-1]["tokens"] > token_budget:
                 receipt["budget_exhausted"] = True
                 break
-            kwargs: dict[str, Any] = {"model": model, "system": system, "prompt": prompt, "max_tokens": max_tokens}
+            kwargs: dict[str, Any] = {"model": model, "system": system_directive, "prompt": task_spec_json, "max_tokens": max_tokens}
             if schema is not None:
                 kwargs["format"] = schema
             try:
@@ -238,7 +308,7 @@ class SwarmSpecialistDispatch:
                                          {"text": generation["text"], "model": model}, receipt)
             from app.kernel.compute.structured_edit import repair_message
 
-            prompt = f"{prompt}\nassistant: {generation['text'][:600]}\nuser: {repair_message(generation['text'], reason)['content']}"
+            task_spec_json = f"{task_spec_json}\nassistant: {generation['text'][:600]}\nuser: {repair_message(generation['text'], reason)['content']}"
         return self._refuse(reason, receipt)
 
     def _gate(self, generation: Mapping[str, Any], ir: Any) -> tuple[bool, str, list[dict[str, Any]]]:

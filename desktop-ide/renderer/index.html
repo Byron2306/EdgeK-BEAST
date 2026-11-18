@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="css/beast-workspace-layout-loaded.css">
   <link rel="stylesheet" href="css/beast-studio-repair-r1.css">
   <link rel="stylesheet" href="css/beast-ide-legibility-20261116.css">
+  <link rel="stylesheet" href="css/beast-physical-plane.css">
 </head>
 <body>
   <canvas id="beastMatrix" aria-hidden="true"></canvas>
@@ -64,6 +65,7 @@
         <button data-beast-route="mission"><img src="assets/icons/mission.png" alt=""><span class="label">Mission</span><span>›</span></button>
         <button data-beast-route="models"><img src="assets/icons/models.png" alt=""><span class="label">Models</span><span>›</span></button>
         <button data-beast-route="compute-fabric"><img src="assets/icons/compute.png" alt=""><span class="label">Compute Fabric</span><span>›</span></button>
+        <button data-beast-route="physical-plane"><img src="assets/icons/compute.png" alt=""><span class="label">Physical Plane</span><span>›</span></button>
         <button data-beast-route="live-fabric"><img src="assets/icons/system.png" alt=""><span class="label">Live Evidence Fabric</span><span>›</span></button>
         <button data-beast-route="compute-control"><img src="assets/icons/compute.png" alt=""><span class="label">Compute Control</span><span>›</span></button>
         <button data-beast-route="agents"><img src="assets/icons/agents.png" alt=""><span class="label">Agents</span><span>›</span></button>
@@ -111,7 +113,7 @@
         <canvas id="beastHeaderPulse" aria-hidden="true"></canvas>
         <select id="beastCompactRoute" class="beast-compact-route" aria-label="Navigate BEAST page">
           <option value="studio">BEAST Studio</option><option value="mission">Mission</option><option value="workspace">Workspace</option><option value="source">SourcePlan</option>
-          <option value="compatibility">IDE Compatibility</option><option value="compute-fabric">Compute Fabric</option><option value="live-fabric">Live Evidence Fabric</option><option value="compute-control">Compute Control</option>
+          <option value="compatibility">IDE Compatibility</option><option value="compute-fabric">Compute Fabric</option><option value="physical-plane">Physical Plane</option><option value="live-fabric">Live Evidence Fabric</option><option value="compute-control">Compute Control</option>
           <option value="models">Models</option><option value="agents">Agents</option><option value="review">Review</option>
           <option value="grand-closure">Grand Closure</option><option value="trust">Trust</option><option value="memory">Memory</option><option value="evidence">Evidence</option><option value="commons">Commons</option>
           <option value="crystallization">Crystallization</option><option value="map">Map</option>
@@ -187,6 +189,7 @@
   <script src="js/pages/beast-mission-page.js"></script>
   <script src="js/pages/beast-models-page.js"></script>
   <script src="js/pages/beast-compute-fabric-page.js"></script>
+  <script src="js/pages/beast-physical-plane-page.js"></script>
   <script src="js/pages/beast-live-fabric-page.js"></script>
   <script src="js/pages/beast-compute-control-page.js"></script>
   <script src="js/pages/beast-agents-page.js"></script>
@@ -198,6 +201,7 @@
   <script src="js/pages/beast-map-page.js"></script>
   <script src="js/pages/beast-crystallization-page.js"></script>
   <script src="js/pages/beast-commons-page.js"></script>
+  <script src="js/beast-terminal-chat.js"></script>
   <script src="js/pages/beast-terminal-page.js"></script>
   <script src="js/pages/beast-testing-page.js"></script>
   <script src="js/pages/beast-tooling-page.js"></script>

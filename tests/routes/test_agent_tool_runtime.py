@@ -46,6 +46,9 @@ def test_read_range_emits_structured_observation(tmp_path: Path):
 
 
 def test_workspace_index_extracts_symbols_and_nim_context(tmp_path: Path):
+    backup = tmp_path / ".beast_backups" / "old"
+    backup.mkdir(parents=True)
+    (backup / "coder.py").write_text("def stale_backup(): pass\n", encoding="utf-8")
     engine, run_id = _engine(tmp_path)
     observation = asyncio.run(engine.execute_tool(run_id, "workspace.index", {"limit": 100, "include_symbols": True}))
     result = observation["result"]
@@ -56,6 +59,8 @@ def test_workspace_index_extracts_symbols_and_nim_context(tmp_path: Path):
     symbols = {(item["path"], item["name"], item["kind"]) for item in result["symbols"]}
     assert ("alpha.py", "alpha", "function") in symbols
     assert ("math.nim", "beastAdd", "function") in symbols
+    assert not any(path.startswith(".beast_backups/") for path, _, _ in symbols)
+    assert not any(item["path"].startswith(".beast_backups/") for item in result["files"])
     assert result["index_digest"].startswith("sha256:")
 
 
@@ -113,8 +118,12 @@ def test_search_is_bounded_and_excludes_beast_state(tmp_path: Path):
     state = tmp_path / ".beast" / "private.txt"
     state.parent.mkdir(exist_ok=True)
     state.write_text("needle", encoding="utf-8")
+    backup = tmp_path / ".beast_backups" / "old"
+    backup.mkdir(parents=True)
+    (backup / "stale.txt").write_text("needle", encoding="utf-8")
     (tmp_path / "visible.txt").write_text("needle here", encoding="utf-8")
     observation = asyncio.run(engine.execute_tool(run_id, "workspace.search_text", {"query": "needle"}))
     paths = {item["path"] for item in observation["result"]["matches"]}
     assert "visible.txt" in paths
     assert ".beast/private.txt" not in paths
+    assert ".beast_backups/old/stale.txt" not in paths

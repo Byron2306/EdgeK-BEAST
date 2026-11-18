@@ -64,18 +64,36 @@
   }
 
   function eventPayload(event) {
+    // BEAST_INTEGRATION_003B_CURSOR: parse before cursor mutation.
+    const parsed = JSON.parse(event.data || '{}');
+    const payload = parsed && typeof parsed.payload === 'object'
+      ? parsed.payload
+      : parsed;
+
     const sequence = Number(event?.lastEventId || 0);
-    if (Number.isFinite(sequence) && sequence > Number(runtime.streamState.sequence || 0)) {
+
+    if (
+      Number.isFinite(sequence) &&
+      sequence > Number(runtime.streamState.sequence || 0)
+    ) {
       runtime.streamState.sequence = sequence;
-      patch({ activeRunSequence:sequence });
+      patch({ activeRunSequence: sequence });
+
       const stamp = now();
-      if (sequence % 10 === 0 || stamp - Number(runtime.streamState.lastCursorPersistAt || 0) >= 1000) {
+
+      if (
+        sequence % 10 === 0 ||
+        stamp - Number(runtime.streamState.lastCursorPersistAt || 0) >= 1000
+      ) {
         runtime.streamState.lastCursorPersistAt = stamp;
-        if (typeof api.persist === 'function') api.persist();
+
+        if (typeof api.persist === 'function') {
+          api.persist();
+        }
       }
     }
-    const parsed = JSON.parse(event.data || '{}');
-    return parsed && typeof parsed.payload === 'object' ? parsed.payload : parsed;
+
+    return payload;
   }
 
     return { appendTrace, updateProgress, finishProgress, clearWatchdog, armWatchdog, eventPayload };

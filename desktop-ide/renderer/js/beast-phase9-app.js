@@ -1,5 +1,5 @@
 (() => {
-  const pages = ['studio','workspace','compatibility','source','mission','models','compute-fabric','live-fabric','compute-control','agents','review','grand-closure','trust','memory','evidence','crystallization','commons','map','terminal','testing','tooling','doctor','reality','providers','system','atlas','worktrees','deploy','chronicle','economy','settings'];
+  const pages = ['studio','workspace','compatibility','source','mission','models','compute-fabric','physical-plane','live-fabric','compute-control','agents','review','grand-closure','trust','memory','evidence','crystallization','commons','map','terminal','testing','tooling','doctor','reality','providers','system','atlas','worktrees','deploy','chronicle','economy','settings'];
   let railKey = '';
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[char]);
 
@@ -409,6 +409,7 @@
       page === 'mission' ? BeastMissionPage.renderer :
       page === 'models' ? BeastModelsPage.renderer :
       page === 'compute-fabric' ? BeastComputeFabricPage.renderer :
+      page === 'physical-plane' ? BeastPhysicalPlanePage.renderer :
       page === 'live-fabric' ? BeastLiveFabricPage.renderer :
       page === 'compute-control' ? BeastComputeControlPage.renderer :
       page === 'agents' ? BeastAgentsPage.renderer :

@@ -33,7 +33,10 @@ class ToolExecutionFailed(RuntimeError):
         self.observation = observation
 
 
-_EXCLUDED_DIRS = {".git", ".beast", "node_modules", "__pycache__", ".venv", "venv", "dist", "build"}
+_EXCLUDED_DIRS = {
+    ".git", ".beast", ".beast_backups", "node_modules", "__pycache__",
+    ".venv", "venv", "dist", "build",
+}
 
 _LANGUAGE_BY_SUFFIX = {
     ".py": "python",
@@ -59,6 +62,34 @@ _LANGUAGE_BY_SUFFIX = {
 
 def _shell_quote(value: Any) -> str:
     return "'" + str(value if value is not None else "").replace("'", "'\\''") + "'"
+
+
+def _excluded_workspace_part(name: str) -> bool:
+    return (
+        name in _EXCLUDED_DIRS
+        or name.startswith(".beast-")
+        or name.startswith(".beast_")
+        or name.startswith(".phase")
+    )
+
+
+def _iter_workspace_files(root: Path, target: Path):
+    """Yield visible workspace files without ever descending ignored trees."""
+    if target.is_file():
+        yield target
+        return
+    for current, dirs, names in os.walk(target, topdown=True, followlinks=False):
+        dirs[:] = sorted(name for name in dirs if not _excluded_workspace_part(name))
+        current_path = Path(current)
+        for name in sorted(names):
+            candidate = current_path / name
+            try:
+                relative = candidate.relative_to(root)
+            except ValueError:
+                continue
+            if any(_excluded_workspace_part(part) for part in relative.parts):
+                continue
+            yield candidate
 
 
 def _safe_remote_relative(value: Any) -> str:
@@ -431,12 +462,11 @@ async def _workspace_search_text(arguments: dict[str, Any], context: ToolExecuti
     case_sensitive = bool(arguments.get("case_sensitive"))
     needle = query if case_sensitive else query.lower()
     matches: list[dict[str, Any]] = []
-    candidates = [path] if path.is_file() else path.rglob("*")
-    for candidate in candidates:
+    for candidate in _iter_workspace_files(root, path):
         if not candidate.is_file():
             continue
         relative_parts = candidate.relative_to(root).parts
-        if any(part in _EXCLUDED_DIRS or part.startswith(".beast-") or part.startswith(".phase1") for part in relative_parts):
+        if any(_excluded_workspace_part(part) for part in relative_parts):
             continue
         try:
             if candidate.stat().st_size > 2 * 1024 * 1024:
@@ -465,7 +495,7 @@ from pathlib import Path
 root = Path(".").resolve()
 limit = int(os.environ.get("BEAST_INDEX_LIMIT", "1200"))
 include_symbols = os.environ.get("BEAST_INDEX_SYMBOLS", "1") == "1"
-excluded = {".git", ".beast", "node_modules", "__pycache__", ".venv", "venv", "dist", "build"}
+excluded = {".git", ".beast", ".beast_backups", "node_modules", "__pycache__", ".venv", "venv", "dist", "build"}
 suffixes = {
     ".py": "python", ".js": "javascript", ".jsx": "javascriptreact", ".ts": "typescript", ".tsx": "typescriptreact",
     ".nim": "nim", ".nims": "nim", ".nimble": "nim", ".go": "go", ".rs": "rust", ".c": "c", ".h": "c",
@@ -536,7 +566,7 @@ def extract(path, language, text):
 files, symbols, imports, tests = [], [], [], []
 languages, symbol_kinds = {}, {}
 for current, dirs, names in os.walk(root):
-    dirs[:] = sorted(d for d in dirs if d not in excluded and not d.startswith(".beast-") and not d.startswith(".phase"))
+    dirs[:] = sorted(d for d in dirs if d not in excluded and not d.startswith(".beast-") and not d.startswith(".beast_") and not d.startswith(".phase"))
     for name in sorted(names):
         if len(files) >= limit:
             break
@@ -612,13 +642,13 @@ print(json.dumps({
     imports: list[dict[str, Any]] = []
     languages: dict[str, int] = {}
     symbol_kinds: dict[str, int] = {}
-    for candidate in sorted(root.rglob("*"), key=lambda item: item.relative_to(root).as_posix()):
+    for candidate in _iter_workspace_files(root, root):
         if len(files) >= limit:
             break
         if not candidate.is_file():
             continue
         relative_parts = candidate.relative_to(root).parts
-        if any(part in _EXCLUDED_DIRS or part.startswith(".beast-") or part.startswith(".phase1") for part in relative_parts):
+        if any(_excluded_workspace_part(part) for part in relative_parts):
             continue
         relative = candidate.relative_to(root).as_posix()
         try:
@@ -791,6 +821,12 @@ class AgentToolRuntime:
     def __init__(self, engine: Any, registry: AgentToolRegistry | None = None) -> None:
         self.engine = engine
         self.registry = registry or build_default_tool_registry()
+        self.effect_executor = None
+        effect_registry = getattr(self.registry, "effect_registry", None)
+        if effect_registry is not None:
+            from app.kernel.agents.effect_tool_executor import EffectToolExecutor
+
+            self.effect_executor = EffectToolExecutor(effect_registry)
 
     async def execute(self, run_id: str, request: ToolRequest) -> ToolObservation:
         run = self.engine.store.get_run(run_id)
@@ -801,13 +837,22 @@ class AgentToolRuntime:
         if is_read_only_run(run) and (spec.effect != ToolEffect.READ or spec.requires_worktree):
             raise PermissionError(f"REFUSE_READ_ONLY_TOOL:{spec.tool_id}")
         arguments = self.registry.validate_arguments(spec, request.arguments)
-        target = str(request.execution_target or "local")
-        target_payload = request.execution_target_payload if isinstance(request.execution_target_payload, dict) else {}
-        if target not in spec.targets:
-            raise PermissionError(f"tool {spec.tool_id} does not support target {target}")
         run_request = run.get("request") if isinstance(run.get("request"), dict) else {}
         run_target = str(run_request.get("execution_target") or "local")
         run_payload = run_request.get("execution_target_payload") if isinstance(run_request.get("execution_target_payload"), dict) else {}
+
+        # If the run has a remote target but the tool request only specifies the default "local",
+        # inherit the run's target. An explicit remote target in the request is still respected.
+        request_target = str(request.execution_target or "local")
+        if run_target != "local" and request_target == "local":
+            target = run_target
+            target_payload = run_payload
+        else:
+            target = request_target
+            target_payload = request.execution_target_payload if isinstance(request.execution_target_payload, dict) else run_payload
+
+        if target not in spec.targets:
+            raise PermissionError(f"tool {spec.tool_id} does not support target {target}")
         if target != run_target:
             raise PermissionError("execution target differs from the immutable AgentRun destination")
         if target != "local" and (not run_payload or target_payload != run_payload):
@@ -837,6 +882,7 @@ class AgentToolRuntime:
             engine=self.engine,
         )
         started = time.time()
+        runtime_name = "python_async"
         self.engine.emit(run_id, "agent.tool.started", {
             "tool_id": spec.tool_id,
             "tool_version": spec.version,
@@ -845,6 +891,7 @@ class AgentToolRuntime:
             "effect": spec.effect.value,
             "execution_target": target,
             "execution_target_payload": target_payload,
+            "runtime": "effect_ts" if self.effect_executor is not None else runtime_name,
         })
         status = "completed"
         result: dict[str, Any] = {}
@@ -852,7 +899,18 @@ class AgentToolRuntime:
         truncated = False
         try:
             assert spec.handler is not None
-            raw = await asyncio.wait_for(spec.handler(arguments, context), timeout=max(0.1, spec.timeout_seconds))
+            if self.effect_executor is not None:
+                effect_result = await asyncio.to_thread(
+                    self.effect_executor.execute_authorized,
+                    spec.tool_id,
+                    arguments,
+                    context=context,
+                    timeout_ms=max(100, int(float(spec.timeout_seconds) * 1000)),
+                )
+                raw = effect_result.value
+                runtime_name = "effect_ts"
+            else:
+                raw = await asyncio.wait_for(spec.handler(arguments, context), timeout=max(0.1, spec.timeout_seconds))
             result, truncated = _bounded_text(raw if isinstance(raw, dict) else {"value": raw}, spec.max_output_bytes)
             if isinstance(raw, dict) and raw.get("ok") is False:
                 status = "failed"
@@ -882,7 +940,10 @@ class AgentToolRuntime:
             evidence_digest=digest,
         )
         event_type = "agent.tool.completed" if status == "completed" else "agent.tool.failed"
-        self.engine.emit(run_id, event_type, {"observation": observation.as_dict()})
+        self.engine.emit(run_id, event_type, {
+            "observation": observation.as_dict(),
+            "runtime": runtime_name,
+        })
         self.engine.merge_checkpoint(run_id, {
             "last_observation_id": observation.observation_id,
             "last_tool_id": observation.tool_id,

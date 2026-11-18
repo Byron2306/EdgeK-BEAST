@@ -31,6 +31,7 @@ from app.kernel.approvals import (
 from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 
+from app.kernel.agents.agent_effect import AgentCommandType
 from app.kernel.agents.run_engine import AgentRunEngine
 from app.kernel.commons.route_damping import RouteFlapDampener
 from app.kernel.operations_console import (AgentOperationsConsoleViewModel, DurableConsoleEventProjection, WorkbenchModeEngine, ObjectivePlanWorkspace, ContextManifestStore, ContextManifestConsole, LiveRunTimelineConsole, WorktreeChangesDiffConsole, VerificationConsole)
@@ -61,10 +62,11 @@ from app.kernel.evidence.post_apply_gate import PostApplyVerificationPromotionGa
 from app.kernel.evidence.promotion_closure import PromotionExecutionRollbackClosure
 from app.kernel.evidence.phase3_closure import Phase3EndToEndProofClosure
 from app.kernel.agents.run_state import TERMINAL_STATES, normalize_state
-from app.kernel.agents.run_worker import AGENT_RUN_WORKERS
+from app.kernel.agents.run_worker import AGENT_RUN_WORKERS, TURN_RUNTIMES
 from app.kernel.workspaces.agent_session_store import AgentSessionStore
 from app.cli.api import BeastApiClient
 from app.routes.ide_context import IdeRouteContext
+
 from app.routes.ide_routes.zero_desktop_review import AUDIT, register_zero_review
 
 
@@ -149,7 +151,22 @@ def _launch(app: Any, root: Path, run_id: str) -> dict[str, Any]:
     }
 
 
+def _is_nim_model(run: dict[str, Any]) -> bool:
+    """Detect NIM-hosted models so they route to the NIM planner, not Ollama."""
+    model = str(run.get("model") or "").strip()
+    request = run.get("request") if isinstance(run.get("request"), dict) else {}
+    nim_model = str(request.get("nim_model") or "").strip()
+    candidate = model or nim_model
+    if not candidate:
+        return False
+    low = candidate.lower()
+    return low.startswith("nvidia/") or "nemotron" in low
+
+
 def _prefer_direct_ollama_planner(run: dict[str, Any]) -> bool:
+    # Never route a NIM model to Ollama — Ollama cannot serve nvidia/nemotron models.
+    if _is_nim_model(run):
+        return False
     provider = str(run.get("provider") or "").strip().lower()
     mode = str(run.get("mode") or "").strip().lower()
     request = run.get("request") if isinstance(run.get("request"), dict) else {}
@@ -164,6 +181,10 @@ def _prefer_direct_ollama_planner(run: dict[str, Any]) -> bool:
 
 def _prefer_direct_planner(run: dict[str, Any]) -> bool:
     provider = str(run.get("provider") or "").strip().lower()
+    request = run.get("request") if isinstance(run.get("request"), dict) else {}
+    strategy = str(request.get("launch_strategy") or request.get("execution_adapter") or "").strip().lower()
+    if strategy in {"planner", "typed_planner"}:
+        return True
     return _prefer_direct_ollama_planner(run) or provider in {"nvidia_nim", "nim", "local_nim"}
 
 
@@ -280,6 +301,7 @@ async def _execute_planner_run(
     execution_gateway: Any = None,
     compute_governor: Any = None,
     pressure_controller: Any = None,
+    turn_based: bool = True,
 ) -> None:
     engine = AgentRunEngine(root)
     run = engine.store.get_run(run_id)
@@ -384,14 +406,16 @@ async def _execute_planner_run(
         provider = NIMPlannerProvider(
             model=HOSTED_NEMOTRON_MODEL,
             base_url=HOSTED_NEMOTRON_BASE_URL,
+            api_key=str(os.environ.get("NVIDIA_API_KEY") or ""),
             on_token=lambda text: engine.emit(run_id, "agent.model.delta", {"text": str(text)}),
         )
-    elif str(run.get("provider") or "").strip().lower() in {"nvidia_nim", "nim", "local_nim"}:
+    elif str(run.get("provider") or "").strip().lower() in {"nvidia_nim", "nim", "local_nim"} or _is_nim_model(run):
         request = run.get("request") if isinstance(run.get("request"), dict) else {}
         route_dampener = _nim_route_dampener(root)
         primary = NIMPlannerProvider(
             model=str(run.get("model") or request.get("nim_model") or ""),
             base_url=str(request.get("nim_base_url") or os.environ.get("NVIDIA_NIM_BASE_URL") or ""),
+            api_key=str(os.environ.get("NVIDIA_API_KEY") or ""),
             route_dampener=route_dampener,
             route_id=f"nim:{str(run.get('model') or request.get('nim_model') or '').strip() or 'default'}",
             on_token=lambda text: engine.emit(run_id, "agent.model.delta", {"text": str(text)}),
@@ -436,6 +460,9 @@ async def _execute_planner_run(
         # Reviewed coding crystals: empty unless BEAST_CODING_CRYSTALS=1 and the ARDA runtime key is sound.
         **planner_runtime_extras(root),
     )
+    if turn_based:
+        TURN_RUNTIMES[run_id] = runtime
+        return
     try:
         await runtime.run(run_id)
     except asyncio.CancelledError:
@@ -461,12 +488,19 @@ def _launch_planner(
     execution_gateway: Any = None,
     compute_governor: Any = None,
     pressure_controller: Any = None,
+    turn_based: bool = True,
 ) -> dict[str, Any]:
     existing = AGENT_RUN_WORKERS.get(run_id)
     handle = AGENT_RUN_WORKERS.launch(
         run_id,
         lambda: _execute_planner_run(
-            root, run_id, base_url=base_url, scripted_decisions=scripted_decisions, max_turns=max_turns, crystal_gateway=crystal_gateway, context_packet_builder=context_packet_builder, execution_gateway=execution_gateway, compute_governor=compute_governor, pressure_controller=pressure_controller
+            root, run_id, base_url=base_url, scripted_decisions=scripted_decisions,
+            max_turns=max_turns, crystal_gateway=crystal_gateway,
+            context_packet_builder=context_packet_builder,
+            execution_gateway=execution_gateway,
+            compute_governor=compute_governor,
+            pressure_controller=pressure_controller,
+            turn_based=turn_based,
         ),
     )
     return {
@@ -651,6 +685,56 @@ def register_agent_runs_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[
         run, execution = _maybe_auto_recover(request.app, engine, run, auto_recover=auto_recover)
         run["execution"] = execution
         return {"ok": True, "run": run}
+
+    @router.post("/edgek/agent-runs/{run_id}/turn")
+    async def edgek_agent_run_turn(run_id: str, request: Request, root_path: str = None):
+        """Execute exactly one planner turn (decide → execute → observe) and return.
+
+        OpenCode-style turn-based execution: each call advances the run by one
+        turn. The operator inspects the result, then calls this endpoint again
+        for the next turn until the run reaches a terminal state.
+        """
+        engine, run = _resolve_run_engine(run_id, root_path)
+        if not run:
+            raise HTTPException(status_code=404, detail=f"unknown agent run: {run_id}")
+
+        runtime = TURN_RUNTIMES.get(run_id)
+        if runtime is None:
+            # The durable ledger can outlive the in-process planner (gateway
+            # restart, worker cleanup, or a resumed TUI). Rehydrate it from the
+            # stored run configuration instead of stranding the operator on a
+            # stale run id.
+            state = normalize_state(str(run.get("state") or "created"))
+            if state not in TERMINAL_STATES:
+                root = Path(
+                    str(run.get("root_path") or engine.workspace_root)
+                ).expanduser().resolve()
+                _launch_for_run(request.app, root, run, ctx=ctx)
+            import asyncio as _asyncio
+            for _ in range(20):
+                await _asyncio.sleep(0.1)
+                runtime = TURN_RUNTIMES.get(run_id)
+                if runtime is not None:
+                    break
+        if runtime is None:
+            raise HTTPException(
+                status_code=409,
+                detail=f"No active planner runtime for run {run_id}. Launch the run first with launch=true.",
+            )
+
+        try:
+            result = await runtime.run_one_turn(run_id)
+            state = str(result.get("state") or "")
+            if state in {s.value for s in TERMINAL_STATES}:
+                TURN_RUNTIMES.pop(run_id, None)
+            return {"ok": True, "run": result, "turn_complete": state not in {s.value for s in TERMINAL_STATES}}
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            final = engine.store.get_run(run_id) or {}
+            if normalize_state(str(final.get("state") or "created")) not in TERMINAL_STATES:
+                engine.fail(run_id, str(exc))
+            raise HTTPException(status_code=500, detail=str(exc))
 
     @router.get("/edgek/agent-runs/{run_id}/memory-evidence")
     async def edgek_agent_run_memory_evidence(run_id: str, root_path: str = None):
@@ -1037,7 +1121,13 @@ def register_agent_runs_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[
         max_turns = max(1, min(int(payload.get("max_turns") or 8), 64))
         base_url = _ollama_base_url(run)
         execution = _launch_planner(
-            root, run_id, base_url=base_url, scripted_decisions=scripted, max_turns=max_turns, crystal_gateway=ctx.crystal_gateway, context_packet_builder=ctx.context_packet_builder, execution_gateway=ctx.execution_gateway, compute_governor=ctx.compute_governor, pressure_controller=ctx.pressure_controller
+            root, run_id, base_url=base_url, scripted_decisions=scripted,
+            max_turns=max_turns, crystal_gateway=ctx.crystal_gateway,
+            context_packet_builder=ctx.context_packet_builder,
+            execution_gateway=ctx.execution_gateway,
+            compute_governor=ctx.compute_governor,
+            pressure_controller=ctx.pressure_controller,
+            turn_based=False,
         )
         return {"ok": True, "run": engine.store.get_run(run_id), "execution": execution}
 
@@ -1386,14 +1476,24 @@ def register_agent_runs_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[
         engine = AgentRunEngine(_root(payload.get("root_path")))
         if not engine.store.get_run(run_id):
             raise HTTPException(status_code=404, detail=f"unknown agent run: {run_id}")
-        return await engine.cancel(run_id, str(payload.get("reason") or "operator_cancelled"))
+        runtime = engine.effect_agent(run_id)
+        await runtime.execute_command(
+            runtime.command(AgentCommandType.CANCEL, reason=str(payload.get("reason") or "operator_cancelled"))
+        )
+        return {
+            "ok": True,
+            "run": engine.store.get_run(run_id),
+            "execution": AGENT_RUN_WORKERS.status(run_id),
+        }
 
     @router.post("/edgek/agent-runs/{run_id}/resume")
     async def edgek_agent_run_resume(request: Request, run_id: str, payload: dict[str, Any] = None):
         payload = payload or {}
         engine, _ = _resolve_run_engine(run_id, payload.get("root_path"), payload.get("workspace_root"))
+        runtime = engine.effect_agent(run_id)
         try:
-            run = engine.resume(run_id)
+            await runtime.execute_command(runtime.command(AgentCommandType.RESUME))
+            run = engine.store.get_run(run_id) or {}
         except KeyError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
         except ValueError as exc:

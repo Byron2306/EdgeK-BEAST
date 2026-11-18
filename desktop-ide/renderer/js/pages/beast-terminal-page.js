@@ -72,12 +72,14 @@
           <header class="beast-panel-head"><div><h3>Execution Receipts</h3><span>Evidence-linked outcomes</span></div><button class="beast-button secondary" data-nav="evidence"><img src="${BeastAssets.icon('evidence')}" alt="">Evidence Forge</button></header>
           <div class="terminal-receipt-list" data-terminal-executions></div>
         </section>
-      </div>`;
+      </div>
+      <div data-terminal-chat></div>`;
     return root;
   }
 
   function renderer() {
     const root=template();
+    const chat = window.BeastTerminalChat?.mount(root.querySelector('[data-terminal-chat]'));
     let disposed=false;
     let outputKey='';
     let listKey='';
@@ -169,7 +171,7 @@
       } catch (error) { BeastStore.patch('terminal',{status:'error',error:String(error.message||error)}); BeastFX.trigger('warning',event.target,{size:210}); }
     });
     if (!BeastStore.get().terminal.history.length && !BeastStore.get().terminal.executions.length) BeastTerminalToolingDoctorBridge.loadTerminalState();
-    return {node:root,dispose(){disposed=true;unsubscribe();}};
+    return {node:root,dispose(){disposed=true;chat?.dispose();unsubscribe();}};
   }
 
   window.BeastTerminalPage={renderer};

@@ -697,6 +697,71 @@
       eventSource.addEventListener('agent_run_started', event => { if(runtime.streamState.stream===eventSource){armWatchdog(assistantId,eventSource);const payload=eventPayload(event);runtime.streamState.runId=String(payload.run_id||'');patch({activeRunId:runtime.streamState.runId});const detail=payload.run_id?`Run ${String(payload.run_id).slice(-8)}`:(payload.session_id?`Session ${String(payload.session_id).slice(-6)}`:'Session ready');mergeAssistantRoute(assistantId,{provider:String(payload.provider||route.provider||''),model:String(payload.model||route.model||''),execution_target:String(payload.execution_target||'local'),target_execution:String(payload.execution_target||'local'),reason:'initial_route_selected'});mergeAssistantPlanState(assistantId,{status:'running',active_step_id:'inspect_plan_dispatch',reason:'durable coding run active'});appendTurn(assistantId,{type:'agent_turn',kind:'run',text:`Coding run started · ${detail}`,state:'done',role:'agent',authority:'selected workspace scope',provider:String(payload.provider||route.provider||''),execution_target:String(payload.execution_target||'local')});updateProgress(assistantId,'run','Coding run started',detail,'done');persist();} });
       eventSource.addEventListener('agent_run_preflight', event => { if(runtime.streamState.stream===eventSource){armWatchdog(assistantId,eventSource);const payload=eventPayload(event);const recipes=Array.isArray(payload.recipes)?payload.recipes:[];const skipped=Array.isArray(payload.skipped_tools)?payload.skipped_tools:[];const detail=`Pathfinder ${payload.route_id||'ready'} · ${recipes.length} verified recipe(s) · ${skipped.length} optional tool(s) skipped`;appendTrace('preflight',detail);appendTurn(assistantId,{type:'tool_result',kind:'preflight',tool:'Pathfinder/SkillTree',text:detail,state:'done',role:'tool',authority:'advisory only'});updateProgress(assistantId,'preflight','Pathfinder preflight',`${recipes.length} verified recipe(s) · advisory only`,'done');} });
       eventSource.addEventListener('agent_run_context', event => { if(runtime.streamState.stream===eventSource){armWatchdog(assistantId,eventSource);const payload=eventPayload(event);const locked=Array.isArray(payload.files)?payload.files:files;const unreadable=Array.isArray(payload.unreadable_files)?payload.unreadable_files:[];const aliases=Array.isArray(payload.file_aliases)?payload.file_aliases:[];const lockedRefs=new Set([...locked,...aliases.map(item=>String(item.requested||'')),...aliases.map(item=>String(item.resolved||''))].filter(Boolean));const missing=files.filter(path=>!lockedRefs.has(path));const loaded=payload.content_loaded!==false&&locked.length>0&&!missing.length;patch({contextFiles:normalizeContextFiles([...files,...locked])});const failure=[...unreadable.map(item=>`${item.path||'file'}: ${item.error||'unreadable'}`),...missing.map(path=>`${path}: not locked by backend`)].join(' · ');const aliasText=aliases.length?` (${aliases.map(item=>`${item.requested} → ${item.resolved}`).join(', ')})`:'';const detail=loaded?`Content loaded: ${locked.join(', ')}${aliasText}`:`Context mismatch/read failure: ${failure||'no readable file reached the run'}`;updateProgress(assistantId,'context',loaded?'Context content loaded':'Context mismatch or read failure',loaded?`${locked.join(' · ')}${aliasText}`:failure||'No readable file reached the agent',loaded?'done':'failed');appendTrace('context',detail);appendTurn(assistantId,{type:'tool_result',kind:'context_read',tool:'Workspace File Read',text:detail,state:loaded?'done':'failed',role:'tool',authority:'selected files only'});} });
+      // BEAST_INTEGRATION_003B: guarded integration SSE receipt.
+      eventSource.addEventListener('agent_run_integration', event => {
+        if (runtime.streamState.stream !== eventSource) return;
+
+        const expectedRun = String(runtime.streamState.runId || '');
+        if (!expectedRun) return;
+
+        const sequence = Number(event.lastEventId);
+        if (!Number.isSafeInteger(sequence) || sequence <= 0) {
+          appendTrace('integration', 'Rejected: invalid SSE sequence');
+          return;
+        }
+
+        let payload;
+        try {
+          payload = JSON.parse(event.data || '{}');
+          if (payload && typeof payload.payload === 'object') {
+            payload = payload.payload;
+          }
+        } catch (_) {
+          appendTrace('integration', 'Rejected: malformed SSE JSON');
+          return;
+        }
+
+        if (!payload || typeof payload !== 'object' ||
+            Array.isArray(payload)) return;
+
+        const claimedRun = String(payload.run_id || '');
+        if (claimedRun && claimedRun !== expectedRun) {
+          appendTrace('integration', 'Rejected: run identity mismatch');
+          return;
+        }
+
+        const receipt =
+          window.BeastIntegrationMap?.recordLifecycleEvent?.({
+            ...payload,
+            run_id: expectedRun,
+            sequence
+          });
+
+        if (!receipt) return;
+
+        // Cursor advances only after the receipt is accepted.
+        eventPayload(event);
+
+        appendTrace('integration',
+          `${receipt.capability}: ${receipt.stage}/${receipt.operation} ` +
+          `[${receipt.status}] ` +
+          (receipt.effectCommitted
+            ? 'producer commit claim; independent verification pending'
+            : 'no durable effect proven'));
+        const integrationDetail = `${receipt.stage}/${receipt.operation} · ${receipt.status}${receipt.reason ? ` · ${receipt.reason}` : ''}`;
+        appendTurn(assistantId,{type:'integration_receipt',kind:'integration',tool:receipt.capability,text:integrationDetail,state:receipt.status==='failed'?'failed':'done',role:'tool',authority:'advisory or existing gate only',evidence:receipt.artifacts||{}});
+        updateProgress(assistantId,`integration-${receipt.capability}`.replace(/[^a-z0-9-]/gi,'-'),`${receipt.capability} · ${receipt.status}`,integrationDetail,receipt.status==='failed'?'failed':'done');
+      });
+      eventSource.addEventListener('agent_run_interception', event => {
+        if (runtime.streamState.stream !== eventSource) return;
+        armWatchdog(assistantId,eventSource);
+        const payload=eventPayload(event);
+        const saved=Number(payload.savings?.saved_tokens||0);
+        const detail=`${String(payload.stop_reason||'stream observed').replaceAll('_',' ')} · ${Number(payload.tokens_emitted||0)} token(s) emitted${saved?` · ${saved} saved`:''}`;
+        appendTrace('interception',detail);
+        appendTurn(assistantId,{type:'stream_interception',kind:'compute',tool:'Streaming Interceptor',text:detail,state:payload.upstream_cancel_requested?'done':'active',role:'model',authority:'provider stream cancellation'});
+        updateProgress(assistantId,'interception','Provider stream intercepted',detail,payload.upstream_cancel_requested?'done':'active');
+      });
       eventSource.addEventListener('agent_run_stage', event => { if (runtime.streamState.stream === eventSource) {armWatchdog(assistantId,eventSource);const text=String(eventPayload(event).text||'Working').replaceAll('_',' ');appendTrace('stage',text);appendTurn(assistantId,{type:'agent_reasoning',kind:'stage',text,state:'active',role:'agent'});updateProgress(assistantId,'stage',text,'Agent stage','active');} });
       eventSource.addEventListener('agent_run_tool', event => { if (runtime.streamState.stream === eventSource) {armWatchdog(assistantId,eventSource);const payload=eventPayload(event);const text=String(payload.text||'Using repository tool');const turnType=payload.type||'tool_result';const turnState=payload.status==='deferred'?'failed':turnType==='tool_call'?'active':'done';appendTrace('tool',text);appendTurn(assistantId,{type:turnType,kind:payload.phase||'tool',tool:payload.tool||'BEAST governed tool',text,state:turnState,role:'tool',authority:payload.authority||'read-only/governed',evidence:payload.evidence||''});updateProgress(assistantId,'tools',turnType==='tool_call'?'Using repository tool':'Repository tool finished',`${payload.tool?`${payload.tool}: `:''}${text}`,turnState);} });
       eventSource.addEventListener('agent_run_permission_request', async event => {
@@ -965,7 +1030,63 @@
     };
     eventSource.addEventListener('agent_run_registered', event => { eventPayload(event); });
     eventSource.addEventListener('agent_run_started', event => { eventPayload(event); updateProgress(assistantId,'run','Durable run resumed',identifier.slice(-12),'done'); });
-    eventSource.addEventListener('agent_run_stage', event => { const payload=eventPayload(event); const text=String(payload.text||'Working').replaceAll('_',' '); appendTrace('stage',text); updateProgress(assistantId,'stage',text,'Recovered event','active'); });
+    // BEAST_INTEGRATION_003B: guarded integration SSE receipt.
+    eventSource.addEventListener('agent_run_integration', event => {
+      if (runtime.streamState.stream !== eventSource) return;
+
+      const expectedRun = String(runtime.streamState.runId || '');
+      if (!expectedRun) return;
+
+      const sequence = Number(event.lastEventId);
+      if (!Number.isSafeInteger(sequence) || sequence <= 0) {
+        appendTrace('integration', 'Rejected: invalid SSE sequence');
+        return;
+      }
+
+      let payload;
+      try {
+        payload = JSON.parse(event.data || '{}');
+        if (payload && typeof payload.payload === 'object') {
+          payload = payload.payload;
+        }
+      } catch (_) {
+        appendTrace('integration', 'Rejected: malformed SSE JSON');
+        return;
+      }
+
+      if (!payload || typeof payload !== 'object' ||
+          Array.isArray(payload)) return;
+
+      const claimedRun = String(payload.run_id || '');
+      if (claimedRun && claimedRun !== expectedRun) {
+        appendTrace('integration', 'Rejected: run identity mismatch');
+        return;
+      }
+
+      const receipt =
+        window.BeastIntegrationMap?.recordLifecycleEvent?.({
+          ...payload,
+          run_id: expectedRun,
+          sequence
+        });
+
+      if (!receipt) return;
+
+      // Cursor advances only after the receipt is accepted.
+      eventPayload(event);
+
+      appendTrace('integration',
+        `${receipt.capability}: ${receipt.stage}/${receipt.operation} ` +
+        `[${receipt.status}] ` +
+        (receipt.effectCommitted
+          ? 'producer commit claim; independent verification pending'
+          : 'no durable effect proven'));
+      const integrationDetail=`${receipt.stage}/${receipt.operation} · ${receipt.status}${receipt.reason?` · ${receipt.reason}`:''}`;
+      appendTurn(assistantId,{type:'integration_receipt',kind:'integration',tool:receipt.capability,text:integrationDetail,state:receipt.status==='failed'?'failed':'done',role:'tool',authority:'advisory or existing gate only',evidence:receipt.artifacts||{}});
+      updateProgress(assistantId,`integration-${receipt.capability}`.replace(/[^a-z0-9-]/gi,'-'),`${receipt.capability} · ${receipt.status}`,integrationDetail,receipt.status==='failed'?'failed':'done');
+    });
+    eventSource.addEventListener('agent_run_interception', event => { const payload=eventPayload(event); const saved=Number(payload.savings?.saved_tokens||0); const detail=`${String(payload.stop_reason||'stream observed').replaceAll('_',' ')} · ${Number(payload.tokens_emitted||0)} token(s) emitted${saved?` · ${saved} saved`:''}`; appendTrace('interception',detail); appendTurn(assistantId,{type:'stream_interception',kind:'compute',tool:'Streaming Interceptor',text:detail,state:payload.upstream_cancel_requested?'done':'active',role:'model',authority:'provider stream cancellation'}); updateProgress(assistantId,'interception','Provider stream intercepted',detail,payload.upstream_cancel_requested?'done':'active'); });
+      eventSource.addEventListener('agent_run_stage', event => { const payload=eventPayload(event); const text=String(payload.text||'Working').replaceAll('_',' '); appendTrace('stage',text); updateProgress(assistantId,'stage',text,'Recovered event','active'); });
     eventSource.addEventListener('agent_run_context', event => { const payload=eventPayload(event); const files=Array.isArray(payload.files)?payload.files:[]; if(files.length) patch({contextFiles:normalizeContextFiles([...BeastStore.get().aiCoding.contextFiles,...files])}); updateProgress(assistantId,'context','Context restored',`${files.length} file(s)`,'done'); });
     eventSource.addEventListener('agent_run_tool', event => { const payload=eventPayload(event); appendTrace('tool',String(payload.text||payload.tool||'Tool event')); appendTurn(assistantId,{type:payload.type||'tool_result',kind:payload.phase||'tool',tool:payload.tool||'BEAST tool',text:String(payload.text||''),state:payload.status==='deferred'?'failed':payload.type==='tool_call'?'active':'done',role:'tool',authority:payload.authority||'governed'}); });
     eventSource.addEventListener('agent_run_permission_request', async event => { await handlePermissionRequest({ event, assistantId, eventSource }); });

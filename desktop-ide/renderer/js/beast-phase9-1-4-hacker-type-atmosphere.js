@@ -64,17 +64,32 @@
     resizeHandler = null;
   }
 
+  function painted(el) {
+    // beast-new-route-compat.css sets #beastMatrixFront{display:none!important}
+    // on desktop widths.  Building a rain controller for a canvas that is never
+    // composited means a second full-screen canvas is painted every 80 ms for
+    // nothing, so only animate layers that can actually be seen.
+    if (!el) return false;
+    const style = getComputedStyle(el);
+    return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+  }
+
   function start() {
     if (running || document.body.dataset.beastAtmosphere !== 'matrix-grid' || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     running = true;
-    const bg = makeRain(document.getElementById('beastMatrix'), {
-      step:31,fontSize:12,speedMin:.45,speedMax:1.05,alphaMin:.13,alphaMax:.34,
-      trailMin:6,trailMax:12,fade:.11,headGlow:7,gap:5,velocity:2.8,tick:160
-    });
-    const front = makeRain(document.getElementById('beastMatrixFront'), {
-      step:82,fontSize:11,speedMin:.3,speedMax:.72,alphaMin:.06,alphaMax:.17,
-      trailMin:4,trailMax:8,fade:.15,headGlow:5,gap:5,velocity:2.5,tick:180
-    });
+    const bg = painted(document.getElementById('beastMatrix'))
+      ? makeRain(document.getElementById('beastMatrix'), {
+        step:31,fontSize:12,speedMin:.45,speedMax:1.05,alphaMin:.13,alphaMax:.34,
+        trailMin:6,trailMax:12,fade:.11,headGlow:7,gap:5,velocity:2.8,tick:160
+      })
+      : null;
+    const front = painted(document.getElementById('beastMatrixFront'))
+      ? makeRain(document.getElementById('beastMatrixFront'), {
+        step:82,fontSize:11,speedMin:.3,speedMax:.72,alphaMin:.06,alphaMax:.17,
+        trailMin:4,trailMax:8,fade:.15,headGlow:5,gap:5,velocity:2.5,tick:180
+      })
+      : null;
+    if (!bg && !front) { running = false; return; }
     function draw() {
       if (!running) return;
       if (!document.hidden) {

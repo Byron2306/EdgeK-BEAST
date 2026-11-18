@@ -7,7 +7,6 @@ from typing import Any
 
 from app.kernel.agents.run_state import AgentRunState
 
-
 LEGACY_TO_CANONICAL: dict[str, str] = {
     "agent_run_registered": "agent.run.registered",
     "agent_run_started": "agent.run.started",
@@ -88,10 +87,22 @@ def legacy_event_projection(event_type: str, payload: dict[str, Any]) -> tuple[s
     """Project canonical planner events onto the Pair Programmer wire contract."""
     name = CANONICAL_TO_LEGACY.get(event_type, "")
     projected = dict(payload or {})
+
+    # BEAST_INTEGRATION_003D:
+    # Restore the legacy SSE event name for canonical integration replay.
+    # Preserve the canonical status in the payload.
+    if event_type in {
+        "agent.integration.fired",
+        "agent.integration.skipped",
+        "agent.integration.failed",
+    }:
+        name = "agent_run_integration"
+        projected["status"] = event_type.rsplit(".", 1)[-1]
     if event_type in {"agent.planner.started", "agent.planner.turn.started", "agent.planner.decision"}:
         name = "agent_run_stage"
         if event_type == "agent.planner.started":
-            projected.setdefault("text", "agent planner started")
+            projected.setdefault("engine", "typed_planner_v1")
+            projected.setdefault("text", "typed planner v1 started")
         elif event_type == "agent.planner.turn.started":
             projected.setdefault("text", f"planner turn {projected.get('turn', '?')} started")
         else:
@@ -143,7 +154,12 @@ def legacy_event_projection(event_type: str, payload: dict[str, Any]) -> tuple[s
         projected.setdefault("type", "tool_result")
         projected.setdefault("tool", observation.get("tool_id") or projected.get("tool_id") or "BEAST governed tool")
         projected.setdefault("status", "failed" if event_type == "agent.tool.failed" else "completed")
-        projected.setdefault("text", observation.get("error") or f"{projected.get('tool')} finished")
+        runtime = str(projected.get("runtime") or "")
+        suffix = " via Effect TS" if runtime == "effect_ts" else ""
+        projected.setdefault("text", observation.get("error") or f"{projected.get('tool')} finished{suffix}")
+    elif event_type == "agent.stream.interception":
+        name = "agent_run_interception"
+        projected.setdefault("status", "cancelled_upstream" if projected.get("upstream_cancel_requested") else "observed")
     elif not name and event_type.startswith("agent.planner."):
         name = "agent_run_stage"
         projected.setdefault("text", event_type.replace("agent.", "").replace(".", " "))

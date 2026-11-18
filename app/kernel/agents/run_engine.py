@@ -18,6 +18,7 @@ from app.kernel.agents.run_state import AgentRunState, TERMINAL_STATES, can_tran
 from app.kernel.agents.run_store import AgentRunStore
 from app.kernel.agents.tool_models import ToolRequest
 from app.kernel.agents.tool_runtime import AgentToolRuntime, build_default_tool_registry
+from app.kernel.agents.canonical_tool_registry import CanonicalToolRegistry
 
 
 class AgentRunCancelled(asyncio.CancelledError):
@@ -32,7 +33,10 @@ class AgentRunEngine:
         self.workspace_root = Path(workspace_root).expanduser().resolve()
         self.store = AgentRunStore(self.workspace_root)
         self._sensorium = None
-        self.tool_registry = build_default_tool_registry()
+        self.tool_registry = CanonicalToolRegistry.from_agent_registry(
+            build_default_tool_registry(),
+            workspace_root=self.workspace_root,
+        )
         self.tool_runtime = AgentToolRuntime(self, self.tool_registry)
 
     def create_run(
@@ -123,6 +127,44 @@ class AgentRunEngine:
     def checkpoint(self, run_id: str, payload: dict[str, Any]) -> dict[str, Any]:
         return self.store.checkpoint(run_id, payload)
 
+    def record_planner_observation(
+        self,
+        run_id: str,
+        *,
+        tool_id: str,
+        status: str,
+        arguments: dict[str, Any] | None = None,
+        result: dict[str, Any] | None = None,
+        evidence_digest: str | None = None,
+        duration_ms: float = 0.0,
+    ) -> dict[str, Any]:
+        """Record a structured planner observation for Episode Envelope building.
+
+        Observations are appended to ``checkpoint.planner.observations`` and are
+        later consumed by ``EpisodeEnvelopeBuilder.build``. Each observation
+        captures a tool step with its arguments, result, and evidence digest.
+        """
+        run = self.store.get_run(run_id)
+        if not run:
+            raise KeyError(f"unknown agent run: {run_id}")
+        checkpoint = dict(run.get("checkpoint") or {})
+        planner = dict(checkpoint.get("planner") or {})
+        observations = list(planner.get("observations") or [])
+        index = len(observations)
+        observation = {
+            "index": index,
+            "tool_id": str(tool_id),
+            "status": str(status),
+            "arguments": dict(arguments or {}),
+            "result": dict(result or {}),
+            "evidence_digest": str(evidence_digest or ""),
+            "duration_ms": float(duration_ms),
+        }
+        observations.append(observation)
+        planner["observations"] = observations
+        checkpoint["planner"] = planner
+        return self.store.checkpoint(run_id, checkpoint)
+
     def merge_checkpoint(self, run_id: str, payload: dict[str, Any]) -> dict[str, Any]:
         run = self.store.get_run(run_id)
         if not run:
@@ -192,6 +234,17 @@ class AgentRunEngine:
         self._mirror_event(event)
         AGENT_RUN_CANCELLATIONS.register(run_id)
         return self.store.get_run(run_id) or {}
+
+    def effect_agent(self, run_id: str, **kwargs: Any):
+        """Build the Phase 3 Effect-based runtime for one durable run.
+
+        The runtime owns command dispatch, context projection and event
+        streaming; this facade method keeps that import out of module import
+        cycles and gives routes a single construction point.
+        """
+        from app.kernel.agents.effect_agent_runtime import EffectAgentRuntime
+
+        return EffectAgentRuntime(self, run_id, **kwargs)
 
     def list_tools(self, *, category: str = "", effect: str = "") -> list[dict[str, Any]]:
         return self.tool_registry.list(category=category, effect=effect)

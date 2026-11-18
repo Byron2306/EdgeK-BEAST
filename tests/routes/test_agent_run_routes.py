@@ -6,7 +6,9 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from app.routes.ide import build_ide_router
-from app.routes.ide_routes.agent_runs import _prefer_direct_ollama_planner
+from app.routes.ide_routes.agent_runs import _prefer_direct_ollama_planner, _prefer_direct_planner
+from app.kernel.agents.run_worker import TURN_RUNTIMES
+from app.routes.ide_routes import agent_runs as agent_run_routes
 
 
 class DummyCodeCortex:
@@ -57,6 +59,52 @@ def test_agent_run_crud_replay_cancel_and_resume(tmp_path):
 
     verify = client.get(f"/edgek/agent-runs/{run_id}/verify", params={"root_path": str(tmp_path)})
     assert verify.json()["head_matches"] is True
+
+
+def test_turn_rehydrates_a_missing_in_process_planner_runtime(tmp_path, monkeypatch):
+    client = client_for(tmp_path)
+    session = client.post("/edgek/ide/agent-sessions/create", json={
+        "root_path": str(tmp_path),
+        "objective": "Continue the durable run",
+        "mode": "agent",
+        "provider": "nvidia_nim",
+        "model": "nvidia/test-model",
+    }).json()["session"]
+    run = client.post("/edgek/agent-runs", json={
+        "root_path": str(tmp_path),
+        "session_id": session["session_id"],
+        "objective": "Continue the durable run",
+        "provider": "nvidia_nim",
+        "model": "nvidia/test-model",
+        "request": {"launch_strategy": "typed_planner"},
+        "launch": False,
+    }).json()["run"]
+    run_id = run["run_id"]
+    TURN_RUNTIMES.pop(run_id, None)
+    relaunched = []
+
+    class RehydratedRuntime:
+        async def run_one_turn(self, requested_run_id):
+            assert requested_run_id == run_id
+            return {"run_id": run_id, "state": "completed"}
+
+    def fake_launch(app, root, durable_run, **kwargs):
+        relaunched.append((root, durable_run["run_id"]))
+        TURN_RUNTIMES[run_id] = RehydratedRuntime()
+        return {"active": True, "reused": False}
+
+    monkeypatch.setattr(agent_run_routes, "_launch_for_run", fake_launch)
+    try:
+        response = client.post(
+            f"/edgek/agent-runs/{run_id}/turn",
+            params={"root_path": str(tmp_path)},
+            json={"root_path": str(tmp_path)},
+        )
+    finally:
+        TURN_RUNTIMES.pop(run_id, None)
+
+    assert response.status_code == 200
+    assert relaunched == [(tmp_path.resolve(), run_id)]
 
 
 def test_legacy_simulation_is_recorded_as_durable_run(tmp_path):
@@ -138,6 +186,22 @@ def test_nim_typed_planner_does_not_select_ollama_route():
         "provider": "nvidia_nim",
         "mode": "chat",
         "request": {"launch_strategy": "typed_planner"},
+    }) is False
+
+
+def test_explicit_typed_planner_strategy_is_provider_neutral():
+    assert _prefer_direct_planner({
+        "provider": "fireworks",
+        "mode": "agent",
+        "request": {"launch_strategy": "typed_planner"},
+    }) is True
+
+
+def test_legacy_simulation_without_typed_strategy_keeps_compatibility_worker():
+    assert _prefer_direct_planner({
+        "provider": "fireworks",
+        "mode": "analysis",
+        "request": {"simulate": True},
     }) is False
 
 

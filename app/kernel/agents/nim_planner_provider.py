@@ -15,6 +15,7 @@ from typing import Any
 from app.kernel.commons.route_damping import RouteFlapDampener
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType
 from app.kernel.agents.planner_provider import PlannerDecisionError, parse_planner_decision
+from app.kernel.compute.streaming_interceptor import StreamingComputeInterceptor, StreamingInterceptionEngine
 
 
 class NIMPlannerProvider:
@@ -47,6 +48,7 @@ class NIMPlannerProvider:
         route_dampener: RouteFlapDampener | None = None,
         route_id: str = "",
         on_token: Any = None,
+        stream_interceptor: StreamingComputeInterceptor | None = None,
     ) -> None:
         # Use an instruct model for the control plane by default. Reasoning
         # models are excellent for long answers but can spend the entire
@@ -65,6 +67,12 @@ class NIMPlannerProvider:
         self.route_dampener = route_dampener
         self.route_id = route_id or f"nim:{self.model}"
         self.on_token = on_token
+        self.stream_interceptor = stream_interceptor or StreamingComputeInterceptor(
+            StreamingInterceptionEngine(
+                max_output_tokens=int(os.environ.get("BEAST_NIM_MAX_TOKENS", "2048")),
+                schema_contract=self.ACTION_SCHEMA,
+            )
+        )
         self.last_partial_text = ""
         self.last_usage: dict[str, Any] = {}
         self.last_route = {"provider": "nvidia_nim", "engine": "nvidia_nim", "route_kind": "nim", "reason": "direct_nim_inference"}
@@ -85,16 +93,16 @@ class NIMPlannerProvider:
 
     @classmethod
     def _request_timeout(cls, *, run: dict[str, Any], default_timeout: float) -> float:
-        base = max(5.0, float(default_timeout))
+        base = max(30.0, float(default_timeout))
         if cls._is_repair_turn(run):
-            return max(6.0, min(base, float(os.environ.get("BEAST_NIM_REPAIR_TIMEOUT", "12"))))
+            return max(15.0, min(base, float(os.environ.get("BEAST_NIM_REPAIR_TIMEOUT", "30"))))
         planner = cls._planner_state(run)
         observations = planner.get("observations") if isinstance(planner.get("observations"), list) else []
         turn = max(0, int(planner.get("turn") or 0))
         if turn >= 4 or len(observations) >= 3:
-            return max(5.0, min(base, float(os.environ.get("BEAST_NIM_LATE_TURN_TIMEOUT", "10"))))
+            return max(10.0, min(base, float(os.environ.get("BEAST_NIM_LATE_TURN_TIMEOUT", "20"))))
         if observations:
-            return max(6.0, min(base, float(os.environ.get("BEAST_NIM_FOLLOWUP_TIMEOUT", "14"))))
+            return max(15.0, min(base, float(os.environ.get("BEAST_NIM_FOLLOWUP_TIMEOUT", "30"))))
         return base
 
     def _route_event(self, event: str) -> dict[str, Any]:
@@ -231,7 +239,12 @@ class NIMPlannerProvider:
                     await asyncio.sleep(0.2 * (attempt + 1))
                     continue
                 raise RuntimeError(f"NIM planner request failed: {error}")
-            raw = self._unwrap_argument_groups(str(body.get("content") or ""))
+            raw = str(body.get("content") or "")
+            # Nemotron reasoning models emit thinking in reasoning_content
+            # instead of content. Fall back to it when content is absent.
+            if not raw.strip():
+                raw = str(body.get("reasoning_content") or "")
+            raw = self._unwrap_argument_groups(raw)
             mode = str(run.get("mode") or "").strip().lower()
             if mode in {"chat", "analysis", "ask"} and raw.strip():
                 try:
@@ -258,6 +271,8 @@ class NIMPlannerProvider:
                 "usage": body.get("usage") if isinstance(body.get("usage"), dict) else {},
                 "finish_reason": body.get("finish_reason"),
             }
+            if isinstance(body.get("stream_interception"), dict):
+                self.last_usage["stream_interception"] = body["stream_interception"]
             try:
                 decision = parse_planner_decision(raw)
                 self.last_route = {"provider": "nvidia_nim", "engine": "nvidia_nim", "route_kind": "direct_generate", "reason": "nim_chat_completions"}
@@ -287,6 +302,9 @@ class NIMPlannerProvider:
         content: list[str] = []
         usage: dict[str, Any] = {}
         finish_reason = ""
+        max_tokens = int(payload.get("max_tokens") or os.environ.get("BEAST_NIM_MAX_TOKENS", "2048"))
+        state = self.stream_interceptor.engine.create_initial_state(max_tokens)
+        stopped_upstream = False
         with _egress.urlopen("nim_planner_provider", request, timeout=self.timeout_seconds) as response:
             for raw_line in response:
                 line = raw_line.decode("utf-8", errors="replace").strip()
@@ -306,6 +324,7 @@ class NIMPlannerProvider:
                 delta = choice.get("delta") if isinstance(choice.get("delta"), dict) else {}
                 text = str(delta.get("content") or "")
                 if text:
+                    state.raw_chunks_seen += 1
                     content.append(text)
                     self.last_partial_text += text
                     if callable(self.on_token):
@@ -313,7 +332,27 @@ class NIMPlannerProvider:
                             self.on_token(text)
                         except Exception:
                             pass
-        return {"content": "".join(content), "usage": usage, "finish_reason": finish_reason}
+                    normalized = self.stream_interceptor.provider_adapter.normalize_event(text)
+                    token_count = normalized.token_count if normalized is not None else 1
+                    result = self.stream_interceptor.engine.process_chunk(state, text, token_count)
+                    if result.should_stop:
+                        stopped_upstream = True
+                        close = getattr(response, "close", None)
+                        if callable(close):
+                            close()
+                        break
+        report = self.stream_interceptor.finalize_interception(
+            state,
+            content,
+            upstream_cancel_requested=stopped_upstream,
+            baseline_output_tokens=max_tokens,
+        )
+        return {
+            "content": "".join(content),
+            "usage": usage,
+            "finish_reason": finish_reason,
+            "stream_interception": report.to_dict(),
+        }
 
     def _request_json(self, payload: dict[str, Any]) -> dict[str, Any]:
         request = urllib.request.Request(
