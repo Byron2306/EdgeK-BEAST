@@ -11,7 +11,7 @@
   "main": "main.js",
   "private": true,
   "scripts": {
-    "start": "node scripts/start-desktop-ide.js",
+    "start": "node scripts/start-desktop-ide.cjs",
     "smoke": "node scripts/smoke-desktop-ide.js",
     "smoke:launch": "node scripts/launch-smoke-desktop-ide.js",
     "check:visual-contract": "node scripts/check-hacker-coherence.js",
@@ -19,10 +19,14 @@
     "smoke:parity:foundation": "node scripts/verify-parity-foundation-static.js",
     "smoke:targets": "node scripts/verify-execution-target-parity.js",
     "smoke:remote-dap": "node scripts/verify-remote-dap.js",
+    "typecheck": "tsgo --noEmit -p tsconfig.json",
+    "typecheck:fast": "tsgo --noEmit -p tsconfig.json --pretty false",
+    "typecheck:watch": "tsgo --noEmit -p tsconfig.json --watch",
+    "typecheck:verify": "node scripts/verify-typescript-native.js",
     "phase0:identity": "python3 ../scripts/phase0/generate_build_identity.py",
     "phase0:verify": "python3 ../scripts/phase0/verify_phase0.py",
     "phase0:report": "python3 ../scripts/phase0/generate_release_contract.py",
-    "visual:audit": "node scripts/start-desktop-ide.js scripts/visual-audit-beast-studio.js",
+    "visual:audit": "node scripts/start-desktop-ide.cjs scripts/visual-audit-beast-studio.js",
     "lint": "ruff check ../app/ --select E,F,W,I --ignore E501 --statistics",
     "lint:fix": "ruff check ../app/ --select E,F,W,I --ignore E501 --fix",
     "lint:format": "ruff format ../app/ --check",
@@ -32,8 +36,9 @@
     "phase2:verify": "python3 ../scripts/phase2/verify_agent_run_foundation.py && python3 ../scripts/phase2/verify_agent_run_execution.py"
   },
   "devDependencies": {
+    "@typescript/native-preview": "^7.0.0-dev.20260707.2",
     "electron": "^43.1.0",
-    "electron-builder": "^26.15.3"
+    "electron-builder": "^26.18.0"
   },
   "build": {
     "appId": "ai.edgek.beast.ide",
@@ -99,10 +104,13 @@
     }
   },
   "dependencies": {
-    "bash-language-server": "^5.4.3",
+    "bash-language-server": "^3.3.1",
+    "effect": "^4.1.4",
     "js-yaml": "^4.1.0",
-    "monaco-editor": "^0.55.1",
+    "ls": "^1.0.0",
+    "monaco-editor": "^0.57.0",
     "pyright": "^1.1.411",
+    "scrips": "^1.2.0",
     "typescript": "^5.9.3",
     "typescript-language-server": "^4.3.4",
     "vscode-langservers-extracted": "^4.10.0"
@@ -110,5 +118,10 @@
   "overrides": {
     "dompurify": "^3.4.12",
     "minimatch": "10.2.3"
-  }
+  },
+  "allowScripts": {
+    "core-js@3.51.0": true,
+    "electron-winstaller@5.4.0": true
+  },
+  "type": "commonjs"
 }
