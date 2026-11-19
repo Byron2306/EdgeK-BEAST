@@ -365,3 +365,117 @@ def test_gateway_resumes_exact_approved_bind_after_checkpoint_is_replaced(tmp_pa
         assert engine.store.get_approval(run_id, approval["approval_id"])["resume_claimed"]
     finally:
         TURN_RUNTIMES.pop(run_id, None)
+
+
+def test_direct_run_stores_canonical_nemotron_id(tmp_path):
+    client = client_for(tmp_path)
+    label = "Nemotron 3.5 Super VL 120B A12B"
+    session = client.post("/edgek/ide/agent-sessions/create", json={
+        "root_path": str(tmp_path), "provider": "nvidia_nim", "model": label,
+    }).json()["session"]
+    response = client.post("/edgek/agent-runs", json={
+        "root_path": str(tmp_path), "session_id": session["session_id"],
+        "provider": "nvidia_nim", "model": label,
+        "request": {"launch_strategy": "direct_coder"},
+    })
+    assert response.status_code == 200
+    assert response.json()["run"]["model"] == "nvidia/nemotron-3.5-super-vl-120b-a12b"
+
+
+def test_direct_nim_turns_execute_real_effect_worktree_and_verify(tmp_path, monkeypatch):
+    """Only the external provider response is simulated."""
+    import io
+    import json
+    import subprocess
+    from app.kernel.agents import nim_planner_provider
+    from app.kernel.agents.run_engine import AgentRunEngine
+
+    def git(*args):
+        subprocess.run(["git", "-C", str(tmp_path), *args], check=True)
+
+    git("init", "-q")
+    git("config", "user.name", "BEAST Test")
+    git("config", "user.email", "beast@example.test")
+    target = tmp_path / "sample.py"
+    target.write_text("VALUE = 1\n")
+    (tmp_path / "test_sample.py").write_text(
+        "import unittest\nfrom sample import VALUE\n\n"
+        "class SampleTest(unittest.TestCase):\n"
+        "    def test_value(self):\n        self.assertEqual(VALUE, 2)\n"
+    )
+    git("add", "sample.py", "test_sample.py")
+    git("commit", "-qm", "fixture")
+
+    def tool(tool_id, **arguments):
+        return {"decision_type": "tool", "tool_id": tool_id, "arguments": arguments}
+
+    actions = iter([
+        tool("worktree.bind", objective="Update VALUE", base_ref="HEAD"),
+        tool("workspace.read_range", path="sample.py", start_line=1, line_count=3),
+        tool("worktree.replace_exact", path="sample.py", old_text="VALUE = 1", new_text="VALUE = 2"),
+        tool("worktree.verify", command=["python", "-m", "unittest", "test_sample"]),
+        {"decision_type": "complete", "tool_id": "", "arguments": {}, "summary": "Verified"},
+    ])
+    model_id = "nvidia/nemotron-3.5-super-vl-120b-a12b"
+
+    def stream_response(_operation, request, **_kwargs):
+        spec = json.loads(request.data)
+        assert request.full_url == "https://integrate.api.nvidia.com/v1/chat/completions"
+        assert spec["model"] == model_id and spec["stream"] is True
+        assert spec["chat_template_kwargs"]["enable_thinking"] is True
+        action = json.dumps(next(actions))
+
+        def sse(delta):
+            return ("data: " + json.dumps({"choices": [{"delta": delta}]}) + "\n").encode()
+
+        class Response(io.BytesIO):
+            def __iter__(self):
+                yield sse({"reasoning_content": "Inspecting fixture."})
+                events = AgentRunEngine(tmp_path).store.events(run_id, limit=200)
+                assert events[-1]["event_type"] == "agent.model.reasoning"
+                assert events[-1]["payload"]["text"] == "Inspecting fixture."
+                yield sse({"content": action})
+                yield b"data: [DONE]\n"
+
+        return Response()
+
+    monkeypatch.setenv("NVIDIA_API_KEY", "fixture")
+    monkeypatch.setenv("NVIDIA_NIM_BASE_URL", "https://integrate.api.nvidia.com/v1")
+    monkeypatch.setenv("BEAST_DIRECT_CODER_STREAM", "1")
+    monkeypatch.setenv("BEAST_DIRECT_CODER_THINKING", "1")
+    monkeypatch.setattr(nim_planner_provider._egress, "urlopen", stream_response)
+    client = client_for(tmp_path)
+    root = {"root_path": str(tmp_path)}
+    label = "Nemotron 3.5 Super VL 120B A12B"
+    session = client.post("/edgek/ide/agent-sessions/create", json={
+        **root, "provider": "nvidia_nim", "model": label,
+    }).json()["session"]
+    response = client.post("/edgek/agent-runs", json={
+        **root, "session_id": session["session_id"], "objective": "Update VALUE and verify.",
+        "provider": "nvidia_nim", "model": label,
+        "launch": True, "request": {"launch_strategy": "direct_coder", "autonomy": "autopilot"},
+    })
+    assert response.status_code == 200, response.text
+    run_id = response.json()["run"]["run_id"]
+    path = f"/edgek/agent-runs/{run_id}"
+    for _ in range(5):
+        turn = client.post(path + "/turn", params=root, json={})
+        assert turn.status_code == 200, turn.text
+    run = turn.json()["run"]
+    events = client.get(path + "/events", params=root).json()["events"]
+    assert run["state"] == "completed", [(e["event_type"], e["payload"]) for e in events]
+    assert run["model"] == model_id
+    assert target.read_text() == "VALUE = 1\n"
+    assert (Path(run["checkpoint"]["worktree_root"]) / "sample.py").read_text() == "VALUE = 2\n"
+    assert sum(e["event_type"] == "agent.coder.started" for e in events) == 1
+    assert not any(e["event_type"].startswith("agent.planner.") for e in events)
+    tool_events = [e for e in events if e["event_type"] == "agent.tool.completed"]
+    assert len(tool_events) == 4
+    for event in tool_events:
+        assert event["payload"]["runtime"] == "effect_ts"
+        assert event["payload"]["observation"]["observation_id"]
+    edit = tool_events[2]
+    assert "+VALUE = 2" in edit["payload"]["observation"]["result"]["diff"]
+    verification = next(e for e in events if e["event_type"] == "agent.verification.passed")
+    assert verification["sequence"] > edit["sequence"]
+    assert verification["payload"]["returncode"] == 0

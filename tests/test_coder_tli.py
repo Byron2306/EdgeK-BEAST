@@ -953,7 +953,7 @@ async def test_gateway_pause_does_not_auto_submit_a_second_turn(tmp_path: Path):
         await app.submit_text("Inspect this")
         assert posts == ["run-coder"]
         assert app._turn_ready
-        assert any("Planner paused" in row["content"] for row in app.transcript_entries)
+        assert any("Coding run paused" in row["content"] for row in app.transcript_entries)
 
 
 @pytest.mark.asyncio
@@ -1328,3 +1328,21 @@ async def test_copy_file_writes_sanitized_last_run_without_changing_clipboard(tm
         assert "\\x1b[" not in content
         assert app.clipboard == "SENTINEL"
         assert exported[0].stat().st_mode & 0o777 == 0o600
+
+
+@pytest.mark.asyncio
+async def test_input_submits_in_worker_so_diff_binding_responds_during_turn(tmp_path):
+    class HeldRuntime(FakeRuntimeClient):
+        async def start_turn(self, run_id):
+            await asyncio.sleep(0.7)
+            return {"run_id": run_id, "state": "completed"}
+
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=HeldRuntime(tmp_path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        app.query_one(Input).value = "/agent Change the fixture"
+        await pilot.press("enter")
+        assert app._streaming, "the input handler must return before the turn completes"
+        before = app.diff_expanded
+        await pilot.press("f7")
+        assert app.diff_expanded is not before
+        assert app._streaming

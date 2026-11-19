@@ -93,6 +93,9 @@ class NIMPlannerProvider:
         route_id: str = "",
         on_token: Any = None,
         on_reasoning: Any = None,
+        stream: bool | None = None,
+        enable_thinking: bool = False,
+        allow_reasoning_as_action: bool = True,
         stream_interceptor: StreamingComputeInterceptor | None = None,
         runtime_governor: Any = None,
     ) -> None:
@@ -115,6 +118,9 @@ class NIMPlannerProvider:
         self.route_id = route_id or f"nim:{self.model}"
         self.on_token = on_token
         self.on_reasoning = on_reasoning
+        self.stream = stream
+        self.enable_thinking = enable_thinking
+        self.allow_reasoning_as_action = allow_reasoning_as_action
         self.stream_interceptor = stream_interceptor or StreamingComputeInterceptor(
             StreamingInterceptionEngine(
                 max_output_tokens=int(os.environ.get("BEAST_NIM_MAX_TOKENS", "2048")),
@@ -174,7 +180,9 @@ class NIMPlannerProvider:
             "temperature": 0,
             "seed": 731947 + int(turn),
             "max_tokens": int(os.environ.get("BEAST_NIM_MAX_TOKENS", "2048")),
-            "stream": os.environ.get("BEAST_NIM_PLANNER_STREAM", "0").strip().lower() in {"1", "true", "yes"},
+            "stream": self.stream if self.stream is not None else (
+                os.environ.get("BEAST_NIM_PLANNER_STREAM", "0").strip().lower() in {"1", "true", "yes"}
+            ),
         }
         if prompt.startswith(FOCUSED_EXPLANATION_HEADER):
             schema = self.FOCUSED_EXPLANATION_SCHEMA
@@ -187,7 +195,7 @@ class NIMPlannerProvider:
         if self.model.startswith("nvidia/nemotron-3.5-"):
             # These models otherwise spend the bounded controller budget on
             # hidden reasoning before emitting the executable JSON action.
-            payload["chat_template_kwargs"] = {"enable_thinking": False}
+            payload["chat_template_kwargs"] = {"enable_thinking": self.enable_thinking}
         # Keep the older nvext path available for compatibility with NIM
         # deployments that still expect guided_json passthrough.
         if os.environ.get("BEAST_NIM_GUIDED_JSON", "0").strip().lower() in {"1", "true", "yes"}:
@@ -341,12 +349,12 @@ class NIMPlannerProvider:
             # Nemotron reasoning models emit thinking in reasoning_content
             # instead of content. Fall back to it when content is absent.
             reasoning_text = str(body.get("reasoning_content") or "")
-            if reasoning_text.strip() and callable(self.on_reasoning):
+            if reasoning_text.strip() and not body.get("reasoning_streamed") and callable(self.on_reasoning):
                 try:
                     self.on_reasoning(reasoning_text)
                 except Exception:
                     pass
-            if not raw.strip():
+            if not raw.strip() and self.allow_reasoning_as_action:
                 raw = reasoning_text
             raw = self._unwrap_argument_groups(raw)
             mode = str(run.get("mode") or "").strip().lower()
@@ -404,6 +412,7 @@ class NIMPlannerProvider:
             method="POST",
         )
         content: list[str] = []
+        reasoning: list[str] = []
         usage: dict[str, Any] = {}
         finish_reason = ""
         max_tokens = int(payload.get("max_tokens") or os.environ.get("BEAST_NIM_MAX_TOKENS", "2048"))
@@ -426,6 +435,14 @@ class NIMPlannerProvider:
                 choice = choices[0] if choices and isinstance(choices[0], dict) else {}
                 finish_reason = str(choice.get("finish_reason") or finish_reason)
                 delta = choice.get("delta") if isinstance(choice.get("delta"), dict) else {}
+                thought = str(delta.get("reasoning_content") or "")
+                if thought:
+                    reasoning.append(thought)
+                    if callable(self.on_reasoning):
+                        try:
+                            self.on_reasoning(thought)
+                        except Exception:
+                            pass
                 text = str(delta.get("content") or "")
                 if text:
                     state.raw_chunks_seen += 1
@@ -453,6 +470,9 @@ class NIMPlannerProvider:
         )
         return {
             "content": "".join(content),
+            # Stream callbacks have already received these deltas.
+            "reasoning_content": "".join(reasoning),
+            "reasoning_streamed": True,
             "usage": usage,
             "finish_reason": finish_reason,
             "stream_interception": report.to_dict(),
@@ -484,6 +504,7 @@ class NIMPlannerProvider:
                 pass
         return {
             "content": content,
+            "reasoning_content": str(message.get("reasoning_content") or ""),
             "usage": body.get("usage") if isinstance(body.get("usage"), dict) else {},
             "finish_reason": choice.get("finish_reason"),
         }

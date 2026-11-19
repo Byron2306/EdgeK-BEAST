@@ -133,7 +133,12 @@ class CoderSettings:
             raise ValueError(f"workspace must be an existing directory: {workspace}")
         object.__setattr__(self, "workspace", workspace)
         object.__setattr__(self, "provider", str(self.provider or "ollama").strip())
-        object.__setattr__(self, "model", str(self.model or "beast-auto").strip())
+        model = str(self.model or "beast-auto").strip()
+        if self.provider.lower() in {"nvidia_nim", "nim", "local_nim"}:
+            from app.kernel.compute.nim_picker import canonical_nim_model
+
+            model = canonical_nim_model(model)
+        object.__setattr__(self, "model", model)
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -302,6 +307,10 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
         return ProjectedEvent(
             "advisory", str(payload.get("summary") or "Direct coder completed."),
             sequence, details=payload,
+        )
+    if event.event in {"agent.coder.runtime_unavailable", "agent.coder.tool_rejected"}:
+        return ProjectedEvent(
+            "advisory", str(payload.get("message") or ""), sequence, details=payload,
         )
     if event.event == "agent.coder.provider_paused":
         return ProjectedEvent(

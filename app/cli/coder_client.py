@@ -305,7 +305,7 @@ class CoderRuntimeClient:
                     "workspace_root": str(self.workspace),
                     "execution_target": "local",
                     "autonomy": autonomy_mode,
-                    "apply_on_completion": autonomy_mode == "autopilot",
+                    "apply_on_completion": autonomy_mode == "autopilot" and mode not in {"agent", "edit"},
                     "permission_mode": permission_mode,
                 },
                 "launch": True,

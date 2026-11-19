@@ -174,3 +174,18 @@ def test_cannot_complete_mutation_without_verification():
         assert done["state"] == "completed"
         assert any(e == "agent.coder.completion_refused" for e, _ in engine.events)
     asyncio.run(check())
+
+
+def test_missing_effect_runner_pauses_before_spending_model_turn(tmp_path):
+    from app.kernel.agents.effect_ts_bridge import EffectTSBridge
+
+    engine = Engine()
+    bridge = EffectTSBridge(runner=tmp_path / "absent.mjs")
+    engine.tool_runtime = SimpleNamespace(effect_executor=SimpleNamespace(bridge=bridge))
+    model = ScriptedCodingModel([tool("worktree.bind")])
+    coder = DirectCoderRuntime(engine, model)
+
+    result = asyncio.run(coder.run_one_turn("agent-test"))
+    assert result["state"] == "paused"
+    assert "effect runtime script missing" in result["error"]
+    assert model.calls == 0

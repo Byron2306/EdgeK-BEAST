@@ -113,7 +113,7 @@ class DiffPanel(Static):
     can_focus = True
 
     async def on_click(self) -> None:
-        self.app.toggle_diff_expanded()  # type: ignore[attr-defined]
+        await self.app.toggle_diff_expanded()  # type: ignore[attr-defined]
 
     def on_key(self, event: events.Key) -> None:
         if event.key in {"enter", "space"}:
@@ -1343,10 +1343,16 @@ class BeastCoderApp(App[None]):
         self.store.save_settings(self.settings)
         self._sync()
 
-    async def on_input_submitted(self, event: Input.Submitted) -> None:
+    def on_input_submitted(self, event: Input.Submitted) -> None:
         value = sanitize_terminal_text(event.value).strip()
         event.input.value = ""
         event.input.focus()
+        self.run_worker(self._submit_input(value), group="coder-input", exit_on_error=False)
+
+    async def _submit_input(self, value: str) -> None:
+        if self._streaming:
+            self._append("system", "BEAST is still working. Wait for this turn to finish.", persist=False)
+            return
         if self._menu_kind:
             await self._choose_menu()
             return
@@ -1365,8 +1371,6 @@ class BeastCoderApp(App[None]):
             last_user = self._last_user_prompt()
             if last_user:
                 await self._run_turn(last_user, append_user=False)
-        if event.input.is_mounted:
-            event.input.focus()
 
     def on_input_changed(self, event: Input.Changed) -> None:
         """Drop leaked terminal reports before they are visible or submitted."""
@@ -2198,7 +2202,10 @@ class BeastCoderApp(App[None]):
                     elif projected.kind == "reasoning":
                         # Render model reasoning in the collapsible thinking
                         # block instead of as assistant prose.
-                        self.thinking_bundle = str(projected.text or "")
+                        if projected.details.get("delta"):
+                            self.thinking_bundle = (self.thinking_bundle + projected.text)[-8000:]
+                        else:
+                            self.thinking_bundle = str(projected.text or "")
                         self.screen.set_class(bool(self.thinking_bundle), "has-thinking")
                         self._sync()
                     elif projected.kind == "answer_error":

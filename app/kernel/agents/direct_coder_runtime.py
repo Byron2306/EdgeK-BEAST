@@ -7,11 +7,13 @@ transport adapters until native tool-call transport replaces the JSON codec.
 """
 from __future__ import annotations
 
+import asyncio
 import json
-import os
 import uuid
 from typing import Any
 
+from app.kernel.agents.effect_ts_bridge import EffectUnavailable
+from app.kernel.agents.tool_runtime import ToolExecutionFailed
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType
 from app.kernel.agents.run_state import AgentRunState, TERMINAL_STATES, normalize_state
 
@@ -31,6 +33,7 @@ class DirectCoderRuntime:
     def __init__(self, engine: Any, provider: Any, *, max_turns: int = 32):
         self.engine = engine
         self.provider = provider
+        self._runtime_ready = False
         self.max_turns = max(1, min(int(max_turns), 64))
 
     def _state(self, run_id: str) -> dict[str, Any]:
@@ -110,7 +113,7 @@ class DirectCoderRuntime:
                        "truncated": True}
         return {"tool_id": tool_id,
                 "status": str(observation.get("status") or "completed"),
-                "result": summary}
+                "result": summary, "error": str(observation.get("error") or "")[:1200]}
 
     @staticmethod
     def _autopilot(run: dict[str, Any]) -> bool:
@@ -171,6 +174,16 @@ class DirectCoderRuntime:
         status = normalize_state(str(run.get("state") or "created"))
         if status in TERMINAL_STATES:
             return run
+        if not self._runtime_ready:
+            executor = getattr(getattr(self.engine, "tool_runtime", None), "effect_executor", None)
+            if executor is not None:
+                try:
+                    await asyncio.to_thread(executor.bridge.check_ready)
+                except EffectUnavailable as exc:
+                    self._emit(run_id, "agent.coder.runtime_unavailable", message=str(exc))
+                    self._transition(run_id, AgentRunState.PAUSED, error=str(exc))
+                    return self._snapshot(run_id)
+            self._runtime_ready = True
         state = self._state(run_id)
         turn = int(state.get("turn") or 0)
         if turn >= self.max_turns:
@@ -268,18 +281,18 @@ class DirectCoderRuntime:
                 else:
                     approval_id = state.pop("resuming_approval_id")
                 self._transition(run_id, AgentRunState.EXECUTING_TOOL)
-                self._emit(run_id, "agent.tool.started", tool_id=decision.tool_id)
                 observation = await self.engine.execute_tool(
                     run_id, decision.tool_id, args,
                     execution_target=decision.execution_target,
                     approval_id=approval_id,
                 )
-                self._emit(run_id, "agent.tool.completed",
-                           tool_id=decision.tool_id, observation=observation)
                 entry = self._compact_observation(decision.tool_id, observation)
+            except ToolExecutionFailed as exc:
+                # ToolRuntime already emitted the canonical failure receipt.
+                entry = self._compact_observation(decision.tool_id, exc.observation.as_dict())
             except Exception as exc:
-                self._emit(run_id, "agent.tool.failed",
-                           tool_id=decision.tool_id, error=str(exc)[:600])
+                self._emit(run_id, "agent.coder.tool_rejected",
+                           tool_id=decision.tool_id, message=str(exc)[:600])
                 entry = {"tool_id": decision.tool_id,
                          "status": "failed", "error": str(exc)[:1200]}
             state.setdefault("observations", []).append(entry)
