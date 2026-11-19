@@ -298,6 +298,17 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
         error = str(payload.get("error") or "No grounded file answer was accepted.")
         return ProjectedEvent("answer_error", error + (f" Coverage: {coverage}." if coverage else ""),
                               sequence, details=payload)
+    if event.event == "agent.coder.completed":
+        return ProjectedEvent(
+            "advisory", str(payload.get("summary") or "Direct coder completed."),
+            sequence, details=payload,
+        )
+    if event.event == "agent.coder.provider_paused":
+        return ProjectedEvent(
+            "advisory",
+            "Coding model unavailable: " + str(payload.get("message") or payload.get("reason") or "retry with /next")[:300],
+            sequence, status="paused", details=payload,
+        )
     if event.event == "agent.run.advisory":
         return ProjectedEvent("advisory", str(payload.get("text") or ""), sequence, details=payload)
     if event.event.startswith("agent.integration.") or event.event == "agent.stream.interception":
