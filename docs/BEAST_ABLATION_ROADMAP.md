@@ -173,3 +173,33 @@ the terminal usage frame even when the provider already did work. Observed SSE
 bytes are application bytes read, not socket/NIC bytes or billed tokens. Time to
 first complete schema shape is not tool authorization. The tool registry,
 worktree approval and independent verification stay unchanged in every arm.
+
+### Stage 4B fixed-route governed proxy pilot
+
+Run `python -m scripts.proof.run_stage4b_governed_proxy --out <fresh-directory>`
+for the mock SSE controls. The runner requires a full `jsonschema` validator;
+the optional required-keys fallback does not enforce the test's `minItems`.
+Then run with `--provider nim --repeats 3 --request-cap 27` for the live pilot.
+The gateway is not involved. The runner uses the real `GovernedModelClient`
+request, stream, governor admission, and verification path directly.
+
+Each block pairs the same task, prompt, model, provider seed, schema, and SSE
+request options. Compare prompt-only drain against schema-constrained drain
+to isolate the provider request constraint. Then compare constrained drain
+against the identical constrained request with the stream gate allowed to
+close early. All arms use the same local schema extraction to select the first
+valid object. No feedback, retry, dialect fallback, batching, specialist or
+reuse. The constrained dialect defaults to `openai_json_schema`; a route
+rejection is sealed as an abort, not retried under another dialect. An explicit
+`--dialect nim_guided_json` run is a new, separately identified batch.
+
+The mocked server sends a schema-invalid empty edits array, a valid action,
+then trailing bytes and usage. No provider claims from these controls.
+The fixture verifier runs only a canonical known edit after exact proposal
+equality plus public and independent behavior checks. A different but valid
+repair can be rejected in this pilot. Do not treat the exact-edit rate as a
+general coding success rate. The observed content bytes exclude SSE overhead;
+observed SSE line bytes exclude line separators and are not network bytes.
+Terminal usage may be absent after client close. Use observed usage on the
+attempts rather than the governed client's existing cost estimates and never
+infer prevented model computation or billing from closing the client.
