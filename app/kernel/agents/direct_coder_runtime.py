@@ -92,6 +92,27 @@ class DirectCoderRuntime:
         )
 
     @staticmethod
+    def _compact_observation(tool_id: str, observation: dict[str, Any]) -> dict[str, Any]:
+        result = observation.get("result") if isinstance(observation.get("result"), dict) else {}
+        if tool_id == "workspace.index":
+            summary = {"summary": result.get("summary"), "index_digest": result.get("index_digest"),
+                       "files": [{"path": str(item.get("path") or "")}
+                                 for item in (result.get("files") or [])[:24]
+                                 if isinstance(item, dict)]}
+        elif tool_id == "workspace.read_range":
+            summary = {k: v for k, v in result.items() if k != "content"}
+            summary["content"] = str(result.get("content") or "")[:16000]
+        else:
+            summary = result
+        rendered = json.dumps(summary, default=str, ensure_ascii=False)
+        if len(rendered) > 18000:
+            summary = {"truncated_result_preview": rendered[:16000],
+                       "truncated": True}
+        return {"tool_id": tool_id,
+                "status": str(observation.get("status") or "completed"),
+                "result": summary}
+
+    @staticmethod
     def _autopilot(run: dict[str, Any]) -> bool:
         request = run.get("request") or {}
         return str(request.get("autonomy") or "").lower() in {"autopilot", "auto"}
@@ -244,9 +265,7 @@ class DirectCoderRuntime:
                 )
                 self._emit(run_id, "agent.tool.completed",
                            tool_id=decision.tool_id, observation=observation)
-                entry = {"tool_id": decision.tool_id,
-                         "status": str(observation.get("status") or "completed"),
-                         "result": observation.get("result") or {}}
+                entry = self._compact_observation(decision.tool_id, observation)
             except Exception as exc:
                 self._emit(run_id, "agent.tool.failed",
                            tool_id=decision.tool_id, error=str(exc)[:600])
