@@ -16,6 +16,7 @@ import subprocess
 import sys
 import time
 from typing import Any
+from urllib.error import HTTPError
 
 from app.context.compression_tiers import _sqz, detect_compressors, repo_map
 from app.kernel.data_processing.cascade_output_compressor import compress_cascade_output, exact_lines
@@ -226,6 +227,42 @@ class MeteredProvider:
             self.model_seconds += time.perf_counter() - start
 
 
+def http_rejection(exc: HTTPError, key: str) -> dict[str, Any]:
+    """Save bounded, redacted error fields, never request headers or a raw response."""
+    def redact(text: str) -> str:
+        if key:
+            text = text.replace(key, "[REDACTED]")
+        text = re.sub(r"(?i)\b(?:bearer|basic)\s+[A-Za-z0-9+/._=~-]+",
+                      "[REDACTED]", text)
+        text = re.sub(r"(?i)\b(?:nvapi-|sk-)[A-Za-z0-9_-]+", "[REDACTED]", text)
+        return text
+
+    record: dict[str, Any] = {"status": exc.code}
+    try:
+        raw = exc.read(8192).decode("utf-8", errors="replace")
+    except (OSError, ValueError):
+        raw = ""
+        record["body_unavailable"] = True
+    try:
+        body = json.loads(raw)
+    except (ValueError, RecursionError):
+        body = None
+    error = body.get("error", body) if isinstance(body, dict) else None
+    if isinstance(error, dict):
+        for name in ("code", "type", "param", "message", "detail", "title"):
+            value = error.get(name)
+            if type(value) in {str, int}:
+                clean = " ".join(redact(str(value)).split())
+                if clean:
+                    record[name] = clean[:384]
+    elif isinstance(error, str):
+        record["message"] = " ".join(redact(error).split())[:384]
+    if len(record) == 1 and raw:
+        record["body_sha256"] = digest(redact(raw).encode())
+    record["fingerprint"] = digest(canonical(record))
+    return record
+
+
 class MeasuredNIM(NIMPlannerProvider):
     def __init__(self, *, key: str, model: str):
         super().__init__(api_key=key, model=model, base_url="https://integrate.api.nvidia.com/v1",
@@ -249,6 +286,9 @@ class MeasuredNIM(NIMPlannerProvider):
             record.update(http_response_parsed=True, prompt_tokens=usage.get("prompt_tokens"),
                           completion_tokens=usage.get("completion_tokens"))
             return result
+        except HTTPError as exc:
+            record["http_rejection"] = http_rejection(exc, self.api_key)
+            raise
         finally:
             record["seconds"] = round(time.perf_counter() - start, 6)
 
@@ -481,6 +521,12 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
         write_json(out / "provider" / f"{row['attempt_id']}.json", requests)
     token_rows = [r for r in requests if isinstance(r.get("prompt_tokens"), int) and isinstance(r.get("completion_tokens"), int)]
     observed_tokens = len(token_rows)
+    rejection = requests[0].get("http_rejection") if len(requests) == 1 else None
+    first_turn_rejection = (
+        rejection if run["state"] == "paused" and provider.decisions == 1 and not preflight
+        and not any(e["event_type"] == "agent.tool.started" for e in events)
+        and rejection and 400 <= rejection["status"] < 500 else None
+    )
     experiment_metrics = {}
     if diagnostic:
         joined = {r["user_prompt_sha256"] for r in requests if r.get("user_prompt_sha256")}
@@ -496,7 +542,8 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
                                   for field in r["attempted_fields"]), 6),
                               "provider_message_bytes": sum(r["prompt_bytes"] for r in requests),
                               "provider_request_body_bytes": sum(r["request_body_bytes"] for r in requests)}
-    return {**row, **experiment_metrics, "run_id": rid, "state": run["state"], "verified": bool(
+    return {**row, **experiment_metrics, "run_id": rid, "state": run["state"],
+            "first_turn_http_rejection": first_turn_rejection, "verified": bool(
                 run["state"] == "completed" and verification_ok(run) and independent["exit"] == 0
                 and paths == [task.path] and unchanged and valid),
             "baseline_independent_exit": before["exit"], "baseline_public_exit": baseline_public,
@@ -521,7 +568,13 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
 def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "navigation") -> dict[str, Any]:
     grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
     blocks: dict[tuple[str, int], dict[str, dict[str, Any]]] = defaultdict(dict)
+    planned: dict[str, int] = defaultdict(int)
+    not_run: dict[str, int] = defaultdict(int)
     for row in rows:
+        planned[row["arm"]] += 1
+        if row["state"] == "not_run":
+            not_run[row["arm"]] += 1
+            continue
         grouped[row["arm"]].append(row)
         blocks[(row["task"], row["repeat"])][row["arm"]] = row
     results = {}
@@ -531,7 +584,8 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
         good = sum(row["verified"] for row in arm)
         calls = sum(row["provider_attempts"] for row in arm) if all("provider_attempts" in row for row in arm) else None
         total_seconds = sum(row["wall_seconds"] for row in arm) if all("wall_seconds" in row for row in arm) else None
-        results[name] = {"attempts": len(arm), "verified": good,
+        results[name] = {"planned": planned[name], "not_run": not_run[name],
+                         "attempts": len(arm), "verified": good,
                          "verified_rate": good / len(arm) if arm else None,
                          "total_agent_wall_seconds": total_seconds,
                          "agent_seconds_per_verified": total_seconds / good if total_seconds is not None and good else None,
@@ -655,6 +709,10 @@ def main(argv=None) -> int:
                   "harness_sha256": digest(Path(__file__).read_bytes()), "python": sys.version.split()[0],
                   "reporelay_budget_estimated_tokens": 320, "nim_stream": False, "nim_max_retries": 0,
                   "nim_max_output_tokens": 2048 if args.provider == "nim" else None,
+                  "provider_rejection_gate": {
+                      "enabled": args.provider == "nim", "consecutive_trials": 2, "distinct_arms": True,
+                      "condition": "matching first-turn HTTP 4xx fingerprints before tool execution",
+                  },
                   "heldout_sha256": {name: digest(TASKS[name].heldout.encode()) for name in args.tasks},
                   "claim_boundary": "Synthetic fixtures, no operating-system network isolation. "
                                     "Scripted mode does not measure model efficacy. Live counts are adapter request attempts."}
@@ -669,23 +727,48 @@ def main(argv=None) -> int:
                           })
         write_json(out / "plan.json", frozen)
         rows = []
+        prior_rejection = None
+        abort = None
         for row in plan:
-            try:
-                result = asyncio.run(attempt(out, row, args, key))
-            except Exception as exc:
-                result = {**row, "state": "harness_error", "verified": False, "error_type": type(exc).__name__}
-                if args.provider == "scripted":
-                    result["error"] = str(exc)[:600]
+            if abort is not None:
+                result = {**row, "state": "not_run", "verified": None,
+                          "not_run_reason": "batch_aborted_provider_rejection"}
+            else:
+                try:
+                    result = asyncio.run(attempt(out, row, args, key))
+                except Exception as exc:
+                    result = {**row, "state": "harness_error", "verified": False, "error_type": type(exc).__name__}
+                    if args.provider == "scripted":
+                        result["error"] = str(exc)[:600]
+                rejection = result.get("first_turn_http_rejection") if args.provider == "nim" else None
+                if rejection is None:
+                    prior_rejection = None
+                else:
+                    fingerprint = rejection["fingerprint"]
+                    if (prior_rejection is not None and prior_rejection["fingerprint"] == fingerprint
+                            and prior_rejection["arm"] != row["arm"]):
+                        abort = {"rejection": rejection,
+                                 "trigger_attempt_ids": [prior_rejection["attempt_id"], row["attempt_id"]]}
+                        print(f"BATCH_ABORT=provider_rejection HTTP={rejection['status']} "
+                              f"fingerprint={fingerprint}", flush=True)
+                    prior_rejection = {"fingerprint": fingerprint, "arm": row["arm"],
+                                       "attempt_id": row["attempt_id"]}
             append_jsonl(out / "attempts.jsonl", result)
             rows.append(result)
             print(row["attempt_id"], result["state"], "verified=", result["verified"],
                   "attempts=", result.get("provider_attempts"), flush=True)
         summary = summarize(rows, args.provider, experiment=args.experiment)
+        skipped = sum(row["state"] == "not_run" for row in rows)
+        summary["batch"] = {"status": "aborted_provider_rejection" if abort else "completed",
+                            "planned": len(plan), "attempted": len(rows) - skipped,
+                            "not_run": skipped, "abort": abort}
         write_json(out / "summary.json", summary)
         paths = [out / "plan.json", out / "attempts.jsonl", out / "summary.json",
                  *sorted((out / "events").glob("*.jsonl")), *sorted((out / "provider").glob("*.json"))]
         (out / "SHA256SUMS").write_text("".join(f"{digest(p.read_bytes())}  {p.relative_to(out)}\n" for p in paths))
         print("REPORT:", out)
+        if abort is not None:
+            return 3
         return int(any(row["state"] == "harness_error" for row in rows)
                    or (args.provider == "scripted" and not all(row["verified"] for row in rows)))
     finally:

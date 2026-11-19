@@ -89,3 +89,16 @@ python -m scripts.proof.run_coder_efficiency_matrix \
   --out "$run_dir/live"
 (cd "$run_dir/live" && sha256sum -c SHA256SUMS)
 ```
+
+### Live provider rejection guard
+
+The runner seals a partial batch and exits with status 3 when two consecutive
+trials from different arms hit the same first-turn HTTP 4xx rejection, before
+any tool starts. It fingerprints bounded, redacted provider error details.
+It saves the two attempted trials and marks all unstarted cells `not_run`
+with `verified: null`. Those cells are excluded from arm outcome denominators
+and paired contrasts. The checksum manifest still covers the plan, the recorded
+attempts, the summary, and the provider/event receipts that actually exist.
+Read the top-level `batch` record to distinguish a sealed partial batch from a
+fully executed plan. Ordinary coding failures, unrelated errors, and rejections
+after tools have started do not trigger this guard.
