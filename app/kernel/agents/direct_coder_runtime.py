@@ -224,11 +224,22 @@ class DirectCoderRuntime:
             return self._snapshot(run_id)
         if decision.decision_type is PlannerDecisionType.COMPLETE:
             observations = state.get("observations") or []
-            mutated = any(str(o.get("tool_id") or "") in {
-                "worktree.replace_exact", "worktree.write_file"
-            } and o.get("status") == "completed" for o in observations)
-            verified = any(o.get("tool_id") == "worktree.verify" and
-                           o.get("status") == "completed" for o in observations)
+            mutation_positions = [
+                i for i, o in enumerate(observations)
+                if str(o.get("tool_id") or "") in {
+                    "worktree.replace_exact", "worktree.write_file"
+                } and o.get("status") == "completed"
+            ]
+            mutated = bool(mutation_positions)
+            last_mutation = max(mutation_positions, default=-1)
+            verified = any(
+                i > last_mutation and o.get("tool_id") == "worktree.verify"
+                and o.get("status") == "completed"
+                and isinstance(o.get("result"), dict)
+                and o["result"].get("ok") is True
+                and int(o["result"].get("returncode") or 0) == 0
+                for i, o in enumerate(observations)
+            )
             if mutated and not verified:
                 self._emit(run_id, "agent.coder.completion_refused",
                            reason="mutated_worktree_not_verified")
