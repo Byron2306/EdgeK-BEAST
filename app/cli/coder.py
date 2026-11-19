@@ -14,6 +14,7 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
+from rich.style import Style
 from rich.text import Text
 from textual import events
 from textual.app import App, ComposeResult
@@ -308,6 +309,7 @@ class BeastCoderApp(App[None]):
     }}
     #coder-thinking:focus {{ border: round {BEAST_ACID}; }}
     Screen.has-thinking #coder-thinking {{ display: block; }}
+    Screen.action-timeline #coder-thinking {{ height: 5; margin: 0 1; }}
     #coder-ide-compat {{
         display: none;
         height: auto;
@@ -431,6 +433,12 @@ class BeastCoderApp(App[None]):
         # Thinking / reasoning block.
         self.thinking_bundle: str = ""
         self.thinking_expanded = False
+        self._actions: list[dict[str, Any]] = []
+        self._current_action: dict[str, Any] | None = None
+        self._action_count = 0
+        self._expanded_actions: set[int] = set()
+        self._last_thinking_paint = 0.0
+        self._show_cumulative_diff = False
         # IDE compatibility.
         self.ide_compat: dict[str, Any] = {}
         self.ide_compat_expanded = False
@@ -465,7 +473,6 @@ class BeastCoderApp(App[None]):
                 yield ApprovalPanel(self._approval_text(), id="coder-approvals")
                 yield ToolEventPanel(self._tools_text(), id="coder-inline-tools")
                 yield DiffPanel(self._diff_text(), id="coder-diff")
-                yield ThinkingPanel(self._thinking_text(), id="coder-thinking")
                 yield IdeCompatPanel(self._ide_compat_text(), id="coder-ide-compat")
                 yield Static(
                     sprite_mascot(self.mascot_state, self._mascot_frame),
@@ -473,6 +480,7 @@ class BeastCoderApp(App[None]):
                 )
             with VerticalScroll(id="tool-scroll"):
                 yield Static(self._tools_text(), id="coder-tools")
+        yield ThinkingPanel(self._thinking_text(), id="coder-thinking")
         yield JumpLatestPanel("▼  JUMP TO LATEST  ·  F6 / Ctrl+End", id="coder-jump")
         yield Static("", id="coder-menu")
         yield Input(
@@ -571,7 +579,8 @@ class BeastCoderApp(App[None]):
         self.screen.set_class(compact, "compact")
         self.screen.set_class(tiny, "tiny")
         self.screen.set_class(self._branding_compact, "branding-compact")
-        self.screen.set_class(bool(self.tool_entries), "has-tools")
+        self.screen.set_class(bool(self.tool_entries or self._actions), "has-tools")
+        self.screen.set_class(bool(self._actions), "action-timeline")
         self.screen.set_class(self.beastie_expanded, "beastie-expanded")
         self._sync_branding()
         self._sync()
@@ -774,6 +783,95 @@ class BeastCoderApp(App[None]):
             text.append(f"  ·  {len(self.pending_approvals) - 1} more pending", style=BEAST_MUTED)
         return text
 
+    def _actions_text(self) -> Text:
+        text = Text("ACTIONS\n", style=f"bold {BEAST_ACID}")
+        for action in self._actions[-24:]:
+            tool = action.get("tool_id", "")
+            details = action.get("details") or {}
+            args = action.get("arguments") or {}
+            path = str(details.get("path") or args.get("path") or "")
+            status = action.get("status") or "thinking"
+            title = {"workspace.read_range": "Read", "worktree.read_file": "Read",
+                     "worktree.replace_exact": "Edit", "worktree.write_file": "Write",
+                     "worktree.verify": "Verify", "worktree.diff": "Inspect diff"}.get(tool, tool or "Thinking")
+            color = BEAST_GREEN if status == "completed" else "#FF8A93" if status == "failed" else BEAST_WARN
+            text.append(f"{title}{'  ' + path if path else ''}  ·  {status}", style=color)
+            if details.get("returncode") is not None:
+                text.append(f"  ·  exit {details['returncode']}", style=color)
+            reason = action.get("thinking") or ""
+            if reason:
+                opened = action["id"] in self._expanded_actions
+                text.append("  ▾ Thinking" if opened else "  ▸ Thinking", style=Style(
+                    color=BEAST_MUTED, meta={"@click": f"app.toggle_action_reasoning({action['id']})"},
+                ))
+                if opened:
+                    text.append("\n    " + reason[:1800].strip().replace("\n", "\n    "), style=BEAST_MUTED)
+                    if action.get("receipt", {}).get("observation_id"):
+                        text.append("\n    receipt " + action["receipt"]["observation_id"], style=BEAST_MUTED)
+            if status == "failed" and action.get("error"):
+                text.append("\n  " + str(action["error"]).splitlines()[0][:180], style=color)
+            text.append("\n")
+            patch = details.get("action_diff") or ""
+            if status == "completed" and patch:
+                for line in patch.splitlines()[:18]:
+                    style = (BEAST_GREEN if line.startswith("+") and not line.startswith("+++")
+                             else "#FF8A93" if line.startswith("-") and not line.startswith("---")
+                             else BEAST_MUTED)
+                    text.append("  " + line + "\n", style=style)
+                if len(patch.splitlines()) > 18:
+                    text.append("  … F7 for the full worktree diff\n", style=BEAST_MUTED)
+        return text
+
+    def action_toggle_action_reasoning(self, action_id: int) -> None:
+        if action_id in self._expanded_actions:
+            self._expanded_actions.remove(action_id)
+        else:
+            self._expanded_actions.add(action_id)
+        if self.is_mounted:
+            self.query_one("#coder-inline-tools", ToolEventPanel).update(self._actions_text())
+
+    def _reset_actions(self) -> None:
+        self._actions.clear()
+        self._expanded_actions.clear()
+        self._current_action = None
+        self.thinking_bundle = ""
+        self._show_cumulative_diff = False
+
+    def _begin_action(self) -> None:
+        self._action_count += 1
+        self.thinking_bundle = ""
+        self._current_action = {"id": self._action_count, "status": "thinking"}
+        self._actions.append(self._current_action)
+        if len(self._actions) > 80:
+            removed = self._actions.pop(0)
+            self._expanded_actions.discard(removed["id"])
+
+    def _update_action(self, row: dict[str, Any]) -> None:
+        action = self._current_action
+        if action is None:
+            return
+        action["tool_id"] = row.get("tool_id")
+        action["status"] = row.get("status") or "running"
+        if row["kind"] == "tool_call":
+            action["arguments"] = row["details"].get("arguments") or {}
+        else:
+            action["details"] = {k: row["details"][k] for k in ("path", "action_diff", "returncode")
+                                 if k in row["details"]}
+            if row["tool_id"] not in {"worktree.replace_exact", "worktree.write_file"}:
+                action["details"].pop("action_diff", None)
+            action["receipt"] = row.get("receipt") or {}
+            action["error"] = row.get("text") if row.get("status") == "failed" else ""
+        if self.thinking_bundle:
+            action["thinking"] = self.thinking_bundle
+            self.thinking_bundle = ""
+
+    def _paint_thinking(self, *, force: bool = False) -> None:
+        now = time.monotonic()
+        if self.is_mounted and (force or now - self._last_thinking_paint >= 0.12):
+            self._last_thinking_paint = now
+            self.screen.set_class(bool(self.thinking_bundle), "has-thinking")
+            self.query_one("#coder-thinking", ThinkingPanel).update(self._thinking_text())
+
     def _tools_text(self) -> Text:
         text = Text("TOOL CALLS + RECEIPTS\n", style=f"bold {BEAST_ACID}")
         text.append("─" * 30 + "\n", style=BEAST_BORDER)
@@ -830,6 +928,25 @@ class BeastCoderApp(App[None]):
             "status": status,
             "truncated": bool(details.get("truncated")),
         }
+
+    def _record_tool_patch(self, tool: str, details: dict[str, Any]) -> None:
+        patch = details.get("diff")
+        if not isinstance(patch, str):
+            return
+        if tool == "worktree.diff":
+            self._live_diffs.clear()
+            for piece in re.split(r"(?m)(?=^diff --git )", patch):
+                match = re.search(r"(?m)^\+\+\+ b/(.+?)(?:\t.*)?$", piece)
+                if not match:
+                    match = re.search(r"(?m)^--- a/(.+?)(?:\t.*)?$", piece)
+                if match:
+                    self._live_diffs[match[1]] = piece
+            if patch.strip():
+                self._merge_diff({**details, "files": details.get("files") or list(self._live_diffs)}, status="editing")
+            else:
+                self.diff_bundle = {}
+        elif tool in {"worktree.replace_exact", "worktree.write_file"} and details.get("path"):
+            self._merge_live_diff(str(details["path"]), details)
 
     def _merge_live_diff(self, path: str, details: dict[str, Any]) -> None:
         """Accumulate per-edit patches so the diff grows while the agent works."""
@@ -904,6 +1021,9 @@ class BeastCoderApp(App[None]):
 
     async def toggle_diff_expanded(self) -> None:
         self.diff_expanded = not self.diff_expanded
+        if self._actions:
+            self._show_cumulative_diff = not self._show_cumulative_diff
+            self.diff_expanded = self._show_cumulative_diff
         self._sync()
         if self.diff_expanded and self.is_mounted:
             self.call_after_refresh(self._scroll_transcript_end)
@@ -1164,6 +1284,7 @@ class BeastCoderApp(App[None]):
             return
         self.transcript_entries = self.store.messages()
         self.tool_entries.clear()
+        self._reset_actions()
         self.pending_approvals.clear()
         self.diff_bundle = {}
         self._live_diffs.clear()
@@ -1183,7 +1304,9 @@ class BeastCoderApp(App[None]):
         self.query_one("#coder-transcript", Static).update(self._transcript_text())
         self.query_one("#coder-approvals", ApprovalPanel).update(self._approval_text())
         self.query_one("#coder-tools", Static).update(self._tools_text())
-        self.query_one("#coder-inline-tools", ToolEventPanel).update(self._tools_text())
+        self.query_one("#coder-inline-tools", ToolEventPanel).update(
+            self._actions_text() if self._actions and not self.details_expanded else self._tools_text()
+        )
         with suppress(Exception):
             self.query_one("#coder-diff", DiffPanel).update(self._diff_text())
         with suppress(Exception):
@@ -1192,7 +1315,10 @@ class BeastCoderApp(App[None]):
             self.query_one("#coder-ide-compat", IdeCompatPanel).update(self._ide_compat_text())
         self.screen.set_class(bool(self.tool_entries), "has-tools")
         self.screen.set_class(bool(self.pending_approvals), "has-approvals")
-        self.screen.set_class(bool(self.diff_bundle.get("diff")), "has-diff")
+        self.screen.set_class(
+            bool(self.diff_bundle.get("diff")) and (not self._actions or self._show_cumulative_diff),
+            "has-diff",
+        )
         self.screen.set_class(bool(self.thinking_bundle), "has-thinking")
         self.screen.set_class(bool(self.ide_compat), "has-ide-compat")
         self.screen.set_class(not self._follow_output, "show-jump")
@@ -1492,6 +1618,7 @@ class BeastCoderApp(App[None]):
             self.store.clear()
             self.transcript_entries.clear()
             self.tool_entries.clear()
+            self._reset_actions()
             self.pending_approvals.clear()
             self.diff_bundle = {}
             self._live_diffs.clear()
@@ -1626,6 +1753,7 @@ class BeastCoderApp(App[None]):
             return
         if name == "diff":
             self.diff_expanded = True
+            self._show_cumulative_diff = True
             self._sync()
             if not self.diff_bundle.get("diff"):
                 self._append("system", "No live diff yet. Edits appear here as the agent works.", persist=False)
@@ -1668,6 +1796,7 @@ class BeastCoderApp(App[None]):
             archived = self.store.archive_session(argument.strip() or self.settings.session_title or "session")
             self.transcript_entries.clear()
             self.tool_entries.clear()
+            self._reset_actions()
             self.pending_approvals.clear()
             self.diff_bundle = {}
             self._live_diffs.clear()
@@ -1885,6 +2014,7 @@ class BeastCoderApp(App[None]):
             self.runtime = self._new_runtime(new_settings.workspace)
             self.transcript_entries = self.store.messages()
             self.tool_entries.clear()
+            self._reset_actions()
             self._append("system", f"Workspace selected: {new_settings.workspace}")
             return
         if name == "status":
@@ -2120,6 +2250,7 @@ class BeastCoderApp(App[None]):
             self._append("user", prompt)
             if prefix:
                 prompt = f"{prefix}{prompt}"
+            self._reset_actions()
             # A new objective starts a fresh live diff; the previous run's
             # verified diff returns via agent.worktree.diff_ready.
             self._live_diffs.clear()
@@ -2187,6 +2318,10 @@ class BeastCoderApp(App[None]):
                         event_sequence = 0
                     if event_sequence > after:
                         after = event_sequence
+                    if runtime_event.event == "agent.coder.turn.started":
+                        self._begin_action()
+                        self._sync()
+                        continue
                     projected = project_runtime_event(runtime_event)
                     if projected.kind == "token" and not grounded:
                         assistant += projected.text
@@ -2206,8 +2341,7 @@ class BeastCoderApp(App[None]):
                             self.thinking_bundle = (self.thinking_bundle + projected.text)[-8000:]
                         else:
                             self.thinking_bundle = str(projected.text or "")
-                        self.screen.set_class(bool(self.thinking_bundle), "has-thinking")
-                        self._sync()
+                        self._paint_thinking()
                     elif projected.kind == "answer_error":
                         answer_error = projected.text
                     elif projected.kind == "advisory":
@@ -2235,19 +2369,20 @@ class BeastCoderApp(App[None]):
                             "details": projected.details,
                         }
                         self.tool_entries.append(row)
-                        if projected.kind == "tool_result":
-                            # per-edit unified diff → live red/green section
-                            details = projected.details if isinstance(projected.details, dict) else {}
-                            if isinstance(details.get("diff"), str):
-                                self._merge_live_diff(
-                                    str(details.get("path") or projected.tool_id or ""),
-                                    details,
-                                )
+                        if projected.kind != "integration":
+                            self._update_action(row)
+                        if projected.kind == "tool_result" and projected.success:
+                            self._record_tool_patch(projected.tool_id, projected.details)
                         self.transcript_entries[assistant_index]["content"] = assistant
                         if projected.receipt.get("observation_id"):
                             receipts.append(projected.receipt["observation_id"])
                         self._sync()
                 result = await turn_task
+                if self._current_action is not None and self._current_action["status"] == "thinking":
+                    if self.thinking_bundle:
+                        self._current_action["thinking"] = self.thinking_bundle
+                    self._current_action["status"] = str(result.get("state") or "finished")
+                    self.thinking_bundle = ""
             except Exception:
                 if not turn_task.done():
                     turn_task.cancel()

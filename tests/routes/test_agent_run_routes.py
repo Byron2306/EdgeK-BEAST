@@ -399,9 +399,8 @@ def test_direct_nim_turns_execute_real_effect_worktree_and_verify(tmp_path, monk
     target = tmp_path / "sample.py"
     target.write_text("VALUE = 1\n")
     (tmp_path / "test_sample.py").write_text(
-        "import unittest\nfrom sample import VALUE\n\n"
-        "class SampleTest(unittest.TestCase):\n"
-        "    def test_value(self):\n        self.assertEqual(VALUE, 2)\n"
+        "import pytest\nfrom sample import VALUE\n\n"
+        "@pytest.mark.asyncio\nasync def test_value():\n    assert VALUE == 2\n"
     )
     git("add", "sample.py", "test_sample.py")
     git("commit", "-qm", "fixture")
@@ -413,7 +412,7 @@ def test_direct_nim_turns_execute_real_effect_worktree_and_verify(tmp_path, monk
         tool("worktree.bind", objective="Update VALUE", base_ref="HEAD"),
         tool("workspace.read_range", path="sample.py", start_line=1, line_count=3),
         tool("worktree.replace_exact", path="sample.py", old_text="VALUE = 1", new_text="VALUE = 2"),
-        tool("worktree.verify", command=["python", "-m", "unittest", "test_sample"]),
+        tool("worktree.verify", command=["python", "-m", "pytest", "-q", "test_sample.py"]),
         {"decision_type": "complete", "tool_id": "", "arguments": {}, "summary": "Verified"},
     ])
     model_id = "nvidia/nemotron-3.5-super-vl-120b-a12b"
@@ -476,6 +475,8 @@ def test_direct_nim_turns_execute_real_effect_worktree_and_verify(tmp_path, monk
         assert event["payload"]["observation"]["observation_id"]
     edit = tool_events[2]
     assert "+VALUE = 2" in edit["payload"]["observation"]["result"]["diff"]
+    assert "+VALUE = 2" in edit["payload"]["observation"]["result"]["action_diff"]
+    assert "pytest_asyncio.plugin" in tool_events[3]["payload"]["observation"]["result"]["resolved_command"]
     verification = next(e for e in events if e["event_type"] == "agent.verification.passed")
     assert verification["sequence"] > edit["sequence"]
     assert verification["payload"]["returncode"] == 0

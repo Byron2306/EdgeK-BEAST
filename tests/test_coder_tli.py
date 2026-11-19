@@ -1346,3 +1346,37 @@ async def test_input_submits_in_worker_so_diff_binding_responds_during_turn(tmp_
         await pilot.press("f7")
         assert app.diff_expanded is not before
         assert app._streaming
+
+
+def test_worktree_snapshot_replaces_live_edit_and_next_edit_keeps_other_files(tmp_path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+    a = "diff --git a/a.py b/a.py\n--- a/a.py\n+++ b/a.py\n@@ -1 +1 @@\n-a\n+A\n"
+    b = a.replace("a.py", "b.py").replace("-a\n+A\n", "-b\n+B\n")
+    app._record_tool_patch("worktree.replace_exact", {"path": "a.py", "diff": a})
+    app._record_tool_patch("worktree.diff", {"diff": a + b})
+    assert app.diff_bundle["files"] == ["a.py", "b.py"]
+    assert app.diff_bundle["added"] == 2
+    app._record_tool_patch("worktree.replace_exact", {"path": "a.py", "diff": a.replace("+A\n", "+AA\n")})
+    assert app.diff_bundle["diff"].count("diff --git") == 2
+    assert "+AA\n" in app.diff_bundle["diff"]
+
+
+@pytest.mark.asyncio
+async def test_direct_timeline_keeps_reasoning_and_edit_delta_per_action(tmp_path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+    async with app.run_test(size=(120, 40)):
+        app._begin_action()
+        app.thinking_bundle = "Read the target."
+        app._update_action({"kind": "tool_call", "tool_id": "workspace.read_range", "details": {}})
+        app._update_action({"kind": "tool_result", "tool_id": "workspace.read_range", "status": "completed", "details": {}})
+        app._begin_action()
+        app.thinking_bundle = "Make a bounded edit."
+        app._update_action({"kind": "tool_call", "tool_id": "worktree.replace_exact", "details": {}})
+        app._update_action({"kind": "tool_result", "tool_id": "worktree.replace_exact", "status": "completed",
+                            "details": {"path": "a.py", "action_diff": "@@ -1 +1 @@\n-a\n+b\n"}})
+        assert [x["thinking"] for x in app._actions] == ["Read the target.", "Make a bounded edit."]
+        collapsed = app._actions_text().plain
+        assert "Read the target." not in collapsed and "+b" in collapsed
+        app.action_toggle_action_reasoning(app._actions[0]["id"])
+        expanded = app._actions_text().plain
+        assert "Read the target." in expanded and "Make a bounded edit." not in expanded

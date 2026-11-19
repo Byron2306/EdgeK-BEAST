@@ -3,7 +3,10 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import difflib
 import hashlib
+import importlib.util
+import itertools
 import json
 import os
 import re
@@ -395,6 +398,7 @@ async def _worktree_write_file(arguments: dict[str, Any], context: ToolExecution
         "before_sha256": hashlib.sha256(before).hexdigest() if existed else "",
         "after_sha256": hashlib.sha256(content.encode("utf-8")).hexdigest(),
         "bytes_written": len(content.encode("utf-8")),
+        "action_diff": _action_patch(relative, "", content),
         **_worktree_patch(context, relative),
     }
 
@@ -467,7 +471,46 @@ async def _worktree_replace_exact(arguments: dict[str, Any], context: ToolExecut
         "replacements": expected,
         "before_sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
         "after_sha256": hashlib.sha256(updated.encode("utf-8")).hexdigest(),
+        "action_diff": _action_patch(relative, text, updated),
         **_worktree_patch(context, relative),
+    }
+
+
+def _action_patch(path: str, before: str, after: str) -> str:
+    # The canonical Git diff remains available even if the inline view is too large.
+    if len(before) + len(after) > 512_000:
+        return ""
+    lines = difflib.unified_diff(
+        before.splitlines(), after.splitlines(), f"a/{path}", f"b/{path}", lineterm="",
+    )
+    return "\n".join(itertools.islice(lines, 80))[:8000]
+
+
+def _local_worktree_command(argv: list[str]) -> list[str]:
+    command = list(argv)
+    if command[0] in {"pytest", "py.test"}:
+        command = [sys.executable, "-m", "pytest", *command[1:]]
+    elif command[0] in {"python", "python3"}:
+        command[0] = sys.executable
+    if command[:3] == [sys.executable, "-m", "pytest"]:
+        explicit_async_plugin = any(
+            arg.removeprefix("-p") in {"asyncio", "pytest_asyncio", "pytest_asyncio.plugin",
+                                       "no:asyncio", "no:pytest_asyncio", "no:pytest_asyncio.plugin"}
+            for arg in command[3:]
+        )
+        if not explicit_async_plugin and importlib.util.find_spec("pytest_asyncio") is not None:
+            command[3:3] = ["-p", "pytest_asyncio.plugin"]
+    return command
+
+
+def _local_worktree_env() -> dict[str, str]:
+    # Use the gateway environment without copying a virtualenv into the worktree.
+    return {
+        **os.environ,
+        "PATH": os.pathsep.join((str(Path(sys.executable).parent), os.environ.get("PATH", ""))),
+        "GIT_OPTIONAL_LOCKS": "0",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
     }
 
 
@@ -542,21 +585,14 @@ async def _worktree_run_verification(arguments: dict[str, Any], context: ToolExe
     if len(command) > 32:
         raise ValueError("verification command exceeds 32 arguments")
     requested_command = list(command)
-    command = list(requested_command)
-    if command[0] in {"python", "python3"}:
-        command[0] = sys.executable
+    command = _local_worktree_command(requested_command)
     timeout = max(1.0, min(float(arguments.get("timeout_seconds") or 120), 600.0))
     process = await asyncio.create_subprocess_exec(
         *command,
         cwd=str(root),
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
-        env={
-            **os.environ,
-            "GIT_OPTIONAL_LOCKS": "0",
-            "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
-            "PYTHONDONTWRITEBYTECODE": "1",
-        },
+        env=_local_worktree_env(),
     )
     try:
         stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=timeout)
@@ -902,21 +938,14 @@ async def _worktree_run(arguments: dict[str, Any], context: ToolExecutionContext
     if len(command) > 64:
         raise ValueError("command exceeds 64 arguments")
     requested = list(command)
-    resolved = list(requested)
-    if resolved[0] in {"python", "python3"}:
-        resolved[0] = sys.executable
+    resolved = _local_worktree_command(requested)
     timeout = max(1.0, min(float(arguments.get("timeout_seconds") or 120), 600.0))
     process = await asyncio.create_subprocess_exec(
         *resolved,
         cwd=str(root),
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
-        env={
-            **os.environ,
-            "GIT_OPTIONAL_LOCKS": "0",
-            "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
-            "PYTHONDONTWRITEBYTECODE": "1",
-        },
+        env=_local_worktree_env(),
     )
     timed_out = False
     try:
