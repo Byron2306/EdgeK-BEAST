@@ -40,13 +40,15 @@ SOURCE_EXPERIMENT = "source-compression"
 PREBOUND_SOURCE_EXPERIMENT = "source-compression-prebound"
 NAV_GRAPH_EXPERIMENT = "worktree-navigation"
 NAV_GRAPH_ARMS = ("file_list", "symbols", "graph")
+REAL_GRAPH_EXPERIMENT = "real-repo-navigation"
+GRAPH_EXPERIMENTS = (NAV_GRAPH_EXPERIMENT, REAL_GRAPH_EXPERIMENT)
 SOURCE_EXPERIMENTS = (SOURCE_EXPERIMENT, PREBOUND_SOURCE_EXPERIMENT)
-PACKET_EXPERIMENTS = (*SOURCE_EXPERIMENTS, NAV_GRAPH_EXPERIMENT)
+PACKET_EXPERIMENTS = (*SOURCE_EXPERIMENTS, *GRAPH_EXPERIMENTS)
 SOURCE_ARMS = ("closeout", "longcodezip")
 SOURCE_BUDGET_RATIO = 0.55
 EXPERIMENT_ARMS = {"navigation": ARMS, DIAGNOSTIC_EXPERIMENT: DIAGNOSTIC_ARMS,
                    SOURCE_EXPERIMENT: SOURCE_ARMS, PREBOUND_SOURCE_EXPERIMENT: SOURCE_ARMS,
-                   NAV_GRAPH_EXPERIMENT: NAV_GRAPH_ARMS}
+                   NAV_GRAPH_EXPERIMENT: NAV_GRAPH_ARMS, REAL_GRAPH_EXPERIMENT: ("file_list", "graph")}
 TOOLS = frozenset({
     "workspace.index", "workspace.list", "workspace.read_range", "workspace.search_text",
     "worktree.read_file", "worktree.list", "worktree.search_text",
@@ -64,6 +66,11 @@ class Task:
     public: str
     heldout: str
     support: tuple[tuple[str, str], ...] = ()
+    provenance: dict[str, Any] | None = None
+
+    @property
+    def import_name(self) -> str:
+        return self.module.replace("/", ".")
 
     @property
     def path(self) -> str:
@@ -159,6 +166,76 @@ SOURCE_TASKS = {
 }
 
 
+UPSTREAM = {
+    "package_name": {
+        "repo": "packaging", "url": "https://github.com/pypa/packaging.git",
+        "commit": "d8e3b31b734926ebbcaff654279f6855a73e052f",
+        "module": "packaging/utils", "upstream_text": 're.compile(r"[-_.]+")',
+        "seeded_text": 're.compile(r"[-_]+")',
+        "objective": "Restore canonical project-name normalization so periods, underscores and hyphens "
+                     "are folded together, including mixed runs. Requirement equality and hashing must agree "
+                     "for equivalent names and continue to distinguish different version specifiers.",
+        "public": "from packaging.requirements import Requirement\n"
+                  "assert canonicalize_name('Sample.Project') == 'sample-project'\n"
+                  "assert Requirement('Sample.Project>=1') == Requirement('sample-project>=1')",
+        "heldout": "from packaging.requirements import Requirement\n"
+                   "assert canonicalize_name('A_..--B') == 'a-b'\n"
+                   "assert len({Requirement('OTHER__Pkg>=2'), Requirement('other..pkg>=2')}) == 1\n"
+                   "assert Requirement('other..pkg>=2') != Requirement('other-pkg>=3')",
+        "licenses": ("LICENSE", "LICENSE.APACHE", "LICENSE.BSD"),
+    },
+    "compact_unicode": {
+        "repo": "itsdangerous", "url": "https://github.com/pallets/itsdangerous.git",
+        "commit": "096c8d42545d3b68ea21a4f890fb2b2d8979c0bd",
+        "module": "itsdangerous/_json", "upstream_text": 'kwargs.setdefault("ensure_ascii", False)',
+        "seeded_text": 'kwargs.setdefault("ensure_ascii", True)',
+        "objective": "Restore literal Unicode in the default compact JSON used by the URL-safe serializer. "
+                     "Honor an explicit ASCII-only override and preserve compact separators and round-trips.",
+        "public": "from itsdangerous import URLSafeSerializer\n"
+                  "serializer = URLSafeSerializer('fixture').serializer\n"
+                  "assert serializer.dumps({'name': 'café'}) == '{\"name\":\"café\"}'",
+        "heldout": "from itsdangerous import URLSafeSerializer\n"
+                   "s = URLSafeSerializer('fixture')\n"
+                   "data = {'city': '東京', 'count': 2}\n"
+                   "assert s.serializer.dumps(data) == '{\"city\":\"東京\",\"count\":2}'\n"
+                   "assert s.serializer.dumps(data, ensure_ascii=True).isascii()\n"
+                   "assert s.loads(s.dumps(data)) == data",
+        "licenses": ("LICENSE.txt",),
+    },
+}
+
+
+def load_real_tasks(root: Path) -> dict[str, Task]:
+    result = {}
+    for name, spec in UPSTREAM.items():
+        repo = root / spec["repo"]
+        commit = spec["commit"]
+        if git(repo, "rev-parse", "--verify", f"{commit}^{{commit}}").strip() != commit:
+            raise ValueError(f"missing exact upstream revision for {name}")
+        prefix = f"src/{spec['repo']}/"
+        package = git(repo, "ls-tree", "-r", "-z", "--name-only", commit, "--", prefix).split("\0")
+        tracked_paths = [path for path in package if path and path.endswith(".py")]
+        tracked_paths.extend(spec["licenses"])
+        files = {}
+        # Read pinned blobs, never a working copy or its configuration files.
+        for path in sorted(tracked_paths):
+            entry = git(repo, "ls-tree", commit, "--", path).split()
+            if not entry or entry[0] not in {"100644", "100755"}:
+                raise ValueError(f"not a regular pinned source file: {path}")
+            files[path.removeprefix("src/")] = git(repo, "show", f"{commit}:{path}")
+        pristine = files.pop(spec["module"] + ".py")
+        fixed, broken = spec["upstream_text"], spec["seeded_text"]
+        if pristine.count(fixed) != 1:
+            raise ValueError(f"pinned mutation anchor drifted for {name}")
+        provenance = {"url": spec["url"], "commit": commit, "source_scope": prefix,
+                      "edit_path": spec["module"] + ".py",
+                      "pristine_target_sha256": digest(pristine.encode()),
+                      "support_sha256": {p: digest(body.encode()) for p, body in files.items()}}
+        result[name] = Task(spec["module"], spec["objective"], pristine.replace(fixed, broken, 1),
+                            broken, fixed, spec["public"], spec["heldout"], tuple(files.items()), provenance)
+    return result
+
+
 def canonical(obj: Any) -> bytes:
     return json.dumps(obj, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode()
 
@@ -195,7 +272,7 @@ def make_plan(tasks: tuple[str, ...], repeats: int, seed: int, *, experiment: st
                 row["compression"] = DIAGNOSTIC_ARMS[arm]
             if experiment in PACKET_EXPERIMENTS:
                 row["source_packet"] = arm
-                if experiment == NAV_GRAPH_EXPERIMENT:
+                if experiment in GRAPH_EXPERIMENTS:
                     row["graph_packet"] = arm
                 if experiment != SOURCE_EXPERIMENT:
                     row["prebind"] = True
@@ -225,13 +302,14 @@ def create_fixture(root: Path, task: Task) -> dict[str, str]:
     files = {
         ".gitignore": ".beast/\n__pycache__/\n",
         task.path: task.source,
-        "test_public.py": f"import unittest\nfrom {task.module} import *\n\n"
+        "test_public.py": f"import unittest\nfrom {task.import_name} import *\n\n"
                           "class PublicContract(unittest.TestCase):\n    def test_contract(self):\n"
                           + "".join(f"        {line}\n" for line in task.public.splitlines()),
     }
     files.update(task.support)
-    for index in range(1, 9):
-        files[f"helpers/format_{index:02d}.py"] = f"def format_item_{index}(value):\n    return str(value)\n"
+    if not task.provenance:
+        for index in range(1, 9):
+            files[f"helpers/format_{index:02d}.py"] = f"def format_item_{index}(value):\n    return str(value)\n"
     for name, source in files.items():
         path = root / name
         path.parent.mkdir(exist_ok=True, parents=True)
@@ -245,7 +323,7 @@ def create_fixture(root: Path, task: Task) -> dict[str, str]:
 
 def heldout(root: Path, task: Task) -> dict[str, Any]:
     code = "\n".join([
-        "import sys", "sys.path.insert(0, sys.argv[1])", f"from {task.module} import *", task.heldout,
+        "import sys", "sys.path.insert(0, sys.argv[1])", f"from {task.import_name} import *", task.heldout,
     ])
     start = time.perf_counter()
     try:
@@ -461,7 +539,8 @@ def build_source_packet(root: Path, task: Task, *, compress: bool) -> dict[str, 
             "files": receipts, "seconds": round(time.perf_counter() - started, 6)}
 
 
-def build_graph_packet(root: Path, paths: list[str], arm: str, db_path: Path) -> dict[str, Any]:
+def build_graph_packet(root: Path, paths: list[str], arm: str, db_path: Path, *,
+                       real_repo: bool = False, objective: str = "") -> dict[str, Any]:
     """Use the real BEAST index, not model guesses, for paths, symbols and edges."""
     if arm not in NAV_GRAPH_ARMS:
         raise ValueError("unknown graph arm")
@@ -470,12 +549,19 @@ def build_graph_packet(root: Path, paths: list[str], arm: str, db_path: Path) ->
     raw = canonical({"files": paths}).decode()
     payload: dict[str, Any] = {"files": paths}
     parser_modes: dict[str, int] = defaultdict(int)
+    cold_seconds = warm_seconds = None
     if arm != "file_list":
         from app.kernel.data_processing.workspace_graph import WorkspaceGraph
 
+        if real_repo and db_path.exists():
+            raise FileExistsError(db_path)
+        index_start = time.perf_counter()
         graph = WorkspaceGraph(str(db_path))
         indexed = graph.index_repository(str(root), max_files=60, include_patterns=["*.py"])
+        cold_seconds = round(time.perf_counter() - index_start, 6)
+        lookup_start = time.perf_counter()
         index = graph.graph_snapshot(node_limit=500, edge_limit=1000)
+        warm_seconds = round(time.perf_counter() - lookup_start, 6)
         if indexed["errors"] or indexed["indexed_files"] != len(paths):
             raise RuntimeError("worktree graph indexed a different file set")
         known = set(paths)
@@ -498,12 +584,32 @@ def build_graph_packet(root: Path, paths: list[str], arm: str, db_path: Path) ->
             if not pairs:
                 raise RuntimeError("worktree graph produced no local dependency edges")
             payload["edges"] = [{"from": src, "to": dst} for src, dst in sorted(pairs)]
+    if real_repo and "symbols" in payload:
+        terms = set(re.findall(r"[a-z0-9]+", objective.lower()))
+        def relevant(symbol):
+            terms_in_symbol = set(re.findall(r"[a-z0-9]+", (symbol["path"] + " " + symbol["name"]).lower()))
+            return (-len(terms & terms_in_symbol), symbol["path"], symbol["line"], symbol["name"])
+        symbols = sorted(payload["symbols"], key=relevant)
+        edges = payload.pop("edges", [])
+        payload["symbols"] = []
+        payload["edges"] = []
+        for edge in edges:
+            payload["edges"].append(edge)
+            if len(canonical(payload)) > 2400:
+                payload["edges"].pop()
+                break
+        for symbol in symbols:
+            payload["symbols"].append(symbol)
+            if len(canonical(payload)) > 8000:
+                payload["symbols"].pop()
+                break
     sent = canonical(payload).decode()
     if len(sent.encode()) > 8000:
         raise RuntimeError("graph packet exceeds the fixed byte ceiling")
     return {"kind": "navigation", "raw": raw, "sent": sent, "files": [],
             "navigation": {"arm": arm, "paths": paths, "symbols": len(payload.get("symbols", [])),
-                           "edges": len(payload.get("edges", [])), "parsers": dict(parser_modes)},
+                           "edges": len(payload.get("edges", [])), "parsers": dict(parser_modes),
+                           "cold_index_seconds": cold_seconds, "indexed_snapshot_lookup_seconds": warm_seconds},
             "seconds": round(time.perf_counter() - start, 6)}
 
 
@@ -647,7 +753,9 @@ async def bind_fixture_before_first_turn(engine, runtime, run):
 async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key: str) -> dict[str, Any]:
     source_experiment = "source_packet" in row
     prebind = bool(row.get("prebind"))
-    task = (SOURCE_TASKS if source_experiment else TASKS)[row["task"]]
+    task = args.materialized_tasks[row["task"]] if args.experiment == REAL_GRAPH_EXPERIMENT else (
+        SOURCE_TASKS if source_experiment else TASKS)[row["task"]]
+    real_repo = bool(task.provenance)
     diagnostic = "compression" in row
     if diagnostic:
         task = diagnostic_fixture(task)
@@ -691,7 +799,8 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
         if "graph_packet" in row:
             paths = [p for p in git(bound, "ls-files", "-z").split("\0") if p.endswith(".py")]
             runtime.source_packet = build_graph_packet(
-                bound, paths, row["graph_packet"], out / "tmp" / row["attempt_id"] / "graph.sqlite3")
+                bound, paths, row["graph_packet"], out / "tmp" / row["attempt_id"] / "graph.sqlite3",
+                real_repo=real_repo, objective=task.objective)
         else:
             runtime.source_packet = build_source_packet(bound, task, compress=row["source_packet"] == "longcodezip")
         run = engine.store.get_run(rid)
@@ -774,6 +883,10 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
             "provider_message_bytes": sum(r["prompt_bytes"] for r in requests),
             "provider_request_body_bytes": sum(r["request_body_bytes"] for r in requests),
         }
+    if real_repo:
+        nav = (runtime.source_packet or {}).get("navigation") or {}
+        experiment_metrics.update(cold_index_seconds=nav.get("cold_index_seconds"),
+                                  indexed_snapshot_lookup_seconds=nav.get("indexed_snapshot_lookup_seconds"))
     if diagnostic:
         joined = {r["user_prompt_sha256"] for r in requests if r.get("user_prompt_sha256")}
         applied = [r for r in runtime.compression_receipts if r["applied"]]
@@ -870,7 +983,7 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
                     results[name][field] = sum(r.get(field, 0) for r in arm)
         def comparisons(baseline, treatments=None):
             pairs = []
-            metrics = fields + (("first_target_read_tool_number",) if experiment == NAV_GRAPH_EXPERIMENT else ())
+            metrics = fields + (("first_target_read_tool_number",) if experiment in GRAPH_EXPERIMENTS else ())
             for (task, repeat), block in blocks.items():
                 control = block.get(baseline)
                 if control is None:
@@ -888,8 +1001,18 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
 
         pairs = ({"paired_against_file_list": comparisons("file_list"),
                   "paired_graph_against_symbols": comparisons("symbols", {"graph"})}
-                 if experiment == NAV_GRAPH_EXPERIMENT else {"paired_against_closeout": comparisons("closeout")})
-        return {"evidence_class": "scripted_control_only" if provider == "scripted" else "live_synthetic_pilot",
+                 if experiment == NAV_GRAPH_EXPERIMENT else
+                 {"paired_against_file_list": comparisons("file_list")} if experiment == REAL_GRAPH_EXPERIMENT else
+                 {"paired_against_closeout": comparisons("closeout")})
+        if experiment == REAL_GRAPH_EXPERIMENT:
+            for arm_name, arm_rows in grouped.items():
+                for field in ("cold_index_seconds", "indexed_snapshot_lookup_seconds"):
+                    values = [r[field] for r in arm_rows if r.get(field) is not None]
+                    results[arm_name][field] = {"n": len(values), "median": median(values) if values else None,
+                                                "total": sum(values) if values else None}
+        evidence_class = ("scripted_control_only" if provider == "scripted" else
+                          "live_upstream_seeded_pilot" if experiment == REAL_GRAPH_EXPERIMENT else "live_synthetic_pilot")
+        return {"evidence_class": evidence_class,
                 "experiment": experiment, "arms": results, **pairs}
     pairs = [{"task": task, "repeat": repeat, "arm": arm,
               "decision_delta": trial["decisions"] - block["direct"]["decisions"],
@@ -921,7 +1044,8 @@ def main(argv=None) -> int:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--experiment", choices=tuple(EXPERIMENT_ARMS), default="navigation")
     parser.add_argument("--compression-backend", choices=("native", "upstream"), default="native")
-    parser.add_argument("--tasks", nargs="+", choices=tuple(TASKS) + tuple(SOURCE_TASKS))
+    parser.add_argument("--tasks", nargs="+", choices=tuple(TASKS) + tuple(SOURCE_TASKS) + tuple(UPSTREAM))
+    parser.add_argument("--repo-fixtures", type=Path, help="parent of pinned packaging and itsdangerous Git checkouts")
     parser.add_argument("--provider", choices=["scripted", "nim"], default="scripted")
     parser.add_argument("--model", default="nvidia/nemotron-3.5-super-vl-120b-a12b")
     parser.add_argument("--seed", type=int, default=4317)
@@ -931,7 +1055,13 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     if not 1 <= args.repeats <= 20 or not 5 <= args.max_turns <= 32:
         parser.error("repeats must be 1–20 and max-turns 5–32")
-    task_set = SOURCE_TASKS if args.experiment in PACKET_EXPERIMENTS else TASKS
+    if args.experiment == REAL_GRAPH_EXPERIMENT:
+        if args.repo_fixtures is None:
+            parser.error("real-repo-navigation requires --repo-fixtures")
+        task_set = load_real_tasks(args.repo_fixtures)
+        args.materialized_tasks = task_set
+    else:
+        task_set = SOURCE_TASKS if args.experiment in PACKET_EXPERIMENTS else TASKS
     args.tasks = args.tasks or list(task_set)
     if any(task not in task_set for task in args.tasks):
         parser.error("selected task is not part of this experiment")
@@ -1003,11 +1133,32 @@ def main(argv=None) -> int:
                            **{path: digest(code.encode()) for path, code in task_set[name].support}}
                     for name in args.tasks},
             )
-        if args.experiment == NAV_GRAPH_EXPERIMENT:
+        if args.experiment in GRAPH_EXPERIMENTS:
             frozen.update(experiment=args.experiment, packet_binding="before_first_request",
                           packet_limit_bytes=8000, packet_cadence="first_request_only",
                           graph_index_scope="tracked Python files, isolated database per attempt",
                           graph_backend_sha256=digest((REPO / "app/kernel/data_processing/workspace_graph.py").read_bytes()))
+        if args.experiment == REAL_GRAPH_EXPERIMENT:
+            for name in args.tasks:
+                task = task_set[name]
+                upstream = out / "tmp" / f"{name}-pristine"
+                original = replace(task, source=task.source.replace(task.old, task.new, 1))
+                create_fixture(upstream, original)
+                public_rc = subprocess.run([sys.executable, "-B", *PUBLIC[1:]], cwd=upstream,
+                                           capture_output=True, timeout=15).returncode
+                if public_rc != 0 or heldout(upstream, original)["exit"] != 0:
+                    raise RuntimeError(f"pristine upstream validation failed for {name}")
+                mutant = out / "tmp" / f"{name}-seeded"
+                create_fixture(mutant, task)
+                mutant_rc = subprocess.run([sys.executable, "-B", *PUBLIC[1:]], cwd=mutant,
+                                           capture_output=True, timeout=15).returncode
+                if mutant_rc != 1 or heldout(mutant, task)["exit"] != 1:
+                    raise RuntimeError(f"seeded regression did not fail both checks for {name}")
+            frozen.update(upstream={name: task_set[name].provenance for name in args.tasks},
+                          claim_boundary="Pinned real open-source package code with seeded regressions and independent "
+                                         "behavior checks. Not historical issues or model-training-blinded. "
+                                         "Cold index build and lookup against the built index are measured separately. "
+                                         "These task fixtures are not OS-network-isolated.")
         write_json(out / "plan.json", frozen)
         rows = []
         prior_rejection = None

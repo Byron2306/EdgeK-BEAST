@@ -177,3 +177,36 @@ metrics reuse the `source_packet_*` receipt fields. There are separate paired
 comparisons against the file list and from symbols to graph. The no-cloud
 controls use the default scripted provider. The first live block across all
 three task families requires `--request-cap 72` at eight turns and one repeat.
+
+## Held-out navigation on upstream package source
+
+`--experiment real-repo-navigation` keeps the graph and file-list arms only.
+It uses the Python source packages and licenses from two external pinned Git
+commits, with one controlled seeded regression each. The upstream package
+code is real, but these are not historical issue resolutions, whole-repository
+benchmarks, or tasks guaranteed unseen in training. These tasks are held out
+from BEAST's earlier synthetic navigation experiments.
+
+| Fixture | Pin | Seeded behavior regression |
+| --- | --- | --- |
+| [packaging](https://github.com/pypa/packaging) | `d8e3b31b734926ebbcaff654279f6855a73e052f` (24.2) | Periods dropped from project-name normalization |
+| [ItsDangerous](https://github.com/pallets/itsdangerous) | `096c8d42545d3b68ea21a4f890fb2b2d8979c0bd` (2.2.0) | Compact JSON escapes Unicode by default |
+
+Pass `--repo-fixtures` pointing at a parent containing Git directories named
+`packaging` and `itsdangerous`. The harness reads only Python blobs from the
+pinned package trees and the pinned licenses. It verifies that each pristine
+fixture passes its public and independent tests and that each seeded defect
+fails both before any live requests. The plan records the upstream commit
+and file digests. The model can edit only the one nominated implementation
+file and never sees the independent checks through its worktree.
+
+The graph arm uses paths, ranked symbols and actual local-import edges under
+the same 8,000-byte packet ceiling. The file list arm can still read all the
+same files. Each graph trial starts with a new index. The report separates
+cold index construction and snapshot lookup against that already-built index,
+both included in wall time. The lookup measurement is not a warm
+end-to-end model run and does not measure cache reuse between worktrees.
+
+One repeat across both packages is four trials with a 32-request ceiling
+at eight turns. Three repeats are twelve live trials with a 96-request ceiling.
+Always run scripted controls first. Keep RAG off for the paired comparison.
