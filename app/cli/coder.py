@@ -1276,7 +1276,7 @@ class BeastCoderApp(App[None]):
                 return str(entry.get("content") or "") or None
         return None
 
-    def action_copy_run(self) -> None:
+    def action_copy_run(self, *, to_file: bool = False) -> None:
         """Copy the last request's visible transcript and receipt summaries."""
         start = next(
             (i for i in range(len(self.transcript_entries) - 1, -1, -1)
@@ -1309,7 +1309,23 @@ class BeastCoderApp(App[None]):
                 receipt_id = receipt.get("observation_id") or receipt.get("receipt_id")
                 suffix = f" · receipt {receipt_id}" if receipt_id else ""
                 lines.append(f"{item.get('sequence') or '-'} {tool_id}: {item.get('text') or item.get('status') or ''}{suffix}")
-        self.copy_to_clipboard(sanitize_terminal_text("\n".join(lines)))
+        sanitized = sanitize_terminal_text("\n".join(lines))
+        if to_file:
+            root = Path(self.settings.workspace).expanduser().resolve()
+            directory = root / ".beast" / "coder"
+            directory.mkdir(parents=True, exist_ok=True)
+            if not directory.resolve().is_relative_to(root):
+                raise RuntimeClientError("Transcript export directory escapes the workspace")
+            safe_run = re.sub(r"[^A-Za-z0-9_-]", "_", run_id)[:96] or "latest"
+            target = directory / f"last-run-{safe_run}.txt"
+            if target.is_symlink():
+                raise RuntimeClientError("Transcript export target is a symlink")
+            target.write_text(sanitized + "\n", encoding="utf-8")
+            target.chmod(0o600)
+            self._append("system", f"Sanitized last run saved: {target}", persist=False)
+            self.notify(str(target), title="Copy last run to file")
+            return
+        self.copy_to_clipboard(sanitized)
         self.notify("Last BEAST run sent to the clipboard.", title="Copy last run")
 
     async def toggle_tool_details(self) -> None:
@@ -1420,7 +1436,9 @@ class BeastCoderApp(App[None]):
 
     async def _run_command(self, name: str, argument: str) -> None:
         if name == "copy":
-            self.action_copy_run()
+            if argument.strip().lower() not in {"", "file"}:
+                raise ValueError("Usage: /copy [file]")
+            self.action_copy_run(to_file=argument.strip().lower() == "file")
             return
         if name in {"ask", "review", "edit", "agent"}:
             if not argument:
