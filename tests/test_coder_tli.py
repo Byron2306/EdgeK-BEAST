@@ -1310,3 +1310,21 @@ async def test_thinking_panel_toggle_expanded(tmp_path: Path):
         app.toggle_thinking_expanded()
         app._sync()
         assert app.thinking_expanded is False
+
+
+@pytest.mark.asyncio
+async def test_copy_file_writes_sanitized_last_run_without_changing_clipboard(tmp_path: Path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+    async with app.run_test(size=(100, 30)):
+        await app.submit_text("Explain README.md")
+        app.clipboard = "SENTINEL"
+        await app.submit_text("/copy file")
+        exported = sorted((tmp_path / ".beast" / "coder").glob("last-run-*.txt"))
+        assert len(exported) == 1
+        content = exported[0].read_text(encoding="utf-8")
+        assert "Explain README.md" in content
+        assert "obs-coder" in content
+        assert "/copy file" not in content
+        assert "\\x1b[" not in content
+        assert app.clipboard == "SENTINEL"
+        assert exported[0].stat().st_mode & 0o777 == 0o600
