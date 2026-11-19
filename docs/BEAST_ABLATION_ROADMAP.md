@@ -17,6 +17,7 @@ Do not infer an interaction from pilots on different fixtures.
 | 5. KV and inference reuse | The coder integration can identify local engine payloads by compatible prefix identity. Forge KV Level 6 is fixture-driven and excludes native context export; Levels 7/8 are offline gauntlets. Those are custody/protocol evidence, not a live native restore result. | First local same-engine cold vs warm vs explicit import. Retain engine-side proof of cache consumption, cached and recomputed prefix tokens, prefill/TTFT, transfer time and byte overhead. Change one prefix/model/tokenizer/quantization anchor and show stale state gets no credit. Hosted provider caching, cross-node restore and transport are distinct arms. |
 | 6. Semantic RAID and resume | Real context-packet store, content hash, mirrors, index, and reconstruction code. That proves there is a recovery mechanism, not a prompt compressor. | Compare rebuild vs RAID restore on identical interrupted tasks. Drop or corrupt a fixture copy, restore exactly, refuse if all copies are bad, and measure time, source rereads and successful resume. |
 | 7. Sensorium, memfd, AF_XDP and Commons | The uploads include five sealed-memory receipt entries in the large gauntlet pack, AF_XDP echo evidence, Sensorium logs, and Commons lab registrations. The sampled lab registration has `require_arda=false`. These are separately scoped observations. | Keep observability overhead, descriptor transport, AF_XDP transport and authenticated cross-node workload delivery in separate lanes. Require a common run ID, workload digest and receiver verification before joining them to an inference or crystal result. A registration is not execution; an echo is not a routed model call. |
+| **7B. Physical crystal distribution and handoff** | The real capsule worker checks seals and digests through a read-only mapping after an SCM_RIGHTS handoff. It copies payload bytes for JSON parsing. The current pipe helper reads and hashes only, so it is not a like-for-like replay comparison. | Compare whole blobs, Git packs, and real Xet on a pinned artifact corpus, then pipe vs sealed memfd with the identical local worker. Feed actual reconstruction, transfer, and verification costs into final crystal economics. See the [stage protocol](#stage-7b-physical-crystal-distribution-and-handoff). |
 | 8. Accounting across stages | Request and token usage records, estimated spend fields, shadow and Compute Governor receipts exist. The prior PGEC record joins are insufficient for causal reuse credit where the writer fills pass/zero-call/latency fields directly. | Compare metered versus shadow costs and publish coverage. Identify what is observed, estimated or unknown. Include cold creation, validation, storage/transfer and fallbacks. Report break-even and cost per independently verified task; never blend counterfactual token savings with billed spend or measured GPU compute. |
 | **9. Crystals, last** | The BEHEMOTH Phase II runner uses the real promoted family registry/interpreter. The reported cross-revision run reproduced final-tree digests for two seeds. A separate uploaded proper-coding receipt has two crystal verifications but no verified live sample; PGEC flags written by a receipt constructor are not replay or runtime verification. | Measure cold solve/promotion vs warm replay on unseen recurrences. Add direct, individual child, sequential, and lattice arms; run benign drift, semantic near-miss, hidden postcondition failure, incompatible environment and damaged artifact controls. Independently verify effect, rollback and final tree. Measure actual model and engine calls, verification cost, and break-even. Cross-node/cross-provider claims require distinct evidence that the destination executed and verified the effect. |
 
@@ -92,3 +93,60 @@ backup. Use `scripts/proof/run_behemoth_phase2.py` on a checked copy to run the
 real interpreter on generated fixtures with independent visible and hidden
 checks, tamper and failed-stage controls. Do not mix those generated controls
 with the later live crystal economics matrix.
+
+
+## Stage 7B: physical crystal distribution and handoff
+
+**Status:** planned, not run. Insert this after the existing telemetry and
+transport probes and before the final crystal replay and economics matrix.
+This is a physical-byte experiment, independent of Stage 3's source and output
+chunking, and does not require model requests.
+
+### 7B.1 Durable storage and cross-host distribution
+
+Freeze an ordered, digest-pinned corpus of export-safe crystal artifacts with
+their exact bytes and dependency manifests. Include identical copies, small
+edits in place, a shifted insertion near the start, and unrelated content.
+Report the native artifact size range. Keep large synthetic size sweeps
+separate so they cannot inflate claims for small real capsules.
+
+Use three real arms on the same artifact versions: whole digest-addressed
+blob storage, Git packs, and a real Xet client/backend using content-defined
+chunking. Pin tool versions and report storage configuration. A local CDC
+approximation may serve as a labeled control but cannot stand in for Xet.
+Give each arm matching cold (empty receiver) and warm (same prior logical
+versions) trials. Distinguish upload/update and fetch; keep client and server
+cache state and transport topology explicit. Do not compare local Git I/O
+latency directly with hosted Xet network latency.
+
+Record logical bytes, physical stored byte deltas, indexes/manifests and any
+other metadata, actual new bytes transferred in each direction, reconstruction
+CPU and wall time, and receiver peak RSS with measurement scope. Report
+application bytes separately from observed network bytes. Unknown metrics
+remain unknown; Git pack size is not a wire-byte receipt. Require the receiver
+to reconstruct byte-identical content matching the pinned artifact digest.
+
+### 7B.2 Host-local capsule delivery
+
+After reconstruction, run pipe bytes and a sealed memfd with SCM_RIGHTS
+against the same capsule framing and worker behavior. Match spawn versus
+already-running worker conditions across arms. Instrument sender preparation
+and sealing, payload and control bytes at handoff, receiver read/mmap and hash,
+JSON parse and hydration, then replay and independent postcondition verification.
+The transport-independent integrity and replay checks must be the same. Record
+seal checks for the memfd arm separately. Account for observed copies and peak
+RSS without treating an mmap as free or adding shared mapped pages twice.
+
+Record both one-worker cold hydration and reuse of a single sealed mapping
+across multiple worker handoffs, charging its initial hydration once. Require
+the same successful postcondition and final tree for positive pairs. Exercise
+missing or corrupted storage chunks and tampered payloads, and separately test
+that the memfd path refuses an unsealed descriptor. A memfd is volatile and
+same-host only. Cross-host distribution ends with the bytes reconstructed at
+the destination; descriptor handoff begins there.
+
+Join storage, receiver, handoff and replay receipts by run, artifact and
+manifest digest. Report any preserved-byte savings separately from model
+compute avoided and carry measured costs into the final crystal comparison.
+The existing pipe hash helper is useful as a transport control, not a matched
+end-to-end replay baseline.

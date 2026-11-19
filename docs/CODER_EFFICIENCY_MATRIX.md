@@ -291,8 +291,9 @@ conclusions. Scripted controls verify plumbing, not model efficacy.
 The repeatedly budget-exhausted `compatible_identity` task remains a named
 stress case in retrieval chunking, reported separately from the other tasks.
 
-### Physical byte efficiency is a separate experiment
+### Stage 7B remains a separate physical-byte experiment
 
+See the [Stage 7B protocol](BEAST_ABLATION_ROADMAP.md#stage-7b-physical-crystal-distribution-and-handoff).
 Compare whole digest-addressed blobs, real Git packs, and real Xet
 content-defined chunking on the same versioned crystal artifact corpus. Keep
 containers and digests constant across storage arms. Use exact duplicates, local
