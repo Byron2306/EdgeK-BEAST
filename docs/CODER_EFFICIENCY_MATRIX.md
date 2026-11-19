@@ -44,3 +44,48 @@ For a three-task live pilot, omit `--tasks shipping` and use `--request-cap 96`.
 - `SHA256SUMS` binds the report files. It is not a signature or a substitute for independent replication.
 
 This is a synthetic pilot, not SWE-bench, and the held-out tests are withheld from the model's fixture, not blinded to their authors. Git worktrees are not OS sandboxes. Run live mode in a disposable environment if stronger execution isolation is needed. The runner strips inherited credentials from its child environment, retains the NIM key only in the provider object, and never prints it. Do not infer a live performance effect from the scripted control. For manuscript work, preregister independent task families and report uncertainty with task-level pairing.
+
+## RTK and SQZ diagnostic ablation
+
+`--experiment diagnostic-compression` runs three arms per shuffled task/repeat
+block: closeout only (raw diagnostics), closeout + RTK, and closeout + SQZ.
+RepoRelay and the default integration suite stay off. The fixed public verifier
+runs once in the bound worktree before the agent edits, generating a real
+failure with deliberately repeated output and two similar but distinct diagnostic
+markers. The objective, fixture, verifier, and held-out checks are identical
+across arms. This is an exposure-controlled synthetic pilot, not a replay of
+the navigation matrix or a claim about ordinary diagnostic distributions.
+
+Only failed verification stdout/stderr are candidates. Source reads, test exit
+codes, raw tool receipts, and pass criteria are unchanged. The harness retains
+exact failure lines and falls back to raw on failed fidelity, no byte reduction,
+or if the rendered prompt clips evidence. The per-prompt event binds raw and
+sent hashes and bytes. The live provider receipt records the exact user-message
+hash and serialized request-body size at the transport boundary. Join them to
+distinguish rendered savings from payloads actually submitted to the adapter.
+Adapter invocations, parsed responses, and provider-reported token usage are
+different observations. Unknown usage is never imputed. Compare verification,
+NIM attempts, input/output tokens and wall time, including failed trials, before
+claiming an end-to-end win.
+
+Default `--compression-backend native` measures BEAST's named stand-ins.
+`--compression-backend upstream` requires both version-identified binaries
+before any live requests and records their hashes and versions. If either
+upstream tool fails to produce an admissible result, that field stays raw.
+Do not pool upstream and native runs or credit an upstream result from native
+controls. First check actual provider delivery counts per arm. Zero deliveries
+mean the corresponding arm did not test a delivered transform.
+
+```bash
+run_dir=$(mktemp -d "$HOME/beast-output-compression.XXXXXX")
+python -m scripts.proof.run_coder_efficiency_matrix \
+  --experiment diagnostic-compression --out "$run_dir/controls"
+(cd "$run_dir/controls" && sha256sum -c SHA256SUMS)
+
+# Optional first live pilot, after verifying the controls.
+python -m scripts.proof.run_coder_efficiency_matrix \
+  --experiment diagnostic-compression --provider nim \
+  --seed 4319 --repeats 1 --max-turns 8 --request-cap 72 \
+  --out "$run_dir/live"
+(cd "$run_dir/live" && sha256sum -c SHA256SUMS)
+```

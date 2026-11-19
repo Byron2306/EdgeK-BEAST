@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 import json
 import os
@@ -17,7 +17,8 @@ import sys
 import time
 from typing import Any
 
-from app.context.compression_tiers import repo_map
+from app.context.compression_tiers import _sqz, detect_compressors, repo_map
+from app.kernel.data_processing.cascade_output_compressor import compress_cascade_output, exact_lines
 from app.kernel.agents.direct_coder_runtime import DirectCoderRuntime
 from app.kernel.agents.nim_planner_provider import NIMPlannerProvider
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType
@@ -31,6 +32,8 @@ ARMS = {
     "direct": (False, False), "reporelay": (True, False),
     "closeout": (False, True), "both": (True, True),
 }
+DIAGNOSTIC_EXPERIMENT = "diagnostic-compression"
+DIAGNOSTIC_ARMS = {"closeout": "none", "rtk": "rtk", "sqz": "sqz"}
 TOOLS = frozenset({
     "workspace.index", "workspace.list", "workspace.read_range", "workspace.search_text",
     "worktree.read_file", "worktree.list", "worktree.search_text",
@@ -97,24 +100,40 @@ def append_jsonl(path: Path, obj: Any) -> None:
         os.fsync(out.fileno())
 
 
-def make_plan(tasks: tuple[str, ...], repeats: int, seed: int) -> list[dict[str, Any]]:
+def make_plan(tasks: tuple[str, ...], repeats: int, seed: int, *, experiment: str = "navigation") -> list[dict[str, Any]]:
     rng = random.Random(seed)
     blocks = [(task, repeat) for task in tasks for repeat in range(1, repeats + 1)]
     rng.shuffle(blocks)
     rows = []
     for task, repeat in blocks:
-        arms = list(ARMS)
+        arms = list(DIAGNOSTIC_ARMS if experiment == DIAGNOSTIC_EXPERIMENT else ARMS)
         rng.shuffle(arms)
         for arm in arms:
-            hint, close = ARMS[arm]
-            rows.append({"task": task, "repeat": repeat, "arm": arm,
-                         "reporelay": hint, "closeout": close,
-                         "attempt_id": f"{task}-{repeat:02d}-{arm}"})
+            diagnostic = experiment == DIAGNOSTIC_EXPERIMENT
+            hint, close = (False, True) if diagnostic else ARMS[arm]
+            row = {"task": task, "repeat": repeat, "arm": arm, "reporelay": hint, "closeout": close,
+                   "attempt_id": f"{task}-{repeat:02d}-{arm}"}
+            if diagnostic:
+                row["compression"] = DIAGNOSTIC_ARMS[arm]
+            rows.append(row)
     return rows
 
 
 def git(root: Path, *args: str) -> str:
     return subprocess.check_output(["git", "-C", str(root), *args], text=True, timeout=15)
+
+
+def diagnostic_fixture(task: Task) -> Task:
+    # Emit real public-verifier output with a near-identical pair among repeated lines.
+    noise = "contract runner checkpoint: fixture validation has started"
+    public = "\n".join([
+        f"for _ in range(15): print({noise!r})",
+        f"print('ERROR CONTRACT_CHECK {task.module} alpha-01: diagnostic marker')",
+        f"for _ in range(15): print({noise!r})",
+        f"print('ERROR CONTRACT_CHECK {task.module} alpha-02: diagnostic marker')",
+        task.public,
+    ])
+    return replace(task, public=public)
 
 
 def create_fixture(root: Path, task: Task) -> dict[str, str]:
@@ -215,7 +234,13 @@ class MeasuredNIM(NIMPlannerProvider):
         self.requests: list[dict[str, Any]] = []
 
     def _request_json(self, payload):
-        record = {"prompt_bytes": len(canonical(payload.get("messages", []))), "http_response_parsed": False}
+        messages = payload.get("messages", [])
+        user_content = next((m.get("content") for m in reversed(messages)
+                             if m.get("role") == "user"), None)
+        record = {"prompt_bytes": len(canonical(messages)),
+                  "request_body_bytes": len(json.dumps(payload).encode("utf-8")),
+                  "http_response_parsed": False,
+                  "user_prompt_sha256": digest(user_content.encode()) if isinstance(user_content, str) else None}
         self.requests.append(record)
         start = time.perf_counter()
         try:
@@ -246,13 +271,88 @@ class Scripted:
         return PlannerDecision(decision_type=PlannerDecisionType.TOOL, tool_id=step[0], arguments=step[1])
 
 
+def project_diagnostic(raw: str, tier: str, policy: str, detection: dict[str, Any]):
+    start = time.perf_counter()
+    backend = "raw"
+    reason = "pass_through"
+    sent = raw
+    if raw and tier != "none":
+        try:
+            status = detection.get(tier, {}) if policy == "upstream" else {}
+            if tier == "rtk":
+                result = compress_cascade_output(raw, kind="test", allow_binary=policy == "upstream",
+                                                 binary_path=status.get("binary_path"))
+                fidelity = result.get("safe")
+            else:
+                result = _sqz(raw, status, "test")
+                fidelity = (result.get("fidelity") or {}).get("passed")
+            backend = result["backend"]
+            candidate = result["content"]
+            if fidelity is not True or not set(exact_lines(raw)).issubset(candidate.splitlines()):
+                reason = "fidelity_failed"
+            elif policy == "upstream" and backend != f"{tier}_binary":
+                reason = "upstream_not_applied"
+            elif len(candidate.encode()) >= len(raw.encode()):
+                reason = "not_smaller"
+            else:
+                reason, sent = "applied", candidate
+        except (OSError, ValueError, KeyError, TypeError):
+            reason = "backend_error"
+    return sent, {"backend": backend, "reason": reason, "raw_sha256": digest(raw.encode()),
+                  "sent_sha256": digest(sent.encode()), "raw_bytes": len(raw.encode()),
+                  "sent_bytes": len(sent.encode()), "seconds": round(time.perf_counter() - start, 6)}
+
+
 class ExperimentRuntime(DirectCoderRuntime):
-    def __init__(self, *args, hint: str = "", **kwargs):
+    def __init__(self, *args, hint: str = "", compression: str | None = None,
+                 compression_backend: str = "native", detection=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.hint = hint
+        self.compression = compression
+        self.compression_backend = compression_backend
+        self.detection = detection or {}
+        self.compression_receipts = []
 
     def _prompt(self, run, state):
         prompt = super()._prompt(run, state)
+        if self.compression is not None:
+            observations = list(state.get("observations") or [])
+            receipts = []
+            required = set()
+            delivered_fields = []
+            for index in range(max(0, len(observations) - 5), len(observations)):
+                item = observations[index]
+                if item.get("tool_id") != "worktree.verify" or item.get("status") != "failed":
+                    continue
+                result = dict(item.get("result") or {})
+                for field in ("stdout", "stderr"):
+                    raw = result.get(field)
+                    if not isinstance(raw, str) or not raw:
+                        continue
+                    sent, receipt = project_diagnostic(raw, self.compression, self.compression_backend,
+                                                       self.detection)
+                    result[field] = sent
+                    receipts.append({"field": field, **receipt})
+                    required.update(exact_lines(raw))
+                    if sent != raw:
+                        delivered_fields.append(json.dumps(sent, ensure_ascii=False))
+                observations[index] = {**item, "result": result}
+            if receipts:
+                rendered = super()._prompt(run, {**state, "observations": observations})
+                # Recheck the rendered prompt after the parent runtime's context cap.
+                applied = bool(delivered_fields and all(field in rendered for field in delivered_fields)
+                               and all(json.dumps(line, ensure_ascii=False)[1:-1] in rendered
+                                       for line in required)
+                               and len(rendered.encode()) < len(prompt.encode()))
+                actual = rendered if applied else prompt
+                record = {"tier": self.compression, "attempted_fields": receipts, "applied": applied,
+                          "turn": int(state.get("turn") or 0) + 1,
+                          "raw_prompt_sha256": digest(prompt.encode()), "sent_prompt_sha256": digest(actual.encode()),
+                          "raw_prompt_bytes": len(prompt.encode()), "sent_prompt_bytes": len(actual.encode()),
+                          "bytes_saved": len(prompt.encode()) - len(actual.encode())}
+                self.compression_receipts.append(record)
+                self.engine.emit(run["run_id"], "agent.efficiency.compression_prompt", record)
+                prompt = actual
         if self.hint:
             prompt += "\n[REPORELAY NAVIGATION ONLY]\n" + self.hint
         return prompt
@@ -273,8 +373,32 @@ def verification_ok(run: dict[str, Any]) -> bool:
                 and verify.get("mutation_epoch") == cp.get("worktree_mutation_epoch") and cp.get("worktree_mutation_epoch"))
 
 
+async def record_failed_verification(engine, runtime, rid, *, baseline=False):
+    try:
+        await engine.execute_tool(rid, "worktree.verify", {"command": list(PUBLIC)})
+    except ToolExecutionFailed:
+        state = runtime._state(rid)
+        run = engine.store.get_run(rid)
+        verify = (run.get("checkpoint") or {}).get("verification") or {}
+        if baseline and (verify.get("returncode") != 1
+                         or "alpha-01" not in str(verify.get("stdout_tail"))
+                         or "alpha-02" not in str(verify.get("stdout_tail"))):
+            raise RuntimeError("baseline diagnostic verifier did not expose both markers")
+        state.setdefault("observations", []).append({"tool_id": "worktree.verify", "status": "failed",
+            "result": {"returncode": verify.get("returncode"), "stdout": verify.get("stdout_tail"),
+                       "stderr": verify.get("stderr_tail")}})
+        runtime._save(rid, state)
+        return run, True
+    if baseline:
+        raise RuntimeError("baseline diagnostic verifier unexpectedly passed")
+    return engine.store.get_run(rid), False
+
+
 async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key: str) -> dict[str, Any]:
     task = TASKS[row["task"]]
+    diagnostic = "compression" in row
+    if diagnostic:
+        task = diagnostic_fixture(task)
     root = out / "fixtures" / row["attempt_id"]
     anchors = create_fixture(root, task)
     before = heldout(root, task)
@@ -304,33 +428,28 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
             "capability": "compression.reporelay", "fidelity_passed": fidelity,
             "implementation": result["implementation"], "hint_bytes": len(hint.encode()),
         })
-    runtime = ExperimentRuntime(engine, provider, hint=hint, max_turns=args.max_turns)
-    closed = False
+    runtime = ExperimentRuntime(engine, provider, hint=hint, max_turns=args.max_turns,
+                                compression=row.get("compression"),
+                                compression_backend=getattr(args, "compression_backend", "native"),
+                                detection=getattr(args, "compression_detection", {}))
+    closed = preflight = False
     terminal = {state.value for state in TERMINAL_STATES} | {"paused", "waiting_for_approval"}
     for _ in range(args.max_turns + 1):
         epoch = (run.get("checkpoint") or {}).get("worktree_mutation_epoch") or 0
         run = await runtime.run_one_turn(rid)
         if run["state"] in terminal:
             break
+        if diagnostic and not preflight and worktree_for(engine, run) is not None:
+            run, preflight = await record_failed_verification(engine, runtime, rid, baseline=True)
         new_epoch = (run.get("checkpoint") or {}).get("worktree_mutation_epoch") or 0
         if row["closeout"] and new_epoch > epoch:
             wt = worktree_for(engine, run)
             if wt is None or changed_paths(wt) != [task.path]:
                 continue
             engine.emit(rid, "agent.efficiency.closeout_started", {"mutation_epoch": new_epoch})
-            try:
-                await engine.execute_tool(rid, "worktree.verify", {"command": list(PUBLIC)})
-            except ToolExecutionFailed:
-                # Keep the failed test observation available for a bounded repair turn.
-                state = runtime._state(rid)
-                verify = (engine.store.get_run(rid).get("checkpoint") or {}).get("verification") or {}
-                state.setdefault("observations", []).append({"tool_id": "worktree.verify", "status": "failed",
-                    "result": {"returncode": verify.get("returncode"), "stdout": verify.get("stdout_tail"),
-                               "stderr": verify.get("stderr_tail")}})
-                runtime._save(rid, state)
-                run = engine.store.get_run(rid)
+            run, failed = await record_failed_verification(engine, runtime, rid)
+            if failed:
                 continue
-            run = engine.store.get_run(rid)
             if verification_ok(run):
                 engine.emit(rid, "agent.coder.completed", {
                     "summary": f"Edited {task.path}; public verification exit 0; left in {wt}.",
@@ -362,7 +481,22 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
         write_json(out / "provider" / f"{row['attempt_id']}.json", requests)
     token_rows = [r for r in requests if isinstance(r.get("prompt_tokens"), int) and isinstance(r.get("completion_tokens"), int)]
     observed_tokens = len(token_rows)
-    return {**row, "run_id": rid, "state": run["state"], "verified": bool(
+    experiment_metrics = {}
+    if diagnostic:
+        joined = {r["user_prompt_sha256"] for r in requests if r.get("user_prompt_sha256")}
+        applied = [r for r in runtime.compression_receipts if r["applied"]]
+        submitted = [r for r in applied if r["sent_prompt_sha256"] in joined]
+        experiment_metrics = {"diagnostic_preflight": preflight,
+                              "compression_deliveries": len(applied),
+                              "compression_prompt_bytes_saved": sum(r["bytes_saved"] for r in applied),
+                              "compression_provider_deliveries": len(submitted),
+                              "compression_provider_prompt_bytes_saved": sum(r["bytes_saved"] for r in submitted),
+                              "compression_stage_seconds": round(sum(
+                                  field["seconds"] for r in runtime.compression_receipts
+                                  for field in r["attempted_fields"]), 6),
+                              "provider_message_bytes": sum(r["prompt_bytes"] for r in requests),
+                              "provider_request_body_bytes": sum(r["request_body_bytes"] for r in requests)}
+    return {**row, **experiment_metrics, "run_id": rid, "state": run["state"], "verified": bool(
                 run["state"] == "completed" and verification_ok(run) and independent["exit"] == 0
                 and paths == [task.path] and unchanged and valid),
             "baseline_independent_exit": before["exit"], "baseline_public_exit": baseline_public,
@@ -384,14 +518,15 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
             "tool_failures": sum(e["event_type"] == "agent.tool.failed" for e in events)}
 
 
-def summarize(rows: list[dict[str, Any]], provider: str) -> dict[str, Any]:
+def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "navigation") -> dict[str, Any]:
     grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
     blocks: dict[tuple[str, int], dict[str, dict[str, Any]]] = defaultdict(dict)
     for row in rows:
         grouped[row["arm"]].append(row)
         blocks[(row["task"], row["repeat"])][row["arm"]] = row
     results = {}
-    for name in ARMS:
+    diagnostic = experiment == DIAGNOSTIC_EXPERIMENT
+    for name in DIAGNOSTIC_ARMS if diagnostic else ARMS:
         arm = grouped[name]
         good = sum(row["verified"] for row in arm)
         calls = sum(row["provider_attempts"] for row in arm) if all("provider_attempts" in row for row in arm) else None
@@ -404,6 +539,44 @@ def summarize(rows: list[dict[str, Any]], provider: str) -> dict[str, Any]:
                          "provider_attempts_per_verified": calls / good if calls is not None and good else None,
                          "median_wall_seconds": median([row["wall_seconds"] for row in arm if "wall_seconds" in row])
                          if any("wall_seconds" in row for row in arm) else None}
+    if diagnostic:
+        fields = ("provider_attempts", "provider_message_bytes", "provider_request_body_bytes", "prompt_tokens_observed",
+                  "completion_tokens_observed", "wall_seconds", "source_read_calls")
+        def complete(row, field):
+            return row.get(field) is not None and (not field.endswith("_observed")
+                or row.get("requests_with_usage") == row.get("provider_attempts"))
+        for name, arm in grouped.items():
+            covered = [row for row in arm if complete(row, "prompt_tokens_observed")]
+            results[name].update(
+                trials_with_complete_usage=len(covered),
+                requests_with_usage=sum(r.get("requests_with_usage", 0) for r in arm),
+                provider_message_bytes=sum(r["provider_message_bytes"] for r in arm)
+                    if all("provider_message_bytes" in r for r in arm) else None,
+                provider_request_body_bytes=sum(r["provider_request_body_bytes"] for r in arm)
+                    if all("provider_request_body_bytes" in r for r in arm) else None,
+                compression_provider_deliveries=sum(r.get("compression_provider_deliveries", 0) for r in arm),
+                compression_provider_prompt_bytes_saved=sum(r.get("compression_provider_prompt_bytes_saved", 0) for r in arm),
+                compression_stage_seconds=round(sum(r.get("compression_stage_seconds", 0.0) for r in arm), 6),
+                diagnostic_preflights=sum(bool(r.get("diagnostic_preflight")) for r in arm),
+                provider_input_tokens_total=sum(r["prompt_tokens_observed"] for r in covered) if len(covered) == len(arm) else None,
+                provider_output_tokens_total=sum(r["completion_tokens_observed"] for r in covered) if len(covered) == len(arm) else None,
+            )
+        pairs = []
+        for (task, repeat), block in blocks.items():
+            control = block.get("closeout")
+            if control is None:
+                continue
+            for arm, row in block.items():
+                if arm == "closeout":
+                    continue
+                pairs.append({"task": task, "repeat": repeat, "arm": arm,
+                              "verified_delta": int(row["verified"]) - int(control["verified"]),
+                              "arm_state": row["state"], "control_state": control["state"],
+                              "deltas": {field: round(row[field] - control[field], 6)
+                                         if complete(row, field) and complete(control, field) else None
+                                         for field in fields}})
+        return {"evidence_class": "scripted_control_only" if provider == "scripted" else "live_synthetic_pilot",
+                "experiment": experiment, "arms": results, "paired_against_closeout": pairs}
     pairs = [{"task": task, "repeat": repeat, "arm": arm,
               "decision_delta": trial["decisions"] - block["direct"]["decisions"],
               "provider_attempt_delta": trial["provider_attempts"] - block["direct"]["provider_attempts"],
@@ -432,6 +605,8 @@ def summarize(rows: list[dict[str, Any]], provider: str) -> dict[str, Any]:
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--experiment", choices=("navigation", DIAGNOSTIC_EXPERIMENT), default="navigation")
+    parser.add_argument("--compression-backend", choices=("native", "upstream"), default="native")
     parser.add_argument("--tasks", nargs="+", choices=list(TASKS), default=list(TASKS))
     parser.add_argument("--provider", choices=["scripted", "nim"], default="scripted")
     parser.add_argument("--model", default="nvidia/nemotron-3.5-super-vl-120b-a12b")
@@ -444,7 +619,7 @@ def main(argv=None) -> int:
         parser.error("repeats must be 1–20 and max-turns 5–32")
     if len(set(args.tasks)) != len(args.tasks):
         parser.error("task names must be unique")
-    plan = make_plan(tuple(args.tasks), args.repeats, args.seed)
+    plan = make_plan(tuple(args.tasks), args.repeats, args.seed, experiment=args.experiment)
     key = os.environ.get("NVIDIA_API_KEY", "") if args.provider == "nim" else ""
     if args.provider == "nim" and (not key or args.request_cap < len(plan) * args.max_turns):
         parser.error("live mode requires NVIDIA_API_KEY and --request-cap >= planned attempts × max-turns")
@@ -462,6 +637,15 @@ def main(argv=None) -> int:
         for directory in ("fixtures", "events", "provider", "home", "tmp"):
             (out / directory).mkdir()
         os.environ.update(HOME=str(out / "home"), TMPDIR=str(out / "tmp"))
+        if args.experiment == DIAGNOSTIC_EXPERIMENT and args.compression_backend == "upstream":
+            detected = detect_compressors()
+            args.compression_detection = {tier: detected[tier] for tier in ("rtk", "sqz")}
+            missing = [tier for tier, entry in args.compression_detection.items() if not entry["real_tool"]]
+            if missing:
+                parser.error("upstream binaries could not be identified: " + ", ".join(missing))
+            for entry in args.compression_detection.values():
+                with Path(entry["binary_path"]).open("rb") as binary:
+                    entry["binary_sha256"] = hashlib.file_digest(binary, "sha256").hexdigest()
         if args.provider == "nim":
             os.environ["BEAST_NIM_MAX_TOKENS"] = "2048"
         frozen = {"schema": "beast.coder.efficiency.v1", "code_head": git(REPO, "rev-parse", "HEAD").strip(),
@@ -474,6 +658,15 @@ def main(argv=None) -> int:
                   "heldout_sha256": {name: digest(TASKS[name].heldout.encode()) for name in args.tasks},
                   "claim_boundary": "Synthetic fixtures, no operating-system network isolation. "
                                     "Scripted mode does not measure model efficacy. Live counts are adapter request attempts."}
+        if args.experiment == DIAGNOSTIC_EXPERIMENT:
+            frozen.update(experiment=args.experiment, compression_backend=args.compression_backend,
+                          compression_detection=getattr(args, "compression_detection", {}),
+                          diagnostic_preflight="real fixed verifier after bind, before agent mutation",
+                          backend_sha256={
+                              str(Path(fn.__code__.co_filename).relative_to(REPO)):
+                              digest(Path(fn.__code__.co_filename).read_bytes())
+                              for fn in (compress_cascade_output, _sqz)
+                          })
         write_json(out / "plan.json", frozen)
         rows = []
         for row in plan:
@@ -487,7 +680,7 @@ def main(argv=None) -> int:
             rows.append(result)
             print(row["attempt_id"], result["state"], "verified=", result["verified"],
                   "attempts=", result.get("provider_attempts"), flush=True)
-        summary = summarize(rows, args.provider)
+        summary = summarize(rows, args.provider, experiment=args.experiment)
         write_json(out / "summary.json", summary)
         paths = [out / "plan.json", out / "attempts.jsonl", out / "summary.json",
                  *sorted((out / "events").glob("*.jsonl")), *sorted((out / "provider").glob("*.json"))]

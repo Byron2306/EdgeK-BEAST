@@ -59,8 +59,8 @@ def exact_lines(text: str, edit_targets: Iterable[str] = ()) -> list[str]:
     return out
 
 
-def _rtk(text: str, kind: str, timeout: float) -> tuple[str, str]:
-    binary = shutil.which("rtk")
+def _rtk(text: str, kind: str, timeout: float, binary_path: str | None = None) -> tuple[str, str]:
+    binary = binary_path or shutil.which("rtk")
     if not binary:
         return "", ""
     commands = []
@@ -79,10 +79,16 @@ def _rtk(text: str, kind: str, timeout: float) -> tuple[str, str]:
 
 
 def compress_cascade_output(text: str, *, kind: str = "test", edit_targets: Iterable[str] = (),
-                            timeout: float = 10.0) -> dict[str, Any]:
+                            timeout: float = 10.0, allow_binary: bool = True,
+                            binary_path: str | None = None) -> dict[str, Any]:
     text = str(text or "")
     kind = kind if kind in KINDS else "log"
-    compressed, command = _rtk(text, kind, timeout)
+    if not allow_binary:
+        compressed, command = "", ""
+    elif binary_path:
+        compressed, command = _rtk(text, kind, timeout, binary_path)
+    else:
+        compressed, command = _rtk(text, kind, timeout)
     backend = "rtk_binary" if compressed else "beast_native_rtk_stub"
     if not compressed:
         compressed = _native(text)
