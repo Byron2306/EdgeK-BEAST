@@ -187,3 +187,29 @@ def test_project_failed_tool_preserves_actual_error_and_receipt():
     assert projected.success is False
     assert projected.status == "failed"
     assert projected.text == "pytest failed"
+
+
+def test_session_archive_list_and_resume_round_trip(tmp_path: Path):
+    store = ConversationStore(tmp_path)
+    store.append("user", "first task")
+    store.append("assistant", "first answer")
+
+    archived = store.archive_session("demo work")
+    assert archived is not None
+    assert archived["messages"] == 2
+    assert store.messages() == []
+
+    sessions = store.list_sessions()
+    assert len(sessions) == 1
+    assert sessions[0]["session_id"] == archived["session_id"]
+    assert sessions[0]["title"] == "demo work"
+
+    loaded = store.load_session(archived["session_id"])
+    assert loaded is not None
+    assert [row["content"] for row in store.messages()] == ["first task", "first answer"]
+
+
+def test_settings_round_trip_preserves_session_title(tmp_path: Path):
+    store = ConversationStore(tmp_path)
+    store.save_settings(CoderSettings(workspace=tmp_path, session_title="fix auth"))
+    assert store.load_settings().session_title == "fix auth"

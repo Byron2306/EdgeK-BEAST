@@ -12,6 +12,7 @@ from typing import Awaitable, Callable, Dict, Any, Optional
 from dataclasses import asdict
 import logging
 from pathlib import Path
+from datetime import datetime, timezone
 
 from app.kernel.compute.perceive import EdgeKIR, ProviderType
 from app.kernel.governance.reason import GovernanceDecision, GovernanceResult
@@ -26,6 +27,7 @@ from app.kernel.compute.crystal_runtime_boundary import CrystalRuntimeBoundary
 from app.kernel.compute.integration_harness import BeastHarnessRequest
 from app.kernel.registry.provider_registry import ProviderRegistry
 from app.kernel.local.ollama_kv_manager import OllamaKVManager
+from app.kernel.compute.forge_kv_coordinator import ForgeKVCoordinator, ForgeKVRequest
 from app.kernel.compute.residual_candidate import ResidualCandidate
 from app.kernel.compute.residual_compute_governor import ResidualComputeGovernor, ResidualComputeRequest
 from app.kernel.compute.residual_contracts import (
@@ -56,8 +58,10 @@ class Executor:
         self._ollama_context_manager: Optional[OllamaKVManager] = None
         self._ollama_context_base_url = ""
         self.sensorium = None
+        # Phase 5: Forge KV Coordinator for engine-native KV reuse
+        self._forge_kv_coordinator: Optional[ForgeKVCoordinator] = None
 
-    def bind_runtime_services(self, *, crystal_gateway=None, integration_harness=None, sensorium=None) -> None:
+    def bind_runtime_services(self, *, crystal_gateway=None, integration_harness=None, sensorium=None, forge_kv_coordinator=None) -> None:
         """Bind the process-wide governed services used by live gateway routes.
 
         The executor is imported before the application composition root.  This
@@ -71,6 +75,8 @@ class Executor:
             self.integration_harness = integration_harness
         if sensorium is not None:
             self.sensorium = sensorium
+        if forge_kv_coordinator is not None:
+            self._forge_kv_coordinator = forge_kv_coordinator
     
     def _get_provider(self, provider_type: ProviderType):
         """Get or create a provider instance"""
@@ -965,7 +971,7 @@ class Executor:
         provider_label: str,
         base_url: str,
     ) -> Dict[str, Any]:
-        """Execute against Ollama's native /api/generate endpoint."""
+        """Execute against Ollama's native /api/generate endpoint with Forge KV context reuse."""
         # The governed Ollama lane uses the native API.  Older desktop
         # profiles exported the OpenAI-compatible ``/v1`` suffix; tolerate
         # that legacy setting rather than issuing the invalid
@@ -977,6 +983,40 @@ class Executor:
         model = self._provider_model_name(ir.model, provider_label)
         
         prompt = self._messages_to_prompt(ir.messages)
+        
+        # Phase 5: Try to get/create Forge KV context for Ollama
+        forge_kv_context = None
+        forge_kv_result = None
+        if self._forge_kv_coordinator is not None:
+            try:
+                # Build ForgeKVRequest from IR
+                metadata = ir.metadata or {}
+                forge_request = ForgeKVRequest(
+                    task_class=str(metadata.get("task_class") or "chat"),
+                    model=model,
+                    prompt=prompt,
+                    prompt_prefix=str(metadata.get("prompt_prefix") or ""),
+                    system_prompt=str(metadata.get("system_prompt") or ""),
+                    model_digest=str(metadata.get("model_digest") or ""),
+                    tokenizer_hint=str(metadata.get("tokenizer_hint") or ""),
+                    template=str(metadata.get("template") or ""),
+                    options=dict(metadata.get("options") or {}),
+                    workspace_id=str(metadata.get("workspace_id") or "default"),
+                    privacy_domain=str(metadata.get("privacy_domain") or "local"),
+                    mission_id=str(metadata.get("mission_id") or ""),
+                    max_tokens=ir.max_tokens or 128,
+                )
+                forge_kv_result = self._forge_kv_coordinator.run(forge_request, timeout=5.0)
+                forge_kv_context = forge_kv_result.get("context", [])
+                logger.info("Forge KV context reuse: mode=%s, context_len=%d, prompt_eval_count=%d",
+                           forge_kv_result.get("inference", {}).get("reuse_mode", "unknown"),
+                           len(forge_kv_context) if forge_kv_context else 0,
+                           forge_kv_result.get("economics", {}).get("prompt_eval_count", 0))
+            except Exception as e:
+                logger.warning("Forge KV coordinator failed, falling back to direct Ollama: %s", e)
+                forge_kv_context = None
+                forge_kv_result = None
+        
         payload = {
             "model": model,
             "prompt": prompt,
@@ -984,6 +1024,9 @@ class Executor:
         }
         if ir.max_tokens:
             payload["options"] = {"num_predict": ir.max_tokens}
+        # Include Forge KV context if available
+        if forge_kv_context:
+            payload["context"] = forge_kv_context
 
         headers = {"Content-Type": "application/json"}
         try:
@@ -991,9 +1034,30 @@ class Executor:
             response.raise_for_status()
             data = response.json()
             
+            # If we got a new context from Ollama, update the Forge KV coordinator's manager
+            if forge_kv_result is not None and self._forge_kv_coordinator is not None:
+                new_context = data.get("context")
+                if isinstance(new_context, list) and all(isinstance(x, int) for x in new_context):
+                    try:
+                        # The coordinator's manager has the context block - update it
+                        # This is a best-effort update; the manager will handle deduplication
+                        manager = self._forge_kv_coordinator.manager
+                        # Find the block that was used and update its context
+                        for block in manager.contexts.values():
+                            if block.model == model and block.prompt_prefix == (metadata.get("prompt_prefix") or ""):
+                                block.ollama_context = new_context
+                                block.last_used_at = datetime.now(timezone.utc).isoformat()
+                                block.use_count += 1
+                                break
+                    except Exception as e:
+                        logger.warning("Failed to update Forge KV context after generation: %s", e)
+            
             # Map Ollama's response format to OpenAI format
             text = data.get("response", "")
-            mapped_response = self._openai_text_response(ir, text, provider=provider_label, extra={"raw_ollama": data})
+            extra = {"raw_ollama": data}
+            if forge_kv_result is not None:
+                extra["forge_kv_reuse"] = forge_kv_result
+            mapped_response = self._openai_text_response(ir, text, provider=provider_label, extra=extra)
             return mapped_response
         except httpx.HTTPStatusError as e:
             detail = self._provider_error_detail(e.response.text)

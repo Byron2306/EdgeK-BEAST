@@ -4,13 +4,18 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
+import shutil
 import subprocess
 import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+
+_MIN_WORKTREE_FREE_BYTES = 2 * 1024**3
 
 
 def _safe_slug(value: str, fallback: str = "mission") -> str:
@@ -55,6 +60,39 @@ class WorktreeForge:
         self.store_dir = self.workspace_root / ".beast" / "worktrees"
         self.registry_path = self.store_dir / "tasks.json"
 
+    def _checkout_dir(self) -> Path:
+        configured = os.environ.get("BEAST_WORKTREE_ROOT", "").strip()
+        if not configured:
+            return self.store_dir.resolve()
+        root = Path(configured).expanduser()
+        if not root.is_absolute():
+            raise ValueError("BEAST_WORKTREE_ROOT must be an absolute path")
+        # One configured parent can serve several repositories without mixing their checkouts.
+        digest = hashlib.sha256(os.fsencode(self.workspace_root)).hexdigest()[:12]
+        return (root / f"{_safe_slug(self.workspace_root.name)}-{digest}").resolve()
+
+    def _checkout_storage_error(self, checkout_dir: Path) -> str:
+        free = shutil.disk_usage(checkout_dir).free
+        if free < _MIN_WORKTREE_FREE_BYTES:
+            return (
+                f"Worktree checkout refused: insufficient free space at {checkout_dir} "
+                f"({free / 1024**3:.2f} GiB available, "
+                f"{_MIN_WORKTREE_FREE_BYTES / 1024**3:.2f} GiB minimum). "
+                "Free space or set BEAST_WORKTREE_ROOT to a roomier filesystem."
+            )
+        return ""
+
+    def has_registered_checkout(self, root: Path, branch: str) -> bool:
+        listing = self._git(["worktree", "list", "--porcelain", "-z"], cwd=self.workspace_root)
+        if not listing.ok:
+            return False
+        for entry in listing.stdout.split("\0\0"):
+            fields = entry.split("\0")
+            if (f"worktree {root}" in fields and f"branch refs/heads/{branch}" in fields
+                    and not any(field.startswith("prunable") for field in fields)):
+                return True
+        return False
+
     @staticmethod
     def _primary_worktree_root(candidate: Path) -> Path:
         try:
@@ -96,7 +134,13 @@ class WorktreeForge:
         unique = hashlib.sha1(f"{task_id}:{_now()}".encode("utf-8")).hexdigest()[:8]
         task_id = f"{task_id}-{unique}"
         branch = f"beast/{task_id}"
-        worktree_path = (self.store_dir / task_id).resolve()
+        try:
+            checkout_dir = self._checkout_dir()
+            worktree_path = checkout_dir / task_id
+            storage_error = ""
+        except (OSError, RuntimeError, ValueError) as exc:
+            worktree_path = None
+            storage_error = f"Invalid worktree checkout location: {exc}"
         base_commit = self._git(["rev-parse", base_ref], cwd=self.workspace_root)
         record = {
             "beast_object_type": "beast_worktree_task",
@@ -111,7 +155,7 @@ class WorktreeForge:
             "base_commit": base_commit.stdout if base_commit.ok else "",
             "workspace_root": str(self.workspace_root),
             "requested_workspace_root": str(self.requested_workspace_root),
-            "worktree_path": str(worktree_path),
+            "worktree_path": str(worktree_path) if worktree_path is not None else "",
             "status": "creating",
             "created_at": _now(),
             "updated_at": _now(),
@@ -124,8 +168,17 @@ class WorktreeForge:
             self._upsert(record)
             self._register_receipt(record["receipt"])
             return {"ok": False, "task": record}
-        worktree_path.parent.mkdir(parents=True, exist_ok=True)
-        added = self._git(["worktree", "add", "-b", branch, str(worktree_path), base_ref], cwd=self.workspace_root, timeout=30.0)
+        if worktree_path is not None:
+            try:
+                # Create the parent first so the space check probes the actual destination.
+                worktree_path.parent.mkdir(parents=True, exist_ok=True)
+                storage_error = self._checkout_storage_error(worktree_path.parent)
+            except OSError as exc:
+                storage_error = f"Could not prepare worktree checkout at {worktree_path.parent}: {exc}"
+        if storage_error:
+            added = WorktreeCommandResult(False, [], stderr=storage_error, returncode=1)
+        else:
+            added = self._git(["worktree", "add", "-b", branch, str(worktree_path), base_ref], cwd=self.workspace_root, timeout=30.0)
         record["git"] = added.to_dict()
         if added.ok:
             record["status"] = "active"
@@ -174,7 +227,10 @@ class WorktreeForge:
             "commands": [result.to_dict(), patch.to_dict()],
         }
 
-    def sourceplan_draft_from_diff(self, task_id: str, max_chars: int = 60000) -> Dict[str, Any]:
+    def sourceplan_draft_from_diff(
+        self, task_id: str, max_chars: int = 60000, *, require_diff: bool = False,
+        observed_new_paths: tuple[str, ...] = (),
+    ) -> Dict[str, Any]:
         """Create an advisory SourcePlan draft from the worktree branch diff.
 
         This is deliberately not an apply operation. It gives IDE operators a
@@ -189,15 +245,31 @@ class WorktreeForge:
             return {"ok": False, "error": "worktree path missing"}
         base_ref = str(record.get("base_commit") or record.get("base_ref") or "HEAD")
         branch = str(record.get("branch") or "")
-        diff_range = f"{base_ref}...HEAD"
-        stat = self._git(["diff", "--stat", diff_range], cwd=path)
-        patch = self._git(["diff", diff_range], cwd=path)
-        if not patch.stdout:
-            stat = self._git(["diff", "--stat"], cwd=path)
-            patch = self._git(["diff"], cwd=path)
-            diff_range = "worktree"
-        changed = self._git(["diff", "--name-only", diff_range], cwd=path) if diff_range != "worktree" else self._git(["diff", "--name-only"], cwd=path)
-        files = [line.strip() for line in changed.stdout.splitlines() if line.strip()]
+        if require_diff:
+            # Compare candidate bytes against the recorded base. Only include new
+            # untracked files with completed write observations, not build debris.
+            diff_range = base_ref
+            stat = self._git(["diff", "--stat", base_ref, "--"], cwd=path)
+            patch = self._git(["diff", base_ref, "--"], cwd=path)
+            changed = self._git(["diff", "--name-only", "-z", base_ref, "--"], cwd=path)
+            untracked = self._git(["ls-files", "--others", "--exclude-standard", "-z"], cwd=path)
+            if not all(item.ok for item in (stat, patch, changed, untracked)):
+                return {"ok": False, "error": "could not establish the worktree diff"}
+            files = [name for name in changed.stdout.split("\0") if name]
+            added = set(untracked.stdout.split("\0")) & set(observed_new_paths)
+            files.extend(sorted(added - set(files)))
+            if not files:
+                return {"ok": False, "error": "SourcePlan requires a non-empty worktree diff"}
+        else:
+            diff_range = f"{base_ref}...HEAD"
+            stat = self._git(["diff", "--stat", diff_range], cwd=path)
+            patch = self._git(["diff", diff_range], cwd=path)
+            if not patch.stdout:
+                stat = self._git(["diff", "--stat"], cwd=path)
+                patch = self._git(["diff"], cwd=path)
+                diff_range = "worktree"
+            changed = self._git(["diff", "--name-only", diff_range], cwd=path) if diff_range != "worktree" else self._git(["diff", "--name-only"], cwd=path)
+            files = [line.strip() for line in changed.stdout.splitlines() if line.strip()]
         operations, translation_notes = self._sourceplan_operations_for_files(path, base_ref, files)
         needs_translation = bool(translation_notes) or not operations
         plan_id = f"worktree-promotion-{task_id}"

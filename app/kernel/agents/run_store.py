@@ -143,6 +143,26 @@ class AgentRunStore:
                     FOREIGN KEY(run_id) REFERENCES agent_runs(run_id) ON DELETE CASCADE
                 );
                 CREATE INDEX IF NOT EXISTS idx_agent_approvals_run ON agent_run_approvals(run_id, created_at);
+                CREATE TABLE IF NOT EXISTS agent_swarm_recovery_claims (
+                    run_id TEXT PRIMARY KEY,
+                    claimed_at REAL NOT NULL,
+                    FOREIGN KEY (run_id) REFERENCES agent_runs(run_id) ON DELETE CASCADE
+                );
+                CREATE TABLE IF NOT EXISTS agent_deferred_approval_actions (
+                    run_id TEXT NOT NULL,
+                    approval_id TEXT NOT NULL,
+                    action_json TEXT NOT NULL,
+                    finished_at REAL NOT NULL DEFAULT 0,
+                    PRIMARY KEY (run_id, approval_id),
+                    FOREIGN KEY (run_id, approval_id) REFERENCES agent_run_approvals(run_id, approval_id) ON DELETE CASCADE
+                );
+                CREATE TABLE IF NOT EXISTS agent_deferred_approval_claims (
+                    run_id TEXT NOT NULL,
+                    approval_id TEXT NOT NULL,
+                    claimed_at REAL NOT NULL,
+                    PRIMARY KEY (run_id, approval_id),
+                    FOREIGN KEY (run_id, approval_id) REFERENCES agent_run_approvals(run_id, approval_id) ON DELETE CASCADE
+                );
                 """
             )
 
@@ -389,29 +409,101 @@ class AgentRunStore:
             "head_matches": bool(run) and previous == str(run.get("head_hash") or ""),
         }
 
-    def create_approval(self, run_id: str, request: dict[str, Any]) -> dict[str, Any]:
+    def create_approval(
+        self, run_id: str, request: dict[str, Any], *, deferred_action: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         approval_id = str(request.get("request_id") or request.get("approval_id") or f"approval-{uuid.uuid4().hex[:16]}")
         created = _now()
         with self._connect() as connection:
-            connection.execute(
+            connection.execute("BEGIN IMMEDIATE")
+            inserted = connection.execute(
                 """INSERT OR IGNORE INTO agent_run_approvals(
                     approval_id,run_id,status,request_json,resolution_json,created_at,resolved_at
                 ) VALUES(?,?, 'pending', ?, '{}', ?, 0)""",
                 (approval_id, run_id, json.dumps(request, sort_keys=True, default=str), created),
             )
+            if deferred_action is not None and inserted.rowcount == 1:
+                connection.execute(
+                    """INSERT INTO agent_deferred_approval_actions(run_id, approval_id, action_json)
+                       VALUES(?, ?, ?)""",
+                    (run_id, approval_id, json.dumps(deferred_action, sort_keys=True)),
+                )
+            connection.execute("COMMIT")
         return self.get_approval(run_id, approval_id) or {}
+
+    def pending_deferred_action(self, run_id: str) -> dict[str, Any] | None:
+        with self._connect() as connection:
+            row = connection.execute(
+                """SELECT d.approval_id, d.action_json FROM agent_deferred_approval_actions d
+                   JOIN agent_run_approvals a USING(run_id, approval_id)
+                   WHERE d.run_id=? AND d.finished_at=0
+                   ORDER BY a.created_at DESC, d.approval_id DESC LIMIT 1""",
+                (run_id,),
+            ).fetchone()
+        if row is None:
+            return None
+        return {**self._json(str(row["action_json"]), {}), "approval_id": str(row["approval_id"])}
+
+    def finish_deferred_action(self, run_id: str, approval_id: str) -> None:
+        with self._connect() as connection:
+            connection.execute(
+                """UPDATE agent_deferred_approval_actions SET finished_at=?
+                   WHERE run_id=? AND approval_id=? AND finished_at=0""",
+                (_now(), run_id, approval_id),
+            )
+
+    def was_deferred_approval(self, run_id: str, approval_id: str) -> bool:
+        with self._connect() as connection:
+            return connection.execute(
+                """SELECT 1 FROM agent_run_events WHERE run_id=?
+                   AND event_type='agent.planner.approval_deferred'
+                   AND json_extract(payload_json, '$.approval_id')=? LIMIT 1""",
+                (run_id, approval_id),
+            ).fetchone() is not None
 
     def get_approval(self, run_id: str, approval_id: str) -> dict[str, Any] | None:
         with self._connect() as connection:
-            row = connection.execute("SELECT * FROM agent_run_approvals WHERE run_id=? AND approval_id=?", (run_id, approval_id)).fetchone()
+            row = connection.execute("""SELECT a.*, c.approval_id IS NOT NULL AS resume_claimed
+                   FROM agent_run_approvals a LEFT JOIN agent_deferred_approval_claims c USING(run_id, approval_id)
+                   WHERE a.run_id=? AND a.approval_id=?""", (run_id, approval_id)).fetchone()
         return self._approval_row(row) if row else None
 
     def approvals(self, run_id: str) -> list[dict[str, Any]]:
         with self._connect() as connection:
             rows = connection.execute(
-                "SELECT * FROM agent_run_approvals WHERE run_id=? ORDER BY created_at", (run_id,)
+                """SELECT a.*, c.approval_id IS NOT NULL AS resume_claimed
+                   FROM agent_run_approvals a LEFT JOIN agent_deferred_approval_claims c USING(run_id, approval_id)
+                   WHERE a.run_id=? ORDER BY a.created_at""", (run_id,)
             ).fetchall()
         return [self._approval_row(row) for row in rows]
+
+    def claim_swarm_recovery(self, run_id: str) -> bool:
+        """Claim the single recovery proposal slot across workers and restarts."""
+        with self._connect() as connection:
+            cursor = connection.execute(
+                """INSERT OR IGNORE INTO agent_swarm_recovery_claims(run_id, claimed_at)
+                   SELECT run_id, ? FROM agent_runs WHERE run_id=? AND cancel_requested=0""",
+                (_now(), run_id),
+            )
+            return cursor.rowcount == 1
+
+    def swarm_recovery_claimed(self, run_id: str) -> bool:
+        with self._connect() as connection:
+            return connection.execute(
+                "SELECT 1 FROM agent_swarm_recovery_claims WHERE run_id=?", (run_id,),
+            ).fetchone() is not None
+
+    def claim_deferred_approval(self, run_id: str, approval_id: str) -> bool:
+        """Consume an approved deferred execution slot across workers and restarts."""
+        with self._connect() as connection:
+            cursor = connection.execute(
+                """INSERT OR IGNORE INTO agent_deferred_approval_claims(run_id, approval_id, claimed_at)
+                   SELECT run_id, approval_id, ? FROM agent_run_approvals
+                   WHERE run_id=? AND approval_id=? AND status='approved'
+                     AND EXISTS (SELECT 1 FROM agent_runs WHERE run_id=? AND cancel_requested=0)""",
+                (_now(), run_id, approval_id, run_id),
+            )
+            return cursor.rowcount == 1
 
     def list_approvals(self, run_id: str) -> list[dict[str, Any]]:
         """Compatibility alias for planner/runtime consumers.
@@ -500,6 +592,7 @@ class AgentRunStore:
             "status": str(row["status"]),
             "request": self._json(str(row["request_json"]), {}),
             "resolution": self._json(str(row["resolution_json"]), {}),
+            "resume_claimed": bool(row["resume_claimed"]),
             "created_at": float(row["created_at"]),
             "resolved_at": float(row["resolved_at"]),
         }

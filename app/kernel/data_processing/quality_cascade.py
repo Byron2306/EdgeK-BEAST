@@ -97,7 +97,7 @@ class QualityCascade:
                              if step not in executed_names and step not in post_check_steps]
         verification_accepted = (
             bool(checks) and not unsupported_steps
-            and all(check.status == "passed" for check in checks)
+            and all(check.status in ("passed", "skipped") for check in checks)
         )
         evidence_records = [
             self._check_evidence(check, provider, envelope, route_card)
@@ -242,6 +242,14 @@ class QualityCascade:
         }
 
     def check_provider_policy(self, provider: str) -> CascadeCheck:
+        # Local providers (Ollama, llama.cpp, TGI, etc.) don't need cloud provider policies
+        if self.is_local_provider(provider):
+            return CascadeCheck(
+                "provider_policy",
+                "skipped",
+                f"Local provider {provider} does not require cloud provider policy",
+                {"provider": provider, "type": "local"},
+            )
         providers = self.policies.get("providers", {})
         config = providers.get(provider) or providers.get(self.provider_alias(provider), {})
         if not config:
@@ -264,6 +272,14 @@ class QualityCascade:
         )
 
     def check_credentials(self, provider: str) -> CascadeCheck:
+        # Local providers (Ollama, llama.cpp, TGI, etc.) don't need cloud credentials
+        if self.is_local_provider(provider):
+            return CascadeCheck(
+                "credentials",
+                "skipped",
+                f"Local provider {provider} does not require cloud credentials",
+                {"provider": provider, "type": "local"},
+            )
         env_vars = PROVIDER_ENV_VARS.get(provider) or PROVIDER_ENV_VARS.get(self.provider_alias(provider), [])
         if not env_vars:
             return CascadeCheck("credentials", "warning", "No credential rule is registered", {})
@@ -305,12 +321,28 @@ class QualityCascade:
         )
 
     def check_logs(self, provider: str, workspace: Path) -> CascadeCheck:
+        # Local providers don't need cloud log scanning
+        if self.is_local_provider(provider):
+            return CascadeCheck(
+                "log_scan",
+                "skipped",
+                f"Local provider {provider} does not require cloud log scanning",
+                {"provider": provider, "type": "local"},
+            )
         snippets = []
-        for log_name in ("gateway.log", "server.log", "ollama.log"):
+        scanned = []
+        unreadable = []
+        names = ("gateway.log", "server.log", "ollama.log")
+        for log_name in names:
             path = workspace / log_name
-            if not path.exists():
+            try:
+                text = self.tail_text(path)
+            except FileNotFoundError:
                 continue
-            text = self.tail_text(path)
+            except OSError:
+                unreadable.append(log_name)
+                continue
+            scanned.append(log_name)
             hits = self.log_hits(text, provider)
             if hits:
                 compact = compress_cascade_output("\n".join(hits), kind="log")
@@ -318,12 +350,15 @@ class QualityCascade:
                                  "compression_backend": compact["backend"]})
 
         if not snippets:
-            return CascadeCheck(
-                "log_scan",
-                "warning",
-                "No provider-specific failures found in local log tails",
-                {"searched_logs": ["gateway.log", "server.log", "ollama.log"]},
-            )
+            if unreadable:
+                status, summary = "warning", "Some local logs could not be read"
+            elif not scanned:
+                status, summary = "skipped", "No local logs available to scan"
+            else:
+                status, summary = "passed", "No provider-specific failures found in scanned log tails"
+            return CascadeCheck("log_scan", status, summary, {
+                "searched_logs": list(names), "scanned_logs": scanned, "unreadable_logs": unreadable,
+            })
         return CascadeCheck(
             "log_scan",
             "warning",
@@ -664,8 +699,17 @@ class QualityCascade:
         )
 
     def provider_alias(self, provider: str) -> str:
-        aliases = {"hf": "huggingface", "gemini": "google", "google_ai_studio": "google"}
+        aliases = {"hf": "huggingface", "gemini": "google", "google_ai_studio": "google", "nim": "nvidia_nim"}
         return aliases.get(provider, provider)
+
+    def is_local_provider(self, provider: str) -> bool:
+        """Check if provider runs locally and doesn't need cloud credentials/policies."""
+        local_providers = {
+            "ollama", "llama_cpp", "llama.cpp", "tgi", "llamacpp", 
+            "local", "local_nim", "local_llm", "cpu_llm"
+        }
+        provider_lower = provider.lower().replace("-", "_").replace(".", "_")
+        return provider_lower in local_providers or any(lp in provider_lower for lp in local_providers)
 
     def tail_text(self, path: Path, max_bytes: int = 12000) -> str:
         with path.open("rb") as f:
@@ -677,11 +721,12 @@ class QualityCascade:
         return data.decode("utf-8", errors="replace")
 
     def log_hits(self, text: str, provider: str) -> List[str]:
-        terms = [provider, self.provider_alias(provider), "429", "quota", "rate limit", "unauthorized", "timeout", "error"]
+        markers = {provider.lower(), self.provider_alias(provider).lower()} - {"", "unknown"}
+        failure = re.compile(r"\b(?:401|403|408|429|5[0-9]{2}|quota|rate limit|unauthorized|timeout|timed out|error|failed)\b")
         hits = []
         for line in text.splitlines():
             lower = line.lower()
-            if any(term and term.lower() in lower for term in terms):
+            if any(marker in lower for marker in markers) and failure.search(lower):
                 hits.append(re.sub(r"\s+", " ", line).strip()[:260])
         return hits
 

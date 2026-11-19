@@ -85,6 +85,7 @@ class OptimizedKVEngineAdapter:
             metadata={
                 "adapter": self.__class__.__name__,
                 "source_node": "local",
+                "payload_provenance": "engine_adapter_capture",
                 "tensor_parallel_size": self.tensor_parallel_size,
                 "flash_attention": self.enable_flash_attention,
                 "paged_attention": self.enable_paged_attention,

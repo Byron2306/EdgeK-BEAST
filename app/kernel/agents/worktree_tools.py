@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -276,6 +277,52 @@ async def _worktree_bind(arguments: dict[str, Any], context: ToolExecutionContex
     }
 
 
+def _count_patch_lines(patch: str) -> tuple[int, int]:
+    added = removed = 0
+    for line in patch.splitlines():
+        if line.startswith(("+++", "---")):
+            continue
+        if line.startswith("+"):
+            added += 1
+        elif line.startswith("-"):
+            removed += 1
+    return added, removed
+
+
+def _worktree_patch(context: ToolExecutionContext, relative: str = "", limit: int = 40000) -> dict[str, Any]:
+    """Return a bounded unified diff for one file (or the whole worktree)."""
+    if context.worktree_root is None:
+        return {}
+    try:
+        root = _worktree_root(context)
+    except (PermissionError, FileNotFoundError):
+        return {}
+    if relative:
+        # New files are untracked until staged with --intent-to-add; that only
+        # touches the index inside the throwaway worktree.
+        subprocess.run(
+            ["git", "-C", str(root), "add", "-N", "--", relative],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=10,
+        )
+    command = ["git", "-C", str(root), "diff", "--no-color", "--no-ext-diff"]
+    if relative:
+        command.extend(["--", relative])
+    try:
+        result = subprocess.run(command, capture_output=True, timeout=15)
+    except (OSError, subprocess.SubprocessError):
+        return {}
+    if result.returncode != 0:
+        return {}
+    patch = result.stdout.decode("utf-8", errors="replace")
+    added, removed = _count_patch_lines(patch)
+    return {
+        "diff": patch[:limit],
+        "diff_added": added,
+        "diff_removed": removed,
+        "diff_truncated": len(patch) > limit,
+    }
+
+
 async def _worktree_write_file(arguments: dict[str, Any], context: ToolExecutionContext) -> dict[str, Any]:
     if _is_remote_target(context):
         descriptor = _remote_target_descriptor(context)
@@ -348,6 +395,7 @@ async def _worktree_write_file(arguments: dict[str, Any], context: ToolExecution
         "before_sha256": hashlib.sha256(before).hexdigest() if existed else "",
         "after_sha256": hashlib.sha256(content.encode("utf-8")).hexdigest(),
         "bytes_written": len(content.encode("utf-8")),
+        **_worktree_patch(context, relative),
     }
 
 
@@ -419,6 +467,7 @@ async def _worktree_replace_exact(arguments: dict[str, Any], context: ToolExecut
         "replacements": expected,
         "before_sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
         "after_sha256": hashlib.sha256(updated.encode("utf-8")).hexdigest(),
+        **_worktree_patch(context, relative),
     }
 
 
@@ -640,13 +689,20 @@ async def _worktree_sourceplan(arguments: dict[str, Any], context: ToolExecution
             max_chars=max_chars,
         )
     else:
+        observations = (checkpoint.get("planner") or {}).get("observations") or []
+        observed_new_paths = tuple(
+            str((obs.get("result") or {}).get("path") or "")
+            for obs in observations if isinstance(obs, dict)
+            and obs.get("tool_id") == "worktree.write_file" and obs.get("status") == "completed"
+        )
         result = WorktreeForge(context.workspace_root).sourceplan_draft_from_diff(
-            task_id,
-            max_chars,
+            task_id, max_chars, require_diff=True, observed_new_paths=observed_new_paths,
         )
     if not result.get("ok"):
         raise RuntimeError(str(result.get("error") or "SourcePlan synthesis failed"))
     plan = result.get("plan") if isinstance(result.get("plan"), dict) else {}
+    if not plan.get("files"):
+        raise ValueError("SourcePlan requires a non-empty worktree diff")
     if context.engine is not None:
         event_payload = {
             "plan_id": plan.get("plan_id"),
@@ -685,35 +741,264 @@ async def _worktree_sourceplan(arguments: dict[str, Any], context: ToolExecution
     return result
 
 
+_WORKTREE_EXCLUDED_DIRS = frozenset({
+    ".git", ".beast", ".beast-python-tools", ".venv", "venv", "node_modules",
+    "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".tox",
+    "dist", "build", ".next", ".nuxt", "target", "coverage", ".idea", ".vscode",
+})
+
+
+def _worktree_relative(context: ToolExecutionContext, value: Any) -> str:
+    raw = str(value or "").replace("\\", "/").strip()
+    if raw.startswith("/"):
+        raise ValueError("worktree tools require a path relative to the worktree root")
+    return raw or "."
+
+
+def _worktree_iter_files(root: Path, start: Path):
+    """Yield files under ``start`` without entering heavy or generated trees."""
+    if start.is_file():
+        yield start
+        return
+    for candidate in start.rglob("*"):
+        try:
+            relative_parts = candidate.relative_to(root).parts
+        except ValueError:
+            continue
+        if any(part in _WORKTREE_EXCLUDED_DIRS or part.startswith(".beast-") for part in relative_parts):
+            continue
+        if candidate.is_file() and not candidate.is_symlink():
+            yield candidate
+
+
+def _worktree_result(context: ToolExecutionContext) -> dict[str, Any]:
+    return {
+        "execution_target": str(context.execution_target or "local"),
+        "execution_target_payload": dict(context.execution_target_payload or {}),
+        "target_execution": "isolated_worktree",
+        "worktree_root": str(context.worktree_root or ""),
+    }
+
+
+async def _worktree_read_file(arguments: dict[str, Any], context: ToolExecutionContext) -> dict[str, Any]:
+    """Read a bounded range from the isolated worktree (never the live workspace)."""
+    if _is_remote_target(context):
+        raise NotImplementedError("worktree.read_file currently requires a local worktree")
+    relative = _worktree_relative(context, arguments.get("path"))
+    target = _safe_worktree_path(context, relative)
+    if not target.is_file():
+        raise FileNotFoundError(f"worktree file not found: {relative}")
+    if target.stat().st_size > 8 * 1024 * 1024:
+        raise ValueError("worktree.read_file refuses files larger than 8 MiB")
+    text = target.read_text(encoding="utf-8", errors="replace")
+    lines = text.splitlines()
+    start = max(1, int(arguments.get("start_line") or 1))
+    count = max(1, min(int(arguments.get("line_count") or 200), 1000))
+    selected = lines[start - 1 : start - 1 + count]
+    end = start + len(selected) - 1 if selected else start
+    return {
+        "path": relative,
+        "start_line": start,
+        "end_line": end,
+        "total_lines": len(lines),
+        "content": "\n".join(selected),
+        "sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
+        "truncated": end < len(lines),
+        **_worktree_result(context),
+    }
+
+
+async def _worktree_list(arguments: dict[str, Any], context: ToolExecutionContext) -> dict[str, Any]:
+    """List one directory inside the isolated worktree."""
+    if _is_remote_target(context):
+        raise NotImplementedError("worktree.list currently requires a local worktree")
+    root = _worktree_root(context)
+    relative = _worktree_relative(context, arguments.get("path"))
+    target = _safe_worktree_path(context, relative)
+    if not target.is_dir():
+        raise FileNotFoundError(f"worktree directory not found: {relative}")
+    limit = max(1, min(int(arguments.get("limit") or 200), 1000))
+    entries: list[dict[str, Any]] = []
+    for child in sorted(target.iterdir(), key=lambda item: (not item.is_dir(), item.name.lower())):
+        if child.name in _WORKTREE_EXCLUDED_DIRS or child.name.startswith(".beast-"):
+            continue
+        entries.append({
+            "name": child.name,
+            "path": child.relative_to(root).as_posix(),
+            "kind": "directory" if child.is_dir() else "file",
+            "size": child.stat().st_size if child.is_file() else None,
+        })
+        if len(entries) >= limit:
+            break
+    return {
+        "path": relative,
+        "entries": entries,
+        "count": len(entries),
+        **_worktree_result(context),
+    }
+
+
+async def _worktree_search_text(arguments: dict[str, Any], context: ToolExecutionContext) -> dict[str, Any]:
+    """Search the isolated worktree so the model sees its own edits, not the base tree."""
+    if _is_remote_target(context):
+        raise NotImplementedError("worktree.search_text currently requires a local worktree")
+    root = _worktree_root(context)
+    query = str(arguments.get("query") or "")
+    if not query:
+        raise ValueError("query is required")
+    relative = _worktree_relative(context, arguments.get("path"))
+    start = _safe_worktree_path(context, relative)
+    if not start.exists():
+        raise FileNotFoundError(f"worktree path not found: {relative}")
+    limit = max(1, min(int(arguments.get("limit") or 100), 500))
+    case_sensitive = bool(arguments.get("case_sensitive"))
+    needle = query if case_sensitive else query.lower()
+    matches: list[dict[str, Any]] = []
+    for candidate in _worktree_iter_files(root, start):
+        try:
+            if candidate.stat().st_size > 2 * 1024 * 1024:
+                continue
+            text = candidate.read_text(encoding="utf-8", errors="replace")
+        except (OSError, UnicodeError):
+            continue
+        for line_no, line in enumerate(text.splitlines(), start=1):
+            haystack = line if case_sensitive else line.lower()
+            if needle in haystack:
+                matches.append({
+                    "path": candidate.relative_to(root).as_posix(),
+                    "line": line_no,
+                    "preview": line[:500],
+                })
+                if len(matches) >= limit:
+                    return {
+                        "query": query,
+                        "matches": matches,
+                        "count": len(matches),
+                        "truncated": True,
+                        **_worktree_result(context),
+                    }
+    return {
+        "query": query,
+        "matches": matches,
+        "count": len(matches),
+        "truncated": False,
+        **_worktree_result(context),
+    }
+
+
+async def _worktree_run(arguments: dict[str, Any], context: ToolExecutionContext) -> dict[str, Any]:
+    """Run an argv command inside the worktree.
+
+    This is the agent's shell: tests, linters, builds, ``git diff`` and small
+    probes. It never touches the operator's workspace and never grants
+    promotion authority; only ``worktree.verify`` is the completion gate.
+    """
+    if _is_remote_target(context):
+        raise NotImplementedError("worktree.run currently requires a local worktree")
+    root = _worktree_root(context)
+    command = arguments.get("command")
+    if not isinstance(command, list) or not command or not all(isinstance(item, str) and item for item in command):
+        raise ValueError("command must be a non-empty string array")
+    if len(command) > 64:
+        raise ValueError("command exceeds 64 arguments")
+    requested = list(command)
+    resolved = list(requested)
+    if resolved[0] in {"python", "python3"}:
+        resolved[0] = sys.executable
+    timeout = max(1.0, min(float(arguments.get("timeout_seconds") or 120), 600.0))
+    process = await asyncio.create_subprocess_exec(
+        *resolved,
+        cwd=str(root),
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+        env={
+            **os.environ,
+            "GIT_OPTIONAL_LOCKS": "0",
+            "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+            "PYTHONDONTWRITEBYTECODE": "1",
+        },
+    )
+    timed_out = False
+    try:
+        stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=timeout)
+    except asyncio.TimeoutError:
+        timed_out = True
+        process.kill()
+        stdout, stderr = await process.communicate()
+    out = stdout.decode("utf-8", errors="replace")
+    err = stderr.decode("utf-8", errors="replace")
+    return {
+        "command": requested,
+        "resolved_command": resolved,
+        "returncode": process.returncode,
+        "ok": process.returncode == 0 and not timed_out,
+        "timed_out": timed_out,
+        "stdout": out[-20000:],
+        "stderr": err[-12000:],
+        **_worktree_result(context),
+    }
+
+
 def register_worktree_tools(registry: AgentToolRegistry) -> AgentToolRegistry:
-    mutation_approval = True
+    # All worktree tools operate exclusively inside an isolated worktree — they
+    # never touch the operator's workspace. Autopilot owns these; no per-call
+    # approval prompts. The only governance gate is worktree→workspace apply,
+    # which requires explicit operator consent (/apply or autopilot apply_on_completion).
     registry.register(ToolSpec(
         tool_id="worktree.bind", version="1", title="Create isolated worktree",
         description="Create and bind an isolated Git worktree to this AgentRun.", category="worktree",
         risk=ToolRisk.HIGH, effect=ToolEffect.ISOLATED_MUTATION,
         input_schema={"type":"object","properties":{"objective":{"type":"string"},"risk":{"type":"string"},"provider":{"type":"string"},"base_ref":{"type":"string"},"task_id":{"type":"string"}},"additionalProperties":False},
-        timeout_seconds=45, requires_approval=mutation_approval, idempotent=False, targets=("local","ssh","container"), handler=_worktree_bind,
+        timeout_seconds=45, requires_approval=False, idempotent=False, targets=("local","ssh","container"), handler=_worktree_bind,
     ))
     registry.register(ToolSpec(
         tool_id="worktree.write_file", version="1", title="Write isolated file",
         description="Create or replace a UTF-8 file only inside the bound worktree.", category="worktree",
         risk=ToolRisk.HIGH, effect=ToolEffect.ISOLATED_MUTATION,
         input_schema={"type":"object","required":["path","content"],"properties":{"path":{"type":"string"},"content":{"type":"string"}},"additionalProperties":False},
-        timeout_seconds=10, requires_approval=mutation_approval, requires_worktree=True, idempotent=False, targets=("local","ssh","container"), handler=_worktree_write_file,
+        timeout_seconds=10, requires_approval=False, requires_worktree=True, idempotent=False, targets=("local","ssh","container"), handler=_worktree_write_file,
     ))
     registry.register(ToolSpec(
         tool_id="worktree.replace_exact", version="1", title="Replace exact text in worktree",
         description="Perform a bounded exact replacement only inside the bound worktree.", category="worktree",
         risk=ToolRisk.HIGH, effect=ToolEffect.ISOLATED_MUTATION,
         input_schema={"type":"object","required":["path","old_text","new_text"],"properties":{"path":{"type":"string"},"old_text":{"type":"string"},"new_text":{"type":"string"},"expected_occurrences":{"type":"integer"}},"additionalProperties":False},
-        timeout_seconds=10, requires_approval=mutation_approval, requires_worktree=True, idempotent=False, targets=("local","ssh","container"), handler=_worktree_replace_exact,
+        timeout_seconds=10, requires_approval=False, requires_worktree=True, idempotent=False, targets=("local","ssh","container"), handler=_worktree_replace_exact,
+    ))
+    registry.register(ToolSpec(
+        tool_id="worktree.read_file", version="1", title="Read isolated file",
+        description="Read a bounded line range from the bound worktree so the model sees its own edits.", category="inspection",
+        risk=ToolRisk.LOW, effect=ToolEffect.READ,
+        input_schema={"type":"object","required":["path"],"properties":{"path":{"type":"string"},"start_line":{"type":"integer"},"line_count":{"type":"integer"}},"additionalProperties":False},
+        timeout_seconds=15, requires_worktree=True, targets=("local",), handler=_worktree_read_file,
+    ))
+    registry.register(ToolSpec(
+        tool_id="worktree.list", version="1", title="List isolated directory",
+        description="List one directory inside the bound worktree, skipping generated and VCS trees.", category="inspection",
+        risk=ToolRisk.LOW, effect=ToolEffect.READ,
+        input_schema={"type":"object","properties":{"path":{"type":"string"},"limit":{"type":"integer"}},"additionalProperties":False},
+        timeout_seconds=15, requires_worktree=True, targets=("local",), handler=_worktree_list,
+    ))
+    registry.register(ToolSpec(
+        tool_id="worktree.search_text", version="1", title="Search isolated worktree",
+        description="Search file contents inside the bound worktree for a substring.", category="inspection",
+        risk=ToolRisk.LOW, effect=ToolEffect.READ,
+        input_schema={"type":"object","required":["query"],"properties":{"query":{"type":"string"},"path":{"type":"string"},"limit":{"type":"integer"},"case_sensitive":{"type":"boolean"}},"additionalProperties":False},
+        timeout_seconds=25, requires_worktree=True, targets=("local",), handler=_worktree_search_text,
     ))
     registry.register(ToolSpec(
         tool_id="worktree.verify", version="1", title="Run worktree verification",
         description="Run an explicit argv verification command inside the bound worktree without a shell.", category="verification",
         risk=ToolRisk.HIGH, effect=ToolEffect.EXECUTION,
         input_schema={"type":"object","required":["command"],"properties":{"command":{"type":"array","items":{"type":"string"}},"timeout_seconds":{"type":"number"}},"additionalProperties":False},
-        timeout_seconds=610, requires_approval=True, requires_worktree=True, idempotent=False, targets=("local","ssh","container"), handler=_worktree_run_verification,
+        timeout_seconds=610, requires_approval=False, requires_worktree=True, idempotent=False, targets=("local","ssh","container"), handler=_worktree_run_verification,
+    ))
+    registry.register(ToolSpec(
+        tool_id="worktree.run", version="1", title="Run isolated command",
+        description="Run an argv command (tests, linters, builds, git) inside the bound worktree. Never touches the workspace.", category="execution",
+        risk=ToolRisk.HIGH, effect=ToolEffect.EXECUTION,
+        input_schema={"type":"object","required":["command"],"properties":{"command":{"type":"array","items":{"type":"string"}},"timeout_seconds":{"type":"number"}},"additionalProperties":False},
+        timeout_seconds=610, requires_approval=False, requires_worktree=True, idempotent=False, targets=("local",), handler=_worktree_run,
     ))
     registry.register(ToolSpec(
         tool_id="worktree.diff", version="1", title="Inspect worktree diff",

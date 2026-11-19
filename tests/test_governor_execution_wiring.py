@@ -120,6 +120,7 @@ async def test_executor_dispatches_admitted_specialist_instead_of_provider(tmp_p
 @pytest.mark.asyncio
 async def test_executor_specialist_flag_off_never_calls_ollama(tmp_path, monkeypatch):
     from app.kernel.execution.execute import Executor
+    from types import SimpleNamespace
 
     monkeypatch.delenv("BEAST_SWARM_SPECIALIST", raising=False)
     executor = Executor()
@@ -128,7 +129,9 @@ async def test_executor_specialist_flag_off_never_calls_ollama(tmp_path, monkeyp
     from app.kernel.compute.adaptive_router import AdaptiveRouter
 
     decision = AdaptiveRouter().route(similarity=0.9, specialist=SPECIALIST)
-    assert await executor._try_local_specialist(ir(), decision, None) is None
+    # Provide a mock compute object with plan_id
+    mock_compute = SimpleNamespace(plan=SimpleNamespace(plan_id="test-plan"))
+    assert await executor._try_local_specialist(ir(), decision, mock_compute) is None
     assert calls == []
 
 

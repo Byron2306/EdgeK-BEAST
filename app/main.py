@@ -173,6 +173,10 @@ from app.kernel.storage.outcome_evidence import OutcomeEvidence, default_outcome
 from app.kernel.compute.crystal_forks import TemporalCrystalForkManager
 from app.kernel.data_processing.semantic_raid import ArtifactFossilLayerStore, SemanticRaidStore
 from app.kernel.compute.kv_cache_transport import CrossEngineKVCacheTransport
+from app.kernel.compute.kv_crystal_tier import CrystalKVTier
+from app.kernel.compute.physical_ledger import PhysicalLedger, probe_pools
+from app.kernel.compute.reclaim_policy import ReclaimPolicy
+from app.kernel.compute.residual_pressure_governor import LinuxPSIReader, ResidualPressureGovernor
 from app.kernel.deployment.beast_config import config as beast_config
 from app.kernel.execution.execute import executor as governed_executor
 from app.kernel.registry.commons_space_registry import CommonsSpaceRegistry
@@ -234,6 +238,31 @@ artifact_fossil_store = ArtifactFossilLayerStore(beast_state_root / "fossils")
 kv_cache_transport = CrossEngineKVCacheTransport(
     max_memory_bytes=beast_config.KV_MAX_MEMORY_BYTES,
     storage_dir=beast_config.KV_CACHE_DIR,
+    crystal_tier=CrystalKVTier(
+        Path(beast_config.KV_CACHE_DIR).expanduser().resolve() / "crystal",
+        privacy_domain="local_kv_storage",
+        ttl_seconds=float(os.environ.get("BEAST_KV_CRYSTAL_TTL_SECONDS", "86400") or 86400),
+    ),
+)
+from app.kernel.compute.kv_transport import bind_default_transport
+
+bind_default_transport(kv_cache_transport)
+
+# One physical byte budget across VRAM / RAM / swap / NVMe / memfd, plus the
+# ordered reclaim ladder that feeds it.  Capacities are probed once at startup
+# and can be refreshed through /edgek/physical/reprobe; an unknown pool denies
+# rather than assumes.
+physical_ledger = PhysicalLedger(
+    {pool: capacity.capacity_bytes for pool, capacity in probe_pools(kv_root=beast_config.KV_CACHE_DIR).items()},
+    journal_path=beast_state_root / "physical_ledger.jsonl",
+)
+physical_ledger.sweep()
+residual_pressure_reader = LinuxPSIReader()
+residual_pressure_governor = ResidualPressureGovernor()
+reclaim_policy = ReclaimPolicy(
+    kv_tier=kv_cache_transport.crystal_tier,
+    capsules={},
+    min_level="high",
 )
 if beast_config.KV_TRANSPORT_ENDPOINT:
     kv_cache_transport.register_http_sender(
@@ -4565,6 +4594,97 @@ async def edgek_federated_commons_revoke(envelope_id: str, payload: Dict[str, An
 async def edgek_kv_cache_state():
     """Return local KV/cache transport state."""
     return kv_cache_transport.get_stats()
+
+
+@app.get("/edgek/physical/ledger")
+@app.post("/edgek/physical/ledger")
+async def edgek_physical_ledger():
+    """Return the unified physical byte budget across every tier."""
+    return physical_ledger.state()
+
+
+@app.post("/edgek/physical/admit")
+async def edgek_physical_admit(payload: Dict[str, Any] = None):
+    """Reserve bytes in one physical pool, all-or-nothing."""
+    payload = payload or {}
+    try:
+        return physical_ledger.admit(
+            str(payload.get("owner") or ""),
+            str(payload.get("pool") or ""),
+            int(payload.get("bytes") or 0),
+            ttl_seconds=payload.get("ttl_seconds", 86400.0),
+            pinned=bool(payload.get("pinned", False)),
+            privacy_domain=str(payload.get("privacy_domain") or "local_physical"),
+            reclaim_receipt_digest=str(payload.get("reclaim_receipt_digest") or ""),
+        ).as_dict()
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/edgek/physical/release")
+async def edgek_physical_release(payload: Dict[str, Any] = None):
+    """Release a physical lease by id."""
+    payload = payload or {}
+    lease_id = str(payload.get("lease_id") or "")
+    if not lease_id:
+        raise HTTPException(status_code=400, detail="lease_id is required")
+    return physical_ledger.release(lease_id, reason=str(payload.get("reason") or "operator")).as_dict()
+
+
+@app.post("/edgek/physical/reprobe")
+async def edgek_physical_reprobe(payload: Dict[str, Any] = None):
+    """Refresh pool capacities from live probes without dropping leases."""
+    payload = payload or {}
+    pools = probe_pools(kv_root=beast_config.KV_CACHE_DIR)
+    changed = {pool: physical_ledger.resize(pool, capacity.capacity_bytes) for pool, capacity in pools.items()}
+    return {"reprobed": True, "pools": changed, "state": physical_ledger.state()}
+
+
+@app.post("/edgek/physical/reclaim")
+async def edgek_physical_reclaim(payload: Dict[str, Any] = None):
+    """Run the ordered reclaim ladder for the current PSI level.
+
+    ``force_level`` is an explicit operator override for testing the ladder;
+    it is echoed in the receipt as the operated level so the evidence is never
+    mistaken for a real pressure episode.
+    """
+    payload = payload or {}
+    snapshot = residual_pressure_reader.read()
+    decision = residual_pressure_governor.classify(snapshot)
+    level = str(payload.get("force_level") or decision.level.value)
+    authorization_factory = None
+    authorization = payload.get("authorization")
+    if isinstance(authorization, dict) and authorization:
+        from app.kernel.execution.cgroup_capsule import CgroupAuthorization
+
+        def authorization_factory(mission_id: str, action: str):
+            if str(authorization.get("mission_id")) != mission_id or str(authorization.get("action")) != action:
+                return None
+            return CgroupAuthorization(
+                action=action,
+                mission_id=mission_id,
+                approved_by=str(authorization.get("approved_by") or ""),
+                approval_receipt_id=str(authorization.get("approval_receipt_id") or ""),
+                reason=str(authorization.get("reason") or ""),
+                destructive=bool(authorization.get("destructive", False)),
+            )
+
+    receipt = reclaim_policy.run(
+        level,
+        snapshot_digest=snapshot.digest,
+        authorization_factory=authorization_factory,
+    ).as_dict()
+    receipt["observed_level"] = decision.level.value
+    receipt["level_forced"] = bool(payload.get("force_level"))
+    return receipt
+
+
+@app.post("/edgek/physical/sweep")
+async def edgek_physical_sweep():
+    """Release expired, unpinned physical leases."""
+    released = [item.as_dict() for item in physical_ledger.sweep()]
+    return {"released": released, "state": physical_ledger.state()}
+
 
 @app.post("/edgek/kv-cache/receive")
 async def edgek_kv_cache_receive(request: Request, payload: Dict[str, Any] = None):

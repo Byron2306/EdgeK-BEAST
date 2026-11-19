@@ -155,7 +155,7 @@ class CommonsCrystalPublisher:
     def __init__(self, transport: Any, *, owner: str = OWNER, bucket: str = BUCKET):
         self.transport, self.owner, self.bucket = transport, owner, bucket
 
-    def publish(self, bundle: Mapping[str, Any], space: Mapping[str, Any], *, node_ids: Iterable[str],
+    async def publish(self, bundle: Mapping[str, Any], space: Mapping[str, Any], *, node_ids: Iterable[str],
                 quorum: int | None = None) -> dict[str, Any]:
         node_ids = tuple(node_ids)
         manifest, blobs = revision_manifest(bundle, space)
@@ -163,7 +163,7 @@ class CommonsCrystalPublisher:
         nodes: dict[str, Any] = {}
         for node_id in node_ids:
             try:
-                self.transport.probe(node_id)
+                await self.transport.probe(node_id)
                 listed = self.transport.list_buckets(node_id).get("buckets") or []
                 if f"{self.owner}/{self.bucket}" not in {row.get("bucket_id") for row in listed}:
                     try:
@@ -219,9 +219,9 @@ class CommonsCrystalImporter:
     def __init__(self, transport: Any, registry: Any, *, owner: str = OWNER, bucket: str = BUCKET):
         self.transport, self.registry, self.owner, self.bucket = transport, registry, owner, bucket
 
-    def pull(self, node_id: str, crystal_id: str, *, trusted_keys: Mapping[str, Any]) -> dict[str, Any]:
+    async def pull(self, node_id: str, crystal_id: str, *, trusted_keys: Mapping[str, Any]) -> dict[str, Any]:
         revision = revision_name(crystal_id)
-        self.transport.probe(node_id)
+        await self.transport.probe(node_id)
         result = self.transport.import_revision(node_id, owner=self.owner, name=self.bucket, revision=revision)
         admission = dict(result.get("admission") or {})
         if (result.get("status") != "quarantined_hypothesis" or admission.get("status") != "quarantined_hypothesis"
@@ -259,16 +259,67 @@ class GatewayCommonsTransport:
 
     def __init__(self, base_url: str = DEFAULT_GATEWAY, *, vault_root: str | Path, timeout: float = 60.0):
         import httpx
+        import json
+        from pathlib import Path
 
         from app.kernel.commons.artifact_vault import ArtifactVault
+        from app.kernel.commons.remote_client import RemoteCommonsGateway, RemoteCommonsRegistry
+        from app.kernel.commons.remote_protocol import CommonsRequestSigner
+        from app.kernel.commons.lattice_trust import CrystalLatticeTrustStore
+        from app.kernel.commons.discovery import CommonsDiscoveryCatalog
+        from app.kernel.commons.remote_client import CommonsEgressGate
 
         if not base_url.startswith(("http://127.0.0.1", "http://localhost", "http://[::1]")):
             raise PermissionError("Commons crystal publishing only talks to a loopback BEAST gateway")
         self.client = httpx.Client(base_url=base_url, timeout=timeout)
         self.vault = ArtifactVault(Path(vault_root))
+        # Fetch the gateway's workspace identity from the gateway itself
+        self._workspace_identity = self._fetch_workspace_identity(base_url)
+        # Create a direct client to the remote nodes for operations that need fresh lattice trust store
+        # (e.g., probing nodes, which requires up-to-date lattice trust store)
+        manifest_path = Path(".beast/remote-commons-lab/manifest.json")
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {"nodes": [], "gateway_env": {}}
+        env = manifest.get("gateway_env", {})
+        signer = CommonsRequestSigner.from_pem_file(
+            env.get("BEAST_COMMONS_REMOTE_CLIENT_KEY", ""),
+            node_id=env.get("BEAST_COMMONS_REMOTE_CLIENT_NODE_ID", ""),
+            key_id=env.get("BEAST_COMMONS_REMOTE_CLIENT_KEY_ID", ""),
+        )
+        lattice_trust_path = Path(".beast/remote-commons-lab/trust-commons/lattice-trust.yaml")
+        if not lattice_trust_path.exists():
+            lattice_trust_path = Path(".beast/remote-commons-lab/trust-commons/lattice-trust.yaml")
+        lattice_trust = CrystalLatticeTrustStore.from_file(lattice_trust_path)
+        self._direct_gateway = RemoteCommonsGateway(
+            RemoteCommonsRegistry(Path(".beast") / "commons-remote" / "nodes.sqlite3"),
+            CommonsEgressGate(allowed_hosts=("127.0.0.1",), allow_insecure_loopback=True),
+            signer=CommonsRequestSigner.from_pem_file(
+                env.get("BEAST_COMMONS_REMOTE_CLIENT_KEY", ""),
+                node_id=env.get("BEAST_COMMONS_REMOTE_CLIENT_NODE_ID", ""),
+                key_id=env.get("BEAST_COMMONS_REMOTE_CLIENT_KEY_ID", ""),
+            ),
+            lattice_trust_store=CrystalLatticeTrustStore.from_file(
+                Path(".beast/remote-commons-lab/trust-commons/lattice-trust.yaml")
+            ),
+            discovery_catalog=CommonsDiscoveryCatalog(Path(".beast") / "commons-remote" / "discovery.sqlite3"),
+        )
+
+    def _fetch_workspace_identity(self, base_url: str) -> str:
+        """Fetch the gateway's workspace identity digest from the gateway itself."""
+        import httpx
+        try:
+            resp = httpx.get(f"{base_url}/edgek/control-plane/workspace-identity", timeout=10.0)
+            resp.raise_for_status()
+            data = resp.json()
+            return data["digest"]
+        except Exception:
+            # Fallback: compute locally (may not match gateway if gateway has different git remote)
+            from app.kernel.workspaces.workspace_identity import discover, stable_workspace_uuid
+            return discover(".", workspace_uuid=stable_workspace_uuid(".")).digest()
 
     def _call(self, method: str, path: str, **kwargs: Any) -> dict[str, Any]:
-        response = self.client.request(method, REMOTE_PREFIX + path, **kwargs)
+        headers = kwargs.pop("headers", {})
+        headers["x-beast-workspace-identity"] = self._workspace_identity
+        response = self.client.request(method, REMOTE_PREFIX + path, headers=headers, **kwargs)
         if response.status_code >= 400:
             detail = response.text[:400]
             if "already exists" in detail:
@@ -276,8 +327,9 @@ class GatewayCommonsTransport:
             raise RuntimeError(f"{method} {path} -> {response.status_code}: {detail}")
         return response.json()
 
-    def probe(self, node_id: str) -> dict[str, Any]:
-        return self._call("POST", f"/nodes/{node_id}/probe")
+    async def probe(self, node_id: str) -> dict[str, Any]:
+        # Use direct gateway client for probing to ensure fresh lattice trust store
+        return await self._direct_gateway.probe(node_id)
 
     def list_buckets(self, node_id: str) -> dict[str, Any]:
         return self._call("GET", f"/nodes/{node_id}/buckets")

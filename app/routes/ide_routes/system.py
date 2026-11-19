@@ -28,6 +28,13 @@ from app.kernel.compute.mission_crystal_lattice import MissionCrystalLattice
 from app.kernel.evidence.evidence_bus import EvidenceBus
 from app.kernel.policy.architecture_decisions import architecture_decision_register
 from app.kernel.security.safety_governor import SafetyGovernor
+from app.kernel.governance.governor_spine import (
+    ComputeGovernorSpine,
+    GovernorReceiptLog,
+    Proposal,
+    Episode,
+    forensic_sink,
+)
 from app.kernel.workspaces import system_inspector
 from app.kernel.workspaces.agent_session_store import AgentSessionStore
 from app.kernel.workspaces.mission_cockpit import MissionCockpit
@@ -177,74 +184,205 @@ def register_system_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[str,
             if not command_text:
                 yield sse("error", {"ok": False, "error": "empty command"})
                 return
-            yield sse("start", {
-                "ok": True,
-                "command": command_text,
-                "cwd": str(run_cwd),
-                "task_id": task_id,
-                "mode": mode,
-                "approved": approved,
-                "timeout": bounded_timeout,
-            })
-            stdout_chunks: list[str] = []
-            stderr_chunks: list[str] = []
-            returncode: int | None = None
-            timed_out = False
-            process = None
-            try:
-                process = await asyncio.create_subprocess_shell(
-                    command_text,
-                    cwd=str(run_cwd),
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
-                )
-                queue: asyncio.Queue[tuple[str, dict[str, Any]]] = asyncio.Queue()
+            # Server-side authorization is mandatory. The client-side
+            # classification and caller-supplied approval flag are not trusted.
+            safety = await asyncio.to_thread(
+                SafetyGovernor(root).classify_command,
+                command_text,
+                mode=mode,
+                task_id=task_id,
+            )
+            decision = str(safety.get("decision") or "block")
+            if decision != "allow":
+                yield sse("error", {
+                    "ok": False,
+                    "error": "terminal_stream_not_authorized",
+                    "decision": decision,
+                    "safety": safety,
+                })
+                return
 
-                async def pump(stream: Any, name: str, sink: list[str]):
+            # Admit the exact command and workspace through Compute Governor.
+            # Execution remains disabled until the admitted async runner is
+            # integrated and tested.
+            spine = ComputeGovernorSpine(
+                receipts=GovernorReceiptLog(
+                    root / ".beast" / "governor" / "receipts.jsonl",
+                    sinks=[forensic_sink(root / ".beast" / "evidence" / "governor")],
+                )
+            )
+            proposal = Proposal(
+                kind="command",
+                lane="operator",
+                command=command_text,
+                safety=safety,
+                approved=False,
+                signature_material={"cwd": str(run_cwd)},
+            )
+            admission = await asyncio.to_thread(
+                spine.admit,
+                Episode(run_id=task_id or "terminal_stream"),
+                proposal,
+            )
+            if not admission.permits():
+                yield sse("error", {
+                    "ok": False,
+                    "error": f"governor_{admission.outcome}",
+                    "safety": safety,
+                    "governor": admission.to_dict(),
+                })
+                return
+
+            # V1: explicitly bounded, diagnostic-only executable commands.
+            # No shell, redirects, pipes, scripts, or caller-supplied approval.
+            try:
+                argv = shlex.split(command_text)
+            except ValueError:
+                yield sse("error", {"ok": False, "error": "invalid_command_syntax"})
+                return
+
+            permitted = {
+                ("pwd",),
+                ("git", "--version"),
+                ("node", "--version"),
+                ("python", "--version"),
+                ("python3", "--version"),
+            }
+
+            if tuple(argv) not in permitted:
+                yield sse("error", {
+                    "ok": False,
+                    "error": "terminal_stream_command_not_in_v1_allowlist",
+                })
+                return
+
+            if admission.outcome != "admit" or not admission.permits():
+                yield sse("error", {
+                    "ok": False,
+                    "error": "terminal_stream_admission_not_enforced",
+                    "governor": admission.to_dict(),
+                })
+                return
+
+            executable = shutil.which(argv[0])
+            if not executable:
+                yield sse("error", {
+                    "ok": False,
+                    "error": "executable_not_found",
+                })
+                return
+
+            import signal
+
+            process = None
+            stdout_chunks = []
+            stderr_chunks = []
+            timed_out = False
+            returncode = None
+
+            def terminate_group():
+                if process is not None and process.poll() is None:
+                    try:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+
+            try:
+                def launch():
+                    return subprocess.Popen(
+                        [executable, *argv[1:]],
+                        cwd=str(run_cwd),
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        stdin=subprocess.DEVNULL,
+                        start_new_session=True,
+                        shell=False,
+                    )
+
+                # The subprocess is created inside the admitted callback.
+                process = spine.run_admitted(admission, proposal, launch)
+
+                yield sse("start", {
+                    "ok": True,
+                    "command": command_text,
+                    "cwd": str(run_cwd),
+                    "task_id": task_id,
+                    "mode": mode,
+                    "approved": False,
+                    "timeout": bounded_timeout,
+                    "governor": admission.to_dict(),
+                })
+
+                queue = asyncio.Queue()
+
+                async def pump(stream, name, sink):
                     while True:
-                        chunk = await stream.readline()
+                        chunk = await asyncio.to_thread(stream.readline)
                         if not chunk:
                             break
-                        text = chunk.decode("utf-8", errors="replace")
-                        sink.append(text)
+                        value = chunk.decode("utf-8", errors="replace")
+                        sink.append(value)
                         del sink[:-400]
-                        await queue.put(("chunk", {"stream": name, "text": text}))
+                        await queue.put(("chunk", {
+                            "stream": name,
+                            "text": value,
+                        }))
 
-                stdout_task = asyncio.create_task(pump(process.stdout, "stdout", stdout_chunks))
-                stderr_task = asyncio.create_task(pump(process.stderr, "stderr", stderr_chunks))
-                wait_task = asyncio.create_task(process.wait())
-                deadline = time.time() + bounded_timeout
+                stdout_task = asyncio.create_task(
+                    pump(process.stdout, "stdout", stdout_chunks)
+                )
+                stderr_task = asyncio.create_task(
+                    pump(process.stderr, "stderr", stderr_chunks)
+                )
+                wait_task = asyncio.create_task(
+                    asyncio.to_thread(process.wait)
+                )
+
+                deadline = time.monotonic() + bounded_timeout
+
                 while True:
-                    if wait_task.done() and queue.empty():
+                    if wait_task.done() and stdout_task.done() and stderr_task.done() and queue.empty():
                         break
-                    remaining = max(0.05, deadline - time.time())
-                    if remaining <= 0.05 and not wait_task.done():
+
+                    if time.monotonic() >= deadline and not wait_task.done():
                         timed_out = True
-                        process.kill()
+                        terminate_group()
+
                     try:
-                        event, payload = await asyncio.wait_for(queue.get(), timeout=min(0.25, remaining))
+                        event, payload = await asyncio.wait_for(
+                            queue.get(), timeout=0.1
+                        )
                         yield sse(event, payload)
                     except asyncio.TimeoutError:
-                        yield sse("heartbeat", {"running": not wait_task.done(), "elapsed_ms": int((time.time() - started) * 1000)})
-                    if timed_out and wait_task.done() and queue.empty():
-                        break
+                        yield sse("heartbeat", {
+                            "running": not wait_task.done(),
+                            "elapsed_ms": int((time.time() - started) * 1000),
+                        })
+
                 returncode = int(await wait_task)
                 await stdout_task
                 await stderr_task
+
             except asyncio.CancelledError:
-                if process and process.returncode is None:
-                    process.kill()
+                terminate_group()
                 raise
             except Exception as exc:
-                result = {
+                terminate_group()
+                yield sse("error", {
                     "ok": False,
-                    "command": command_text,
-                    "cwd": str(run_cwd),
-                    "error": str(exc),
-                    "duration_ms": int((time.time() - started) * 1000),
-                }
-                yield sse("error", result)
+                    "error": "terminal_stream_execution_failed",
+                    "detail": type(exc).__name__,
+                    "governor": admission.to_dict(),
+                })
                 return
+            finally:
+                if process is not None:
+                    if process.poll() is None:
+                        terminate_group()
+                    for stream in (process.stdout, process.stderr):
+                        if stream is not None:
+                            stream.close()
+
             duration_ms = int((time.time() - started) * 1000)
             result = {
                 "ok": returncode == 0 and not timed_out,
@@ -258,15 +396,24 @@ def register_system_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[str,
                 "stderr": "".join(stderr_chunks)[-12000:],
                 "safety": {
                     "mode": mode,
-                    "approved": approved,
-                    "operator_override": operator_override,
+                    "approved": False,
+                    "operator_override": "",
                     "streamed": True,
+                    "diagnostic_only": True,
                 },
+                "governor": admission.to_dict(),
             }
+
             out_dir = root / ".beast" / "ide" / "terminal"
             out_dir.mkdir(parents=True, exist_ok=True)
-            out_path = out_dir / f"terminal_{int(time.time())}_{_raw_hash_text(command_text)[:10]}.json"
-            out_path.write_text(json.dumps(result, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
+            out_path = out_dir / (
+                f"terminal_{int(time.time())}_"
+                f"{_raw_hash_text(command_text)[:10]}.json"
+            )
+            out_path.write_text(
+                json.dumps(result, indent=2, sort_keys=True, default=str) + "\\n",
+                encoding="utf-8",
+            )
             receipt = EvidenceBus(root).register(
                 artifact_type="beast_governed_terminal_execution",
                 artifact_path=out_path,
@@ -275,9 +422,18 @@ def register_system_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[str,
                 task_id=task_id or "desktop_terminal",
                 status="ok" if result["ok"] else "failed",
                 summary=f"Streamed terminal command: {command_text[:140]}",
-                metadata={"returncode": returncode, "duration_ms": duration_ms, "timed_out": timed_out},
+                metadata={
+                    "returncode": returncode,
+                    "duration_ms": duration_ms,
+                    "timed_out": timed_out,
+                    "governor_receipt_id": admission.receipt_id,
+                },
             )
-            yield sse("done", {**result, "evidence_receipt": receipt, "path": str(out_path)})
+            yield sse("done", {
+                **result,
+                "evidence_receipt": receipt,
+                "path": str(out_path),
+            })
 
         return StreamingResponse(emit(), media_type="text/event-stream")
     return None

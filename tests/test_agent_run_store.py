@@ -159,13 +159,16 @@ def test_agent_workspace_read_range_uses_remote_target(tmp_path, monkeypatch):
 
     monkeypatch.setattr(tool_runtime_module, "_run_target_shell", fake_target_shell)
     engine = AgentRunEngine(tmp_path)
-    run_id = engine.create_run(session_id="session-target-read", objective="Read remote", mode="analysis")["run_id"]
+    run_id = engine.create_run(
+        session_id="session-target-read",
+        objective="Read remote",
+        mode="analysis",
+        request={"execution_target": "ssh", "execution_target_payload": {"kind": "ssh", "sessionId": "target-ssh-read", "host": "devbox", "remoteRoot": "/repo"}},
+    )["run_id"]
     result = asyncio.run(engine.execute_tool(
         run_id,
         "workspace.read_range",
         {"path": "README.md", "start_line": 1, "line_count": 2},
-        execution_target="ssh",
-        execution_target_payload={"kind": "ssh", "sessionId": "target-ssh-read", "host": "devbox", "remoteRoot": "/repo"},
     ))
     assert result["status"] == "completed"
     assert result["result"]["target_execution"] == "remote_ssh"
@@ -185,13 +188,16 @@ def test_agent_workspace_search_text_uses_remote_target(tmp_path, monkeypatch):
 
     monkeypatch.setattr(tool_runtime_module, "_run_target_shell", fake_target_shell)
     engine = AgentRunEngine(tmp_path)
-    run_id = engine.create_run(session_id="session-target-search", objective="Search remote", mode="analysis")["run_id"]
+    run_id = engine.create_run(
+        session_id="session-target-search",
+        objective="Search remote",
+        mode="analysis",
+        request={"execution_target": "container", "execution_target_payload": {"kind": "container", "sessionId": "target-container-search", "containerId": "devctr", "workspaceFolder": "/workspace"}},
+    )["run_id"]
     result = asyncio.run(engine.execute_tool(
         run_id,
         "workspace.search_text",
         {"query": "answer", "path": "."},
-        execution_target="container",
-        execution_target_payload={"kind": "container", "sessionId": "target-container-search", "containerId": "devctr", "workspaceFolder": "/workspace"},
     ))
     assert result["status"] == "completed"
     assert result["result"]["target_execution"] == "remote_container"

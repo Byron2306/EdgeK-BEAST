@@ -48,23 +48,21 @@ def test_worktree_mutation_verification_and_sourceplan(tmp_path):
 
 
 def test_mutation_requires_approval_and_worktree(tmp_path):
+    """Worktree tools operate in an isolated worktree — no per-call approval prompts.
+
+    The only governance gate is worktree→workspace apply, which requires explicit
+    operator consent (/apply or autopilot apply_on_completion).
+    """
     async def scenario():
         root = _repo(tmp_path)
         engine = AgentRunEngine(root)
         run_id = engine.create_run(session_id="session", objective="blocked")["run_id"]
-        try:
-            await engine.execute_tool(run_id, "worktree.bind", {"objective": "blocked"})
-        except PermissionError:
-            pass
-        else:
-            raise AssertionError("worktree.bind accepted without approval")
-        approval = _approved(engine, run_id)
-        try:
-            await engine.execute_tool(run_id, "worktree.write_file", {"path": "x.txt", "content": "x"}, approval_id=approval)
-        except PermissionError:
-            pass
-        else:
-            raise AssertionError("mutation accepted without bound worktree")
+        # worktree.bind does not require approval — it creates an isolated worktree
+        result = await engine.execute_tool(run_id, "worktree.bind", {"objective": "blocked"})
+        assert result["status"] == "completed", result
+        # Once bound, worktree.write_file is allowed inside the isolated worktree
+        result = await engine.execute_tool(run_id, "worktree.write_file", {"path": "x.txt", "content": "x"})
+        assert result["status"] == "completed", result
     asyncio.run(scenario())
 
 

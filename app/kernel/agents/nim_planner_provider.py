@@ -4,6 +4,7 @@ from __future__ import annotations
 from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 
 import asyncio
+from copy import deepcopy
 import json
 import os
 import time
@@ -13,8 +14,10 @@ import urllib.request
 from typing import Any
 
 from app.kernel.commons.route_damping import RouteFlapDampener
+from app.kernel.agents.file_review import EXPLANATION_HEADER, FOCUSED_EXPLANATION_HEADER
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType
 from app.kernel.agents.planner_provider import PlannerDecisionError, parse_planner_decision
+from app.kernel.compute.streaming_interceptor import StreamingComputeInterceptor, StreamingInterceptionEngine
 
 
 class NIMPlannerProvider:
@@ -36,6 +39,48 @@ class NIMPlannerProvider:
         "additionalProperties": False,
     }
 
+    EXPLANATION_SCHEMA = {
+        "type": "object",
+        "properties": {
+            "decision_type": {"type": "string", "enum": ["complete"]},
+            "tool_id": {"type": "string", "enum": [""]},
+            "summary": {"type": "string"},
+            "arguments": {
+                "type": "object",
+                "properties": {
+                    "points": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 6,
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "path": {"type": "string"},
+                                "line": {"type": "integer", "minimum": 1},
+                                "evidence": {"type": "string"},
+                                "text": {"type": "string"},
+                            },
+                            "required": ["path", "line", "evidence", "text"],
+                            "additionalProperties": False,
+                        },
+                    },
+                },
+                "required": ["points"],
+                "additionalProperties": False,
+            },
+        },
+        "required": ["decision_type", "arguments", "tool_id"],
+        "additionalProperties": False,
+    }
+
+    FOCUSED_EXPLANATION_SCHEMA = deepcopy(EXPLANATION_SCHEMA)
+    FOCUSED_EXPLANATION_SCHEMA["properties"]["arguments"]["properties"]["points"]["items"] = {
+        "type": "object",
+        "properties": {"ref": {"type": "string"}, "text": {"type": "string"}},
+        "required": ["ref", "text"],
+        "additionalProperties": False,
+    }
+
     def __init__(
         self,
         *,
@@ -47,6 +92,9 @@ class NIMPlannerProvider:
         route_dampener: RouteFlapDampener | None = None,
         route_id: str = "",
         on_token: Any = None,
+        on_reasoning: Any = None,
+        stream_interceptor: StreamingComputeInterceptor | None = None,
+        runtime_governor: Any = None,
     ) -> None:
         # Use an instruct model for the control plane by default. Reasoning
         # models are excellent for long answers but can spend the entire
@@ -62,12 +110,20 @@ class NIMPlannerProvider:
         self.api_key = str(api_key or os.environ.get("NVIDIA_API_KEY") or "")
         self.timeout_seconds = max(10.0, float(timeout_seconds))
         self.max_retries = max(0, min(int(max_retries), 3))
+        self.runtime_governor = runtime_governor
         self.route_dampener = route_dampener
         self.route_id = route_id or f"nim:{self.model}"
         self.on_token = on_token
+        self.on_reasoning = on_reasoning
+        self.stream_interceptor = stream_interceptor or StreamingComputeInterceptor(
+            StreamingInterceptionEngine(
+                max_output_tokens=int(os.environ.get("BEAST_NIM_MAX_TOKENS", "2048")),
+                schema_contract=self.ACTION_SCHEMA,
+            )
+        )
         self.last_partial_text = ""
         self.last_usage: dict[str, Any] = {}
-        self.last_route = {"provider": "nvidia_nim", "engine": "nvidia_nim", "route_kind": "nim", "reason": "direct_nim_inference"}
+        self.last_route = {"provider": "nvidia_nim", "engine": "nvidia_nim", "model": self.model, "route_kind": "nim", "reason": "direct_nim_inference"}
 
     @staticmethod
     def _planner_state(run: dict[str, Any]) -> dict[str, Any]:
@@ -85,16 +141,16 @@ class NIMPlannerProvider:
 
     @classmethod
     def _request_timeout(cls, *, run: dict[str, Any], default_timeout: float) -> float:
-        base = max(5.0, float(default_timeout))
+        base = max(30.0, float(default_timeout))
         if cls._is_repair_turn(run):
-            return max(6.0, min(base, float(os.environ.get("BEAST_NIM_REPAIR_TIMEOUT", "12"))))
+            return max(15.0, min(base, float(os.environ.get("BEAST_NIM_REPAIR_TIMEOUT", "30"))))
         planner = cls._planner_state(run)
         observations = planner.get("observations") if isinstance(planner.get("observations"), list) else []
         turn = max(0, int(planner.get("turn") or 0))
         if turn >= 4 or len(observations) >= 3:
-            return max(5.0, min(base, float(os.environ.get("BEAST_NIM_LATE_TURN_TIMEOUT", "10"))))
+            return max(10.0, min(base, float(os.environ.get("BEAST_NIM_LATE_TURN_TIMEOUT", "20"))))
         if observations:
-            return max(6.0, min(base, float(os.environ.get("BEAST_NIM_FOLLOWUP_TIMEOUT", "14"))))
+            return max(15.0, min(base, float(os.environ.get("BEAST_NIM_FOLLOWUP_TIMEOUT", "30"))))
         return base
 
     def _route_event(self, event: str) -> dict[str, Any]:
@@ -120,8 +176,14 @@ class NIMPlannerProvider:
             "max_tokens": int(os.environ.get("BEAST_NIM_MAX_TOKENS", "2048")),
             "stream": os.environ.get("BEAST_NIM_PLANNER_STREAM", "0").strip().lower() in {"1", "true", "yes"},
         }
+        if prompt.startswith(FOCUSED_EXPLANATION_HEADER):
+            schema = self.FOCUSED_EXPLANATION_SCHEMA
+        elif prompt.startswith(EXPLANATION_HEADER):
+            schema = self.EXPLANATION_SCHEMA
+        else:
+            schema = self.ACTION_SCHEMA
         if self._structured_output_enabled():
-            payload["structured_outputs"] = {"json": self.ACTION_SCHEMA}
+            payload["structured_outputs"] = {"json": schema}
         if self.model.startswith("nvidia/nemotron-3.5-"):
             # These models otherwise spend the bounded controller budget on
             # hidden reasoning before emitting the executable JSON action.
@@ -129,7 +191,7 @@ class NIMPlannerProvider:
         # Keep the older nvext path available for compatibility with NIM
         # deployments that still expect guided_json passthrough.
         if os.environ.get("BEAST_NIM_GUIDED_JSON", "0").strip().lower() in {"1", "true", "yes"}:
-            payload["nvext"] = {"guided_json": self.ACTION_SCHEMA}
+            payload["nvext"] = {"guided_json": schema}
         return payload
 
     @staticmethod
@@ -183,13 +245,47 @@ class NIMPlannerProvider:
         thread.start()
         return await future
 
+    def _governed_request(self, request_method: Any, payload: dict[str, Any], *,
+                          run: dict[str, Any], turn: int) -> dict[str, Any]:
+        # Run the lease in the transport worker. A caller timing out/cancelling
+        # must not release the concurrency slot while the socket is still active.
+        governor = self.runtime_governor
+        if governor is None:
+            return request_method(payload)
+        provider = "nvidia_nim"
+        policy = governor.policies.get("providers", {}).get(provider)
+        if not isinstance(policy, dict) or not policy.get("enabled"):
+            raise PlannerDecisionError("Hosted NIM is disabled or missing from the loaded provider policy.")
+        admission = governor.begin_execution(
+            provider=provider, model=self.model, session_id=str(run.get("session_id") or "default"),
+            metadata={"run_id": str(run.get("run_id") or ""), "turn": turn,
+                      "lane": "interactive", "client": "nim_planner"},
+        )
+        if not admission.allowed:
+            raise PlannerDecisionError(admission.reason)
+        try:
+            result = request_method(payload)
+        except Exception as exc:
+            if isinstance(exc, urllib.error.HTTPError):
+                affects_circuit = exc.code in {408, 429} or 500 <= exc.code < 600
+                error_type = f"http_{exc.code}"
+            else:
+                affects_circuit = isinstance(exc, OSError)
+                error_type = type(exc).__name__
+            governor.complete_execution(admission.attempt_id, provider, success=False,
+                                        error_type=error_type, affects_circuit=affects_circuit)
+            raise
+        # Transport is successful even if the caller later rejects the answer.
+        governor.complete_execution(admission.attempt_id, provider, success=True)
+        return result
+
     async def next_decision(self, prompt: str, *, run: dict[str, Any], turn: int) -> PlannerDecision:
         self.last_partial_text = ""
         if not self.api_key:
             raise RuntimeError("NVIDIA_API_KEY is required for the NIM planner")
         request_timeout = self._request_timeout(run=run, default_timeout=self.timeout_seconds)
         if self.route_dampener is not None and self.route_dampener.suppressed(self.route_id):
-            self.last_route = {"provider": "nvidia_nim", "engine": "nvidia_nim", "route_kind": "dampened", "reason": "persistent_bad_route_memory"}
+            self.last_route = {"provider": "nvidia_nim", "engine": "nvidia_nim", "model": self.model, "route_kind": "dampened", "reason": "persistent_bad_route_memory"}
             self.last_usage = {"engine": "nvidia_nim", "model": self.model, "base_url": self.base_url, "timeout_seconds": request_timeout, "route": self._route_event("timeout")}
             raise PlannerDecisionError("NIM route dampened after repeated slow or failed planner turns")
         started = time.perf_counter()
@@ -200,10 +296,20 @@ class NIMPlannerProvider:
             request_method = self._request_stream if payload["stream"] else self._request_json
             try:
                 body = await asyncio.wait_for(
-                    self._call_request(request_method, payload),
+                    self._call_request(
+                        lambda packet: self._governed_request(request_method, packet, run=run, turn=turn),
+                        payload,
+                    ),
                     timeout=request_timeout + 2.0,
                 )
-            except asyncio.TimeoutError as exc:
+            except PlannerDecisionError:
+                # An admission refusal is terminal for this provider, not a
+                # transport error to retry or count against its health.
+                self.last_route = {"provider": "nvidia_nim", "engine": "nvidia_nim",
+                                   "route_kind": "runtime_refused", "reason": "runtime_admission"}
+                self.last_usage = {}
+                raise
+            except asyncio.TimeoutError:
                 error = f"timeout after {request_timeout:.1f}s"
             except (OSError, urllib.error.HTTPError, urllib.error.URLError, ValueError) as exc:
                 error = f"{type(exc).__name__}: {exc}"
@@ -231,13 +337,24 @@ class NIMPlannerProvider:
                     await asyncio.sleep(0.2 * (attempt + 1))
                     continue
                 raise RuntimeError(f"NIM planner request failed: {error}")
-            raw = self._unwrap_argument_groups(str(body.get("content") or ""))
+            raw = str(body.get("content") or "")
+            # Nemotron reasoning models emit thinking in reasoning_content
+            # instead of content. Fall back to it when content is absent.
+            reasoning_text = str(body.get("reasoning_content") or "")
+            if reasoning_text.strip() and callable(self.on_reasoning):
+                try:
+                    self.on_reasoning(reasoning_text)
+                except Exception:
+                    pass
+            if not raw.strip():
+                raw = reasoning_text
+            raw = self._unwrap_argument_groups(raw)
             mode = str(run.get("mode") or "").strip().lower()
             if mode in {"chat", "analysis", "ask"} and raw.strip():
                 try:
                     decision = parse_planner_decision(raw)
                 except PlannerDecisionError:
-                    self.last_route = {"provider": "nvidia_nim", "engine": "nvidia_nim", "route_kind": "direct_text_answer", "reason": "non_json_chat_completion"}
+                    self.last_route = {"provider": "nvidia_nim", "engine": "nvidia_nim", "model": self.model, "route_kind": "direct_text_answer", "reason": "non_json_chat_completion"}
                     if self.route_dampener is not None:
                         self.last_usage["route"] = self._route_event("success")
                     return PlannerDecision(
@@ -258,9 +375,11 @@ class NIMPlannerProvider:
                 "usage": body.get("usage") if isinstance(body.get("usage"), dict) else {},
                 "finish_reason": body.get("finish_reason"),
             }
+            if isinstance(body.get("stream_interception"), dict):
+                self.last_usage["stream_interception"] = body["stream_interception"]
             try:
                 decision = parse_planner_decision(raw)
-                self.last_route = {"provider": "nvidia_nim", "engine": "nvidia_nim", "route_kind": "direct_generate", "reason": "nim_chat_completions"}
+                self.last_route = {"provider": "nvidia_nim", "engine": "nvidia_nim", "model": self.model, "route_kind": "direct_generate", "reason": "nim_chat_completions"}
                 if self.route_dampener is not None:
                     self.last_usage["route"] = self._route_event("success")
                 return decision
@@ -287,6 +406,9 @@ class NIMPlannerProvider:
         content: list[str] = []
         usage: dict[str, Any] = {}
         finish_reason = ""
+        max_tokens = int(payload.get("max_tokens") or os.environ.get("BEAST_NIM_MAX_TOKENS", "2048"))
+        state = self.stream_interceptor.engine.create_initial_state(max_tokens)
+        stopped_upstream = False
         with _egress.urlopen("nim_planner_provider", request, timeout=self.timeout_seconds) as response:
             for raw_line in response:
                 line = raw_line.decode("utf-8", errors="replace").strip()
@@ -306,6 +428,7 @@ class NIMPlannerProvider:
                 delta = choice.get("delta") if isinstance(choice.get("delta"), dict) else {}
                 text = str(delta.get("content") or "")
                 if text:
+                    state.raw_chunks_seen += 1
                     content.append(text)
                     self.last_partial_text += text
                     if callable(self.on_token):
@@ -313,7 +436,27 @@ class NIMPlannerProvider:
                             self.on_token(text)
                         except Exception:
                             pass
-        return {"content": "".join(content), "usage": usage, "finish_reason": finish_reason}
+                    normalized = self.stream_interceptor.provider_adapter.normalize_event(text)
+                    token_count = normalized.token_count if normalized is not None else 1
+                    result = self.stream_interceptor.engine.process_chunk(state, text, token_count)
+                    if result.should_stop:
+                        stopped_upstream = True
+                        close = getattr(response, "close", None)
+                        if callable(close):
+                            close()
+                        break
+        report = self.stream_interceptor.finalize_interception(
+            state,
+            content,
+            upstream_cancel_requested=stopped_upstream,
+            baseline_output_tokens=max_tokens,
+        )
+        return {
+            "content": "".join(content),
+            "usage": usage,
+            "finish_reason": finish_reason,
+            "stream_interception": report.to_dict(),
+        }
 
     def _request_json(self, payload: dict[str, Any]) -> dict[str, Any]:
         request = urllib.request.Request(

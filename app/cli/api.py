@@ -7801,12 +7801,17 @@ class BeastApiClient:
         governance_level: str="governed",
         action_ir_required: bool=False,
         allow_fallback: bool=True,
+        context_overrides: Optional[Dict[str, str]]=None,
     ) -> AsyncIterator[Dict[str, Any]]:
         """Streaming version of live_turn.
 
         It streams BEAST stage/tool events separately from assistant text, then
         streams provider tokens when possible. Callers can opt into a local
         scout fallback; interactive chat disables it to avoid unrelated output.
+
+        ``context_overrides`` carries already-governed transformed previews. When
+        present they are the exact bytes sent to the model, and the compute
+        receipt reports the transformation instead of claiming raw context.
         """
         text = text.strip()
         if not text:
@@ -7833,6 +7838,22 @@ class BeastApiClient:
             if context_files
             else []
         )
+        context_overrides = context_overrides or {}
+        transformed_files = 0
+        if context_overrides:
+            for record in context_records:
+                if not record.get("ok"):
+                    continue
+                override = context_overrides.get(str(record.get("path") or ""))
+                if override is None:
+                    continue
+                transformed = str(override)[: max(800, int(context_max_chars_each or 4200))]
+                record["preview"] = transformed
+                record["transformed"] = True
+                record["model_content_hash"] = hashlib.sha256(
+                    transformed.encode("utf-8", errors="replace")
+                ).hexdigest()
+                transformed_files += 1
         # Report the actual bounded-context decision to interactive clients.
         # This is deliberately factual: the economizer limits the material
         # sent to the model; it must not be presented as semantic compression
@@ -7848,7 +7869,8 @@ class BeastApiClient:
                 "source_chars": source_chars,
                 "supplied_chars": supplied_chars,
                 "truncated_files": sum(1 for record in readable_records if record.get("truncated")),
-                "policy": "bounded_selected_context",
+                "transformed_files": transformed_files,
+                "policy": "governed_transformed_selected_context" if transformed_files else "bounded_selected_context",
                 "kv_cache": "provider_managed",
                 "crystal": "preflight",
             },

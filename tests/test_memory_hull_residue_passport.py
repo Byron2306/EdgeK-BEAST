@@ -109,3 +109,31 @@ def test_agent_passport_decisions_can_be_sealed_and_expiry_is_enforced(tmp_path)
     )
     assert denied["allowed"] is False
     assert denied["reason"] == "passport_expired"
+
+
+def test_recall_uses_authenticated_payload_not_index_projection(tmp_path):
+    hull = MemoryHull(tmp_path / "vault", seal=ResidueSeal(tmp_path / "keys"))
+    valid = hull.write_residue(task="Amber control", decision="Use marker 47.")
+    index_path = tmp_path / "vault" / ".index" / "residue_index.json"
+    index = json.loads(index_path.read_text())
+    index["records"][0]["decision"] = "Use forged marker 99."
+    index_path.write_text(json.dumps(index))
+    assert hull.search("Amber control") == []  # unsigned edit to the index
+    hull._write_index(index["records"])  # signed but stale projection, not the sidecar payload
+    records = hull.search("Amber control")
+    assert len(records) == 1 and records[0]["residue_id"] == valid["residue_id"]
+    assert records[0]["decision"] == "Use marker 47."
+    assert hull.search("forged marker") == []
+
+
+def test_recall_rejects_a_valid_signature_from_another_vault_signer(tmp_path):
+    root = tmp_path / "vault"
+    local = MemoryHull(root, seal=ResidueSeal(tmp_path / "local-keys"))
+    local.write_residue(task="Trusted control", decision="Local fact.")
+    foreign = MemoryHull(root, seal=ResidueSeal(tmp_path / "other-keys"))
+    receipt = foreign.write_residue(task="Foreign control", decision="Foreign fact.")
+    assert receipt["verified"]
+    assert local.search("Foreign control") == []  # foreign index signature
+    local.rebuild_index()  # authentic local index must still not vouch for a foreign sidecar
+    assert local.search("Foreign control") == []
+    assert local.search("Trusted control")[0]["decision"] == "Local fact."

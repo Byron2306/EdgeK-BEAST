@@ -686,7 +686,11 @@ def tgi_available(base_url: str, *, timeout: float = 1.0, transport: httpx.BaseT
     try:
         with httpx.Client(transport=transport, trust_env=False, timeout=timeout) as c:
             return c.get(base_url.rstrip("/") + "/health").status_code == 200
-    except httpx.HTTPError:
+    except (httpx.HTTPError, OSError):
+        # OSError covers a missing CA bundle (FileNotFoundError from
+        # ssl.create_default_context) and DNS/socket failures.  TGI is optional,
+        # so a broken local probe must report "down" instead of escaping as a
+        # 500 that takes the whole governed model inventory with it.
         return False
 
 

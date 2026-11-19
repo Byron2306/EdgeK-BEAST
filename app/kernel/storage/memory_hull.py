@@ -115,9 +115,14 @@ class MemoryHull:
             return self._verification(False, str(path), "not_a_residue_sidecar")
         try:
             sidecar = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
+        except (OSError, ValueError) as exc:
             return self._verification(False, str(path), type(exc).__name__)
 
+        if not isinstance(sidecar, dict):
+            return self._verification(False, str(path), "invalid_sidecar")
+        return self._verify_sidecar_snapshot(path, sidecar)
+
+    def _verify_sidecar_snapshot(self, path: Path, sidecar: Dict[str, Any]) -> Dict[str, Any]:
         payload = sidecar.get("payload") if isinstance(sidecar.get("payload"), dict) else {}
         seal = sidecar.get("residue_seal") if isinstance(sidecar.get("residue_seal"), dict) else {}
         section = str(payload.get("section") or "")
@@ -127,8 +132,12 @@ class MemoryHull:
         markdown_path = self._markdown_path_for_sidecar(path)
         markdown_hash = ""
         markdown_ok = False
-        if markdown_path.exists():
-            markdown_hash = self._sha256_text(markdown_path.read_text(encoding="utf-8"))
+        try:
+            markdown = self._contained_path(markdown_path).read_text(encoding="utf-8")
+        except (OSError, ValueError, RuntimeError):
+            pass
+        else:
+            markdown_hash = self._sha256_text(markdown)
             markdown_ok = (
                 sidecar.get("markdown_sha256") == markdown_hash
                 and payload.get("markdown_sha256") == markdown_hash
@@ -189,15 +198,59 @@ class MemoryHull:
         needle = str(query or "").lower()
         if not needle:
             return []
-        results = []
-        for record in self.list_residue(section=section, limit=1000):
-            haystack = " ".join(
+        if section is not None:
+            self._validate_section(section)
+        index = self._read_index()
+        index_seal = index.get("residue_seal")
+        if not index.get("records") or not isinstance(index_seal, dict):
+            return []
+        trusted_key = self.seal.local_public_key_hash()
+        if not trusted_key or index.get("root") != str(self.root):
+            return []
+        proof = self.seal.verify(index, index_seal, expected_purpose="memory_hull_index")
+        if not proof.get("verified") or proof.get("public_key_hash") != trusted_key:
+            return []
+
+        def matches(record: Dict[str, Any]) -> bool:
+            return needle in " ".join(
                 str(record.get(key) or "")
                 for key in ("residue_id", "task", "provider", "decision", "policy_tags")
             ).lower()
-            if needle in haystack:
-                results.append(record)
-        return results[: max(1, int(limit))]
+
+        records = sorted((row for row in index["records"] if isinstance(row, dict)),
+                         key=lambda row: str(row.get("created_at") or ""), reverse=True)
+        results = []
+        seen = set()
+        for row in records[:1000]:
+            group, identifier = row.get("section"), row.get("residue_id")
+            if group not in VAULT_SECTIONS or (section is not None and group != section):
+                continue
+            if not isinstance(identifier, str) or not re.fullmatch(r"residue_[0-9a-f]{20}", identifier):
+                continue
+            if identifier in seen or not matches(row):
+                continue
+            # The index nominates. Read, verify and return the same sidecar snapshot
+            # rather than re-reading a different file or returning projected text.
+            try:
+                path = self._contained_path(self._section_path(group) / f"{identifier}.residue.json")
+                sidecar = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, ValueError, RuntimeError):
+                continue
+            if not isinstance(sidecar, dict) or not isinstance(sidecar.get("payload"), dict):
+                continue
+            payload = sidecar["payload"]
+            if payload.get("section") != group or payload.get("residue_id") != identifier:
+                continue
+            verification = self._verify_sidecar_snapshot(path, sidecar)
+            if not verification.get("verified") or verification["seal"].get("public_key_hash") != trusted_key:
+                continue
+            if not matches(payload):
+                continue
+            seen.add(identifier)
+            results.append(self._index_record(payload, self._markdown_path_for_sidecar(path), path, verification))
+            if len(results) >= max(1, int(limit)):
+                break
+        return results
 
     @staticmethod
     def _render_markdown(payload: Dict[str, Any]) -> str:
@@ -284,7 +337,9 @@ class MemoryHull:
             return {"records": []}
         try:
             payload = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
+        except (OSError, ValueError):
+            return {"records": []}
+        if not isinstance(payload, dict):
             return {"records": []}
         records = payload.get("records") if isinstance(payload.get("records"), list) else []
         payload["records"] = records

@@ -62,6 +62,48 @@ def test_context_packet_includes_bounded_files_and_excludes_sensitive_paths(tmp_
     assert {"source": "config/.env", "reason": "sensitive_or_blocked"} in packet["excluded_evidence"]
 
 
+def test_context_packet_binds_governed_context_overrides(tmp_path):
+    repo = tmp_path / "repo"
+    (repo / "app").mkdir(parents=True)
+    (repo / "app" / "main.py").write_text(
+        "def hello():\n    return 'original'\n", encoding="utf-8"
+    )
+    envelope = {
+        "task_id": "tsk_override",
+        "intent": "Edit app/main.py",
+        "task_class": "small_patch",
+        "privacy_class": "internal",
+        "inputs": {"user_request": "Edit app/main.py"},
+        "context_budget": {"max_tokens": 4000, "max_files": 4, "allow_full_files": False},
+    }
+    override = "def hello():\n    ...  # [beast-lcz: body elided 1 lines]\n"
+
+    raw = ContextPacketBuilder(max_file_chars=400).build(
+        envelope, workspace_root=str(repo)
+    )
+    transformed = ContextPacketBuilder(max_file_chars=400).build(
+        envelope,
+        workspace_root=str(repo),
+        context_overrides={"app/main.py": override},
+    )
+
+    evidence = next(
+        item
+        for item in transformed["included_evidence"]
+        if item["source"] == "app/main.py"
+    )
+    assert evidence["content"].startswith("def hello():")
+    assert "body elided" in evidence["content"]
+    assert evidence["context_transform"]["source_content_hash"].startswith("sha256:")
+    assert evidence["context_transform"]["model_content_hash"].startswith("sha256:")
+    assert (
+        evidence["context_transform"]["source_content_hash"]
+        != evidence["context_transform"]["model_content_hash"]
+    )
+    assert transformed["handoff_hash"] != raw["handoff_hash"]
+    assert transformed["packet_id"] != raw["packet_id"]
+
+
 def test_context_packet_routes_context_selection_through_code_cortex(tmp_path):
     repo = tmp_path / "repo"
     (repo / "app").mkdir(parents=True)

@@ -1373,6 +1373,62 @@ def _individual_frame_images(
     return tuple(frames)
 
 
+_PET_FRAME_ORDER = {
+    "idle": tuple(range(0, 6)),
+    "working": tuple(range(6, 22)),
+    "finished": tuple(range(39, 45)),
+    "alert": tuple(range(45, 51)),
+}
+
+
+@lru_cache(maxsize=16)
+def _pet_frame_images(target_cells: int = 16, target_rows: int = 5) -> tuple[Any, ...]:
+    """Load the compact terminal-pet frames derived from Downloads/pet.png."""
+    if Image is None:
+        return tuple()
+    root = Path(__file__).with_name("assets") / "sprites" / "pet"
+    frames: List[Any] = []
+    target_px_h = max(2, target_rows * 2)
+    resample = getattr(getattr(Image, "Resampling", Image), "LANCZOS", 1)
+    for path in sorted(root.glob("frame_*.png")):
+        try:
+            raw = Image.open(path).convert("RGBA")
+        except Exception:
+            continue
+        bbox = raw.getchannel("A").getbbox()
+        if bbox is None:
+            continue
+        art = raw.crop(bbox)
+        scale = min(target_cells / max(1, art.width), target_px_h / max(1, art.height))
+        art = art.resize(
+            (max(1, int(art.width * scale)), max(1, int(art.height * scale))),
+            resample,
+        )
+        canvas = Image.new("RGBA", (target_cells, target_px_h), (0, 0, 0, 0))
+        canvas.alpha_composite(
+            art,
+            (max(0, (target_cells - art.width) // 2), max(0, target_px_h - art.height)),
+        )
+        frames.append(canvas)
+    return tuple(frames)
+
+
+def pet_sprite(
+    state: str = "idle",
+    frame: int = 0,
+    *,
+    target_cells: int = 16,
+    target_rows: int = 5,
+) -> Text:
+    """Render the imported pet spritesheet as a small state-aware companion."""
+    frames = _pet_frame_images(target_cells, target_rows)
+    if not frames:
+        return mini_mascot()
+    order = _PET_FRAME_ORDER.get(mascot_state_for(state), _PET_FRAME_ORDER["idle"])
+    valid = tuple(index for index in order if index < len(frames)) or (0,)
+    return _rgba_to_halfblocks(frames[valid[int(frame or 0) % len(valid)]])
+
+
 @lru_cache(maxsize=16)
 def _spritesheet_frame_images(
     state: str, target_cells: int = 34, target_rows: int = 14
@@ -17975,8 +18031,23 @@ def _execute_palette_command_workspaces(
 BeastMissionConsole.execute_palette_command = _execute_palette_command_workspaces
 
 
-def run() -> None:
-    BeastMissionConsole().run()
+def run(
+    *,
+    workspace: str | Path | None = None,
+    base_url: str | None = None,
+    classic: bool = False,
+) -> None:
+    """Launch the conversation-first TLI, with the dashboard kept as opt-in."""
+    if classic:
+        BeastMissionConsole(base_url=base_url).run()
+        return
+
+    # Import lazily because the focused coder reuses this module's palette and
+    # sprite helpers. Keeping the dependency one-way at runtime avoids a module
+    # cycle while making `beast ui` the lean coding surface by default.
+    from app.cli.coder import run as run_coder
+
+    run_coder(workspace=workspace, base_url=base_url)
 
 
 if __name__ == "__main__":

@@ -126,6 +126,8 @@ def _transport() -> httpx.MockTransport:
         if request.url.path == "/edgek/agent-runs" and request.method == "POST":
             payload = json.loads(request.content)
             assert payload["session_id"] == "agent-a1"
+            assert payload["mode"] == "analysis"
+            assert payload["request"]["launch_strategy"] == "typed_planner"
             assert payload["request"]["prompt"] == "create hello.py"
             assert payload["request"]["workspace_root"] == "/work/demo"
             assert payload["launch"] is True
@@ -211,3 +213,30 @@ async def test_client_reports_gateway_http_error_without_synthetic_success():
         await client.discover_mcp()
 
     await client.aclose()
+
+
+@pytest.mark.asyncio
+async def test_timed_out_turn_reads_its_own_receipt_without_posting_again(tmp_path, monkeypatch):
+    import json
+
+    monkeypatch.setenv("BEAST_CODER_AGENTRUN_MAX_SECONDS", "30")
+    sent = []
+    polls = []
+
+    async def responder(request):
+        if request.method == "POST":
+            sent.append(json.loads(request.content)["turn_request_id"])
+            raise httpx.ReadTimeout("lost reply", request=request)
+        polls.append(request.url.path)
+        # A completed receipt for a *different* request must never advance the UI.
+        receipt = {"id": "0" * 32 if len(polls) == 1 else sent[0], "state": "completed"}
+        return httpx.Response(200, json={"run": {"run_id": "r", "state": "completed",
+            "checkpoint": {"coder_turn_reply": receipt}}})
+
+    client = CoderRuntimeClient("http://localhost", tmp_path, transport=httpx.MockTransport(responder))
+    try:
+        assert (await client.start_turn("r"))["state"] == "completed"
+    finally:
+        await client.aclose()
+    assert len(sent) == 1
+    assert polls == ["/edgek/agent-runs/r"] * 2

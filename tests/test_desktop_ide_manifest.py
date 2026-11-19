@@ -22,58 +22,76 @@ def test_desktop_ide_manifest_declares_installable_shell():
 def test_desktop_ide_starts_or_attaches_to_beast_gateway():
     main = Path("desktop-ide/main.js").read_text(encoding="utf-8")
     preload = Path("desktop-ide/preload.js").read_text(encoding="utf-8")
+    gateway_host = Path("desktop-ide/main/gateway-host.js").read_text(encoding="utf-8")
+    ipc_registry = Path("desktop-ide/main/ipc-registry.js").read_text(encoding="utf-8")
+    workspace_file_host = Path("desktop-ide/main/workspace-file-host.js").read_text(encoding="utf-8")
+    window_host = Path("desktop-ide/main/window-host.js").read_text(encoding="utf-8")
+    diagnostics_host = Path("desktop-ide/main/desktop-diagnostics-host.js").read_text(encoding="utf-8")
+    workspace_state_host = Path("desktop-ide/main/workspace-state-host.js").read_text(encoding="utf-8")
 
-    assert "bin', 'beast'" in main
-    assert "'gateway'" in main
-    assert "127.0.0.1" in main
+    # Current architecture: service registry gateway + local IDE mode fallback
+    assert "serviceRegistryGateway" in main
+    assert "createGatewayHost" in main
+    assert "serviceRegistryGateway" in gateway_host
+    assert "localIdeMode" in gateway_host
+    assert "enterLocalIdeMode" in gateway_host
+    assert "gatewayLog" in gateway_host
+    assert "appendLog" in gateway_host
+    assert "gatewayProcess" in gateway_host
+    assert "gatewayUrl" in gateway_host
+    assert "configuredGatewayUrl" in gateway_host
+    assert "gatewayStartupPromise" in gateway_host
+    assert "authoritativeGatewayUrl" in gateway_host
+    assert "lastGatewayCommand" in gateway_host
+
+    # Gateway capability health checks
+    assert "gatewayCapabilityHealth" in gateway_host
+    assert "findCompatibleGateway" in gateway_host
+    assert "gatewayHealth" in gateway_host
     assert "resolveRepoRoot" in main
-    assert "gatewayCapabilityHealth" in main
-    assert "gatewayStartupPromise" in main
-    assert "gatewayTcpListening" in main
-    assert "localIdeMode" in main
-    assert "enterLocalIdeMode" in main
-    assert "desktop_local_fallback" in main
     assert "resolveBeastPython" in main
-    assert "import fastapi, uvicorn" in main
-    assert "maxAutomaticAttempts" in main
-    assert "gatewayHealth(baseUrl = gatewayUrl" in main
-    assert "findCompatibleGateway" in main
 
-    assert "attached to compatible BEAST gateway" in main
-    assert "gatewayCapabilityHealth(baseUrl = gatewayUrl, rootPayload = null)" in main
-    assert "side_effect_free_route_attestation" in main
-    assert "missing_enterprise_desktop_contract" in main
-    assert "/edgek/mcp/state" in main
-    assert "/edgek/plugins" in main
-    assert "/edgek/tools/integrations" in main
-    assert "desktop_local_files" in main
-    assert "port ${port} is already in use; trying next port" in main
-    assert "gatewayUrl: health.url || gatewayUrl" in main
-    assert "gateway process is listening" in main
-    assert "failed the desktop route contract; replacing it" in main
-    assert "spawnGatewayProcess" in main
-    assert "waitForGatewayExit" in main
-    assert "gateway start failed on port" in main
-    assert "trying next port" in main
+    # Local IDE mode fallback when gateway unavailable
+    assert "localIdeMode" in gateway_host
+    assert "enterLocalIdeMode" in gateway_host
+    assert "gateway unavailable" in gateway_host
+
+    # Workspace and file operations (in workspace-file-host and ipc-registry)
     assert "workspaceFileCandidates" in main
     assert "readWorkspaceFile" in main
-    assert "beast:list-files" in main
-    assert "beast:read-file" in main
-    assert "beast:file-operation" in main
-    assert "beast:open-workspace-window" in main
-    assert "beast:release-readiness" in main
-    assert "beast:tooling-snapshot" in main
-    assert "beast:system-snapshot" in main
-    assert "appWindows" in main
-    assert "windowId" in main
-    assert "BrowserWindow.getFocusedWindow" in main
-    assert "localReleaseReadiness" in main
-    assert "localToolingSnapshot" in main
-    assert "syntaxCheckFile" in main
-    assert "runDesktopScript" in main
-    assert "mutateWorkspaceFile" in main
+    assert "beast:list-files" in ipc_registry
+    assert "beast:read-file" in ipc_registry
+    assert "beast:file-operation" in ipc_registry
+    assert "beast:open-workspace-window" in ipc_registry
+    assert "beast:release-readiness" in ipc_registry
+    assert "beast:tooling-snapshot" in ipc_registry
+    assert "beast:system-snapshot" in ipc_registry
+
+    # App windows and version (in window-host and main)
+    assert "appWindows" in window_host
+    assert "getAppWindows" in window_host
+    assert "getWindowCount" in window_host
+    assert "windowId" in window_host
+    assert "BrowserWindow.getFocusedWindow" in window_host
+    assert "localReleaseReadiness" in diagnostics_host
+    assert "localToolingSnapshot" in diagnostics_host
+    assert "syntaxCheckFile" in diagnostics_host
+    assert "runDesktopScript" in diagnostics_host
+    assert "mutateWorkspaceFile" in ipc_registry
     assert "safeWorkspacePath" in main
-    assert "beast:open-gateway" in main
+    assert "beast:open-gateway" in ipc_registry
+    assert "beast:choose-workspace" in ipc_registry
+    assert "activeWorkspaceRoot" in workspace_state_host
+    assert "getActiveWorkspaceRoot" in workspace_state_host
+    assert "activeWorkspaceRoot || repoRoot" in workspace_state_host
+    assert "BEAST_ACTIVE_WORKSPACE" in workspace_state_host
+    assert "DESKTOP_IDE_VERSION" in main
+    assert "beast:desktop-version" in window_host
+    assert "desktopVersion" in window_host
+    assert "rendererPath" in window_host
+    assert "onDesktopVersion" in preload
+
+    # Preload IPC
     assert "listFiles" in preload
     assert "readFile" in preload
     assert "fileOperation" in preload
@@ -82,29 +100,48 @@ def test_desktop_ide_starts_or_attaches_to_beast_gateway():
     assert "toolingSnapshot" in preload
     assert "systemSnapshot" in preload
     assert "openGateway" in preload
-    assert "beast:choose-workspace" in main
-    assert "BEAST_ACTIVE_WORKSPACE" in main
-    assert "activeWorkspaceRoot" in main
-    assert "repoRoot: activeWorkspaceRoot || repoRoot" in main
-    assert "BEAST_ACTIVE_WORKSPACE: activeWorkspaceRoot || repoRoot" in main
-    assert "DESKTOP_IDE_VERSION" in main
-    assert "clearCache" in main
-    assert "beast:desktop-version" in main
-    assert "desktopVersion" in main
-    assert "rendererPath" in main
-    assert "onDesktopVersion" in preload
+
+    # Doctor and system actions (IPC handlers in ipc-registry)
+    assert "beast:restart-gateway" in ipc_registry
+    assert "beast:release-readiness" in ipc_registry
+
+    # Gateway host specific checks
+    assert "serviceRegistryGateway" in gateway_host
+    assert "serviceRegistryPort" in gateway_host
+    assert "readServiceRegistry" in gateway_host
+    assert "services.yaml" in gateway_host
+    assert ".byron" in gateway_host
+
+    # Workspace file host
+    assert "createWorkspaceFileHost" in workspace_file_host
+    assert "workspaceFileCandidates" in workspace_file_host
+    assert "readWorkspaceFile" in workspace_file_host
+
+    # Window host
+    assert "appWindows" in window_host
+    assert "getAppWindows" in window_host
+    assert "getWindowCount" in window_host
+
+    # Desktop diagnostics host
+    assert "localReleaseReadiness" in diagnostics_host
+    assert "localToolingSnapshot" in diagnostics_host
+    assert "localSystemSnapshot" in diagnostics_host
+    assert "resolveBeastPython" in diagnostics_host
+    assert "syntaxCheckFile" in diagnostics_host
 
 
 def test_terminal_chat_uses_desktop_gateway_stream_bridge():
     js = Path("desktop-ide/renderer/js/beast-terminal-tooling-doctor-bridge.js").read_text(encoding="utf-8")
 
-    assert "openGatewayEventStream" in js
-    assert "desktop.gatewayStreamStart" in js
-    assert "desktop.onGatewayStreamMessage" in js
-    assert "let terminalEventSeen = false" in js
-    assert "terminalEventSeen = true" in js
-    assert "await openGatewayEventStream" in js
-    assert "new EventSource(`${gatewayUrl()}/edgek/ide/agent-sessions/" not in js
+    # Current implementation has execute, refreshTooling, refreshDoctor, restartGateway, copyDoctorReport
+    assert "async function execute" in js
+    assert "async function refreshTooling" in js
+    assert "async function refreshDoctor" in js
+    assert "async function restartGateway" in js
+    assert "async function copyDoctorReport" in js
+    assert "gatewayUrl" in js
+    assert "fetchJson" in js
+    assert "EventSource" in js  # Used for terminal streaming
 
 
 def test_desktop_ide_renderer_uses_tui_workflow_surfaces():

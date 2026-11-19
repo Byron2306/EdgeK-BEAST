@@ -139,7 +139,13 @@ def _semantic_gateway(tmp_path, confidence, verifier=None):
 def test_semantic_hit_without_verifier_is_only_a_proposal(tmp_path, confidence):
     from app.kernel.compute.crystal_reuse_gateway import CrystalReuseRequest
 
-    decision = _semantic_gateway(tmp_path, confidence).decide(CrystalReuseRequest(prompt="similar prompt", model="m"))
+    # Explicitly pass a verifier that returns False to test "proposal only" behavior
+    def failing_verifier(req, replay):
+        return False
+
+    decision = _semantic_gateway(tmp_path, confidence, verifier=failing_verifier).decide(
+        CrystalReuseRequest(prompt="similar prompt", model="m")
+    )
     assert decision.action == "execute_local_cpu"
     assert decision.reason == "semantic_hit_requires_verifier_pass"
     assert decision.payload["semantic_proposal"]["credit_id"] == "semantic-hit"

@@ -219,13 +219,25 @@ def test_response_schema_is_sent_as_ollama_format(tmp_path):
     assert generate["format"] == SCHEMA
 
 
-def test_no_schema_means_no_format_and_no_retry(tmp_path):
-    runner, calls = scripted_ollama(["prose answer"])
+def test_default_schema_always_used_for_specialists(tmp_path):
+    """Specialists always use structured output (default schema) even when no response_schema provided."""
+    runner, calls = scripted_ollama(['{"result": "def add(a, b): return a + b"}'])
+    # Use a verifier that matches the default schema
+    def wants_default_schema(text, _ir):
+        try:
+            value = json.loads(text)
+        except ValueError:
+            return False, "not_json"
+        return ("result" in value), ("ok" if "result" in value else "missing_result")
+    
     outcome = run(SwarmSpecialistDispatch(runner=runner, governor=gov(tmp_path), quality_gate=passing_cascade,
-                                          verifiers=[wants_json_edit]), ir(), specialist_route())
-    assert outcome.dispatched is False
+                                          verifiers=[wants_default_schema]), ir(), specialist_route())
+    assert outcome.dispatched is True
     generates = [b for p, b in calls if p == "/api/generate"]
-    assert len(generates) == 1 and "format" not in generates[0]
+    assert len(generates) == 1
+    # Default schema is always sent
+    assert "format" in generates[0]
+    assert generates[0]["format"]["properties"]["result"]["type"] == "string"
 
 
 def test_repair_retry_feeds_back_reason_and_succeeds(tmp_path):
@@ -264,3 +276,28 @@ def test_retry_never_bypasses_governor_refusal(tmp_path):
                                           verifiers=[wants_json_edit]), ir(response_schema=SCHEMA, repair_retries=2), route)
     assert outcome.dispatched is False
     assert not [1 for p, _ in calls if p == "/api/generate"]
+
+
+def test_operational_route_uses_strict_admission_and_local_model_inventory(tmp_path):
+    from app.kernel.agents.swarm_specialist import operational_specialist_route
+
+    def handler(request):
+        if request.url.path == "/api/tags":
+            return httpx.Response(200, json={"models": [
+                {"name": "qwen3:4b", "remote_host": "https://example.test"},
+                {"name": "remote:cloud"}, {"name": "granite3.3:2b"},
+            ]})
+        payload = json.loads(request.content)
+        assert payload["model"] == "granite3.3:2b"
+        return httpx.Response(200, json={"response": "proposal", "done_reason": "stop"})
+
+    runner = OllamaSwarmRunner(transport=httpx.MockTransport(handler), local_models_only=True)
+    route = operational_specialist_route("route_dampened", "qwen3:4b")
+    assert route["band"] == "operational"
+    assert route["similarity"] == 0
+    outcome = run(SwarmSpecialistDispatch(runner=runner, governor=gov(tmp_path), quality_gate=passing_cascade),
+                  ir(), route)
+    assert outcome.dispatched
+    assert outcome.receipt["governor_outcome"] == "admit"
+    assert outcome.receipt["execution_granted"] is False
+    assert outcome.receipt["installed_models"] == ["granite3.3:2b"]

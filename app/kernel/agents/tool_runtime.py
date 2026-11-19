@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import ast
 import hashlib
 import json
 import os
@@ -33,7 +34,10 @@ class ToolExecutionFailed(RuntimeError):
         self.observation = observation
 
 
-_EXCLUDED_DIRS = {".git", ".beast", "node_modules", "__pycache__", ".venv", "venv", "dist", "build"}
+_EXCLUDED_DIRS = {
+    ".git", ".beast", ".beast_backups", "node_modules", "__pycache__",
+    ".venv", "venv", "dist", "build",
+}
 
 _LANGUAGE_BY_SUFFIX = {
     ".py": "python",
@@ -59,6 +63,40 @@ _LANGUAGE_BY_SUFFIX = {
 
 def _shell_quote(value: Any) -> str:
     return "'" + str(value if value is not None else "").replace("'", "'\\''") + "'"
+
+
+def _excluded_workspace_part(name: str) -> bool:
+    return (
+        name in _EXCLUDED_DIRS
+        or name.startswith(".beast-")
+        or name.startswith(".beast_")
+        or name.startswith(".phase")
+    )
+
+
+def _iter_workspace_files(root: Path, target: Path):
+    """Yield visible workspace files without ever descending ignored trees."""
+    if target.is_file():
+        yield target
+        return
+    for current, dirs, names in os.walk(target, topdown=True, followlinks=False):
+        dirs[:] = sorted(name for name in dirs if not _excluded_workspace_part(name))
+        current_path = Path(current)
+        for name in sorted(names):
+            candidate = current_path / name
+            try:
+                relative = candidate.relative_to(root)
+            except ValueError:
+                continue
+            if any(_excluded_workspace_part(part) for part in relative.parts):
+                continue
+            if candidate.is_symlink():
+                try:
+                    if not candidate.resolve(strict=True).is_relative_to(root):
+                        continue
+                except (OSError, RuntimeError):
+                    continue
+            yield candidate
 
 
 def _safe_remote_relative(value: Any) -> str:
@@ -164,6 +202,39 @@ async def _run_target_shell(context: ToolExecutionContext, script: str, *, timeo
             output_limit=output_limit,
         )
     raise ValueError("remote target shell requested for local execution target")
+
+
+def local_binding_identity(run: dict[str, Any]) -> tuple[str, str, str, str] | None:
+    checkpoint = run.get("checkpoint") or {}
+    request = run.get("request") or {}
+    if checkpoint.get("worktree_remote") or str(request.get("execution_target") or "local") != "local":
+        return None
+    identity = tuple(str(checkpoint.get(key) or "") for key in (
+        "worktree_root", "worktree_task_id", "worktree_branch", "worktree_base_commit",
+    ))
+    return identity if any(identity) else None
+
+
+def local_binding_error(workspace_root: str | Path, identity: tuple[str, str, str, str]) -> str:
+    from app.kernel.workspaces.worktree_forge import WorktreeForge
+
+    path, task_id, branch, base_commit = identity
+    try:
+        if not all(identity) or Path(task_id).name != task_id or task_id in {".", ".."}:
+            return "STALE_WORKTREE_BINDING: incomplete saved worktree identity"
+        forge = WorktreeForge(workspace_root)
+        root = Path(path).resolve()
+        if (root.name != task_id or root == forge.workspace_root or not root.is_dir()
+                or not (root / ".git").is_file()
+                or not forge.has_registered_checkout(root, branch)):
+            return "STALE_WORKTREE_BINDING: saved isolated worktree is missing or outside its registered path"
+        record = forge.status(task_id)
+        if (not record.get("ok") or record.get("worktree_path") != str(root)
+                or record.get("branch") != branch or record.get("base_commit") != base_commit):
+            return "STALE_WORKTREE_BINDING: saved identity does not match a usable registered worktree"
+    except (OSError, ValueError, RuntimeError):
+        return "STALE_WORKTREE_BINDING: could not validate the saved worktree"
+    return ""
 
 
 def _safe_path(root: Path, relative: str) -> Path:
@@ -375,7 +446,35 @@ async def _workspace_read_range(arguments: dict[str, Any], context: ToolExecutio
     text = path.read_text(encoding="utf-8", errors="replace")
     lines = text.splitlines()
     selected = lines[start - 1 : start - 1 + count]
+    outline = {}
+    if arguments.get("include_outline") is True and path.suffix == ".py" and len(text) <= 256_000:
+        try:
+            parsed = ast.parse(text)
+        except (SyntaxError, ValueError, RecursionError):
+            pass
+        else:
+            nodes = []
+            for node in parsed.body:
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                    nodes.append(node)
+                if isinstance(node, ast.ClassDef):
+                    nodes.extend(child for child in node.body if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)))
+            names = set((arguments.get("outline_symbols") or [])[:64])
+            functions = (ast.FunctionDef, ast.AsyncFunctionDef)
+            focused = {node for node in nodes if isinstance(node, functions) and node.name in names}
+            sampled = nodes if len(nodes) <= 48 else [
+                nodes[round(i * (len(nodes) - 1) / 47)] for i in range(48)
+            ]
+            # Keep requested symbols even if the general outline sample missed them.
+            selected_nodes = ([node for node in nodes if node in focused][:48]
+                              + [node for node in sampled if node not in focused])[:48]
+            outline = {"outline": [
+                {"line": node.lineno, "name": node.name, "end_line": node.end_lineno,
+                 "kind": "function" if isinstance(node, functions) else "class"}
+                for node in selected_nodes
+            ]}
     return {
+        **outline,
         "path": path.relative_to(root).as_posix(),
         "start_line": start,
         "end_line": start + len(selected) - 1 if selected else start,
@@ -431,12 +530,11 @@ async def _workspace_search_text(arguments: dict[str, Any], context: ToolExecuti
     case_sensitive = bool(arguments.get("case_sensitive"))
     needle = query if case_sensitive else query.lower()
     matches: list[dict[str, Any]] = []
-    candidates = [path] if path.is_file() else path.rglob("*")
-    for candidate in candidates:
+    for candidate in _iter_workspace_files(root, path):
         if not candidate.is_file():
             continue
         relative_parts = candidate.relative_to(root).parts
-        if any(part in _EXCLUDED_DIRS or part.startswith(".beast-") or part.startswith(".phase1") for part in relative_parts):
+        if any(_excluded_workspace_part(part) for part in relative_parts):
             continue
         try:
             if candidate.stat().st_size > 2 * 1024 * 1024:
@@ -465,7 +563,7 @@ from pathlib import Path
 root = Path(".").resolve()
 limit = int(os.environ.get("BEAST_INDEX_LIMIT", "1200"))
 include_symbols = os.environ.get("BEAST_INDEX_SYMBOLS", "1") == "1"
-excluded = {".git", ".beast", "node_modules", "__pycache__", ".venv", "venv", "dist", "build"}
+excluded = {".git", ".beast", ".beast_backups", "node_modules", "__pycache__", ".venv", "venv", "dist", "build"}
 suffixes = {
     ".py": "python", ".js": "javascript", ".jsx": "javascriptreact", ".ts": "typescript", ".tsx": "typescriptreact",
     ".nim": "nim", ".nims": "nim", ".nimble": "nim", ".go": "go", ".rs": "rust", ".c": "c", ".h": "c",
@@ -536,7 +634,7 @@ def extract(path, language, text):
 files, symbols, imports, tests = [], [], [], []
 languages, symbol_kinds = {}, {}
 for current, dirs, names in os.walk(root):
-    dirs[:] = sorted(d for d in dirs if d not in excluded and not d.startswith(".beast-") and not d.startswith(".phase"))
+    dirs[:] = sorted(d for d in dirs if d not in excluded and not d.startswith(".beast-") and not d.startswith(".beast_") and not d.startswith(".phase"))
     for name in sorted(names):
         if len(files) >= limit:
             break
@@ -612,13 +710,13 @@ print(json.dumps({
     imports: list[dict[str, Any]] = []
     languages: dict[str, int] = {}
     symbol_kinds: dict[str, int] = {}
-    for candidate in sorted(root.rglob("*"), key=lambda item: item.relative_to(root).as_posix()):
+    for candidate in _iter_workspace_files(root, root):
         if len(files) >= limit:
             break
         if not candidate.is_file():
             continue
         relative_parts = candidate.relative_to(root).parts
-        if any(part in _EXCLUDED_DIRS or part.startswith(".beast-") or part.startswith(".phase1") for part in relative_parts):
+        if any(_excluded_workspace_part(part) for part in relative_parts):
             continue
         relative = candidate.relative_to(root).as_posix()
         try:
@@ -716,7 +814,7 @@ def build_default_tool_registry() -> AgentToolRegistry:
         category="workspace",
         risk=ToolRisk.LOW,
         effect=ToolEffect.READ,
-        input_schema={"type": "object", "required": ["path"], "properties": {"path": {"type": "string"}, "start_line": {"type": "integer"}, "line_count": {"type": "integer"}}, "additionalProperties": False},
+        input_schema={"type": "object", "required": ["path"], "properties": {"path": {"type": "string"}, "start_line": {"type": "integer"}, "line_count": {"type": "integer"}, "include_outline": {"type": "boolean"}, "outline_symbols": {"type": "array", "items": {"type": "string"}}}, "additionalProperties": False},
         targets=("local", "ssh", "container"),
         handler=_workspace_read_range,
     ))
@@ -791,6 +889,12 @@ class AgentToolRuntime:
     def __init__(self, engine: Any, registry: AgentToolRegistry | None = None) -> None:
         self.engine = engine
         self.registry = registry or build_default_tool_registry()
+        self.effect_executor = None
+        effect_registry = getattr(self.registry, "effect_registry", None)
+        if effect_registry is not None:
+            from app.kernel.agents.effect_tool_executor import EffectToolExecutor
+
+            self.effect_executor = EffectToolExecutor(effect_registry)
 
     async def execute(self, run_id: str, request: ToolRequest) -> ToolObservation:
         run = self.engine.store.get_run(run_id)
@@ -799,15 +903,36 @@ class AgentToolRuntime:
         self.engine.raise_if_cancelled(run_id)
         spec = self.registry.get(request.tool_id)
         if is_read_only_run(run) and (spec.effect != ToolEffect.READ or spec.requires_worktree):
-            raise PermissionError(f"REFUSE_READ_ONLY_TOOL:{spec.tool_id}")
+            # Read-only mode: never hard-block. Return a guidance result so the
+            # model can re-task with read tools instead of ending as policy_blocked.
+            return {
+                "tool_id": spec.tool_id,
+                "status": "read_only_guidance",
+                "read_only": True,
+                "result": {
+                    "guidance": f"{spec.tool_id} is not available in read-only mode. "
+                                f"Use workspace.read_range, workspace.list, workspace.search_text, "
+                                f"or workspace.index to inspect files instead.",
+                },
+                "error": "",
+            }
         arguments = self.registry.validate_arguments(spec, request.arguments)
-        target = str(request.execution_target or "local")
-        target_payload = request.execution_target_payload if isinstance(request.execution_target_payload, dict) else {}
-        if target not in spec.targets:
-            raise PermissionError(f"tool {spec.tool_id} does not support target {target}")
         run_request = run.get("request") if isinstance(run.get("request"), dict) else {}
         run_target = str(run_request.get("execution_target") or "local")
         run_payload = run_request.get("execution_target_payload") if isinstance(run_request.get("execution_target_payload"), dict) else {}
+
+        # If the run has a remote target but the tool request only specifies the default "local",
+        # inherit the run's target. An explicit remote target in the request is still respected.
+        request_target = str(request.execution_target or "local")
+        if run_target != "local" and request_target == "local":
+            target = run_target
+            target_payload = run_payload
+        else:
+            target = request_target
+            target_payload = request.execution_target_payload if isinstance(request.execution_target_payload, dict) else run_payload
+
+        if target not in spec.targets:
+            raise PermissionError(f"tool {spec.tool_id} does not support target {target}")
         if target != run_target:
             raise PermissionError("execution target differs from the immutable AgentRun destination")
         if target != "local" and (not run_payload or target_payload != run_payload):
@@ -827,9 +952,25 @@ class AgentToolRuntime:
                 checkpoint.get("worktree_execution_target_payload") != target_payload or
                 not checkpoint.get("worktree_remote")):
                 raise PermissionError("remote worktree custody is not bound to this destination")
+        workspace_root = str(run.get("root_path") or self.engine.workspace_root)
+        source_scope = ""
+        if target == "local" and spec.tool_id in {
+            "workspace.read_range", "workspace.search_text", "workspace.list", "workspace.index",
+        }:
+            source_scope = "workspace_checkout"
+            if str(run.get("mode") or "").strip().lower() in {"agent", "edit", "implementer"}:
+                identity = local_binding_identity(run)
+                if checkpoint.get("worktree_remote"):
+                    raise PermissionError("STALE_WORKTREE_BINDING: remote custody on a local run")
+                if identity is not None:
+                    binding_error = await asyncio.to_thread(local_binding_error, self.engine.workspace_root, identity)
+                    if binding_error:
+                        raise PermissionError(binding_error)
+                    workspace_root = str(Path(identity[0]).resolve())
+                    source_scope = "bound_worktree"
         context = ToolExecutionContext(
             run_id=run_id,
-            workspace_root=str(run.get("root_path") or self.engine.workspace_root),
+            workspace_root=workspace_root,
             execution_target=target,
             execution_target_payload=target_payload,
             worktree_root=worktree_root,
@@ -837,6 +978,7 @@ class AgentToolRuntime:
             engine=self.engine,
         )
         started = time.time()
+        runtime_name = "python_async"
         self.engine.emit(run_id, "agent.tool.started", {
             "tool_id": spec.tool_id,
             "tool_version": spec.version,
@@ -845,6 +987,7 @@ class AgentToolRuntime:
             "effect": spec.effect.value,
             "execution_target": target,
             "execution_target_payload": target_payload,
+            "runtime": "effect_ts" if self.effect_executor is not None else runtime_name,
         })
         status = "completed"
         result: dict[str, Any] = {}
@@ -852,7 +995,20 @@ class AgentToolRuntime:
         truncated = False
         try:
             assert spec.handler is not None
-            raw = await asyncio.wait_for(spec.handler(arguments, context), timeout=max(0.1, spec.timeout_seconds))
+            if self.effect_executor is not None:
+                effect_result = await asyncio.to_thread(
+                    self.effect_executor.execute_authorized,
+                    spec.tool_id,
+                    arguments,
+                    context=context,
+                    timeout_ms=max(100, int(float(spec.timeout_seconds) * 1000)),
+                )
+                raw = effect_result.value
+                runtime_name = "effect_ts"
+            else:
+                raw = await asyncio.wait_for(spec.handler(arguments, context), timeout=max(0.1, spec.timeout_seconds))
+            if source_scope and isinstance(raw, dict):
+                raw = {**raw, "source_scope": source_scope}
             result, truncated = _bounded_text(raw if isinstance(raw, dict) else {"value": raw}, spec.max_output_bytes)
             if isinstance(raw, dict) and raw.get("ok") is False:
                 status = "failed"
@@ -882,7 +1038,10 @@ class AgentToolRuntime:
             evidence_digest=digest,
         )
         event_type = "agent.tool.completed" if status == "completed" else "agent.tool.failed"
-        self.engine.emit(run_id, event_type, {"observation": observation.as_dict()})
+        self.engine.emit(run_id, event_type, {
+            "observation": observation.as_dict(),
+            "runtime": runtime_name,
+        })
         self.engine.merge_checkpoint(run_id, {
             "last_observation_id": observation.observation_id,
             "last_tool_id": observation.tool_id,

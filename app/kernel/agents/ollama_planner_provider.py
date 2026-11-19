@@ -4,6 +4,7 @@ from __future__ import annotations
 from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16: governed egress shim
 
 import asyncio
+import httpx
 import json
 import os
 import time
@@ -22,6 +23,7 @@ from app.kernel.compute.crystal_reuse_gateway import CrystalReuseGateway, Crysta
 from app.kernel.local.ollama_config import ollama_model
 from app.kernel.compute.ollama_pressure_controller import OllamaPressureController
 from app.kernel.compute.ollama_cpu_profile import request_options
+from app.kernel.compute.streaming_interceptor import StreamingComputeInterceptor, StreamingInterceptionEngine
 from app.kernel.sensorium.ollama_runtime_sensor import OllamaRuntimeSensor
 from app.kernel.sensorium.workspace_invalidation import WorkspaceInvalidationBus
 
@@ -30,6 +32,21 @@ class OllamaPlannerProvider:
     """Use Ollama as a bounded next-action planner."""
 
     supports_native_file_review = True
+    ACTION_SCHEMA = {
+        "type": "object",
+        "properties": {
+            "decision_type": {"type": "string", "enum": ["tool", "complete", "blocked"]},
+            "tool_id": {"type": "string"},
+            "arguments": {"type": "object", "additionalProperties": True},
+            "summary": {"type": "string"},
+            "blocker": {"type": "string"},
+            "rationale": {"type": "string"},
+            "execution_target": {"type": "string"},
+            "approval_id": {"type": "string"},
+        },
+        "required": ["decision_type", "arguments", "tool_id"],
+        "additionalProperties": False,
+    }
 
     def __init__(
         self,
@@ -53,6 +70,7 @@ class OllamaPlannerProvider:
         runtime_sensor: OllamaRuntimeSensor | None = None,
         invalidation_bus: WorkspaceInvalidationBus | None = None,
         on_token: Any = None,
+        stream_interceptor: StreamingComputeInterceptor | None = None,
     ) -> None:
         self.model = ollama_model(model)
         configured_base_url = (
@@ -62,8 +80,11 @@ class OllamaPlannerProvider:
             or "http://127.0.0.1:11434"
         )
         self.base_url = self._normalize_base_url(configured_base_url)
-        self.timeout_seconds = max(10.0, float(timeout_seconds))
-        self.max_retries = max(0, int(max_retries))
+        # CPU inference on qwen2.5-coder:7b can take 60-120s for a full decision.
+        # Default to 120s per attempt, with 2 retries = 360s max.
+        # The runtime's BEAST_AGENT_PLANNER_DECISION_TIMEOUT_MS (default 180000ms) caps the overall turn.
+        self.timeout_seconds = max(30.0, float(timeout_seconds))
+        self.max_retries = max(0, min(1, int(max_retries)))
         self.default_approval_id = str(default_approval_id or "")
         self.temperature = float(temperature)
         self.seed = int(seed)
@@ -82,6 +103,9 @@ class OllamaPlannerProvider:
         self.runtime_sensor = runtime_sensor or OllamaRuntimeSensor()
         self.invalidation_bus = invalidation_bus or WorkspaceInvalidationBus()
         self.on_token = on_token
+        self.stream_interceptor = stream_interceptor or StreamingComputeInterceptor(
+            StreamingInterceptionEngine(max_output_tokens=2048, schema_contract=self.ACTION_SCHEMA)
+        )
         self._pressure_decision = None
         self._runtime_before: dict[str, Any] | None = None
         self._preflight_ok = False
@@ -244,7 +268,7 @@ class OllamaPlannerProvider:
                 # Stream deltas into the durable run ledger. The final
                 # decision is still parsed and validated as one typed packet;
                 # streaming only improves visibility and cancellation.
-                "stream": False,
+                "stream": bool(callable(self.on_token)),
                 "think": False,
                 "format": "json",
                 "options": {
@@ -262,8 +286,10 @@ class OllamaPlannerProvider:
                 "keep_alive": os.environ.get("BEAST_OLLAMA_KEEP_ALIVE", "5m"),
             }
             try:
-                request_method = self._request_stream_json if callable(self.on_token) else self._request_json
-                body = await asyncio.to_thread(request_method, "/api/generate", payload, request_timeout)
+                if callable(self.on_token):
+                    body = await self._request_stream_json_async("/api/generate", payload, request_timeout)
+                else:
+                    body = await asyncio.to_thread(self._request_json, "/api/generate", payload, request_timeout)
                 self.last_usage = {
                     "prompt_chars": len(request_prompt),
                     "prompt_bytes": len(request_prompt.encode("utf-8")),
@@ -279,6 +305,8 @@ class OllamaPlannerProvider:
                     "num_predict": payload["options"]["num_predict"],
                     "attempt": attempt + 1,
                 }
+                if isinstance(body.get("stream_interception"), dict):
+                    self.last_usage["stream_interception"] = body["stream_interception"]
                 raw = str(body.get("response") or "")
                 mode = str(run.get("mode") or "").strip().lower()
                 if mode in {"chat", "analysis", "ask"} and raw.strip():
@@ -389,53 +417,88 @@ class OllamaPlannerProvider:
     @classmethod
     def _request_timeout(cls, prompt: str, *, run: dict[str, Any], turn: int) -> float:
         del prompt, turn
-        base = max(5.0, float(os.environ.get("BEAST_OLLAMA_PLANNER_TIMEOUT", "30")))
+        base = max(30.0, float(os.environ.get("BEAST_OLLAMA_PLANNER_TIMEOUT", "120")))
         if cls._mutation_packet_required(run):
-            return max(10.0, min(180.0, float(os.environ.get("BEAST_OLLAMA_MUTATION_DECISION_TIMEOUT", "90"))))
+            return max(60.0, min(300.0, float(os.environ.get("BEAST_OLLAMA_MUTATION_DECISION_TIMEOUT", "180"))))
         if cls._is_repair_turn(run):
-            return max(6.0, min(base, float(os.environ.get("BEAST_OLLAMA_REPAIR_TIMEOUT", "12"))))
+            return max(15.0, min(base, float(os.environ.get("BEAST_OLLAMA_REPAIR_TIMEOUT", "30"))))
         planner = cls._planner_state(run)
         observed = planner.get("observations") if isinstance(planner.get("observations"), list) else []
         if observed:
-            return max(6.0, min(base, float(os.environ.get("BEAST_OLLAMA_FOLLOWUP_TIMEOUT", "14"))))
+            return max(15.0, min(base, float(os.environ.get("BEAST_OLLAMA_FOLLOWUP_TIMEOUT", "30"))))
         return base
 
     def _workspace_root(self, run: dict[str, Any]) -> str:
         request = run.get("request") if isinstance(run.get("request"), dict) else {}
         return str(run.get("workspace_root") or run.get("root") or request.get("workspace_root") or "")
 
-    def _request_stream_json(self, path: str, payload: dict[str, Any], timeout: float) -> dict[str, Any]:
-        """Consume Ollama NDJSON while preserving the final usage envelope."""
-        request = urllib.request.Request(
-            f"{self.base_url}{path}",
-            data=json.dumps(payload).encode("utf-8"),
-            headers={"Content-Type": "application/json", "Accept": "application/x-ndjson"},
-            method="POST",
-        )
+    async def _request_stream_json_async(self, path: str, payload: dict[str, Any], timeout: float) -> dict[str, Any]:
+        """Async version of _request_stream_json using httpx for proper cancellation support."""
         aggregate: dict[str, Any] = {}
         response_parts: list[str] = []
-        with _egress.urlopen("ollama_planner_provider", request, timeout=timeout) as response:
-            for raw_line in response:
-                line = raw_line.decode("utf-8", errors="replace").strip()
-                if not line:
-                    continue
-                item = json.loads(line)
-                if not isinstance(item, dict):
-                    continue
-                aggregate.update({key: value for key, value in item.items() if key != "response"})
-                text = str(item.get("response") or "")
-                if text:
-                    response_parts.append(text)
-                    self.last_partial_text += text
-                    if callable(self.on_token):
-                        try:
-                            self.on_token(text)
-                        except Exception:
-                            pass
-                if item.get("done") is True:
-                    break
+        max_tokens = int((payload.get("options") or {}).get("num_predict") or 2048)
+        state = self.stream_interceptor.engine.create_initial_state(max_tokens)
+        stopped_upstream = False
+        timeout_config = httpx.Timeout(timeout, connect=5.0)
+        async with httpx.AsyncClient(timeout=timeout_config, trust_env=False) as client:
+            async with client.stream(
+                "POST",
+                f"{self.base_url}{path}",
+                json=payload,
+                headers={"Content-Type": "application/json", "Accept": "application/x-ndjson"},
+            ) as response:
+                response.raise_for_status()
+                async for raw_line in response.aiter_lines():
+                    line = raw_line.strip()
+                    if not line:
+                        continue
+                    try:
+                        item = json.loads(line)
+                    except json.JSONDecodeError:
+                        continue
+                    if not isinstance(item, dict):
+                        continue
+                    aggregate.update({key: value for key, value in item.items() if key != "response"})
+                    text = str(item.get("response") or "")
+                    if text:
+                        state.raw_chunks_seen += 1
+                        response_parts.append(text)
+                        self.last_partial_text += text
+                        if callable(self.on_token):
+                            try:
+                                self.on_token(text)
+                            except Exception:
+                                pass
+                        normalized = self.stream_interceptor.provider_adapter.normalize_event(text)
+                        token_count = normalized.token_count if normalized is not None else 1
+                        result = self.stream_interceptor.engine.process_chunk(state, text, token_count)
+                        if result.should_stop:
+                            stopped_upstream = True
+                            await response.aclose()
+                            break
+                    if item.get("done") is True:
+                        break
         aggregate["response"] = "".join(response_parts)
+        aggregate["stream_interception"] = self.stream_interceptor.finalize_interception(
+            state,
+            response_parts,
+            upstream_cancel_requested=stopped_upstream,
+            baseline_output_tokens=max_tokens,
+        ).to_dict()
         return aggregate
+
+    def _request_stream_json(self, path: str, payload: dict[str, Any], timeout: float) -> dict[str, Any]:
+        """Sync wrapper for backward compatibility - runs the async version in the event loop."""
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = None
+        if loop and loop.is_running():
+            # We're in an async context - this shouldn't happen for the sync method,
+            # but if it does, run the async version in a thread to avoid blocking.
+            return asyncio.to_thread(self._request_stream_json_async, path, payload, timeout).result()
+        # No running loop - create one and run.
+        return asyncio.run(self._request_stream_json_async(path, payload, timeout))
 
     def _prepare_sensorium(self, run: dict[str, Any]) -> None:
         root = self._workspace_root(run)

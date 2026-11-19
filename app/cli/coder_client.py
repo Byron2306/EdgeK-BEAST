@@ -5,17 +5,34 @@ from app.kernel.compute import governed_egress as _egress  # closure-2026-11-16:
 
 import asyncio
 import os
+import uuid
 
 import json
+from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, AsyncIterable, AsyncIterator
+from urllib.parse import quote
 
 import httpx
 
 
 class RuntimeClientError(RuntimeError):
     """A runtime or transport response that cannot be presented as success."""
+
+
+class RuntimeTurnUnconfirmed(RuntimeClientError):
+    """The client cannot confirm the outcome of an already-submitted turn."""
+
+
+def _turn_wait_seconds() -> float:
+    try:
+        seconds = float(os.environ.get("BEAST_CODER_AGENTRUN_MAX_SECONDS", "300"))
+    except ValueError as exc:
+        raise RuntimeClientError("Invalid BEAST_CODER_AGENTRUN_MAX_SECONDS") from exc
+    if not 30 <= seconds <= 3600:
+        raise RuntimeClientError("AgentRun timeout must be 30..3600 seconds")
+    return seconds
 
 
 @dataclass(frozen=True)
@@ -152,6 +169,22 @@ class CoderRuntimeClient:
     async def discover_mcp(self) -> dict[str, Any]:
         return await self._get_json("/edgek/mcp/state")
 
+    async def discover_ide_snapshot(self) -> dict[str, Any]:
+        """IDE system snapshot: languages, debuggers, notebooks, SSH, containers, ports, processes, environment."""
+        return await self._get_json("/edgek/ide/system-snapshot", root_path=str(self.workspace))
+
+    async def discover_ide_extensions(self) -> dict[str, Any]:
+        """IDE extensions report: VS Code extensions, plugins, MCP servers."""
+        return await self._get_json("/edgek/ide/extensions", root_path=str(self.workspace))
+
+    async def discover_ide_environment(self) -> dict[str, Any]:
+        """IDE environment report: interpreters, PATH, non-secret env vars."""
+        return await self._get_json("/edgek/ide/environment", root_path=str(self.workspace))
+
+    async def discover_ide_packages(self) -> dict[str, Any]:
+        """IDE packages report: Python/Node dependencies and scripts."""
+        return await self._get_json("/edgek/ide/packages", root_path=str(self.workspace))
+
     async def discover_tools(self, run_id: str) -> dict[str, Any]:
         return await self._get_json(
             f"/edgek/agent-runs/{run_id}/tools", root_path=str(self.workspace)
@@ -235,20 +268,45 @@ class CoderRuntimeClient:
         return session
 
     async def start_run(
-        self, session_id: str, prompt: str, provider: str, model: str
+        self, session_id: str, prompt: str, provider: str, model: str,
+        *, mode: str = "ask", context_files: tuple[str, ...] = (),
+        autonomy: str | None = None, permission_mode: str = "normal",
     ) -> dict[str, Any]:
+        if mode not in {"ask", "review", "edit", "agent"}:
+            raise ValueError("invalid BEAST composer mode")
+        autonomy_mode = str(
+            autonomy or os.environ.get("BEAST_TLI_AUTONOMY") or "autopilot"
+        ).strip().lower()
+        if autonomy_mode not in {"autopilot", "manual"}:
+            raise ValueError("autonomy must be 'autopilot' or 'manual'")
+        test_files = [path for path in context_files if Path(path).name.startswith("test_") and path.endswith(".py")]
+        target = next((path for path in context_files if path.endswith(".py") and path not in test_files), "")
+        editing_scope = {}
+        if mode in {"edit", "agent"} and target:
+            editing_scope["implementation_target"] = target
+            if test_files:
+                editing_scope["required_test_files"] = test_files
         body = await self._post_json(
             "/edgek/agent-runs",
             {
                 "session_id": session_id,
-                "mode": "agent",
+                "mode": "analysis" if mode in {"ask", "review"} else mode,
                 "provider": provider,
                 "model": model,
                 "workspace_root": str(self.workspace),
                 "request": {
                     "prompt": prompt,
+                    "transport": "beast_coder_tli_v1",
+                    "launch_strategy": "typed_planner",
+                    "context_files": list(context_files),
+                    **editing_scope,
+                    **({"read_only_file_review": True, "file_answer_style": "explain" if mode == "ask" else "review"}
+                       if mode in {"ask", "review"} and context_files else {}),
                     "workspace_root": str(self.workspace),
                     "execution_target": "local",
+                    "autonomy": autonomy_mode,
+                    "apply_on_completion": autonomy_mode == "autopilot",
+                    "permission_mode": permission_mode,
                 },
                 "launch": True,
             },
@@ -364,4 +422,167 @@ class CoderRuntimeClient:
                     raise RuntimeClientError(f"AgentRun {run_id} exceeded {limit:g}s; server execution may still be active. Do not retry actions blindly.") from exc
                 yield event
         finally:
+            await stream.aclose()
+
+    async def list_approvals(self, run_id: str) -> list[dict[str, Any]]:
+        """Return the durable approval cards for one AgentRun.
+
+        Turn-based execution never blocks on a human: a mutating tool parks the
+        run in ``waiting_for_approval`` and hands the card back. The operator
+        resolves it here, then advances the next turn.
+        """
+        response = await self._client.get(
+            f"/edgek/agent-runs/{run_id}/approvals",
+            params={"root_path": str(self.workspace)},
+        )
+        await self._raise_for_status(response)
+        body = response.json()
+        return list(body.get("approvals") or [])
+
+    async def resolve_approval(
+        self,
+        run_id: str,
+        approval_id: str,
+        *,
+        approved: bool = True,
+        operator: str = "tli-operator",
+    ) -> dict[str, Any]:
+        body = await self._post_json(
+            f"/edgek/agent-runs/{run_id}/approvals/{approval_id}",
+            {
+                "approved": bool(approved),
+                "operator": operator,
+                "root_path": str(self.workspace),
+            },
+        )
+        if body.get("ok") is False:
+            raise RuntimeClientError(
+                str(body.get("detail") or body.get("error") or "approval failed")
+            )
+        return body
+
+    async def start_turn(self, run_id: str) -> dict[str, Any]:
+        """Start exactly one planner turn (decide → execute → observe) and return the result.
+
+        OpenCode-style turn-based execution: each call advances the run by one
+        turn. The operator inspects the result, then calls this again for the
+        next turn until the run reaches a terminal state.
+        """
+        request_id = uuid.uuid4().hex
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + _turn_wait_seconds()
+        try:
+            body = await self._post_json(
+                f"/edgek/agent-runs/{run_id}/turn?root_path={quote(str(self.workspace), safe='')}",
+                {"root_path": str(self.workspace), "turn_request_id": request_id},
+            )
+        except RuntimeClientError as exc:
+            if not isinstance(exc.__cause__, httpx.ReadTimeout):
+                raise
+            # The POST might already be executing. Reconcile through read-only
+            # status, never resubmit it or infer completion from a stale state.
+            while (remaining := deadline - loop.time()) > 0:
+                try:
+                    async with asyncio.timeout(min(5, remaining)):
+                        status = await self.runtime_status(run_id)
+                except (RuntimeClientError, TimeoutError):
+                    status = {}
+                run = status.get("run") or {}
+                receipt = (run.get("checkpoint") or {}).get("coder_turn_reply") or {}
+                if (receipt.get("id") == request_id and receipt.get("state") == run.get("state")
+                        and run.get("run_id") == run_id):
+                    return run
+                await asyncio.sleep(min(0.5, max(0, deadline - loop.time())))
+            raise RuntimeTurnUnconfirmed(
+                f"No final receipt yet for {run_id}. Check /status. The turn was not resubmitted."
+            ) from exc
+        if not body.get("ok"):
+            raise RuntimeClientError(str(body.get("detail") or body.get("error") or "turn failed"))
+        return body.get("run", {})
+
+    async def turn_events(
+        self,
+        run_id: str,
+        *,
+        after: int = 0,
+        max_events: int = 50,
+        idle_timeout: float = 2.0,
+        completion: asyncio.Future[Any] | None = None,
+    ) -> AsyncIterator[RuntimeEvent]:
+        """Stream events for the current turn only.
+
+        Unlike follow_run (which waits for the whole run), turn_events yields
+        persisted events for the completed turn and then returns control to the
+        operator as soon as the stream goes quiet.
+        """
+        limit = _turn_wait_seconds()
+        idle = max(0.25, float(idle_timeout))
+        async def _turn_stream():
+            try:
+                async with self._client.stream(
+                    "GET",
+                    f"/edgek/agent-runs/{run_id}/events",
+                    params={
+                        "root_path": str(self.workspace),
+                        "after": max(0, int(after)),
+                        "follow": "true",
+                        "projection": "canonical",
+                    },
+                    headers={"Accept": "text/event-stream"},
+                ) as response:
+                    await self._raise_for_status(response)
+                    async for event in iter_sse_events(response.aiter_bytes()):
+                        yield event
+            except RuntimeClientError:
+                raise
+            except httpx.HTTPError as exc:
+                raise RuntimeClientError(f"BEAST turn stream failed: {exc}") from exc
+        stream = _turn_stream()
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + limit
+        events_yielded = 0
+        pending_event: asyncio.Task[RuntimeEvent] | None = None
+        completion_seen_at: float | None = None
+        try:
+            pending_event = asyncio.create_task(stream.__anext__())
+            while True:
+                remaining = deadline - loop.time()
+                if remaining <= 0:
+                    if completion is not None:
+                        raise RuntimeTurnUnconfirmed(
+                            f"Stopped waiting for {run_id} after {limit:g}s. Check /status before resuming."
+                        )
+                    raise RuntimeClientError(f"Turn for {run_id} exceeded {limit:g}s")
+                wait_set: set[asyncio.Future[Any]] = {pending_event}
+                if completion is not None and not completion.done():
+                    wait_set.add(completion)
+                done, _ = await asyncio.wait(
+                    wait_set,
+                    timeout=min(remaining, idle),
+                    return_when=asyncio.FIRST_COMPLETED,
+                )
+                if pending_event not in done:
+                    if completion is not None and completion.done():
+                        completion_seen_at = completion_seen_at or loop.time()
+                        if loop.time() - completion_seen_at < idle:
+                            continue
+                        break
+                    # The model may take longer than the quiet window to emit
+                    # its first token. Keep the live SSE read pending while the
+                    # turn request is still executing.
+                    continue
+                try:
+                    event = pending_event.result()
+                except StopAsyncIteration:
+                    break
+                events_yielded += 1
+                yield event
+                if events_yielded >= max_events:
+                    break
+                pending_event = asyncio.create_task(stream.__anext__())
+        finally:
+            if pending_event is not None and not pending_event.done():
+                pending_event.cancel()
+                with suppress(asyncio.CancelledError):
+                    await pending_event
             await stream.aclose()

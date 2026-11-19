@@ -76,8 +76,34 @@ class VectorMemoryFabric:
     def _utc_now() -> str:
         return datetime.now(timezone.utc).isoformat()
 
+    def _get_embedding_model(self):
+        """Get or create the sentence-transformers model for embeddings."""
+        if not hasattr(self, "_embedding_model"):
+            # Check if local embeddings are enabled
+            if os.environ.get("BEAST_ENABLE_LOCAL_EMBEDDINGS", "0") != "1":
+                raise RuntimeError("local embeddings disabled; using lexical retrieval")
+            from sentence_transformers import SentenceTransformer
+            # Use a small, fast model that works well for code/text
+            self._embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+        return self._embedding_model
+
     def _embedding(self, text: str) -> List[float]:
-        """Stable local lexical embedding; no model download or secret required."""
+        """Generate embedding for text. Uses sentence-transformers if enabled, otherwise lexical fallback."""
+        # Check if local embeddings are enabled
+        if os.environ.get("BEAST_ENABLE_LOCAL_EMBEDDINGS", "0") == "1":
+            try:
+                model = self._get_embedding_model()
+                embedding = model.encode(text).tolist()
+                # Truncate or pad to match expected dimensions
+                if len(embedding) > self.dimensions:
+                    embedding = embedding[:self.dimensions]
+                elif len(embedding) < self.dimensions:
+                    embedding = embedding + [0.0] * (self.dimensions - len(embedding))
+                return embedding
+            except Exception:
+                # Fallback to lexical embedding on any error
+                pass
+        # Lexical fallback
         vector = [0.0] * self.dimensions
         for token in re.findall(r"[A-Za-z_][A-Za-z0-9_./:-]*", (text or "").lower()):
             digest = hashlib.blake2b(token.encode("utf-8"), digest_size=8).digest()

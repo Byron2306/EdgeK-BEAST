@@ -11,7 +11,7 @@ import hashlib
 import json
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 
 class ContextPacketBuilder:
@@ -42,6 +42,7 @@ class ContextPacketBuilder:
         semantic_limit: int = 5,
         include_content: bool = True,
         max_files: Optional[int] = None,
+        context_overrides: Optional[Mapping[str, str]] = None,
     ) -> Dict[str, Any]:
         """Build a context packet from already-local BEAST artifacts."""
         root = Path(workspace_root).resolve()
@@ -78,6 +79,7 @@ class ContextPacketBuilder:
                 rel_path,
                 include_content=include_content,
                 allow_full_file=allow_full_files,
+                context_override=(context_overrides or {}).get(self._normalize_rel_path(rel_path)),
             )
             if evidence:
                 included.append(evidence)
@@ -216,6 +218,7 @@ class ContextPacketBuilder:
         rel_path: str,
         include_content: bool,
         allow_full_file: bool,
+        context_override: Optional[str] = None,
     ) -> Tuple[Optional[Dict[str, Any]], Optional[Dict[str, Any]]]:
         normalized = self._normalize_rel_path(rel_path)
         if not normalized:
@@ -247,13 +250,24 @@ class ContextPacketBuilder:
 
         lines = content.splitlines()
         full_content = "\n".join(lines)
-        snippet = full_content if allow_full_file else full_content[: self.max_file_chars]
+        if not content_hash:
+            content_hash = hashlib.sha256(full_content.encode("utf-8")).hexdigest()
+        transform: Dict[str, Any] = {}
+        model_content = full_content
+        if context_override is not None:
+            model_content = str(context_override)
+            transform = {
+                "kind": "governed_compression",
+                "source_content_hash": f"sha256:{content_hash}",
+                "model_content_hash": f"sha256:{hashlib.sha256(model_content.encode('utf-8')).hexdigest()}",
+                "source_bytes": len(full_content.encode("utf-8")),
+                "model_bytes": len(model_content.encode("utf-8")),
+            }
+        snippet = model_content if allow_full_file else model_content[: self.max_file_chars]
         end_line = len(snippet.splitlines()) or 1
         if not include_content:
             snippet = ""
-        if not content_hash:
-            content_hash = hashlib.sha256(full_content.encode("utf-8")).hexdigest()
-        return {
+        evidence = {
             "evidence_id": self._evidence_id("file_snippet", normalized, content_hash),
             "kind": "file_snippet",
             "source": normalized,
@@ -261,7 +275,10 @@ class ContextPacketBuilder:
             "end_line": end_line,
             "content_hash": f"sha256:{content_hash}",
             "content": snippet,
-        }, None
+        }
+        if transform:
+            evidence["context_transform"] = transform
+        return evidence, None
 
     def _semantic_evidence(self, match: Dict[str, Any], include_content: bool) -> Optional[Dict[str, Any]]:
         source = match.get("file") or match.get("label") or match.get("node_id")

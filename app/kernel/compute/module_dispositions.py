@@ -46,6 +46,10 @@ OFFLINE_LIBRARY = frozenset({
     "governed_crystal_executor", "inference_engine_fabric", "interference_buckets",
     "local_compute_cascade", "memory_policy", "port_conflict_crystal",
     "port_conflict_fixture", "resource_executor", "sealed_capsule",
+    "crystal_kv_index",
+    "kv_crystal_tier",
+    "reclaim_policy",
+    "physical_ledger",
 })
 
 RETIRED = {"crystal_integrations": "duplicate compatibility registry removed; use local_capabilities"}

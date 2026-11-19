@@ -35,6 +35,7 @@ class CanonRegistry:
         "cgroup_graceful_cleanup_receipt": {},
         "cgroup_capsule_orphan_state": {},
         "beast_process_plane_capabilities": {},
+        "kv_manifest": {"crystal_id": "kv_"},
     }
 
     def __init__(self):
@@ -291,6 +292,108 @@ class CanonRegistry:
                 "hash_fields": [],
                 "supported_versions": ["1.0"],
             },
+            "kv_manifest": {
+                "required": [
+                    "beast_object_type", "version", "kind", "crystal_id",
+                    "model_fingerprint", "token_span", "layer_range",
+                    "block_size_tokens", "block_bytes", "kv_bytes",
+                    "chunk_manifest", "privacy_domain", "authority",
+                ],
+                "recommended": ["fingerprint_digest", "parent_crystal_id", "expires_at"],
+                "types": {
+                    "model_fingerprint": "dict",
+                    "token_span": "dict",
+                    "layer_range": "list",
+                    "chunk_manifest": "dict",
+                    "block_size_tokens": "number",
+                    "block_bytes": "number",
+                    "kv_bytes": "number",
+                },
+                "hash_fields": ["fingerprint_digest"],
+                "supported_versions": [1],
+            },
+            "kv_lookup_receipt": {
+                "required": ["beast_object_type", "version", "status", "authority"],
+                "recommended": ["crystal_id", "fingerprint_digest", "token_span"],
+                "types": {"token_span": "list", "layer_range": "list"},
+                "hash_fields": [],
+                "supported_versions": ["1.0"],
+            },
+            "kv_eviction_receipt": {
+                "required": ["beast_object_type", "version", "requested_bytes", "evicted", "freed_bytes", "retained_pinned"],
+                "recommended": [],
+                "types": {"requested_bytes": "number", "freed_bytes": "number", "evicted": "list", "retained_pinned": "list"},
+                "hash_fields": [],
+                "supported_versions": ["1.0"],
+            },
+            "crystal_kv_index_stats": {
+                "required": ["beast_object_type", "version", "root", "manifests", "kv_bytes", "unique_chunks", "unique_chunk_bytes", "authority"],
+                "recommended": ["hits", "misses", "rejections", "puts"],
+                "types": {"manifests": "number", "kv_bytes": "number", "unique_chunks": "number", "unique_chunk_bytes": "number"},
+                "hash_fields": [],
+                "supported_versions": ["1.0"],
+            },
+            "reclaim_receipt": {
+                "required": [
+                    "beast_object_type", "version", "pressure_level", "acted",
+                    "requested_bytes", "freed_bytes", "satisfied", "steps",
+                    "stopped_because", "authority",
+                ],
+                "recommended": ["snapshot_digest", "policy_digest", "observed_at_ns"],
+                "types": {
+                    "acted": "boolean",
+                    "satisfied": "boolean",
+                    "requested_bytes": "number",
+                    "freed_bytes": "number",
+                    "steps": "list",
+                },
+                "hash_fields": ["snapshot_digest", "policy_digest"],
+                "supported_versions": ["1.0"],
+            },
+            "kv_crystal_tier_receipt": {
+                "required": ["beast_object_type", "version", "operation", "ok", "block_id", "authority"],
+                "recommended": ["crystal_id", "payload_bytes", "stored_bytes", "dedup_bytes_saved", "fingerprint_digest", "token_span"],
+                "types": {"ok": "boolean", "payload_bytes": "number", "stored_bytes": "number", "dedup_bytes_saved": "number", "token_span": "list"},
+                "hash_fields": ["fingerprint_digest"],
+                "supported_versions": ["1.0"],
+            },
+            "kv_crystal_tier_stats": {
+                "required": ["beast_object_type", "version", "root", "authority", "manifests", "kv_bytes", "unique_chunks", "unique_chunk_bytes"],
+                "recommended": ["privacy_domain", "block_size_tokens", "ttl_seconds", "hits", "misses", "rejections", "puts"],
+                "types": {"manifests": "number", "kv_bytes": "number", "unique_chunks": "number", "unique_chunk_bytes": "number", "block_size_tokens": "number"},
+                "hash_fields": [],
+                "supported_versions": ["1.0"],
+            },
+            "physical_admission_receipt": {
+                "required": [
+                    "beast_object_type", "version", "ok", "owner", "pool",
+                    "requested_bytes", "shortfall_bytes", "authority",
+                ],
+                "recommended": ["lease_id", "capacity_bytes", "available_before_bytes", "denied_reason", "reclaim_receipt_digest"],
+                "types": {
+                    "ok": "boolean",
+                    "requested_bytes": "number",
+                    "shortfall_bytes": "number",
+                    "capacity_bytes": "number",
+                    "available_before_bytes": "number",
+                },
+                "hash_fields": ["reclaim_receipt_digest"],
+                "supported_versions": ["1.0"],
+            },
+            "physical_release_receipt": {
+                "required": ["beast_object_type", "version", "ok", "lease_id", "pool", "released_bytes", "authority"],
+                "recommended": ["reason"],
+                "types": {"ok": "boolean", "released_bytes": "number"},
+                "hash_fields": [],
+                "supported_versions": ["1.0"],
+            },
+            "physical_ledger_state": {
+                "required": ["beast_object_type", "version", "pools", "lease_count", "authority"],
+                "recommended": ["active_lease_count", "journal"],
+                "types": {"pools": "dict", "lease_count": "number", "active_lease_count": "number"},
+                "hash_fields": [],
+                "supported_versions": ["1.0"],
+            },
         }
 
     def _check_equal(
@@ -366,6 +469,8 @@ class CanonRegistry:
             return isinstance(value, list)
         if expected == "str":
             return isinstance(value, str)
+        if expected == "boolean":
+            return isinstance(value, bool)
         if expected == "number":
             return isinstance(value, (int, float))
         return True

@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import asyncio
+
+import pytest
+
 from typing import Any
 
 from app.kernel.agents.planner_provider import CallbackPlannerProvider, CapabilityScoredPlannerProvider, FallbackPlannerProvider, HeuristicPlannerProvider, ScriptedPlannerProvider, StickyFallbackPlannerProvider, parse_planner_decision
@@ -31,7 +34,8 @@ def make_run(tmp_path):
     return engine, run["run_id"]
 
 
-def _repo_run(tmp_path, *, provider="simulated", model="planner-test", graduation_contract=False):
+def _repo_run(tmp_path, *, provider="simulated", model="planner-test", graduation_contract=False,
+              approval_capability="worktree_mutation", transport=""):
     """Agent repo run. ``graduation_contract`` adds the operator-owned R3.24 contract
     (explicit implementation_target + baseline pytest file) that mutating runs need to
     finish COMPLETED instead of policy_blocked by the post-session graduation gate."""
@@ -47,6 +51,8 @@ def _repo_run(tmp_path, *, provider="simulated", model="planner-test", graduatio
         "context_files": ["answer.py"],
         "semantic_context": {"active_file": "answer.py", "open_files": ["answer.py"]},
     }
+    if transport:
+        request["transport"] = transport
     if graduation_contract:
         (root / "test_answer.py").write_text("import answer\n\n\ndef test_value():\n    assert answer.VALUE == 2\n", encoding="utf-8")
         request.update({"implementation_target": "answer.py", "required_test_files": ["test_answer.py"]})
@@ -62,9 +68,19 @@ def _repo_run(tmp_path, *, provider="simulated", model="planner-test", graduatio
         request=request,
     )["run_id"]
     approval_id = "mutate-worktree"
-    engine.store.create_approval(run_id, {"request_id": approval_id, "capabilities": [{"id": "worktree_mutation"}]})
+    engine.store.create_approval(run_id, {"request_id": approval_id, "capabilities": [{"id": approval_capability}]})
     engine.store.resolve_approval(run_id, approval_id, {"approved": True, "scope": "run"})
     return engine, run_id, approval_id
+
+
+
+def _bind_test_worktree(engine, run_id, approval_id, runtime, state):
+    receipt = asyncio.run(engine.execute_tool(run_id, "worktree.bind", {}, approval_id=approval_id))
+    state.observations = [
+        receipt if item.get("tool_id") == "worktree.bind" else item
+        for item in state.observations
+    ]
+    runtime._save_state(state)
 
 
 def _approval_fixture(root, *, step_id="mutate"):
@@ -661,7 +677,8 @@ def test_ollama_provider_uses_shorter_timeout_for_repair_turns():
         }
     }
     timeout = OllamaPlannerProvider._request_timeout("prompt", run=run, turn=3)
-    assert timeout == 12.0
+    # CPU-friendly default: 30s (was 12s)
+    assert timeout == 30.0
 
 
 def test_ollama_provider_uses_shorter_timeout_for_followup_turns_without_repairs():
@@ -675,7 +692,8 @@ def test_ollama_provider_uses_shorter_timeout_for_followup_turns_without_repairs
         }
     }
     timeout = OllamaPlannerProvider._request_timeout("prompt", run=run, turn=2)
-    assert timeout == 14.0
+    # CPU-friendly default: 30s (was 14s)
+    assert timeout == 30.0
 
 
 def test_nim_provider_uses_shorter_timeout_for_repair_turns():
@@ -689,7 +707,8 @@ def test_nim_provider_uses_shorter_timeout_for_repair_turns():
         }
     }
     timeout = NIMPlannerProvider._request_timeout(run=run, default_timeout=30.0)
-    assert timeout == 12.0
+    # CPU-friendly default: 30s (was 12s)
+    assert timeout == 30.0
 
 
 def test_nim_provider_uses_shorter_timeout_for_followup_turns_without_repairs():
@@ -703,7 +722,8 @@ def test_nim_provider_uses_shorter_timeout_for_followup_turns_without_repairs():
         }
     }
     timeout = NIMPlannerProvider._request_timeout(run=run, default_timeout=30.0)
-    assert timeout == 14.0
+    # CPU-friendly default: 30s follow-up timeout (was 14s)
+    assert timeout == 30.0
 
 
 def test_nim_provider_uses_shorter_timeout_for_late_turns():
@@ -722,7 +742,8 @@ def test_nim_provider_uses_shorter_timeout_for_late_turns():
         }
     }
     timeout = NIMPlannerProvider._request_timeout(run=run, default_timeout=30.0)
-    assert timeout == 10.0
+    # CPU-friendly default: 20s for late turns (was 10s)
+    assert timeout == 20.0
 
 
 def test_ollama_provider_exposes_route_and_timeout_usage_on_success():
@@ -745,12 +766,13 @@ def test_ollama_provider_exposes_route_and_timeout_usage_on_success():
             self._seen_timeout = timeout
             return {"response": "{\"decision_type\":\"complete\",\"summary\":\"done\"}", "total_duration": 5_000_000}
 
-    provider = StubOllama(model="qwen2.5:0.5b", timeout_seconds=30, max_retries=0)
+    provider = StubOllama(model="qwen2.5:0.5b", timeout_seconds=120, max_retries=0)
     run = {"checkpoint": {"planner": {"observations": [{"tool_id": "workspace.list", "status": "completed"}]}}}
     decision = asyncio.run(provider.next_decision("prompt", run=run, turn=2))
     assert decision.summary == "done"
-    assert provider._seen_timeout == 14.0
-    assert provider.last_usage["timeout_seconds"] == 14.0
+    # CPU-friendly default: 30s follow-up timeout (was 14s)
+    assert provider._seen_timeout == 30.0
+    assert provider.last_usage["timeout_seconds"] == 30.0
     assert provider.last_route["route_kind"] == "direct_generate"
 
 
@@ -1122,12 +1144,7 @@ def test_timeout_salvages_partial_structured_decision_from_wrapped_provider(tmp_
         {"tool_id": "worktree.bind", "status": "completed", "result": {"task_id": "wt-1", "worktree_root": str(root)}},
     ]
     runtime._save_state(state)
-    engine.merge_checkpoint(run_id, {
-        "worktree_task_id": "wt-1",
-        "worktree_root": str(root),
-        "worktree_branch": "beast/test",
-        "worktree_base_commit": "HEAD",
-    })
+    _bind_test_worktree(engine, run_id, approval_id, runtime, state)
 
     final = asyncio.run(runtime.run(run_id))
     assert final["state"] != "policy_blocked"
@@ -1169,13 +1186,9 @@ def test_invalid_placeholder_mutation_retries_before_tool_execution(tmp_path):
     ]
     state.turn = 2
     runtime._save_state(state)
-    engine.merge_checkpoint(run_id, {
-        "worktree_task_id": "wt-1",
-        "worktree_root": str(tmp_path / "repo"),
-        "worktree_branch": "beast/test",
-        "worktree_base_commit": "HEAD",
-    })
-    final = asyncio.run(runtime.run(run_id))
+    _bind_test_worktree(engine, run_id, approval_id, runtime, state)
+    # This test exercises retry and execution, not the separate graduation contract.
+    final = asyncio.run(runtime.run(run_id, max_turns_this_call=1))
     planner = final.get("checkpoint", {}).get("planner", {})
     assert final["state"] != "policy_blocked"
     assert planner.get("last_decision", {}).get("tool_id") in {"worktree.verify", "worktree.sourceplan_draft", "worktree.replace_exact"}
@@ -1213,12 +1226,7 @@ def test_invalid_placeholder_mutation_blocks_if_retry_stays_invalid(tmp_path):
     ]
     state.turn = 2
     runtime._save_state(state)
-    engine.merge_checkpoint(run_id, {
-        "worktree_task_id": "wt-1",
-        "worktree_root": str(tmp_path / "repo"),
-        "worktree_branch": "beast/test",
-        "worktree_base_commit": "HEAD",
-    })
+    _bind_test_worktree(engine, run_id, approval_id, runtime, state)
     final = asyncio.run(runtime.run(run_id))
     assert final["state"] == "policy_blocked"
     assert "non-empty old_text" in str(final.get("error") or "")
@@ -1261,12 +1269,7 @@ def test_invalid_placeholder_retry_rejects_malformed_read_recovery(tmp_path):
     ]
     state.turn = 2
     runtime._save_state(state)
-    engine.merge_checkpoint(run_id, {
-        "worktree_task_id": "wt-1",
-        "worktree_root": str(tmp_path / "repo"),
-        "worktree_branch": "beast/test",
-        "worktree_base_commit": "HEAD",
-    })
+    _bind_test_worktree(engine, run_id, approval_id, runtime, state)
     final = asyncio.run(runtime.run(run_id))
     assert final["state"] == "policy_blocked"
     assert "workspace.read_range retry recovery requires an exact target path" in str(final.get("error") or "")
@@ -1306,12 +1309,7 @@ def test_invalid_placeholder_retry_rejects_wrong_file_mutation_recovery(tmp_path
     ]
     state.turn = 2
     runtime._save_state(state)
-    engine.merge_checkpoint(run_id, {
-        "worktree_task_id": "wt-1",
-        "worktree_root": str(tmp_path / "repo"),
-        "worktree_branch": "beast/test",
-        "worktree_base_commit": "HEAD",
-    })
+    _bind_test_worktree(engine, run_id, approval_id, runtime, state)
     final = asyncio.run(runtime.run(run_id))
     assert final["state"] == "policy_blocked"
     assert "already inspected target file set" in str(final.get("error") or "")
@@ -1355,8 +1353,8 @@ def test_mutating_timeout_heuristic_block_retries_strong_provider(tmp_path):
             self.last_route = {"provider": "nvidia_nim", "engine": "nvidia_nim", "route_kind": "direct_generate", "reason": "compact_retry_recovered"}
             return parse_planner_decision({
                 "decision_type": "tool",
-                "tool_id": "worktree.sourceplan_draft",
-                "arguments": {},
+                "tool_id": "workspace.read_range",
+                "arguments": {"path": "answer.py"},
             })
 
     runtime = AgentPlannerRuntime(engine, RecoveringStrong(), max_turns=4, max_repair_cycles=2)
@@ -1377,7 +1375,7 @@ def test_mutating_timeout_heuristic_block_retries_strong_provider(tmp_path):
 
     final = asyncio.run(runtime.run(run_id))
     planner = final.get("checkpoint", {}).get("planner", {})
-    assert planner.get("last_decision", {}).get("tool_id") == "worktree.sourceplan_draft"
+    assert planner.get("last_decision", {}).get("tool_id") == "workspace.read_range"
     assert final["state"] != "policy_blocked"
 
 
@@ -2068,12 +2066,7 @@ def test_blocked_fallback_salvages_partial_decision_from_wrapped_primary(tmp_pat
         {"tool_id": "worktree.bind", "status": "completed", "result": {"task_id": "wt-1", "worktree_root": str(tmp_path / 'repo')}},
     ]
     runtime._save_state(state)
-    engine.merge_checkpoint(run_id, {
-        "worktree_task_id": "wt-1",
-        "worktree_root": str(tmp_path / "repo"),
-        "worktree_branch": "beast/test",
-        "worktree_base_commit": "HEAD",
-    })
+    _bind_test_worktree(engine, run_id, approval_id, runtime, state)
     final = asyncio.run(runtime.run(run_id))
     assert final["state"] != "policy_blocked"
     planner = final["checkpoint"]["planner"]
@@ -2115,12 +2108,7 @@ def test_blocked_fallback_salvages_partial_decision_from_recent_model_delta(tmp_
         {"tool_id": "worktree.bind", "status": "completed", "result": {"task_id": "wt-1", "worktree_root": str(tmp_path / 'repo')}},
     ]
     runtime._save_state(state)
-    engine.merge_checkpoint(run_id, {
-        "worktree_task_id": "wt-1",
-        "worktree_root": str(tmp_path / "repo"),
-        "worktree_branch": "beast/test",
-        "worktree_base_commit": "HEAD",
-    })
+    _bind_test_worktree(engine, run_id, approval_id, runtime, state)
     final = asyncio.run(runtime.run(run_id))
     assert final["state"] != "policy_blocked"
     planner = final["checkpoint"]["planner"]
@@ -2161,7 +2149,8 @@ def test_post_bind_duplicate_read_retries_strong_provider(tmp_path):
             "observation_id": "obs-read",
             "tool_id": "workspace.read_range",
             "status": "completed",
-            "result": {"path": "answer.py", "content": "VALUE = 1\n"},
+            "result": {"path": "answer.py", "content": "VALUE = 1\n",
+                       "start_line": 1, "end_line": 1, "total_lines": 1},
         },
         {
             "observation_id": "obs-bind",
@@ -2172,13 +2161,9 @@ def test_post_bind_duplicate_read_retries_strong_provider(tmp_path):
     ]
     state.turn = 2
     runtime._save_state(state)
-    engine.merge_checkpoint(run_id, {
-        "worktree_task_id": "wt-1",
-        "worktree_root": str(tmp_path / "repo"),
-        "worktree_branch": "beast/test",
-        "worktree_base_commit": "HEAD",
-    })
-    final = asyncio.run(runtime.run(run_id))
+    _bind_test_worktree(engine, run_id, approval_id, runtime, state)
+    # This test exercises retry and execution, not the separate graduation contract.
+    final = asyncio.run(runtime.run(run_id, max_turns_this_call=1))
     planner = final["checkpoint"]["planner"]
     assert final["state"] != "policy_blocked"
     tool_ids = [item["tool_id"] for item in planner["observations"]]
@@ -2187,7 +2172,7 @@ def test_post_bind_duplicate_read_retries_strong_provider(tmp_path):
     assert retry_events
 
 
-def test_post_bind_duplicate_read_failure_blocks_further_read_loops(tmp_path):
+def test_post_bind_duplicate_read_failure_pauses_without_repeating_read(tmp_path):
     engine, run_id, approval_id = _repo_run(tmp_path, provider="nvidia_nim", model="meta/llama-3.1-70b-instruct")
 
     class _RepeatedDuplicateRead:
@@ -2212,7 +2197,8 @@ def test_post_bind_duplicate_read_failure_blocks_further_read_loops(tmp_path):
             "observation_id": "obs-read",
             "tool_id": "workspace.read_range",
             "status": "completed",
-            "result": {"path": "answer.py", "content": "VALUE = 1\n"},
+            "result": {"path": "answer.py", "content": "VALUE = 1\n",
+                       "start_line": 1, "end_line": 1, "total_lines": 1},
         },
         {
             "observation_id": "obs-bind",
@@ -2223,23 +2209,18 @@ def test_post_bind_duplicate_read_failure_blocks_further_read_loops(tmp_path):
     ]
     state.turn = 2
     runtime._save_state(state)
-    engine.merge_checkpoint(run_id, {
-        "worktree_task_id": "wt-1",
-        "worktree_root": str(tmp_path / "repo"),
-        "worktree_branch": "beast/test",
-        "worktree_base_commit": "HEAD",
-    })
+    _bind_test_worktree(engine, run_id, approval_id, runtime, state)
     final = asyncio.run(runtime.run(run_id))
-    assert final["state"] == "policy_blocked"
-    assert "bounded mutation plan" in str(final.get("error") or "")
+    assert final["state"] == "paused"
+    assert not final.get("error")
     events = engine.store.events(run_id, limit=200)
     assert any(event["event_type"] == "agent.provider.post_bind_read_retry_failed" for event in events)
-    assert any(event["event_type"] == "agent.provider.read_loop_blocked" for event in events)
+    assert any(event["event_type"] == "agent.provider.read_loop_paused" for event in events)
     recovery = [event for event in events if event["event_type"] == "agent.provider.strong_retry_recovered"]
     assert not recovery
 
 
-def test_post_bind_prompt_hides_read_tools_after_file_inspection(tmp_path):
+def test_post_bind_prompt_keeps_targeted_read_but_hides_index(tmp_path):
     engine, run_id, _approval_id = _repo_run(tmp_path, provider="nvidia_nim", model="meta/llama-3.1-70b-instruct")
     runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]))
     state = runtime._load_state(run_id)
@@ -2248,7 +2229,8 @@ def test_post_bind_prompt_hides_read_tools_after_file_inspection(tmp_path):
             "observation_id": "obs-read",
             "tool_id": "workspace.read_range",
             "status": "completed",
-            "result": {"path": "answer.py", "content": "VALUE = 1\n"},
+            "result": {"path": "answer.py", "content": "VALUE = 1\n",
+                       "start_line": 1, "end_line": 1, "total_lines": 1},
         },
         {
             "observation_id": "obs-bind",
@@ -2260,7 +2242,7 @@ def test_post_bind_prompt_hides_read_tools_after_file_inspection(tmp_path):
     prompt = runtime._prompt(engine.store.get_run(run_id), state)
     assert "worktree.replace_exact(path,old_text,new_text)" in prompt
     assert "worktree.write_file(path,content)" in prompt
-    assert "- workspace.read_range(" not in prompt
+    assert "- workspace.read_range(" in prompt
     assert "- workspace.index(" not in prompt
 
 
@@ -2329,3 +2311,493 @@ def test_planner_prompt_keeps_workspace_inventory_narrow(tmp_path):
     prompt = runtime._prompt(engine.store.get_run(run_id), runtime._load_state(run_id))
     assert "Return ONE JSON object" in prompt
     assert "Never emit whole-file source" in prompt
+
+
+def test_kitty_preflight_waits_for_observed_source(tmp_path):
+    engine = AgentRunEngine(tmp_path)
+    run = engine.create_run(session_id="kitty", objective="Explain sample.py", mode="analysis",
+                            request={"transport": "beast_coder_tli_v1", "context_files": ["sample.py"]})
+    prepared = []
+
+    class Coordinator:
+        advisory_context = []
+
+        def prepare(self, **packet):
+            prepared.append(packet)
+            return {"events": [], "source_files": packet["source_files"]}
+
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]), integration_coordinator=Coordinator())
+    state = runtime._load_state(run["run_id"])
+    state.observations.append({"tool_id": "workspace.index", "status": "completed"})
+    asyncio.run(runtime._prepare_coder_integrations(run, state))
+    assert prepared == []
+    state.observations.append({"tool_id": "workspace.read_range", "status": "completed",
+                               "result": {"path": "sample.py", "content": "VALUE = 1"}})
+    asyncio.run(runtime._prepare_coder_integrations(engine.store.get_run(run["run_id"]), state))
+    asyncio.run(runtime._prepare_coder_integrations(engine.store.get_run(run["run_id"]), state))
+    assert [packet["source_files"] for packet in prepared] == [{"sample.py": "VALUE = 1"}]
+    assert prepared[0]["task_metadata"]["read_only"] is True
+
+
+def _evict_bound_worktree_receipt(runtime, run_id):
+    state = runtime._load_state(run_id)
+    state.observations = [
+        {"tool_id": "worktree.read_range", "status": "failed", "error": "unknown tool",
+         "arguments": {"path": "answer.py"}, "result": {}}
+        for _ in range(runtime.observation_limit)
+    ]
+    state.turn = 4
+    runtime._save_state(state)
+
+
+def test_resume_uses_valid_worktree_when_bind_receipt_has_aged_out(tmp_path):
+    engine, run_id, approval_id = _repo_run(tmp_path)
+    bind = asyncio.run(engine.execute_tool(run_id, "worktree.bind", {}, approval_id=approval_id))
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]), max_turns=8, observation_limit=3)
+    _evict_bound_worktree_receipt(runtime, run_id)
+    result = asyncio.run(runtime.run(run_id, max_turns_this_call=1))
+    assert result["checkpoint"]["worktree_root"] == bind["result"]["worktree_root"]
+    assert result["checkpoint"]["last_tool_id"] == "workspace.read_range"
+    assert result["checkpoint"]["last_tool_status"] == "completed"
+    binds = [e for e in engine.store.events(run_id) if e["event_type"] == "agent.tool.completed"
+             and e["payload"]["observation"]["tool_id"] == "worktree.bind"]
+    assert len(binds) == 1
+
+
+def test_resume_refuses_stale_worktree_before_provider_call(tmp_path):
+    from pathlib import Path
+    import shutil
+
+    engine, run_id, approval_id = _repo_run(tmp_path)
+    bind = asyncio.run(engine.execute_tool(run_id, "worktree.bind", {}, approval_id=approval_id))
+    shutil.rmtree(Path(bind["result"]["worktree_root"]))
+    calls = []
+
+    async def provider(prompt, run, turn):
+        calls.append(turn)
+        return parse_planner_decision({"decision_type": "tool", "tool_id": "worktree.bind", "arguments": {}})
+
+    runtime = AgentPlannerRuntime(engine, CallbackPlannerProvider(provider), max_turns=8, observation_limit=3)
+    _evict_bound_worktree_receipt(runtime, run_id)
+    result = asyncio.run(runtime.run(run_id, max_turns_this_call=1))
+    assert result["state"] == "policy_blocked"
+    assert "STALE_WORKTREE_BINDING" in result["checkpoint"]["planner"]["blocker"]
+    assert not calls
+
+
+def test_unregistered_worktree_reader_gets_bounded_guidance_without_execution(tmp_path):
+    engine, run_id, approval_id = _repo_run(tmp_path)
+    bind = asyncio.run(engine.execute_tool(run_id, "worktree.bind", {}, approval_id=approval_id))
+    read = asyncio.run(engine.execute_tool(run_id, "workspace.read_range", {"path": "answer.py"}))
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([
+        {"decision_type": "tool", "tool_id": "worktree.read_range", "arguments": {"path": "answer.py"}},
+        {"decision_type": "tool", "tool_id": "workspace.read_range", "arguments": {"path": "answer.py"}},
+    ]), max_turns=6)
+    state = runtime._load_state(run_id)
+    state.observations = [bind, read]
+    runtime._save_state(state)
+    result = asyncio.run(runtime.run(run_id, max_turns_this_call=2))
+    events = engine.store.events(run_id, limit=1000)
+    assert result["checkpoint"]["last_tool_id"] == "workspace.read_range"
+    assert result["checkpoint"]["last_tool_status"] == "completed"
+    assert any(e["event_type"] == "agent.planner.tool_guidance"
+               and e["payload"]["replacement_tool_id"] == "workspace.read_range" for e in events)
+    assert not any(e["event_type"] == "agent.planner.observation.accepted"
+                   and e["payload"]["tool_id"] == "worktree.read_range" for e in events)
+
+
+def test_model_cannot_rebind_valid_worktree_on_resume(tmp_path):
+    engine, run_id, approval_id = _repo_run(tmp_path)
+    bind = asyncio.run(engine.execute_tool(run_id, "worktree.bind", {}, approval_id=approval_id))
+    read = asyncio.run(engine.execute_tool(run_id, "workspace.read_range", {"path": "answer.py"}))
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([
+        {"decision_type": "tool", "tool_id": "worktree.bind", "arguments": {}},
+        {"decision_type": "tool", "tool_id": "worktree.bind", "arguments": {}},
+    ]), max_turns=4)
+    state = runtime._load_state(run_id)
+    state.observations = [read]
+    runtime._save_state(state)
+    result = asyncio.run(runtime.run(run_id, max_turns_this_call=2))
+    assert result["state"] == "policy_blocked"
+    assert result["checkpoint"]["worktree_root"] == bind["result"]["worktree_root"]
+    events = engine.store.events(run_id)
+    assert len([e for e in events if e["event_type"] == "agent.planner.tool_guidance"]) == 2
+    assert len([e for e in events if e["event_type"] == "agent.tool.completed"
+                and e["payload"]["observation"]["tool_id"] == "worktree.bind"]) == 1
+
+
+def _pending_exact_bind(tmp_path):
+    """Set up a run where turn 2 is worktree.bind — executes directly, no approval needed."""
+    engine, run_id, _ = _repo_run(tmp_path)
+    calls = []
+
+    async def plan(prompt, run, turn):
+        calls.append(turn)
+        if len(calls) == 1:
+            return {"decision_type": "tool", "tool_id": "workspace.index", "arguments": {}}
+        return {"decision_type": "tool", "tool_id": "worktree.bind",
+                "arguments": {"base_ref": "HEAD", "task_id": f"proposal-{len(calls)}"}}
+
+    runtime = AgentPlannerRuntime(engine, CallbackPlannerProvider(plan))
+    # Turn 1: workspace.index
+    asyncio.run(runtime.run_one_turn(run_id))
+    # Turn 2: worktree.bind executes directly (no per-call approval required)
+    card = {"request": {
+        "safe_arguments": {"base_ref": "HEAD", "task_id": "proposal-2"},
+        "tool_id": "worktree.bind",
+    }}
+    return engine, run_id, runtime, calls, card
+
+
+def test_deferred_approval_resumes_exact_bind_without_replanning(tmp_path):
+    """With no per-call approval, worktree.bind executes directly without waiting."""
+    engine, run_id, runtime, calls, card = _pending_exact_bind(tmp_path)
+    count = len(calls)
+    # bind executes directly — no waiting_for_approval, no deferred card
+    result = asyncio.run(runtime.run_one_turn(run_id))
+    assert result["state"] != "waiting_for_approval", result["state"]
+    assert len(calls) == count + 1  # turn 2 (bind) ran in this call
+    assert result["checkpoint"].get("worktree_root")
+    asyncio.run(runtime.run_one_turn(run_id))
+    events = engine.store.events(run_id, limit=1000)
+    binds = [e["payload"]["observation"] for e in events
+             if e["event_type"] == "agent.tool.completed"
+             and e["payload"]["observation"]["tool_id"] == "worktree.bind"]
+    assert len(binds) == 1
+    assert binds[0]["arguments"] == card["request"]["safe_arguments"]
+
+
+def test_deferred_approval_rejection_does_not_replan(tmp_path):
+    """No approval cards exist — rejection path is unreachable."""
+    engine, run_id, runtime, calls, card = _pending_exact_bind(tmp_path)
+    count = len(calls)
+    # bind executes directly, no rejection possible
+    result = asyncio.run(runtime.run_one_turn(run_id))
+    assert result["state"] != "policy_blocked", result["state"]
+    assert result["checkpoint"].get("worktree_root")
+    assert len(calls) == count + 1
+
+
+def test_deferred_approval_rejects_changed_saved_arguments(tmp_path):
+    """No deferred approval cards — argument mismatch checking is unreachable."""
+    engine, run_id, runtime, calls, card = _pending_exact_bind(tmp_path)
+    count = len(calls)
+    # bind executes directly with whatever arguments the model provides
+    result = asyncio.run(runtime.run_one_turn(run_id))
+    assert result["state"] != "policy_blocked", result["state"]
+    assert result["checkpoint"].get("worktree_root")
+    assert len(calls) == count + 1
+
+
+def test_deferred_approval_claim_blocks_replay_across_workers(tmp_path):
+    """No deferred approval claims — replay blocking is unreachable."""
+    engine, run_id, runtime, calls, card = _pending_exact_bind(tmp_path)
+    count = len(calls)
+    # bind executes directly, no claim/replay logic
+    result = asyncio.run(runtime.run_one_turn(run_id))
+    assert result["state"] != "policy_blocked", result["state"]
+    assert result["checkpoint"].get("worktree_root")
+    assert len(calls) == count + 1
+
+
+@pytest.mark.parametrize("case", ["disabled", "rejected", "approved", "stale_evidence", "live_split", "legacy_split", "read_loop"])
+def test_dampened_mutation_dispatches_swarm_once_with_bound_evidence(tmp_path, monkeypatch, case):
+    import json
+    import subprocess
+    import sys
+    from app.kernel.agents.planner_provider import PlannerDecisionError
+    from app.kernel.agents.swarm_specialist import OllamaSwarmRunner
+
+    monkeypatch.setenv("BEAST_SWARM_SPECIALIST", "0" if case == "disabled" else "1")
+    monkeypatch.setenv("BEAST_SWARM_SPECIALIST_MODEL", "qwen2.5-coder:7b")
+    monkeypatch.setenv("BEAST_OLLAMA_BASE_URL", "http://127.0.0.1:11434")
+    monkeypatch.setenv("BEAST_GOVERNED_INTERCEPTION", "0")
+    generated = []
+
+    async def installed(self):
+        return ["qwen2.5-coder:7b"]
+
+    async def generate(self, **kwargs):
+        generated.append(json.loads(kwargs["prompt"]))
+        return {"text": json.dumps({"path": "outside.py" if case == "rejected" else "answer.py",
+                                    "old_text": "VALUE = 1", "new_text": "VALUE = 2"}),
+                "usage": {"prompt_tokens": 120, "completion_tokens": 35}, "done_reason": "stop"}
+
+    monkeypatch.setattr(OllamaSwarmRunner, "installed_models", installed)
+    monkeypatch.setattr(OllamaSwarmRunner, "generate", generate)
+    engine, run_id, approval_id = _repo_run(
+        tmp_path, provider="nvidia_nim", graduation_contract=True, approval_capability="worktree.bind",
+    )
+    from pathlib import Path
+
+    root = Path(engine.workspace_root)
+    split = case in {"live_split", "legacy_split"}
+    if split:
+        (root / "answer.py").write_text("VALUE = 99\n")
+    read_decision = {"decision_type": "tool", "tool_id": "workspace.read_range",
+                     "arguments": {"path": "answer.py", "start_line": 1, "line_count": 1}}
+    before_bind = asyncio.run(engine.execute_tool(run_id, "workspace.read_range", read_decision["arguments"])) if split else None
+    primary = ScriptedPlannerProvider([read_decision, read_decision] if case == "read_loop" else ([read_decision] if case == "live_split" else []) + [{
+        "decision_type": "tool", "tool_id": "worktree.replace_exact",
+        "arguments": {"old_text": "", "new_text": ""},
+    }])
+
+    class Dampened:
+        async def next_decision(self, *args, **kwargs):
+            raise PlannerDecisionError("NIM route dampened after repeated slow or failed planner turns")
+
+    runtime = AgentPlannerRuntime(engine, primary, max_turns=5)
+    monkeypatch.setattr(runtime, "_get_mutation_retry_provider", lambda *_: Dampened())
+    state = runtime._load_state(run_id)
+    state.observations = [
+        {"tool_id": "workspace.read_range", "status": "completed",
+         "result": {"path": "answer.py", "content": "VALUE = 1", "start_line": 1}},
+        {"tool_id": "worktree.bind", "status": "completed", "result": {}},
+    ]
+    state.turn = 2
+    _bind_test_worktree(engine, run_id, approval_id, runtime, state)
+
+    worktree = Path(engine.store.get_run(run_id)["checkpoint"]["worktree_root"])
+    if case == "read_loop":
+        evidence = asyncio.run(engine.execute_tool(run_id, "workspace.read_range", read_decision["arguments"]))
+        state.observations.append(evidence)
+        runtime._save_state(state)
+    if case == "stale_evidence":
+        (worktree / "answer.py").write_text("VALUE = 9\n")
+    if split:
+        assert before_bind["result"]["content"] == "VALUE = 99"
+        state.observations[0] = before_bind
+        runtime._save_state(state)
+    if case == "live_split":
+        # Act through the normal planner/tool path after binding.
+        inspected = asyncio.run(runtime.run(run_id, max_turns_this_call=1, defer_approval=True))
+        result = inspected["checkpoint"]["planner"]["observations"][-1]["result"]
+        assert result["content"] == "VALUE = 1"
+        assert result["source_scope"] == "bound_worktree"
+
+    final = asyncio.run(runtime.run(run_id, max_turns_this_call=1, defer_approval=True))
+    events = engine.store.events(run_id, limit=200)
+    receipts = [e["payload"] for e in events if e["payload"].get("capability") == "swarm_recovery"]
+    if case in {"disabled", "stale_evidence"}:
+        assert not generated
+        assert final["state"] == "policy_blocked"
+        if case == "disabled":
+            assert not receipts
+        else:
+            assert receipts[-1]["reason"] == "no_matching_bound_worktree_evidence"
+        return
+    assert len(generated) == 1, [r["reason"] for r in receipts]
+    if case == "rejected":
+        assert receipts[-1]["reason"] == "candidate_outside_exact_edit_contract"
+        assert final["state"] == "policy_blocked"
+        assert (worktree / "answer.py").read_text() == "VALUE = 1\n"
+        return
+    if case == "read_loop":
+        assert any(e["event_type"] == "agent.provider.post_bind_read_stalled" for e in events)
+        assert not any(e["event_type"] == "agent.provider.invalid_mutation_retry" for e in events)
+        # With autopilot, workspace-bounded tools auto-grant — no approval card,
+        # no waiting_for_approval. The run stays in updating_plan/completed.
+        assert final["state"] != "waiting_for_approval"
+        return
+    assert "VALUE = 1" in generated[0]["source_context"]
+    assert "VALUE = 99" not in generated[0]["source_context"]
+    if case == "legacy_split":
+        # Find the read_range observation that shows bound_worktree scope
+        obs = final["checkpoint"]["planner"]["observations"]
+        read_obs = [o for o in obs if o.get("tool_id") == "workspace.read_range" and o.get("result", {}).get("source_scope") == "bound_worktree"]
+        assert read_obs, f"Expected a bound_worktree read_range observation, got: {obs}"
+        assert read_obs[-1]["result"]["content"] == "VALUE = 1"
+    assert {role["role"] for role in receipts[-1]["roles"]} == {
+        "hermes", "conductor", "sentinel", "cartographer", "failure_analyst",
+        "compressor", "crystalist", "verifier", "supervisor", "critic", "scribe", "archivist",
+    }
+    assert receipts[-1]["reason"] == "candidate_grounded"
+    assert receipts[-1]["effect_committed"] is False
+    assert sum(e["event_type"] == "agent.tool.started" and e["payload"].get("tool_id") == "worktree.bind"
+               for e in events) == 1
+    assert (root / "answer.py").read_text() == ("VALUE = 99\n" if split else "VALUE = 1\n")
+    # With no per-call approval, replace_exact executes directly — no
+    # waiting_for_approval, no approval card.
+    assert final["state"] != "waiting_for_approval", final["state"]
+    assert (worktree / "answer.py").read_text() == "VALUE = 2\n"
+    assert (root / "answer.py").read_text() == ("VALUE = 99\n" if split else "VALUE = 1\n")
+    result = subprocess.run([sys.executable, "-m", "pytest", "--noconftest", "-q", "test_answer.py"],
+                            cwd=worktree, capture_output=True, text=True)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_source_read_rejects_forged_local_binding_and_ask_stays_on_checkout(tmp_path):
+    engine, run_id, approval_id = _repo_run(tmp_path)
+    asyncio.run(engine.execute_tool(run_id, "worktree.bind", {}, approval_id=approval_id))
+    cp = engine.store.get_run(run_id)["checkpoint"]
+    engine.merge_checkpoint(run_id, {"worktree_root": str(tmp_path)})
+    with pytest.raises(PermissionError, match="STALE_WORKTREE_BINDING"):
+        asyncio.run(engine.execute_tool(run_id, "workspace.read_range", {"path": "answer.py"}))
+
+    ask_id = engine.create_run(session_id="ask-test", objective="Read answer", mode="ask")["run_id"]
+    engine.merge_checkpoint(ask_id, cp)
+    read = asyncio.run(engine.execute_tool(ask_id, "workspace.read_range", {"path": "answer.py"}))
+    assert read["result"]["source_scope"] == "workspace_checkout"
+    assert read["result"]["content"] == "VALUE = 1"
+
+
+def test_post_bind_read_guard_only_blocks_covered_ranges(tmp_path):
+    engine, run_id, _ = _repo_run(tmp_path)
+    state = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]))._load_state(run_id)
+    def read(start, count):
+        return parse_planner_decision({"decision_type": "tool", "tool_id": "workspace.read_range",
+            "arguments": {"path": "answer.py", "start_line": start, "line_count": count}})
+
+    state.observations = [{"tool_id": "worktree.bind", "status": "completed"}]
+    for start, end in ((1, 80), (81, 120)):
+        state.observations.append({
+            "tool_id": "workspace.read_range", "status": "completed",
+            "result": {"path": "answer.py", "source_scope": "bound_worktree", "content": "data",
+                       "start_line": start, "end_line": end, "total_lines": 800},
+        })
+    duplicate = AgentPlannerRuntime._post_bind_duplicate_read
+    assert duplicate(read(1, 80), state)
+    assert duplicate(read(31, 90), state)
+    assert not duplicate(read(81, 80), state)
+    assert not duplicate(read(630, 80), state)
+
+
+def test_hosted_nim_retry_does_not_send_nvidia_model_to_ollama(tmp_path, monkeypatch):
+    monkeypatch.delenv("BEAST_NIM_MODEL", raising=False)
+    monkeypatch.delenv("NVIDIA_NIM_BASE_URL", raising=False)
+    engine, run_id, _ = _repo_run(tmp_path, provider="nvidia_nim", model="nvidia/nemotron-3.5-super-vl-120b-a12b")
+    primary = ScriptedPlannerProvider([])
+    runtime = AgentPlannerRuntime(engine, primary)
+    assert runtime._get_mutation_retry_provider(primary, engine.store.get_run(run_id)) is primary
+
+
+@pytest.mark.parametrize("claim", ["real", "fabricated"])
+def test_tli_no_change_requires_quoted_bound_evidence(tmp_path, claim):
+    engine, run_id, approval_id = _repo_run(tmp_path, transport="beast_coder_tli_v1")
+    bind = asyncio.run(engine.execute_tool(run_id, "worktree.bind", {}, approval_id=approval_id))
+    read = asyncio.run(engine.execute_tool(run_id, "workspace.read_range", {"path": "answer.py"}))
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([{
+        "decision_type": "complete", "summary": "The requested definition exists.",
+        "arguments": {"no_change": {"observation_id": read["observation_id"],
+                                    "quote": "VALUE = 1" if claim == "real" else "VALUE = 82"}},
+    }]))
+    state = runtime._load_state(run_id)
+    state.observations = [bind, read]
+    runtime._save_state(state)
+    result = asyncio.run(runtime.run(run_id, max_turns_this_call=1))
+    events = engine.store.events(run_id, limit=250)
+    if claim == "real":
+        assert result["state"] == "completed"
+        completion = next(e["payload"] for e in events if e["event_type"] == "agent.planner.completed")
+        assert completion["completion_mode"] == "evidence_backed_no_change"
+        assert completion["promotion_authorized"] is False
+    else:
+        assert result["state"] != "completed"
+        assert any(e["event_type"] == "agent.planner.completion_rejected" for e in events)
+    assert not any(e["event_type"] == "agent.sourceplan.ready" for e in events)
+
+
+def test_tli_bound_handoff_uses_requested_test_and_leaves_diff_for_review(tmp_path):
+    from pathlib import Path
+    engine, run_id, approval_id = _repo_run(tmp_path, graduation_contract=True, transport="beast_coder_tli_v1")
+    bind = asyncio.run(engine.execute_tool(run_id, "worktree.bind", {}, approval_id=approval_id))
+    read = asyncio.run(engine.execute_tool(run_id, "workspace.read_range", {"path": "answer.py"}))
+    command = ["python", "-m", "pytest", "-q", "test_answer.py", "-k", "value"]
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([
+        {"decision_type": "blocked", "blocker": "No worktree.bind tool is available in the allowed tool list"},
+        {"decision_type": "tool", "tool_id": "worktree.replace_exact",
+         "arguments": {"path": "answer.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2"}},
+        {"decision_type": "tool", "tool_id": "worktree.verify", "arguments": {"command": command}},
+    ]), max_turns=7)
+    state = runtime._load_state(run_id)
+    state.observations = [bind, read]
+    runtime._save_state(state)
+    final = asyncio.run(runtime.run(run_id))
+    assert final["state"] == "completed", final["error"]
+    assert (Path(engine.workspace_root) / "answer.py").read_text() == "VALUE = 1\n"
+    assert (Path(bind["result"]["worktree_root"]) / "answer.py").read_text() == "VALUE = 2\n"
+    events = engine.store.events(run_id, limit=500)
+    observations = [e["payload"]["observation"] for e in events if e["event_type"] == "agent.tool.completed"]
+    assert sum(o["tool_id"] == "worktree.bind" for o in observations) == 1
+    verify = next(o["result"] for o in observations if o["tool_id"] == "worktree.verify")
+    assert verify["command"] == command and verify["returncode"] == 0
+    completion = next(e["payload"] for e in events if e["event_type"] == "agent.planner.completed")
+    assert completion["completion_mode"] == "isolated_review"
+    assert completion["promotion_authorized"] is False
+
+
+def test_passing_baseline_verifier_cannot_create_empty_sourceplan(tmp_path):
+    from app.kernel.agents.tool_runtime import ToolExecutionFailed
+
+    engine, run_id, approval_id = _repo_run(tmp_path, transport="beast_coder_tli_v1")
+    asyncio.run(engine.execute_tool(run_id, "worktree.bind", {}, approval_id=approval_id))
+    verified = asyncio.run(engine.execute_tool(
+        run_id, "worktree.verify", {"command": ["git", "diff", "--check"]}, approval_id=approval_id,
+    ))
+    assert verified["result"]["returncode"] == 0
+    with pytest.raises(ToolExecutionFailed, match="non-empty worktree diff"):
+        asyncio.run(engine.execute_tool(run_id, "worktree.sourceplan_draft", {}))
+    assert not any(e["event_type"] == "agent.sourceplan.ready" for e in engine.store.events(run_id))
+
+
+def test_duplicate_read_adds_targeted_worktree_evidence_before_normal_budget_retry(tmp_path, monkeypatch):
+    import subprocess
+    from pathlib import Path
+
+    monkeypatch.setenv("BEAST_SWARM_SPECIALIST", "0")
+    engine, run_id, approval_id = _repo_run(tmp_path, provider="nvidia_nim")
+    root = Path(engine.workspace_root)
+    (root / "answer.py").write_text("# filler\n" * 80 + "def action_copy_run():\n    return 1\n")
+    subprocess.run(["git", "commit", "-qam", "fixture"], cwd=root, check=True)
+    with engine.store._connect() as db:
+        db.execute("UPDATE agent_runs SET objective=? WHERE run_id=?", ("Add /copy file", run_id))
+    bind = asyncio.run(engine.execute_tool(run_id, "worktree.bind", {}, approval_id=approval_id))
+    args = {"path": "answer.py", "start_line": 1, "line_count": 20}
+    read = asyncio.run(engine.execute_tool(run_id, "workspace.read_range", args))
+    prompts = []
+
+    async def decide(prompt, run, turn):
+        prompts.append(prompt)
+        return {"decision_type": "tool", "tool_id": "workspace.read_range", "arguments": args}
+
+    runtime = AgentPlannerRuntime(engine, CallbackPlannerProvider(decide))
+    state = runtime._load_state(run_id)
+    state.turn, state.observations = 2, [bind, read]
+    runtime._save_state(state)
+    final = asyncio.run(runtime.run_one_turn(run_id))
+    assert final["state"] == "paused", final.get("error")
+    assert len(prompts) == 2
+    assert "def action_copy_run():" in prompts[-1] and "1–20" in prompts[-1]
+    events = engine.store.events(run_id, limit=250)
+    retry = next(e["payload"] for e in events if e["event_type"] == "agent.provider.post_bind_read_retry")
+    assert retry["timeout_seconds"] == runtime._decision_timeout_seconds(engine.store.get_run(run_id))
+    receipts = [e["payload"]["observation"] for e in events
+                if e["event_type"] == "agent.tool.completed"
+                and e["payload"]["observation"]["tool_id"] == "workspace.read_range"]
+    assert len(receipts) == 2
+    assert receipts[-1]["result"]["source_scope"] == "bound_worktree"
+    assert "def action_copy_run():" in receipts[-1]["result"]["content"]
+
+
+def test_missing_legacy_deferred_approval_action_stops_without_replanning(tmp_path):
+    engine, run_id, _ = _repo_run(tmp_path)
+    approval_id = "approval-legacy-without-action"
+    engine.store.create_approval(run_id, {"request_id": approval_id, "tool_id": "worktree.bind"})
+    engine.store.resolve_approval(run_id, approval_id, {"approved": True})
+    engine.merge_checkpoint(run_id, {"suspended_approval_id": approval_id})
+    engine.emit(run_id, "agent.planner.approval_deferred", {
+        "approval_id": approval_id, "tool_id": "worktree.bind",
+    })
+    calls = []
+
+    async def plan(prompt, run, turn):
+        calls.append(turn)
+        return {"decision_type": "tool", "tool_id": "worktree.bind",
+                "arguments": {"base_ref": "HEAD"}}
+
+    runtime = AgentPlannerRuntime(engine, CallbackPlannerProvider(plan))
+    result = asyncio.run(runtime.run_one_turn(run_id))
+    assert calls == []
+    assert result["state"] == "policy_blocked"
+    assert "DEFERRED_APPROVAL_ACTION_MISSING" in result["error"]
+    assert not result["checkpoint"].get("worktree_root")

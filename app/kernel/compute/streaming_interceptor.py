@@ -397,7 +397,7 @@ class StreamingInterceptionEngine:
     @staticmethod
     def _find_governed_object(value: Any) -> Optional[Dict[str, Any]]:
         if isinstance(value, dict):
-            if any(key in value for key in ("action", "tool", "patch", "governed")):
+            if any(key in value for key in ("action", "tool", "patch", "governed", "decision_type")):
                 return value
             for nested in value.values():
                 found = StreamingInterceptionEngine._find_governed_object(nested)
@@ -575,6 +575,39 @@ class StreamingComputeInterceptor:
         savings = self.engine.measure_tokens_saved(state, baseline_output_tokens)
         return StreamInterceptionReport(
             emitted_chunks=emitted,
+            final_state=state,
+            cancellation=cancellation,
+            repair_decision=repair,
+            savings=savings,
+        )
+
+    def finalize_interception(
+        self,
+        state: StreamInterceptionState,
+        emitted_chunks: List[str],
+        *,
+        upstream_cancel_requested: bool = False,
+        baseline_output_tokens: Optional[int] = None,
+    ) -> StreamInterceptionReport:
+        """Finalize a provider-native loop that used this interceptor's engine."""
+        state.upstream_cancel_requested = bool(upstream_cancel_requested)
+        final_result = StreamInterceptionResult(
+            should_continue=not state.early_stopped,
+            should_stop=state.early_stopped,
+            stop_reason=state.stop_reason,
+            partial_object=state.governed_object_found,
+            schema_valid=state.schema_valid,
+            state=state,
+        )
+        repair = self.engine.repair_or_escalate(final_result)
+        savings = self.engine.measure_tokens_saved(state, baseline_output_tokens)
+        cancellation = UpstreamCancellation(
+            requested=bool(upstream_cancel_requested),
+            reason=state.stop_reason if upstream_cancel_requested else "",
+            calls=1 if upstream_cancel_requested else 0,
+        )
+        return StreamInterceptionReport(
+            emitted_chunks=list(emitted_chunks),
             final_state=state,
             cancellation=cancellation,
             repair_decision=repair,

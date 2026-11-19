@@ -148,9 +148,15 @@ class CrystalReuseGateway:
         self.trace_ledger = trace_ledger
         self.eval_gate = eval_gate or LocalEvalGate()
         self.route_optimizer = route_optimizer
+        self.eval_gate = eval_gate or LocalEvalGate()
         # D9 (IEI v0.9 §7.12.1, Table 15): a semantic hit only nominates. It may be served solely when it is in the
         # exact band (>= 0.95) *and* an injected verifier passes; otherwise it is recorded as a proposal.
-        self.semantic_verifier = semantic_verifier
+        # Default semantic_verifier: runs LocalEvalGate against the cached response with basic safety rules.
+        # Can be overridden by injecting a custom semantic_verifier.
+        if semantic_verifier is None:
+            self.semantic_verifier = self._default_semantic_verifier
+        else:
+            self.semantic_verifier = semantic_verifier
 
     def decide(self, request: CrystalReuseRequest, *, seal_decision: bool = True) -> CrystalReuseDecision:
         started = time.perf_counter()
@@ -501,12 +507,41 @@ class CrystalReuseGateway:
     def _semantic_verified(self, request: CrystalReuseRequest, replay: RuntimeReplayResult) -> bool:
         from app.kernel.compute.adaptive_router import classify_band
 
-        if self.semantic_verifier is None or classify_band(replay.confidence) != "exact":
+        if classify_band(replay.confidence) != "exact":
             return False
         try:
             return self.semantic_verifier(request, replay) is True
         except Exception:
             return False  # fail closed: a crashing verifier never authorizes reuse
+
+    def _default_semantic_verifier(self, request: CrystalReuseRequest, replay: RuntimeReplayResult) -> bool:
+        """Default semantic verifier: runs LocalEvalGate on the cached response with basic safety rules.
+
+        This is the default implementation when no custom semantic_verifier is provided.
+        It checks that the cached response is not empty, contains no secret patterns,
+        and (if JSON was expected) is valid JSON.
+        """
+        payload = replay.payload or {}
+        # The cached response is typically in payload["answer"] or payload["response"]
+        response_text = str(
+            payload.get("answer") or payload.get("response") or payload.get("text") or ""
+        )
+        if not response_text.strip():
+            return False
+
+        # Basic safety rules for any reused response
+        rules = [
+            {"type": "no_secret_patterns"},
+            {"type": "max_length", "value": 100000},  # reasonable upper bound
+        ]
+
+        # If the original request expected JSON, validate the cached response is valid JSON
+        request_format = str((request.metadata or {}).get("response_format", {}).get("type") if isinstance(request.metadata, dict) else "")
+        if request_format in {"json", "json_object"}:
+            rules.insert(0, {"type": "regex", "pattern": r"^\s*[\{\[].*[\}\]]\s*$"})
+
+        eval_result = self.eval_gate.evaluate(request=request, response=response_text, rules=rules)
+        return bool(eval_result.get("passed"))
 
     def _semantic_lookup(self, request: CrystalReuseRequest) -> Optional[RuntimeReplayResult]:
         if self.semantic_matcher is None:

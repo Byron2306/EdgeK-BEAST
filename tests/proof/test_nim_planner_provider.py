@@ -84,3 +84,33 @@ def test_nim_planner_provider_can_add_legacy_guided_json(monkeypatch):
     payload = provider._request_payload("prompt", repair="", turn=1)
     assert payload["structured_outputs"]["json"] == provider.ACTION_SCHEMA
     assert payload["nvext"]["guided_json"] == provider.ACTION_SCHEMA
+
+
+def test_nim_structured_source_explanation_requires_citation_points(monkeypatch):
+    monkeypatch.setenv("BEAST_NIM_STRUCTURED_OUTPUTS", "1")
+    monkeypatch.setenv("BEAST_NIM_GUIDED_JSON", "1")
+    provider = NIMPlannerProvider(model="test", api_key="nvapi-test")
+    payload = provider._request_payload("BEAST SOURCE EXPLANATION\nQuestion: summarize", repair="", turn=2)
+    schema = payload["structured_outputs"]["json"]
+    assert schema["properties"]["decision_type"]["enum"] == ["complete"]
+    args = schema["properties"]["arguments"]
+    assert args["required"] == ["points"]
+    points = args["properties"]["points"]
+    assert (points["minItems"], points["maxItems"]) == (1, 6)
+    assert set(points["items"]["required"]) == {"path", "line", "evidence", "text"}
+    assert payload["nvext"]["guided_json"] == schema
+
+
+
+def test_nim_focused_explanation_schema_uses_only_ref_and_text(monkeypatch):
+    monkeypatch.setenv("BEAST_NIM_STRUCTURED_OUTPUTS", "1")
+    monkeypatch.setenv("BEAST_NIM_GUIDED_JSON", "1")
+    provider = NIMPlannerProvider(model="test", api_key="nvapi-test")
+    payload = provider._request_payload(
+        "BEAST SOURCE EXPLANATION\nCITATION MODE: SOURCE REFERENCES\nQuestion: Trace main", repair="", turn=3,
+    )
+    schema = payload["structured_outputs"]["json"]
+    item = schema["properties"]["arguments"]["properties"]["points"]["items"]
+    assert set(item["required"]) == {"ref", "text"}
+    assert set(item["properties"]) == {"ref", "text"}
+    assert payload["nvext"]["guided_json"] == schema

@@ -127,6 +127,29 @@ class ResidueSeal:
             "purpose": seal.get("purpose"),
         }
 
+    def local_public_key_hash(self) -> Optional[str]:
+        """Resolve the existing local signing identity without generating a key."""
+        try:
+            if Ed25519PrivateKey is not None and serialization is not None:
+                key = serialization.load_pem_private_key(self.private_key.read_bytes(), password=None)
+                if not isinstance(key, Ed25519PrivateKey):
+                    return None
+                public = key.public_key().public_bytes(
+                    encoding=serialization.Encoding.PEM,
+                    format=serialization.PublicFormat.SubjectPublicKeyInfo,
+                )
+            else:
+                result = subprocess.run(
+                    ["openssl", "pkey", "-in", str(self.private_key), "-pubout"],
+                    capture_output=True, timeout=15, check=False,
+                )
+                if result.returncode != 0:
+                    return None
+                public = result.stdout
+        except (OSError, ValueError, TypeError, subprocess.SubprocessError):
+            return None
+        return self._hash_bytes(public)
+
     def health(self) -> Dict[str, Any]:
         key_exists = self.private_key.exists()
         mode = None

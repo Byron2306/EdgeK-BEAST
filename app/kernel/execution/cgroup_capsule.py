@@ -37,26 +37,95 @@ class CgroupAuthorization:
 
 
 class CgroupV2Discovery:
-    def __init__(self, root: Path = Path("/sys/fs/cgroup")):
+    """Read-only cgroup v2 capability probe.
+
+    ``cgroup.kill``, ``cgroup.freeze`` and ``cgroup.events`` are deliberately
+    absent on the cgroup v2 *root*; they only exist on non-root cgroups.  A
+    probe anchored at ``/sys/fs/cgroup`` therefore reports the actuator as
+    missing on a kernel that fully supports it.  This probe resolves the
+    controls against the caller's effective cgroup first, then the root, then
+    a bounded sweep of non-root cgroups, and reports where each control was
+    actually found.
+    """
+
+    CONTROL_NAMES = ("cgroup.events", "cgroup.freeze", "cgroup.kill", "cgroup.pressure")
+
+    def __init__(
+        self,
+        root: Path = Path("/sys/fs/cgroup"),
+        *,
+        proc_self_cgroup: Path = Path("/proc/self/cgroup"),
+    ):
         self.root = Path(root)
+        self.proc_self_cgroup = Path(proc_self_cgroup)
+
+    def effective_path(self) -> Path:
+        """Return the cgroup v2 path of the calling process under ``self.root``."""
+        try:
+            lines = self.proc_self_cgroup.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            return self.root
+        for line in lines:
+            if line.startswith("0::"):
+                relative = line[3:].strip().lstrip("/")
+                return self.root / relative if relative else self.root
+        return self.root
+
+    def _non_root_candidates(self, limit: int = 64) -> list[Path]:
+        candidates: list[Path] = []
+        try:
+            children = sorted(self.root.iterdir())
+        except OSError:
+            return candidates
+        for child in children:
+            if len(candidates) >= limit:
+                break
+            if child.is_dir() and not child.is_symlink():
+                candidates.append(child)
+        return candidates
+
+    def _resolve_controls(self) -> tuple[Dict[str, bool], Dict[str, str]]:
+        effective = self.effective_path()
+        resolved: Dict[str, str] = {}
+        controls: Dict[str, bool] = {}
+        candidates: list[Path] | None = None
+        for name in self.CONTROL_NAMES:
+            owner: Path | None = None
+            if (effective / name).exists():
+                owner = effective
+            elif (self.root / name).exists():
+                owner = self.root
+            else:
+                if candidates is None:
+                    candidates = self._non_root_candidates()
+                owner = next((path for path in candidates if (path / name).exists()), None)
+            controls[name.removeprefix("cgroup.")] = owner is not None
+            resolved[name.removeprefix("cgroup.")] = str(owner) if owner is not None else ""
+        return controls, resolved
 
     def state(self) -> Dict[str, Any]:
         controllers = self._words(self.root / "cgroup.controllers")
         delegated_controllers = [item.lstrip("+") for item in self._words(self.root / "cgroup.subtree_control")]
-        controls = {
-            "events": (self.root / "cgroup.events").exists(),
-            "freeze": (self.root / "cgroup.freeze").exists(),
-            "kill": (self.root / "cgroup.kill").exists(),
-            "pressure": (self.root / "cgroup.pressure").exists(),
+        controls, resolved_from = self._resolve_controls()
+        effective = self.effective_path()
+        effective_exists = effective.is_dir()
+        effective_controls = {
+            name.removeprefix("cgroup."): (effective / name).exists()
+            for name in self.CONTROL_NAMES
         }
         return {
             "beast_object_type": "cgroup_v2_capability_state",
-            "version": "1.0",
+            "version": "1.1",
             "root": str(self.root),
             "available": (self.root / "cgroup.controllers").exists(),
             "controllers": controllers,
             "delegated_controllers": delegated_controllers,
             "controls": controls,
+            "control_sources": resolved_from,
+            "effective_cgroup": str(effective),
+            "effective_cgroup_exists": effective_exists,
+            "effective_controls": effective_controls,
+            "effective_cgroup_writable": effective_exists and os.access(effective, os.W_OK),
             "delegated_writable": os.access(self.root, os.W_OK),
             "subtree_control_writable": os.access(self.root / "cgroup.subtree_control", os.W_OK),
             "delegation_proven": bool(
@@ -65,6 +134,11 @@ class CgroupV2Discovery:
                 and (self.root / "cgroup.subtree_control").exists()
                 and os.access(self.root, os.W_OK)
                 and os.access(self.root / "cgroup.subtree_control", os.W_OK)
+            ),
+            "actuation_proven": bool(
+                effective_exists
+                and effective_controls.get("kill")
+                and os.access(effective, os.W_OK)
             ),
             "inspection_mutates_state": False,
         }
@@ -163,6 +237,40 @@ class CgroupMissionCapsule:
             authorization,
             confirmed=confirmed,
             details={"requested_limits": dict(limits), "observed_limits": observed},
+        )
+
+    def reclaim_memory(
+        self,
+        bytes_to_reclaim: int,
+        authorization: CgroupAuthorization,
+    ) -> Dict[str, Any]:
+        """Ask the kernel to reclaim page cache from this capsule.
+
+        ``memory.reclaim`` is the polite step between evicting a cold capsule
+        and SIGKILL: it drops reclaimable pages without killing a task.  The
+        receipt records the observed ``memory.current`` delta so a weak
+        reclaim is visible rather than assumed.
+        """
+        authorization.require("reclaim", self.mission_id)
+        requested = int(bytes_to_reclaim)
+        if requested <= 0 or requested > (1 << 40):
+            raise ValueError("reclaim size must be positive and bounded")
+        control = self._control("memory.reclaim")
+        before = self._read_int("memory.current")
+        control.write_text(f"{requested}\n", encoding="utf-8")
+        after = self._read_int("memory.current")
+        reclaimed = None if before is None or after is None else max(0, before - after)
+        return self._receipt(
+            "reclaim",
+            authorization,
+            confirmed=after is not None and reclaimed is not None,
+            details={
+                "requested_bytes": requested,
+                "memory_current_before": before,
+                "memory_current_after": after,
+                "reclaimed_bytes": reclaimed,
+                "kernel_interface": "memory.reclaim",
+            },
         )
 
     def kill(self, authorization: CgroupAuthorization) -> Dict[str, Any]:
@@ -303,10 +411,23 @@ class CgroupMissionCapsule:
             "pressure": self.pressure(),
             "controls": {
                 name: (self.path / name).exists()
-                for name in ("cgroup.procs", "cgroup.events", "cgroup.freeze", "cgroup.kill")
+                for name in (
+                    "cgroup.procs",
+                    "cgroup.events",
+                    "cgroup.freeze",
+                    "cgroup.kill",
+                    "memory.current",
+                    "memory.reclaim",
+                )
             },
             "read_only_projection": True,
         }
+
+    def _read_int(self, name: str) -> Optional[int]:
+        try:
+            return int(self._control(name).read_text(encoding="utf-8").strip())
+        except (OSError, RuntimeError, ValueError):
+            return None
 
     def _control(self, name: str) -> Path:
         path = self.path / name

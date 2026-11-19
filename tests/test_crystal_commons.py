@@ -50,7 +50,7 @@ class FakeCommonsTransport:
         self.calls: list[tuple] = []
         self.tamper_blob: bytes | None = None
 
-    def probe(self, node_id):
+    async def probe(self, node_id):
         self.calls.append(("probe", node_id))
         return {"ok": True, "state": "lattice_attested"}
 
@@ -136,32 +136,32 @@ def test_revision_manifest_is_verify_only_hypothesis_bound_to_space(promoted, tm
     assert revision_name(promoted["candidate"].crystal_id).startswith("cc-")
 
 
-def test_publish_to_three_nodes_with_matching_witness_receipts(promoted, tmp_path):
+async def test_publish_to_three_nodes_with_matching_witness_receipts(promoted, tmp_path):
     transport = FakeCommonsTransport(tmp_path)
     space = build_crystal_space(promoted["bundle"], tmp_path / "spaces")
-    report = CommonsCrystalPublisher(transport).publish(promoted["bundle"], space, node_ids=NODES)
+    report = await CommonsCrystalPublisher(transport).publish(promoted["bundle"], space, node_ids=NODES)
     assert report["status"] == "published" and report["quorum"] == 3
     assert len({r["manifest_digest"] for r in report["nodes"].values()}) == 1
     assert all(r["receipt"]["maximum_authority"] == "verify_only" for r in report["nodes"].values())
     assert ("create_bucket", "commons-node-a", OWNER, BUCKET, "private") in transport.calls
-    again = CommonsCrystalPublisher(transport).publish(promoted["bundle"], space, node_ids=NODES)
+    again = await CommonsCrystalPublisher(transport).publish(promoted["bundle"], space, node_ids=NODES)
     assert again["status"] == "published" and all(r.get("existing") for r in again["nodes"].values())
     stored = b"".join(p.read_bytes() for p in (tmp_path / "nodes").rglob("*") if p.is_file() and "blobs" in p.parts)
     assert b"BEGIN PRIVATE" not in stored and str(promoted["base"]).encode() not in stored
 
 
-def _published(promoted, tmp_path):
+async def _published(promoted, tmp_path):
     transport = FakeCommonsTransport(tmp_path)
     space = build_crystal_space(promoted["bundle"], tmp_path / "spaces")
-    CommonsCrystalPublisher(transport).publish(promoted["bundle"], space, node_ids=NODES)
+    await CommonsCrystalPublisher(transport).publish(promoted["bundle"], space, node_ids=NODES)
     return transport
 
 
-def test_import_lands_quarantined_with_custody_and_is_never_served(promoted, tmp_path):
-    transport = _published(promoted, tmp_path)
+async def test_import_lands_quarantined_with_custody_and_is_never_served(promoted, tmp_path):
+    transport = await _published(promoted, tmp_path)
     node = crystal_stack(tmp_path / "local")
     crystal_id = promoted["candidate"].crystal_id
-    record = CommonsCrystalImporter(transport, node["registry"]).pull(
+    record = await CommonsCrystalImporter(transport, node["registry"]).pull(
         "commons-node-b", crystal_id, trusted_keys={"test-key": promoted["key"].public_key()})
     assert record["status"] == "quarantined"
     assert record["provenance"]["signer_trusted"] is True
@@ -171,22 +171,22 @@ def test_import_lands_quarantined_with_custody_and_is_never_served(promoted, tmp
     assert node["registry"].active_for_family(FAMILY) is None
 
 
-def test_tampered_custody_is_refused(promoted, tmp_path):
-    transport = _published(promoted, tmp_path)
+async def test_tampered_custody_is_refused(promoted, tmp_path):
+    transport = await _published(promoted, tmp_path)
     transport.tamper_blob = json.dumps({"schema": "beast.coding_crystal_publication.v1", "payload_root_digest": "x"}).encode()
     node = crystal_stack(tmp_path / "local")
     with pytest.raises(ValueError):
-        CommonsCrystalImporter(transport, node["registry"]).pull("commons-node-a", promoted["candidate"].crystal_id,
+        await CommonsCrystalImporter(transport, node["registry"]).pull("commons-node-a", promoted["candidate"].crystal_id,
                                                                  trusted_keys={})
 
 
-def test_import_then_local_reproduction_is_the_only_promotion(promoted, tmp_path):
+async def test_import_then_local_reproduction_is_the_only_promotion(promoted, tmp_path):
     from app.kernel.compute.crystal_publication import reproduce_quarantined
 
-    transport = _published(promoted, tmp_path)
+    transport = await _published(promoted, tmp_path)
     node = crystal_stack(tmp_path / "local")
     crystal_id = promoted["candidate"].crystal_id
-    CommonsCrystalImporter(transport, node["registry"]).pull("commons-node-c", crystal_id, trusted_keys={})
+    await CommonsCrystalImporter(transport, node["registry"]).pull("commons-node-c", crystal_id, trusted_keys={})
     planner = CodingCrystalPlanner(node["registry"], node["authority"], node["ledger"], replay_candidate_id=crystal_id)
 
     def run_variant(variant):
@@ -205,10 +205,10 @@ def test_gateway_transport_is_loopback_only(tmp_path):
         GatewayCommonsTransport("https://commons.example.org", vault_root=tmp_path / "vault")
 
 
-def test_import_binds_publishing_space_for_shadow_accounting(promoted, tmp_path):
-    transport = _published(promoted, tmp_path)
+async def test_import_binds_publishing_space_for_shadow_accounting(promoted, tmp_path):
+    transport = await _published(promoted, tmp_path)
     node = crystal_stack(tmp_path / "local")
-    record = CommonsCrystalImporter(transport, node["registry"]).pull(
+    record = await CommonsCrystalImporter(transport, node["registry"]).pull(
         "commons-node-a", promoted["candidate"].crystal_id, trusted_keys={})
     commons = record["provenance"]["commons"]
     assert commons["space_id"].startswith("coding-crystal-") and commons["space_manifest_hash"].startswith("sha256:")

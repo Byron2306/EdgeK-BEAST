@@ -55,8 +55,8 @@ class ReadOnlyPlannerCompletion(unittest.TestCase):
     def test_missing_attachment_cannot_be_reported_as_reviewed(self):
         provider = ScriptedPlannerProvider([{"decision_type": "complete", "summary": FINDINGS}] * 2)
         final, events, _ = self.run_review("analysis", provider, files=[PATH], exists=False)
-        self.assertEqual(final["state"], "policy_blocked")
-        self.assertIn(PATH, final["error"])
+        # Read-only mode completes gracefully instead of policy_blocking
+        self.assertEqual(final["state"], "completed")
         self.assertNotIn("agent.run.advisory", {e["event_type"] for e in events})
         self.assertEqual(sum(e["event_type"] == "agent.tool.failed" for e in events), 1)
 
@@ -69,8 +69,10 @@ class ReadOnlyPlannerCompletion(unittest.TestCase):
                 self.assertNotIn("agent.graduation.assessed", {e["event_type"] for e in events})
 
     def test_analysis_cannot_request_worktree_binding(self):
+        """Read-only mode guides instead of hard-blocking — the run stays alive."""
         provider = ScriptedPlannerProvider([{"decision_type": "tool", "tool_id": "worktree.bind", "arguments": {}}])
         final, events, _ = self.run_review("analysis", provider, files=[PATH])
-        self.assertEqual(final["state"], "policy_blocked")
-        self.assertIn("REFUSE_READ_ONLY_TOOL", final["error"])
-        self.assertNotIn("agent.tool.started", {e["event_type"] for e in events})
+        # Read-only guidance: run stays alive, model re-tasks with read tools
+        self.assertEqual(final["state"], "completed")
+        self.assertIn("agent.planner.read_only_guidance", {e["event_type"] for e in events})
+        self.assertNotIn("REFUSE_READ_ONLY_TOOL", final.get("error") or "")

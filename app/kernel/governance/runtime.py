@@ -3,6 +3,7 @@ EdgeK BEAST Gateway - Runtime Governance
 Controls provider execution with stasis walls, circuit breakers, timeouts, and attempt logs.
 """
 
+import os
 import sqlite3
 import threading
 import time
@@ -189,7 +190,9 @@ class RuntimeGovernor:
         provider: str,
         success: bool,
         error_type: str = "",
-        error_message: str = ""
+        error_message: str = "",
+        *,
+        affects_circuit: bool = True,
     ):
         completed_at = self._utc_now()
         with self._connect() as conn:
@@ -215,10 +218,11 @@ class RuntimeGovernor:
         with self._lock:
             self._active_counts[provider] = max(0, self._active_counts.get(provider, 0) - 1)
 
-        if success:
-            self._record_provider_success(provider)
-        else:
-            self._record_provider_failure(provider, error_message or error_type)
+        if affects_circuit:
+            if success:
+                self._record_provider_success(provider)
+            else:
+                self._record_provider_failure(provider, error_message or error_type)
         self._record_forensic_event({
             "event_kind": "latency" if success else "error",
             "event_id": attempt_id,
@@ -613,4 +617,4 @@ class RuntimeGovernor:
             return None
 
 
-runtime_governor = RuntimeGovernor()
+runtime_governor = RuntimeGovernor(db_path=os.environ.get("BEAST_RUNTIME_GOVERNOR_DB") or None)

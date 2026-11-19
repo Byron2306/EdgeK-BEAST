@@ -73,6 +73,34 @@ def test_provider_handoff_open_profile_keeps_bounded_file_content(tmp_path: Path
     assert handoff["output"]["profile"]["refs_only"] is False
 
 
+def test_provider_handoff_hash_binds_governed_context_override(tmp_path: Path):
+    target = tmp_path / "app" / "main.py"
+    target.parent.mkdir(parents=True)
+    target.write_text("def main():\n    return 'original'\n", encoding="utf-8")
+    override = "def main():\n    ...  # [beast-lcz: body elided 1 lines]\n"
+
+    raw = build_provider_handoff(
+        tmp_path, "Update app/main.py", ["app/main.py"], "openrouter", include_scout=False
+    )
+    transformed = build_provider_handoff(
+        tmp_path,
+        "Update app/main.py",
+        ["app/main.py"],
+        "openrouter",
+        include_scout=False,
+        context_overrides={"app/main.py": override},
+    )
+
+    transformed_evidence = transformed["input"]["context_packet"]["included_evidence"]
+    evidence = next(
+        item for item in transformed_evidence if item.get("source") == "app/main.py"
+    )
+    assert "body elided" in evidence["content"]
+    assert evidence["context_transform"]["model_content_hash"]
+    assert transformed["trace"]["provider_handoff_hash"] != raw["trace"]["provider_handoff_hash"]
+    assert raw["task"]["selected_files"][0]["sha256"] != ""
+
+
 def test_provider_wiring_handoff_uses_semantic_action_skeleton(tmp_path: Path):
     registry = tmp_path / "app" / "kernel" / "provider_registry.py"
     api = tmp_path / "app" / "cli" / "api.py"

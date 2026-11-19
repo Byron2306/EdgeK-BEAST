@@ -17,6 +17,11 @@ from app.kernel.agents.run_cancel import AGENT_RUN_CANCELLATIONS
 
 WorkerFactory = Callable[[], Awaitable[Any]]
 
+# Shared turn runtime store: run_id -> AgentPlannerRuntime
+# Populated by _execute_planner_run when a planner worker starts,
+# consumed by POST /turn endpoints in both route modules.
+TURN_RUNTIMES: dict[str, Any] = {}
+
 
 @dataclass
 class AgentRunWorkerHandle:

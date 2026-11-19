@@ -8,9 +8,13 @@ small, redacted event suitable for SSE, run history, and the Systems Atlas.
 
 from __future__ import annotations
 
+import base64
+import asyncio
+import hashlib
 import json
 import logging
 import os
+import shutil
 from collections.abc import Callable, Mapping
 from pathlib import Path
 from typing import Any
@@ -54,6 +58,7 @@ class CoderIntegrationCoordinator:
         workspace: str | Path,
         *,
         environ: Mapping[str, str] | None = None,
+        runtime_governor: Any = None,
         compression_router: Any = None,
         vector_memory: Any = None,
         memory_hull: Any = None,
@@ -62,10 +67,12 @@ class CoderIntegrationCoordinator:
         crystal_status: Callable[..., Mapping[str, Any]] | None = None,
         bus_probe: Callable[..., Mapping[str, Any]] | None = None,
         swarm_selector: Callable[..., Mapping[str, Any]] | None = None,
+        swarm_dispatcher: Any = None,
         crystal_producer: Callable[..., Mapping[str, Any]] | None = None,
     ) -> None:
         self.workspace = Path(workspace).expanduser().resolve()
         self.environ = dict(os.environ if environ is None else environ)
+        self.runtime_governor = runtime_governor
         self.compression_router = compression_router
         self.vector_memory = vector_memory
         self.memory_hull = memory_hull
@@ -74,6 +81,7 @@ class CoderIntegrationCoordinator:
         self.crystal_status = crystal_status
         self.bus_probe = bus_probe
         self.swarm_selector = swarm_selector
+        self.swarm_dispatcher = swarm_dispatcher
         self.crystal_producer = crystal_producer
         # Raw advisory snippets are intentionally kept out of returned events
         # and durable evidence.  The caller may attach this bounded in-memory
@@ -90,16 +98,57 @@ class CoderIntegrationCoordinator:
         metrics: Mapping[str, Any] | None = None,
         artifacts: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
+        # Receipt semantics are distinct from the legacy fired/skipped/failed
+        # event type. Eligibility is not execution, and execution is not proof
+        # that a durable effect was committed.
+        capability_name = str(capability)
+        mode_name = str(mode)
+        if capability_name == "crystal_bus":
+            stage, operation = "eligibility", "transfer_preflight"
+        elif capability_name == "coding_crystal.production":
+            if mode_name == "armed_awaiting_verified_completion":
+                stage, operation = "eligibility", "production_readiness"
+            elif mode_name in {"candidate_extraction", "verified_awaiting_operator_promotion"}:
+                stage, operation = "postflight", "candidate_extraction"
+            else:
+                stage, operation = "eligibility", "production_readiness"
+        elif capability_name == "family_crystal":
+            stage, operation = "eligibility", "promoted_family_lookup"
+        elif capability_name == "crystal_reuse":
+            stage, operation = "eligibility", "reuse_preflight"
+        elif capability_name == "swarm_specialist":
+            if mode_name == "governed_dispatch":
+                stage, operation = "execution", "specialist_dispatch"
+            else:
+                stage, operation = "eligibility", "specialist_selection"
+        elif capability_name.startswith("compression."):
+            stage, operation = "execution", "context_compression"
+        elif capability_name == "kv_transport":
+            stage, operation = "execution", "prefix_reuse_lookup"
+        elif capability_name in {"vector_rag", "memory_hull.recall"}:
+            stage, operation = "execution", "advisory_retrieval"
+        elif capability_name == "memory_hull.seal":
+            stage, operation = "postflight", "residue_seal"
+        else:
+            stage, operation = "eligibility", "capability_probe"
+
         payload: dict[str, Any] = {
             "capability": str(capability),
             "status": status if status in {"fired", "skipped", "failed"} else "failed",
+            "stage": stage,
+            "operation": operation,
+            "effect_committed": (
+                capability_name == "memory_hull.seal"
+                and status == "fired"
+                and mode_name == "sealed_local_residue"
+            ),
             "mode": str(mode)[:80],
             "reason": str(reason)[:120],
             "metrics": _safe_metrics(metrics),
             "artifacts": {
                 str(key): str(value)[:160]
                 for key, value in dict(artifacts or {}).items()
-                if key in {"receipt_id", "residue_id", "crystal_id", "task_family"}
+                if key in {"receipt_id", "residue_id", "crystal_id", "task_family", "block_id", "engine", "model", "governor_receipt", "provenance"}
                 and isinstance(value, (str, int))
             },
             "authority": "advisory_or_existing_gate_only",
@@ -108,9 +157,22 @@ class CoderIntegrationCoordinator:
         logger.info("agent integration %s", json.dumps(event, sort_keys=True, separators=(",", ":")))
         return event
 
-    def _compression(self, objective: str, source: str, diagnostics: str) -> tuple[list[dict[str, Any]], str, str]:
+    def _compression(
+        self,
+        objective: str,
+        source: str,
+        diagnostics: str,
+        *,
+        source_files: Mapping[str, str] | None = None,
+    ) -> tuple[list[dict[str, Any]], str, str, dict[str, str], str]:
         if not _is_enabled(self.environ, "BEAST_COMPRESSION_TIERS"):
-            return [self._event("compression.tiers", "skipped", mode="opt_in", reason="feature_flag_disabled")], source, diagnostics
+            return (
+                [self._event("compression.tiers", "skipped", mode="opt_in", reason="feature_flag_disabled")],
+                source,
+                diagnostics,
+                {},
+                "",
+            )
         router = self.compression_router
         if router is None:
             from app.context.compression_tiers import default_router
@@ -118,12 +180,20 @@ class CoderIntegrationCoordinator:
             router = default_router()
         events: list[dict[str, Any]] = []
 
-        def invoke(capability: str, tier: str, payload: str, *, query: str = "", kind: str = "test") -> str:
+        def invoke(
+            capability: str,
+            tier: str,
+            payload: str,
+            *,
+            query: str = "",
+            kind: str = "test",
+            edit_targets: tuple[str, ...] = (),
+        ) -> str:
             if not payload:
                 events.append(self._event(capability, "skipped", mode="governed_compression", reason="no_eligible_context"))
                 return payload
             try:
-                output = router.compress(tier, payload, query=query, kind=kind)
+                output = router.compress(tier, payload, query=query, kind=kind, edit_targets=edit_targets)
                 fidelity = output.get("fidelity") if isinstance(output.get("fidelity"), Mapping) else {}
                 metrics = output.get("metrics") if isinstance(output.get("metrics"), Mapping) else {}
                 governor = output.get("governor") if isinstance(output.get("governor"), Mapping) else {}
@@ -144,12 +214,32 @@ class CoderIntegrationCoordinator:
                 return payload
 
         # RepoRelay is represented by the tested native repo-map tier.  The
-        # payload is the workspace path, never source text in the event.
-        invoke("compression.reporelay", "repo_map", str(self.workspace), query=objective)
-        source = invoke("compression.longcodezip", "longcodezip", source, query=objective)
+        # payload is the workspace path, never source text in the event. Its
+        # bounded output is attached to the model packet by the caller.
+        repo_map_content = invoke("compression.reporelay", "repo_map", str(self.workspace), query=objective)
+
+        transformed_files: dict[str, str] = {}
+        eligible = source_files or {}
+        if eligible:
+            for path, content in list(eligible.items())[:8]:
+                text = str(content or "")
+                if not text:
+                    transformed_files[str(path)] = ""
+                    continue
+                transformed_files[str(path)] = invoke(
+                    "compression.longcodezip",
+                    "longcodezip",
+                    text,
+                    query=objective,
+                    kind="source",
+                )
+            source = "\n\n".join(transformed_files.values())
+        else:
+            source = invoke("compression.longcodezip", "longcodezip", source, query=objective, kind="source")
+
         diagnostics = invoke("compression.rtk", "rtk", diagnostics, query=objective, kind="test")
         diagnostics = invoke("compression.sqz", "sqz", diagnostics, query=objective, kind="test")
-        return events, source, diagnostics
+        return events, source, diagnostics, transformed_files, repo_map_content
 
     def _vector_events(self, objective: str) -> list[dict[str, Any]]:
         try:
@@ -175,6 +265,14 @@ class CoderIntegrationCoordinator:
                             "authority": "advisory_only_requires_operator_acceptance",
                         }
                     )
+            if hits <= 0:
+                return [self._event(
+                    "vector_rag",
+                    "skipped",
+                    mode="advisory_retrieval",
+                    reason="no_retrieval_hits",
+                    metrics={"hits": 0},
+                )]
             return [self._event("vector_rag", "fired", mode="advisory_retrieval", reason="retrieval_completed", metrics={"hits": hits})]
         except Exception as exc:
             return [self._event("vector_rag", "failed", mode="advisory_retrieval", reason=type(exc).__name__)]
@@ -196,6 +294,14 @@ class CoderIntegrationCoordinator:
                             "authority": "sealed_local_advisory_recall",
                         }
                     )
+            if not records:
+                return [self._event(
+                    "memory_hull.recall",
+                    "skipped",
+                    mode="sealed_local_recall",
+                    reason="no_recall_records",
+                    metrics={"records": 0},
+                )]
             return [self._event("memory_hull.recall", "fired", mode="sealed_local_recall", reason="recall_completed", metrics={"records": len(records)})]
         except Exception as exc:
             return [self._event("memory_hull.recall", "failed", mode="sealed_local_recall", reason=type(exc).__name__)]
@@ -206,6 +312,76 @@ class CoderIntegrationCoordinator:
 
             self.memory_hull = MemoryHull(self.workspace / ".beast" / "memory_hull")
         return self.memory_hull
+
+
+    def _kv_events(self, objective: str, source: str, metadata: Mapping[str, Any]) -> list[dict[str, Any]]:
+        """Look up a real engine-native prompt-prefix block on the process transport.
+
+        Metadata registration is not reuse. This path reports ``fired`` only
+        when the transport already holds verified engine-native bytes for the
+        exact model/prefix identity. It never selects a foreign engine lane and
+        never registers a payload-free block as a reusable cache.
+        """
+        if not _is_enabled(self.environ, "BEAST_ZERO_COPY_KV"):
+            return [self._event("kv_transport", "skipped", mode="opt_in", reason="feature_flag_disabled")]
+        try:
+            from app.kernel.compute.kv_transport import CacheEngine, default_transport
+
+            provider = str(metadata.get("provider") or "").strip().lower()
+            engine_by_provider = {
+                "ollama": CacheEngine.OLLAMA,
+                "local_ollama": CacheEngine.OLLAMA,
+                "vllm": CacheEngine.VLLM,
+                "sglang": CacheEngine.SGLANG,
+                "lm_studio": CacheEngine.LM_STUDIO,
+                "local_nim": CacheEngine.VLLM,
+            }
+            engine = engine_by_provider.get(provider)
+            if engine is None:
+                return [self._event(
+                    "kv_transport",
+                    "skipped",
+                    mode="awaiting_engine_native_payload",
+                    reason="provider_does_not_expose_transportable_kv",
+                )]
+
+            transport = default_transport(storage_dir=self.workspace / ".beast" / "kv_transport")
+            model = str(metadata.get("model") or provider or "unknown")
+            tokenizer = str(metadata.get("tokenizer") or model)
+            prefix = (source or objective or "")[:4000]
+            system = str(metadata.get("system_prompt") or "beast-agent-coder")
+            hit = transport.lookup(model, tokenizer, prefix, system, preferred_engine=engine)
+            if hit is None:
+                return [self._event(
+                    "kv_transport",
+                    "skipped",
+                    mode="awaiting_engine_native_payload",
+                    reason="no_reusable_engine_native_prefix",
+                    metrics={"hits": 0},
+                )]
+            if not transport.has_reusable_payload(hit.block_id):
+                return [self._event(
+                    "kv_transport",
+                    "skipped",
+                    mode="awaiting_engine_native_payload",
+                    reason="metadata_block_has_no_engine_native_payload",
+                    metrics={"hits": 1},
+                    artifacts={"block_id": hit.block_id, "engine": hit.engine.value},
+                )]
+            return [self._event(
+                "kv_transport",
+                "fired",
+                mode="prefix_reuse",
+                reason="reusable_engine_native_prefix_found",
+                metrics={"hits": 1},
+                artifacts={
+                    "block_id": hit.block_id,
+                    "engine": hit.engine.value,
+                    "provenance": hit.metadata.get("payload_provenance", "unspecified_tensor_payload"),
+                },
+            )]
+        except Exception as exc:
+            return [self._event("kv_transport", "failed", mode="prefix_reuse_lookup", reason=type(exc).__name__)]
 
     def _crystal_events(self, objective: str, metadata: Mapping[str, Any]) -> list[dict[str, Any]]:
         events: list[dict[str, Any]] = []
@@ -221,27 +397,103 @@ class CoderIntegrationCoordinator:
 
         try:
             if self.family_lookup is None:
-                from app.kernel.compute.family_crystals import infer_task_family, lookup_promoted_family_crystal
+                from app.kernel.compute import family_crystals as _family_crystals
 
-                family = infer_task_family(objective, metadata)
-                hit = lookup_promoted_family_crystal(family, env=self.environ)
+                family = _family_crystals.infer_task_family(objective, metadata)
+                hit = _family_crystals.lookup_promoted_family_crystal(family, env=self.environ)
             else:
                 family = str(metadata.get("task_family") or "")
                 hit = self.family_lookup(objective=objective, metadata=metadata)
-            events.append(
-                self._event(
-                    "family_crystal",
-                    "fired" if hit else "skipped",
-                    mode="read_only_promoted_lookup",
-                    reason="promoted_family_crystal_hit" if hit else "no_promoted_family_crystal",
-                    artifacts={
-                        "crystal_id": (hit or {}).get("crystal_id", ""),
-                        "task_family": (hit or {}).get("task_family", family),
-                    },
+
+            if hit and metadata.get("read_only") is True:
+                events.append(self._event(
+                    "family_crystal", "fired", mode="read_only_promoted_lookup",
+                    reason="promoted_family_crystal_hit_read_only",
+                    artifacts={"crystal_id": hit.get("crystal_id", ""), "task_family": family},
+                ))
+            elif hit:
+                # Load the full promoted crystal from the registry and replay it
+                db_path = hit.get("storage_path")
+                crystal_id = hit.get("crystal_id")
+                if db_path and crystal_id:
+                    registry = _family_crystals.FamilyRegistry(db_path)
+                    record = registry.get(crystal_id)
+                    crystal = record.get("crystal_object")
+                    if isinstance(crystal, _family_crystals.FamilyCrystal):
+                        # Execute the governed replay in a scratch worktree
+                        worktree_root = self.workspace / ".beast" / "crystal_replay" / crystal_id
+                        if worktree_root.exists():
+                            shutil.rmtree(worktree_root)
+                        worktree_root.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copytree(self.workspace, worktree_root, ignore=shutil.ignore_patterns('.beast/crystal_replay*', 'crystal_replay*'))
+
+                        parameters = {
+                            "implementation_target": str(metadata.get("implementation_target") or ""),
+                            "verify_command": list(metadata.get("verify_command") or ["python3", "-m", "pytest", "-q"]),
+                        }
+                        result = _family_crystals.replay_family(crystal, parameters, self.workspace, worktree_root)
+
+                        if result.get("ok"):
+                            events.append(
+                                self._event(
+                                    "family_crystal",
+                                    "fired",
+                                    mode="governed_replay",
+                                    reason="family_crystal_replay_verified",
+                                    metrics={
+                                        "tool_calls": result.get("tool_calls", 0),
+                                        "changed_files": len(result.get("changed", [])),
+                                        "wall_ms": result.get("wall_ms", 0),
+                                    },
+                                    artifacts={
+                                        "crystal_id": crystal_id,
+                                        "task_family": family,
+                                        "replay_trace_digest": str(hashlib.sha256(json.dumps(result.get("trace", []), sort_keys=True).encode()).hexdigest()[:16]),
+                                    },
+                                )
+                            )
+                        else:
+                            events.append(
+                                self._event(
+                                    "family_crystal",
+                                    "skipped",
+                                    mode="governed_replay",
+                                    reason=f"family_crystal_replay_refused: {result.get('reason')}",
+                                    artifacts={"crystal_id": crystal_id, "task_family": family},
+                                )
+                            )
+                        shutil.rmtree(worktree_root, ignore_errors=True)
+                    else:
+                        events.append(
+                            self._event(
+                                "family_crystal",
+                                "skipped",
+                                mode="governed_replay",
+                                reason="promoted_crystal_not_loadable",
+                                artifacts={"crystal_id": crystal_id, "task_family": family},
+                            )
+                        )
+                else:
+                    events.append(
+                        self._event(
+                            "family_crystal",
+                            "skipped",
+                            mode="read_only_promoted_lookup",
+                            reason="promoted_family_crystal_hit_but_no_replay_context",
+                            artifacts={"crystal_id": crystal_id, "task_family": family},
+                        )
+                    )
+            else:
+                events.append(
+                    self._event(
+                        "family_crystal",
+                        "skipped",
+                        mode="read_only_promoted_lookup",
+                        reason="no_promoted_family_crystal",
+                    )
                 )
-            )
         except Exception as exc:
-            events.append(self._event("family_crystal", "failed", mode="read_only_promoted_lookup", reason=type(exc).__name__))
+            events.append(self._event("family_crystal", "failed", mode="governed_replay", reason=type(exc).__name__))
 
         try:
             if self.crystal_status is None:
@@ -259,8 +511,12 @@ class CoderIntegrationCoordinator:
     def _bus_event(self, metadata: Mapping[str, Any]) -> dict[str, Any]:
         if not _is_enabled(self.environ, "BEAST_CONSOLIDATED_CRYSTAL_BUS"):
             return self._event("crystal_bus", "skipped", mode="opt_in", reason="feature_flag_disabled")
+        if metadata.get("read_only") is True:
+            return self._event("crystal_bus", "skipped", mode="transfer_eligibility",
+                               reason="read_only_run_does_not_transfer_capsules")
         if self.bus_probe is None:
-            return self._event("crystal_bus", "skipped", mode="awaiting_admitted_capsule", reason="no_transfer_eligible_capsule")
+            return self._event("crystal_bus", "skipped", mode="awaiting_admitted_capsule",
+                               reason="no_admitted_capsule")
         try:
             result = self.bus_probe(workspace=self.workspace, metadata=metadata)
             eligible = bool(result.get("eligible"))
@@ -268,17 +524,87 @@ class CoderIntegrationCoordinator:
         except Exception as exc:
             return self._event("crystal_bus", "failed", mode="transfer_preflight", reason=type(exc).__name__)
 
-    def _swarm_event(self, objective: str, metadata: Mapping[str, Any]) -> dict[str, Any]:
+    def _swarm_event(self, objective: str, metadata: Mapping[str, Any], source: str = "") -> dict[str, Any]:
         if not _is_enabled(self.environ, "BEAST_SWARM_SPECIALIST"):
             return self._event("swarm_specialist", "skipped", mode="advisory", reason="feature_flag_disabled")
         try:
             if self.swarm_selector is None:
                 route = metadata.get("adaptive_route") if isinstance(metadata.get("adaptive_route"), Mapping) else {}
-                result = {"selected": route.get("route") == "local_specialist_adapter", "reason": "local_specialist_proposed" if route.get("route") == "local_specialist_adapter" else "no_specialist_proposal"}
+                files = metadata.get("files") or metadata.get("context_files") or metadata.get("target_files") or []
+                file_count = len(files) if isinstance(files, (list, tuple)) else 0
+                hard = file_count >= 2 or any(token in objective.lower() for token in ("multi-file", "multifile", "refactor", "rename"))
+                # The governed dispatcher discovers installed models asynchronously
+                # after admission. Selection must not probe Ollama ahead of it.
+                from app.kernel.agents.swarm_specialist import operational_specialist_route
+
+                proposed = route.get("route") == "local_specialist_adapter"
+                result = {
+                    "selected": hard or proposed,
+                    "reason": "local_specialist_proposed" if hard or proposed else "no_specialist_proposal",
+                    "route": dict(route) if proposed else operational_specialist_route("complexity_preflight") if hard else {},
+                }
             else:
                 result = self.swarm_selector(objective=objective, metadata=metadata)
             selected = bool(result.get("selected"))
-            return self._event("swarm_specialist", "fired" if selected else "skipped", mode="advisory_selection", reason=str(result.get("reason") or "selection_completed"))
+            if not selected:
+                return self._event("swarm_specialist", "skipped", mode="advisory_selection", reason=str(result.get("reason") or "no_specialist_selected"))
+
+            dispatcher = self.swarm_dispatcher
+            if dispatcher is None:
+                from app.kernel.agents.swarm_specialist import OllamaSwarmRunner, SwarmSpecialistDispatch
+                from app.kernel.governance.governor_spine import ComputeGovernorSpine, GovernorReceiptLog
+
+                receipt_path = self.workspace / ".beast" / "governor" / "swarm-agent-coder.jsonl"
+                dispatcher = SwarmSpecialistDispatch(
+                    runner=OllamaSwarmRunner(env=self.environ),
+                    governor=ComputeGovernorSpine(receipts=GovernorReceiptLog(receipt_path), enforce=True),
+                    env=self.environ,
+                )
+                self.swarm_dispatcher = dispatcher
+
+            from app.kernel.compute.perceive import EdgeKIR
+
+            route = result.get("route") if isinstance(result.get("route"), Mapping) else {}
+            if not route:
+                adaptive = metadata.get("adaptive_route") if isinstance(metadata.get("adaptive_route"), Mapping) else {}
+                route = dict(adaptive)
+            ir = EdgeKIR(
+                messages=[{"role": "user", "content": objective}],
+                model=str(metadata.get("model") or "local-specialist"),
+                max_tokens=min(1024, max(64, int(metadata.get("specialist_max_tokens") or 512))),
+                temperature=0.0,
+                metadata={
+                    "objective": objective,
+                    "source_context": source[:12000],
+                    "diagnostic_context": str(metadata.get("diagnostic_context") or "")[:4000],
+                    "run_id": str(metadata.get("run_id") or ""),
+                    "response_schema": metadata.get("specialist_response_schema"),
+                    "output_contract": metadata.get("output_contract"),
+                    "quality_cascade": metadata.get("quality_cascade"),
+                },
+            )
+            outcome = asyncio.run(dispatcher.dispatch(ir, route, run_id=str(metadata.get("run_id") or "")))
+            receipt = outcome.receipt if isinstance(getattr(outcome, "receipt", None), Mapping) else {}
+            if not bool(getattr(outcome, "dispatched", False)):
+                return self._event(
+                    "swarm_specialist",
+                    "skipped",
+                    mode="governed_dispatch",
+                    reason=str(getattr(outcome, "reason", "specialist_dispatch_refused")),
+                    artifacts={"model": receipt.get("model", ""), "governor_receipt": receipt.get("governor_receipt", "")},
+                )
+            response = outcome.response if isinstance(getattr(outcome, "response", None), Mapping) else {}
+            advice = str(response.get("text") or "")[:4000]
+            if advice:
+                self.advisory_context.append({"capability": "swarm_specialist", "summary": advice})
+            return self._event(
+                "swarm_specialist",
+                "fired",
+                mode="governed_dispatch",
+                reason=str(getattr(outcome, "reason", "specialist_output_accepted")),
+                metrics={"verified": True},
+                artifacts={"model": response.get("model") or receipt.get("model", ""), "governor_receipt": receipt.get("governor_receipt", "")},
+            )
         except Exception as exc:
             return self._event("swarm_specialist", "failed", mode="advisory_selection", reason=type(exc).__name__)
 
@@ -288,21 +614,110 @@ class CoderIntegrationCoordinator:
         objective: str,
         source_context: str = "",
         diagnostic_context: str = "",
+        source_files: Mapping[str, str] | None = None,
         task_metadata: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Run bounded pre-provider integrations and return redacted evidence."""
+        """Run bounded pre-provider integrations and return redacted evidence.
+
+        ``source_files`` carries the exact selected-file previews. Successful
+        LongCodeZip/RTK/SQZ transforms are returned per file so the caller can
+        put the transformed bytes into the actual provider packet rather than
+        discarding them. Raw content is never placed in an integration event.
+        """
         metadata = dict(task_metadata or {})
         self.advisory_context = []
-        compression, source, diagnostics = self._compression(objective, source_context, diagnostic_context)
+        
+        # Run Quality Cascade as part of preflight
+        quality_report = None
+        if _is_enabled(self.environ, "BEAST_QUALITY_CASCADE"):
+            from app.kernel.data_processing.quality_cascade import QualityCascade
+            quality_cascade = QualityCascade(
+                policies=getattr(self.runtime_governor, "policies", None),
+                runtime_governor=self.runtime_governor,
+            )
+            # Create envelope from task_metadata
+            envelope = {
+                "task_id": metadata.get("run_id", "unknown"),
+                "task_class": "live_coding",
+                "inputs": {
+                    "user_request": objective,
+                    "provider": metadata.get("provider", ""),
+                    "task_name": metadata.get("task_name", ""),
+                    "mentioned_files": list(source_files.keys()) if source_files else [],
+                },
+                "context_budget": {
+                    "max_tokens": metadata.get("max_tokens", 8000),
+                    "max_files": max(1, len(source_files)) if source_files else 1,
+                    "allow_full_files": False,
+                },
+            }
+            route_card = {
+                "route_id": metadata.get("run_id", "unknown"),
+                "preferred_order": ["provider_policy", "credentials", "runtime_circuit", "log_scan"],
+                "provider": metadata.get("provider", ""),
+            }
+            try:
+                quality_report = quality_cascade.run(
+                    envelope=envelope,
+                    route_card=route_card,
+                    workspace_root=str(self.workspace),
+                )
+            except Exception as exc:
+                logger.warning("Quality cascade preflight failed: %s", exc)
+                quality_report = None
+        
+        compression, source, diagnostics, transformed_files, repo_map_content = self._compression(
+            objective,
+            source_context,
+            diagnostic_context,
+            source_files=source_files,
+        )
         events = [
             *compression,
             *self._vector_events(objective),
             *self._memory_recall_events(objective),
+            *self._kv_events(objective, source, metadata),
             *self._crystal_events(objective, metadata),
             self._bus_event(metadata),
-            self._swarm_event(objective, metadata),
+            self._swarm_event(objective, {**metadata, "quality_cascade": quality_report}, source),
         ]
-        return {"events": events, "source_context": source, "diagnostic_context": diagnostics}
+        if quality_report:
+            events.append({
+                "event_type": "agent.integration.fired",
+                "payload": {
+                    "capability": "quality_cascade",
+                    "status": "fired",
+                    "stage": "preflight",
+                    "operation": "quality_verification",
+                    "mode": "local_checks",
+                    "reason": "quality_cascade_passed" if quality_report.get("verification_accepted") else "quality_cascade_not_passed",
+                    "verification_reason": quality_report.get("verification_reason", ""),
+                    "checks": [
+                        {"name": str(check.get("name") or "")[:64],
+                         "status": str(check.get("status") or "")[:32],
+                         "reason": str(check.get("summary") or "")[:240]}
+                        for check in quality_report.get("checks", [])[:16]
+                        if isinstance(check, dict)
+                    ],
+                    "metrics": {
+                        "check_count": quality_report.get("summary", {}).get("check_count", 0),
+                        "passed": quality_report.get("summary", {}).get("passed", 0),
+                        "failed": quality_report.get("summary", {}).get("failed", 0),
+                        "warnings": quality_report.get("summary", {}).get("warnings", 0),
+                        "skipped": quality_report.get("summary", {}).get("skipped", 0),
+                        "verification_accepted": quality_report.get("verification_accepted", False),
+                    },
+                    "artifacts": {"route_id": metadata.get("run_id", "unknown")},
+                    "authority": "advisory_or_existing_gate_only",
+                }
+            })
+        return {
+            "events": events,
+            "source_context": source,
+            "diagnostic_context": diagnostics,
+            "source_files": transformed_files,
+            "repo_map": repo_map_content,
+        }
 
     def complete(self, *, run_id: str, objective: str, verified: bool) -> dict[str, Any]:
         """Seal verified completion and extract a non-promoted crystal candidate."""
@@ -340,6 +755,8 @@ class CoderIntegrationCoordinator:
             status = str(result.get("status") or "unknown")
             fired = status == "verified_awaiting_operator_promotion"
             events.append(self._event("coding_crystal.production", "fired" if fired else "skipped", mode=status, reason=status, artifacts={"crystal_id": result.get("crystal_id", "")}))
+
+
         except Exception as exc:
             events.append(self._event("coding_crystal.production", "failed", mode="candidate_extraction", reason=type(exc).__name__))
         return {"events": events}

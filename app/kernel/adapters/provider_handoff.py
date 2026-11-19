@@ -162,8 +162,14 @@ def build_provider_handoff(
     verification: str = "python -m pytest tests -q",
     include_scout: bool = True,
     output_profile: ProviderOutputProfile | None = None,
+    context_overrides: Dict[str, str] | None = None,
 ) -> Dict[str, Any]:
-    """Build the single object a provider should see for governed coding work."""
+    """Build the single object a provider should see for governed coding work.
+
+    ``context_overrides`` carries already-governed transformed selected-file
+    content. The context packet hash binds those exact bytes while the
+    original source hash remains recorded for stale-edit detection.
+    """
 
     root = Path(root)
     allowed = [str(path) for path in allowed_paths]
@@ -175,6 +181,7 @@ def build_provider_handoff(
         semantic_limit=4,
         include_content=not profile.refs_only,
         max_files=max(1, len(allowed)),
+        context_overrides=context_overrides,
     )
     scout_packet = _safe_scout_packet(root, objective, provider, envelope) if include_scout else {}
     output_refs = output_reference_packet(root, allowed, profile)
