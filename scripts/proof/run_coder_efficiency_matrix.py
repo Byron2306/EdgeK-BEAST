@@ -38,6 +38,10 @@ ARMS = {
     "closeout": (False, True), "both": (True, True),
 }
 DIAGNOSTIC_EXPERIMENT = "diagnostic-compression"
+FILTER_EXPERIMENT = "diagnostic-filters"
+FILTER_ARMS = {"raw": "none", "ansi_sgr": "ansi_sgr", "checkpoint_padding": "checkpoint_padding"}
+FILTER_MODES = {"ansi_sgr", "checkpoint_padding"}
+DIAGNOSTIC_EXPERIMENTS = (DIAGNOSTIC_EXPERIMENT, FILTER_EXPERIMENT)
 DIAGNOSTIC_ARMS = {"closeout": "none", "rtk": "rtk", "sqz": "sqz"}
 SOURCE_EXPERIMENT = "source-compression"
 PREBOUND_SOURCE_EXPERIMENT = "source-compression-prebound"
@@ -46,7 +50,9 @@ NAV_GRAPH_ARMS = ("file_list", "symbols", "graph")
 REAL_GRAPH_EXPERIMENT = "real-repo-navigation"
 LAZY_GRAPH_EXPERIMENT = "graph-on-demand"
 RETRIEVAL_EXPERIMENT = "retrieval-ablation"
-UPSTREAM_EXPERIMENTS = (REAL_GRAPH_EXPERIMENT, LAZY_GRAPH_EXPERIMENT, RETRIEVAL_EXPERIMENT)
+CHUNK_EXPERIMENT = "retrieval-chunking"
+RETRIEVAL_EXPERIMENTS = (RETRIEVAL_EXPERIMENT, CHUNK_EXPERIMENT)
+UPSTREAM_EXPERIMENTS = (REAL_GRAPH_EXPERIMENT, LAZY_GRAPH_EXPERIMENT, *RETRIEVAL_EXPERIMENTS)
 GRAPH_EXPERIMENTS = (NAV_GRAPH_EXPERIMENT, *UPSTREAM_EXPERIMENTS)
 SOURCE_EXPERIMENTS = (SOURCE_EXPERIMENT, PREBOUND_SOURCE_EXPERIMENT)
 PACKET_EXPERIMENTS = (*SOURCE_EXPERIMENTS, *GRAPH_EXPERIMENTS)
@@ -56,7 +62,8 @@ EXPERIMENT_ARMS = {"navigation": ARMS, DIAGNOSTIC_EXPERIMENT: DIAGNOSTIC_ARMS,
                    SOURCE_EXPERIMENT: SOURCE_ARMS, PREBOUND_SOURCE_EXPERIMENT: SOURCE_ARMS,
                    NAV_GRAPH_EXPERIMENT: NAV_GRAPH_ARMS, REAL_GRAPH_EXPERIMENT: ("file_list", "graph"),
                    LAZY_GRAPH_EXPERIMENT: ("file_list", "on_demand"),
-                   RETRIEVAL_EXPERIMENT: tuple(BACKENDS)}
+                   RETRIEVAL_EXPERIMENT: tuple(BACKENDS), CHUNK_EXPERIMENT: ("fixed", "syntax"),
+                   FILTER_EXPERIMENT: FILTER_ARMS}
 TOOLS = frozenset({
     "workspace.index", "workspace.list", "workspace.read_range", "workspace.search_text",
     "worktree.read_file", "worktree.list", "worktree.search_text",
@@ -293,18 +300,20 @@ def make_plan(tasks: tuple[str, ...], repeats: int, seed: int, *, experiment: st
         arms = list(EXPERIMENT_ARMS[experiment])
         rng.shuffle(arms)
         for arm in arms:
-            diagnostic = experiment == DIAGNOSTIC_EXPERIMENT
+            diagnostic = experiment in DIAGNOSTIC_EXPERIMENTS
             hint, close = ARMS[arm] if experiment == "navigation" else (False, True)
             row = {"task": task, "repeat": repeat, "arm": arm, "reporelay": hint, "closeout": close,
                    "attempt_id": f"{task}-{repeat:02d}-{arm}"}
             if diagnostic:
-                row["compression"] = DIAGNOSTIC_ARMS[arm]
+                row["compression"] = EXPERIMENT_ARMS[experiment][arm]
             if experiment in PACKET_EXPERIMENTS:
                 row["source_packet"] = arm
                 if experiment in GRAPH_EXPERIMENTS:
                     row["graph_packet"] = arm
                 if experiment == RETRIEVAL_EXPERIMENT:
                     row.update(graph_packet="file_list", retrieval=arm)
+                if experiment == CHUNK_EXPERIMENT:
+                    row.update(graph_packet="file_list", retrieval="lexical", retrieval_chunking=arm)
                 if experiment == LAZY_GRAPH_EXPERIMENT:
                     row.update(graph_packet="file_list", graph_on_demand=arm == "on_demand")
                 if experiment != SOURCE_EXPERIMENT:
@@ -317,7 +326,7 @@ def git(root: Path, *args: str) -> str:
     return subprocess.check_output(["git", "-C", str(root), *args], text=True, timeout=15)
 
 
-def diagnostic_fixture(task: Task) -> Task:
+def diagnostic_fixture(task: Task, *, filters=False) -> Task:
     # Emit real public-verifier output with a near-identical pair among repeated lines.
     noise = "contract runner checkpoint: fixture validation has started"
     public = "\n".join([
@@ -327,6 +336,13 @@ def diagnostic_fixture(task: Task) -> Task:
         f"print('ERROR CONTRACT_CHECK {task.module} alpha-02: diagnostic marker')",
         task.public,
     ])
+    if filters:
+        # Only known benchmark runner padding is eligible. Diagnostic lines may encode exact whitespace.
+        padding = "contract runner checkpoint: stage3" + " " * 72 + "\t"
+        alpha = [f"\x1b[31mERROR CONTRACT_CHECK {task.module} alpha-0{i}: diagnostic marker\x1b[0m"
+                 for i in (1, 2)]
+        public = "\n".join([f"print({padding!r})", f"print({alpha[0]!r})",
+                            f"print({padding!r})", f"print({alpha[1]!r})", task.public])
     return replace(task, public=public)
 
 
@@ -539,7 +555,14 @@ def project_diagnostic(raw: str, tier: str, policy: str, detection: dict[str, An
     backend = "raw"
     reason = "pass_through"
     sent = raw
-    if raw and tier != "none":
+    if raw and tier in FILTER_MODES:
+        if tier == "ansi_sgr":
+            sent = re.sub(r"\x1b\[[0-9;:]*m", "", raw)
+        else:
+            sent = re.sub(r"(?m)^(contract runner checkpoint: stage3)[ \t]+(?=\r?$)", r"\1", raw)
+        backend = tier
+        reason = "applied" if sent != raw else "not_smaller"
+    elif raw and tier != "none":
         try:
             status = detection.get(tier, {}) if policy == "upstream" else {}
             if tier == "rtk":
@@ -704,7 +727,7 @@ class ExperimentRuntime(DirectCoderRuntime):
                                                        self.detection)
                     result[field] = sent
                     receipts.append({"field": field, **receipt})
-                    required.update(exact_lines(raw))
+                    required.update(exact_lines(sent if self.compression in FILTER_MODES else raw))
                     if sent != raw:
                         delivered_fields.append(json.dumps(sent, ensure_ascii=False))
                 observations[index] = {**item, "result": result}
@@ -822,7 +845,7 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
     real_repo = bool(task.provenance)
     diagnostic = "compression" in row
     if diagnostic:
-        task = diagnostic_fixture(task)
+        task = diagnostic_fixture(task, filters=args.experiment == FILTER_EXPERIMENT)
     root = out / "fixtures" / row["attempt_id"]
     anchors = create_fixture(root, task)
     before = heldout(root, task)
@@ -870,8 +893,13 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
                 bound, paths, row["graph_packet"], out / "tmp" / row["attempt_id"] / "graph.sqlite3",
                 real_repo=real_repo, objective=task.objective)
             if "retrieval" in row:
-                retrieval = build_retrieval(bound, paths, row["retrieval"], task.objective)
-                if retrieval["corpus_sha256"] != args.retrieval_corpus[row["task"]]["sha256"]:
+                chunking = row.get("retrieval_chunking", "fixed")
+                retrieval = build_retrieval(bound, paths, row["retrieval"], task.objective, chunking=chunking)
+                expected = args.retrieval_corpus[row["task"]]
+                if "retrieval_chunking" in row:
+                    expected = expected[chunking]
+                if (retrieval["corpus_sha256"], retrieval["query_sha256"]) != (
+                        expected["sha256"], expected["query_sha256"]):
                     raise RuntimeError("bound worktree retrieval corpus differs from the preflight corpus")
                 runtime.source_packet["retrieval"] = retrieval
                 runtime.source_packet["seconds"] += retrieval["seconds"]
@@ -968,11 +996,11 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
         nav = (runtime.source_packet or {}).get("navigation") or {}
         experiment_metrics.update(cold_index_seconds=nav.get("cold_index_seconds"),
                                   indexed_snapshot_lookup_seconds=nav.get("indexed_snapshot_lookup_seconds"))
-    if args.experiment == RETRIEVAL_EXPERIMENT:
+    if args.experiment in RETRIEVAL_EXPERIMENTS:
         info = runtime.source_packet["retrieval"]
         chunks = info["chunks"]
         experiment_metrics.update(
-            retrieval_backend=info["backend"], retrieval_corpus_sha256=info["corpus_sha256"],
+            retrieval_backend=info["backend"], retrieval_chunking=info["chunking"], retrieval_corpus_sha256=info["corpus_sha256"],
             retrieval_corpus_chunks=info["corpus_chunks"], retrieval_seconds=info["seconds"],
             retrieval_chunks_selected=len(chunks), retrieval_selected_bytes=info["chunk_bytes"],
             retrieval_first_turn_provider_delivered=bool(
@@ -1036,7 +1064,7 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
         grouped[row["arm"]].append(row)
         blocks[(row["task"], row["repeat"])][row["arm"]] = row
     results = {}
-    diagnostic = experiment == DIAGNOSTIC_EXPERIMENT
+    diagnostic = experiment in DIAGNOSTIC_EXPERIMENTS
     source_experiment = experiment in PACKET_EXPERIMENTS
     for name in EXPERIMENT_ARMS[experiment]:
         arm = grouped[name]
@@ -1074,6 +1102,11 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
                 provider_input_tokens_total=sum(r["prompt_tokens_observed"] for r in covered) if len(covered) == len(arm) else None,
                 provider_output_tokens_total=sum(r["completion_tokens_observed"] for r in covered) if len(covered) == len(arm) else None,
             )
+            if experiment in (CHUNK_EXPERIMENT, FILTER_EXPERIMENT):
+                total = results[name]["provider_input_tokens_total"]
+                verified = results[name]["verified"]
+                results[name]["provider_input_tokens_per_verified"] = (
+                    round(total / verified, 2) if total is not None and verified else None)
             if source_experiment:
                 for field in ("source_packet_rendered", "source_packet_provider_deliveries",
                               "source_packet_provider_compressed_deliveries",
@@ -1101,6 +1134,8 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
         pairs = ({"paired_against_file_list": comparisons("file_list"),
                   "paired_graph_against_symbols": comparisons("symbols", {"graph"})}
                  if experiment == NAV_GRAPH_EXPERIMENT else
+                 {"paired_against_fixed": comparisons("fixed")} if experiment == CHUNK_EXPERIMENT else
+                 {"paired_against_raw": comparisons("raw")} if experiment == FILTER_EXPERIMENT else
                  {"paired_against_file_list": comparisons("file_list")} if experiment in UPSTREAM_EXPERIMENTS else
                  {"paired_against_closeout": comparisons("closeout")})
         if experiment in UPSTREAM_EXPERIMENTS:
@@ -1114,12 +1149,13 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
                 for field in ("graph_tool_decisions", "graph_lookup_requests", "graph_lookup_successes",
                               "graph_lookup_result_bytes", "graph_index_builds"):
                     results[name][field] = sum(row.get(field, 0) for row in grouped_rows)
-        if experiment == RETRIEVAL_EXPERIMENT:
+        if experiment in RETRIEVAL_EXPERIMENTS:
             for name, arm_rows in grouped.items():
                 for field in ("retrieval_seconds", "retrieval_chunks_selected", "retrieval_selected_bytes",
                               "retrieval_first_turn_provider_delivered", "retrieval_target_path_selected"):
                     results[name][field] = sum(row.get(field, 0) for row in arm_rows)
-            pairs["paired_vector_against_lexical"] = comparisons("lexical", {"vector"})
+            if experiment == RETRIEVAL_EXPERIMENT:
+                pairs["paired_vector_against_lexical"] = comparisons("lexical", {"vector"})
         evidence_class = ("scripted_control_only" if provider == "scripted" else
                           "live_upstream_seeded_pilot" if experiment in UPSTREAM_EXPERIMENTS else "live_synthetic_pilot")
         return {"evidence_class": evidence_class,
@@ -1168,7 +1204,7 @@ def main(argv=None) -> int:
     if args.experiment in UPSTREAM_EXPERIMENTS:
         if args.repo_fixtures is None:
             parser.error("real-repo-navigation requires --repo-fixtures")
-        task_set = load_real_tasks(args.repo_fixtures, on_demand=args.experiment in (LAZY_GRAPH_EXPERIMENT, RETRIEVAL_EXPERIMENT))
+        task_set = load_real_tasks(args.repo_fixtures, on_demand=args.experiment in (LAZY_GRAPH_EXPERIMENT, *RETRIEVAL_EXPERIMENTS))
         args.materialized_tasks = task_set
     else:
         task_set = SOURCE_TASKS if args.experiment in PACKET_EXPERIMENTS else TASKS
@@ -1222,6 +1258,11 @@ def main(argv=None) -> int:
                   "heldout_sha256": {name: digest(task_set[name].heldout.encode()) for name in args.tasks},
                   "claim_boundary": "Synthetic fixtures, no operating-system network isolation. "
                                     "Scripted mode does not measure model efficacy. Live counts are adapter request attempts."}
+        if args.experiment == FILTER_EXPERIMENT:
+            frozen.update(experiment=args.experiment, diagnostic_filters=FILTER_ARMS,
+                          diagnostic_preflight="identical verifier with seeded SGR and checkpoint padding",
+                          claim_boundary="Synthetic diagnostics only. Filters apply to prompt copies of failed "
+                                         "verifier stdout/stderr, never to source, diffs, or raw receipts.")
         if args.experiment == DIAGNOSTIC_EXPERIMENT:
             frozen.update(experiment=args.experiment, compression_backend=args.compression_backend,
                           compression_detection=getattr(args, "compression_detection", {}),
@@ -1265,12 +1306,16 @@ def main(argv=None) -> int:
                                            capture_output=True, timeout=15).returncode
                 if mutant_rc != 1 or heldout(mutant, task)["exit"] != 1:
                     raise RuntimeError(f"seeded regression did not fail both checks for {name}")
-                if args.experiment == RETRIEVAL_EXPERIMENT:
+                if args.experiment in RETRIEVAL_EXPERIMENTS:
                     paths = [p for p in git(mutant, "ls-files", "-z").split("\0") if p.endswith(".py")]
-                    corpus = build_retrieval(mutant, paths, "file_list", task.objective)
-                    args.retrieval_corpus[name] = {"sha256": corpus["corpus_sha256"],
-                                                  "chunks": corpus["corpus_chunks"],
-                                                  "query_sha256": corpus["query_sha256"]}
+                    manifests = {}
+                    for chunking in (EXPERIMENT_ARMS[CHUNK_EXPERIMENT] if args.experiment == CHUNK_EXPERIMENT
+                                     else ("fixed",)):
+                        corpus = build_retrieval(mutant, paths, "file_list", task.objective, chunking=chunking)
+                        manifests[chunking] = {"sha256": corpus["corpus_sha256"],
+                                               "chunks": corpus["corpus_chunks"],
+                                               "query_sha256": corpus["query_sha256"]}
+                    args.retrieval_corpus[name] = manifests if args.experiment == CHUNK_EXPERIMENT else manifests["fixed"]
             frozen.update(upstream={name: task_set[name].provenance for name in args.tasks},
                           claim_boundary="Pinned real open-source package code with seeded regressions and independent "
                                          "behavior checks. Not historical issues or model-training-blinded. "
@@ -1280,10 +1325,12 @@ def main(argv=None) -> int:
             frozen.update(first_packet="file_list_in_both_arms", graph_lookup_tool=GRAPH_TOOL,
                           graph_lookup_max_calls=MAX_LOOKUPS, graph_lookup_max_result_bytes=MAX_BYTES,
                           graph_index_scope="initial tracked Python files, lazy per-trial index, no mutation")
-        if args.experiment == RETRIEVAL_EXPERIMENT:
+        if args.experiment in RETRIEVAL_EXPERIMENTS:
             frozen.update(first_packet="common_file_list_plus_assigned_retrieved_chunks",
                           retrieval_bytes=RETRIEVAL_BYTES, retrieval_top_k=TOP_K,
-                          retrieval_backends=BACKENDS, graph_index_scope="disabled",
+                          retrieval_backends=({"fixed": "bm25", "syntax": "bm25"}
+                                              if args.experiment == CHUNK_EXPERIMENT else BACKENDS),
+                          graph_index_scope="disabled",
                           retrieval_corpus=args.retrieval_corpus,
                           retrieval_implementation_sha256=digest(
                               (Path(__file__).parent / "retrieval_ablation.py").read_bytes()))

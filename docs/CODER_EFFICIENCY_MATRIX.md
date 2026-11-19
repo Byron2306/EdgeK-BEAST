@@ -268,3 +268,45 @@ and foreign repo/revision scopes share a query. The test checks scope filtering
 and native rejection of a note whose Markdown was changed after signing.
 It makes no model calls and does not change production recall or demonstrate
 a live effect of supplying memory to a coding model.
+
+## Stage 3: context chunking and diagnostic projections
+
+- `retrieval-chunking` pairs fixed windows with Python AST definition boundaries.
+  Both use BM25, the same frozen query and tracked source, 14 lines and 390
+  characters per excerpt, and the same top-three/1,800-byte excerpt budget.
+  The syntax arm uses class, function, and decorator boundaries, then splits longer
+  ranges by the same line limit. Unparseable Python uses the fixed strategy.
+  Both corpus manifests are pinned before model calls and rechecked after binding.
+- `diagnostic-filters` pairs untouched output with SGR stripping and, separately,
+  padding removal from a specific synthetic runner checkpoint line. Each arm
+  sees the same seeded diagnostic fixture. Only copies of failed-verifier
+  stdout/stderr in the model prompt are projected. Source, diff, raw receipts,
+  non-SGR controls, indentation, blank lines, and diagnostic whitespace are
+  untouched. This is not a general terminal sanitizer or a real-log speed claim.
+
+Read usage, verified repairs, and input tokens per verified repair (all attempts
+charged, null with missing coverage or no wins). Check first-turn retrieval
+delivery or the hash-joined provider projection receipts before drawing
+conclusions. Scripted controls verify plumbing, not model efficacy.
+The repeatedly budget-exhausted `compatible_identity` task remains a named
+stress case in retrieval chunking, reported separately from the other tasks.
+
+### Physical byte efficiency is a separate experiment
+
+Compare whole digest-addressed blobs, real Git packs, and real Xet
+content-defined chunking on the same versioned crystal artifact corpus. Keep
+containers and digests constant across storage arms. Use exact duplicates, local
+edits, shifted insertions, and unrelated artifacts. Record logical bytes, new
+stored and transferred bytes including metadata, cold and warm reconstruction
+time, and peak RSS. Do not label a local CDC stand-in as Xet or equate Git pack
+size with network bytes.
+
+Measure the same capsule bytes through matched local workers with pipe versus
+sealed memfd/SCM_RIGHTS. Separate hydrate/write, handoff, mmap/hash, JSON parse
+and postcondition costs. Count actual payload writes and known copies separately
+from wire bytes. The current real capsule worker hashes the mapping and then
+copies the payload to parse JSON, and the existing pipe helper only reads and
+hashes. Their elapsed times are not an end-to-end replay comparison. Durable
+storage/reconstruction and volatile same-host handoff are composable layers,
+not substitutes. Keep this lane separate from provider tokens and from the
+later independent replay-versus-fresh-generation comparison.

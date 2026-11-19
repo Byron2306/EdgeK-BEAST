@@ -1,6 +1,7 @@
 """Benchmark-only shared corpus, lexical/latent-vector ranking, and Memory Hull controls."""
 from __future__ import annotations
 
+import ast
 from collections import Counter
 import hashlib
 import json
@@ -30,7 +31,26 @@ def _terms(text):
     return re.findall(r"[a-z][a-z0-9]+", text.lower())
 
 
-def corpus_for(root, paths):
+def _chunk_windows(source, lines, chunking):
+    if chunking == "fixed":
+        return [(i, min(i + CHUNK_LINES, len(lines))) for i in range(0, len(lines), CHUNK_LINES)]
+    if chunking != "syntax":
+        raise ValueError("unknown retrieval chunking")
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return _chunk_windows(source, lines, "fixed")
+    definitions = (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)
+    starts = {min([node.lineno, *(d.lineno for d in node.decorator_list)]) - 1
+              for node in ast.walk(tree) if isinstance(node, definitions)}
+    stops = {node.end_lineno for node in ast.walk(tree) if isinstance(node, definitions)}
+    boundaries = sorted({0, len(lines), *starts, *stops})
+    return [(i, min(i + CHUNK_LINES, end))
+            for start, end in zip(boundaries, boundaries[1:])
+            for i in range(start, end, CHUNK_LINES)]
+
+
+def corpus_for(root, paths, *, chunking="fixed"):
     corpus = []
     for path in sorted(set(paths)):
         if not path.endswith(".py") or path == "test_public.py":
@@ -38,17 +58,20 @@ def corpus_for(root, paths):
         source = root / path
         if Path(path).is_absolute() or not source.resolve().is_relative_to(root.resolve()):
             raise ValueError("corpus input escapes fixture")
-        lines = source.read_text(encoding="utf-8").splitlines()
-        for start in range(0, len(lines), CHUNK_LINES):
+        content = source.read_text(encoding="utf-8")
+        lines = content.split("\n")
+        if lines[-1] == "":
+            lines.pop()
+        for start, end in _chunk_windows(content, lines, chunking):
             chunk = {"path": path, "line": start + 1,
-                     "excerpt": "\n".join(lines[start:start + CHUNK_LINES])[:MAX_CHUNK_CHARS]}
+                     "excerpt": "\n".join(lines[start:end])[:MAX_CHUNK_CHARS]}
             if chunk["excerpt"].strip():
                 corpus.append({"id": digest(chunk), **chunk})
     return corpus
 
 
 def _scores(corpus, query, arm):
-    terms = set(_terms(query))
+    terms = sorted(set(_terms(query)))
     docs = [Counter(_terms(f"{d['path']} {d['excerpt']}")) for d in corpus]
     df = Counter(term for doc in docs for term in doc)
     n = len(docs)
@@ -87,10 +110,10 @@ def _scores(corpus, query, arm):
 BACKENDS = {"file_list": "none", "lexical": "bm25", "vector": "local_lsa_tfidf_cosine"}
 
 
-def build_retrieval(root: Path, paths: list[str], arm: str, query: str) -> dict:
+def build_retrieval(root: Path, paths: list[str], arm: str, query: str, *, chunking="fixed") -> dict:
     backend = BACKENDS[arm]
     start = time.perf_counter()
-    corpus = corpus_for(root, paths)
+    corpus = corpus_for(root, paths, chunking=chunking)
     corpus_sha = digest(corpus)
     chunks = []
     if arm != "file_list":
@@ -100,7 +123,7 @@ def build_retrieval(root: Path, paths: list[str], arm: str, query: str) -> dict:
                 break
             if len(encode([*chunks, corpus[i]])) <= MAX_BYTES:
                 chunks.append(corpus[i])
-    return {"backend": backend, "corpus_sha256": corpus_sha, "corpus_chunks": len(corpus),
+    return {"backend": backend, "chunking": chunking, "corpus_sha256": corpus_sha, "corpus_chunks": len(corpus),
             "query_sha256": digest(query), "chunks": chunks,
             "chunk_bytes": len(encode(chunks)) if chunks else 0,
             "seconds": round(time.perf_counter() - start, 6)}
