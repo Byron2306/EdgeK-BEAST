@@ -179,6 +179,7 @@ class DirectCoderRuntime:
                 execution_target=raw.get("execution_target") or "local",
             )
             state.pop("pending", None)
+            state["resuming_approval_id"] = approval_id
             self._save(run_id, state)
         else:
             self._transition(run_id, AgentRunState.PLANNING)
