@@ -102,3 +102,36 @@ attempts, the summary, and the provider/event receipts that actually exist.
 Read the top-level `batch` record to distinguish a sealed partial batch from a
 fully executed plan. Ordinary coding failures, unrelated errors, and rejections
 after tools have started do not trigger this guard.
+
+## LongCodeZip-style source-context ablation
+
+`--experiment source-compression` pairs full source packets with BEAST-native
+LongCodeZip-style AST projection. Both arms retain deterministic closeout and
+receive the exact same editable file and nominated dependency paths, once on the
+first post-bind prompt. Only support-file bodies can be stubbed. RepoRelay,
+RTK, SQZ and other integrations are off. A failed fidelity check falls back
+to the raw file. The nominal dependency budget ratio is 0.55, not a hard byte
+ceiling. It is subordinate to the compressor's fidelity constraints.
+
+The three synthetic tasks cover regional tariffs, profile-specific labels,
+and channel-specific retry indexing. The public and independent tests must
+fail before editing, pass after editing, and only the target file may change.
+Receipt data joins the exact user-message hash at the provider boundary.
+Check `source_packet_provider_compressed_deliveries`, rereads, request counts,
+provider usage, and verified outcomes. A smaller rendered packet on its own
+does not demonstrate fewer tokens or equivalent model performance.
+
+```bash
+run_dir=$(mktemp -d "$HOME/beast-longcodezip.XXXXXX")
+python -m scripts.proof.run_coder_efficiency_matrix \
+  --experiment source-compression --out "$run_dir/controls"
+(cd "$run_dir/controls" && sha256sum -c SHA256SUMS)
+# Six live trials, at most 48 attempts; set NVIDIA_API_KEY first.
+python -m scripts.proof.run_coder_efficiency_matrix \
+  --experiment source-compression --provider nim \
+  --seed 4321 --repeats 1 --max-turns 8 --request-cap 48 --out "$run_dir/live"
+(cd "$run_dir/live" && sha256sum -c SHA256SUMS)
+```
+
+See [the ablation and evidence roadmap](BEAST_ABLATION_ROADMAP.md) for the later
+retrieval, transport, recovery, and crystal comparison lanes.

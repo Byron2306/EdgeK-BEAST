@@ -1,7 +1,8 @@
-"""Paired RepoRelay × deterministic-closeout ablation on bounded synthetic coding tasks."""
+"""Paired navigation, diagnostic, and source-context ablations on bounded synthetic coding tasks."""
 from __future__ import annotations
 
 import argparse
+import ast
 import asyncio
 from collections import defaultdict
 from dataclasses import dataclass, replace
@@ -18,7 +19,7 @@ import time
 from typing import Any
 from urllib.error import HTTPError
 
-from app.context.compression_tiers import _sqz, detect_compressors, repo_map
+from app.context.compression_tiers import STUB_MARK, _sqz, detect_compressors, long_code_compress, repo_map
 from app.kernel.data_processing.cascade_output_compressor import compress_cascade_output, exact_lines
 from app.kernel.agents.direct_coder_runtime import DirectCoderRuntime
 from app.kernel.agents.nim_planner_provider import NIMPlannerProvider
@@ -35,6 +36,11 @@ ARMS = {
 }
 DIAGNOSTIC_EXPERIMENT = "diagnostic-compression"
 DIAGNOSTIC_ARMS = {"closeout": "none", "rtk": "rtk", "sqz": "sqz"}
+SOURCE_EXPERIMENT = "source-compression"
+SOURCE_ARMS = ("closeout", "longcodezip")
+SOURCE_BUDGET_RATIO = 0.55
+EXPERIMENT_ARMS = {"navigation": ARMS, DIAGNOSTIC_EXPERIMENT: DIAGNOSTIC_ARMS,
+                   SOURCE_EXPERIMENT: SOURCE_ARMS}
 TOOLS = frozenset({
     "workspace.index", "workspace.list", "workspace.read_range", "workspace.search_text",
     "worktree.read_file", "worktree.list", "worktree.search_text",
@@ -51,6 +57,7 @@ class Task:
     new: str
     public: str
     heldout: str
+    support: tuple[tuple[str, str], ...] = ()
 
     @property
     def path(self) -> str:
@@ -82,6 +89,70 @@ TASKS = {
 }
 
 
+def support_source(core: str, domain: str) -> str:
+    # Fixture-only nearby utility functions, never executed by the test oracle.
+    return core + "\n\n" + "\n\n".join(
+        f'def {domain}_{name}(records):\n'
+        '    selected = [str(record).strip() for record in records if record is not None]\n'
+        '    normalized = [item.casefold() for item in selected if item]\n'
+        '    counts = {item: normalized.count(item) for item in normalized}\n'
+        '    ordered = sorted(counts, key=lambda item: (-counts[item], item))\n'
+        '    return [(item, counts[item]) for item in ordered]\n'
+        for name in ("audit_export", "summary_rows", "history_report", "admin_preview",
+                     "legacy_snapshot", "bulk_export", "dashboard_rollup", "review_queue")
+    )
+
+
+SOURCE_TASKS = {
+    "shipped_tariff": Task(
+        "shipping", "Use the regional tariff lookup in shipping_rules for both the free-shipping threshold "
+        "and base fee. Free shipping starts at the threshold. Preserve the tariff lookup's handling of unknown regions.",
+        "from shipping_rules import tariff_for\n\ndef shipping_fee(total, region):\n"
+        "    return 0 if total >= 50 else 4\n",
+        "return 0 if total >= 50 else 4",
+        "threshold, fee = tariff_for(region)\n    return 0 if total >= threshold else fee",
+        "assert shipping_fee(59, 'coast') == 7\nassert shipping_fee(60, 'coast') == 0",
+        "assert shipping_fee(69, 'remote') == 9\nassert shipping_fee(70, 'remote') == 0\n"
+        "assert shipping_fee(44, 'unknown') == 5\nassert shipping_fee(45, 'unknown') == 0",
+        (("shipping_rules.py", support_source(
+            "TARIFFS = {'coast': (60, 7), 'remote': (70, 9)}\n\n"
+            "def tariff_for(region):\n    return TARIFFS.get(region, (45, 5))\n", "tariff")),),
+    ),
+    "profile_normalize": Task(
+        "provider_labels", "Normalize labels with the profile-specific separator pattern from label_rules. "
+        "Trim outer whitespace, lowercase, collapse every separator run to one underscore, and preserve "
+        "existing underscores and separators not listed for the selected profile.",
+        "import re\nfrom label_rules import separator_pattern\n\ndef normalize_provider(label, profile):\n"
+        "    return label.lower().replace('-', '_')\n",
+        "label.lower().replace('-', '_')",
+        're.sub(separator_pattern(profile), "_", label.strip().lower())',
+        "assert normalize_provider('  A--..B  ', 'legacy') == 'a_b'\n"
+        "assert normalize_provider('A..B', 'modern') == 'a..b'",
+        "assert normalize_provider('A /-B', 'modern') == 'a_b'\n"
+        "assert normalize_provider('A/B__C', 'legacy') == 'a/b__c'\n"
+        "assert normalize_provider(' A--B ', 'unknown') == 'a_b'",
+        (("label_rules.py", support_source(
+            "PATTERNS = {'legacy': r'[\\s.\\-]+', 'modern': r'[\\s/\\-]+'}\n\n"
+            "def separator_pattern(profile):\n    return PATTERNS.get(profile, r'[\\s\\-]+')\n", "label")),),
+    ),
+    "channel_retry": Task(
+        "retry_policy", "Use the channel-specific attempt index from retry_rules before calculating "
+        "exponential backoff. Keep the provided base, cap, and defaults.",
+        "from retry_rules import attempt_index\n\ndef retry_delay(attempt, channel, base=2, cap=30):\n"
+        "    return min(cap, base * 2 ** attempt)\n",
+        "2 ** attempt", "2 ** attempt_index(attempt, channel)",
+        "assert retry_delay(1, 'webhook') == 2\nassert retry_delay(1, 'queue') == 4",
+        "assert retry_delay(-5, 'queue', 3, 9) == 3\n"
+        "assert retry_delay(3, 'webhook', 3, 9) == 9\n"
+        "assert retry_delay(2, 'unknown', 3, 30) == 12",
+        (("retry_rules.py", support_source(
+            "ONE_BASED_CHANNELS = {'webhook', 'email'}\n\n"
+            "def attempt_index(attempt, channel):\n"
+            "    return max(0, attempt - (1 if channel in ONE_BASED_CHANNELS else 0))\n", "retry")),),
+    ),
+}
+
+
 def canonical(obj: Any) -> bytes:
     return json.dumps(obj, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode()
 
@@ -107,15 +178,17 @@ def make_plan(tasks: tuple[str, ...], repeats: int, seed: int, *, experiment: st
     rng.shuffle(blocks)
     rows = []
     for task, repeat in blocks:
-        arms = list(DIAGNOSTIC_ARMS if experiment == DIAGNOSTIC_EXPERIMENT else ARMS)
+        arms = list(EXPERIMENT_ARMS[experiment])
         rng.shuffle(arms)
         for arm in arms:
             diagnostic = experiment == DIAGNOSTIC_EXPERIMENT
-            hint, close = (False, True) if diagnostic else ARMS[arm]
+            hint, close = ARMS[arm] if experiment == "navigation" else (False, True)
             row = {"task": task, "repeat": repeat, "arm": arm, "reporelay": hint, "closeout": close,
                    "attempt_id": f"{task}-{repeat:02d}-{arm}"}
             if diagnostic:
                 row["compression"] = DIAGNOSTIC_ARMS[arm]
+            if experiment == SOURCE_EXPERIMENT:
+                row["source_packet"] = arm
             rows.append(row)
     return rows
 
@@ -146,6 +219,7 @@ def create_fixture(root: Path, task: Task) -> dict[str, str]:
                           "class PublicContract(unittest.TestCase):\n    def test_contract(self):\n"
                           + "".join(f"        {line}\n" for line in task.public.splitlines()),
     }
+    files.update(task.support)
     for index in range(1, 9):
         files[f"helpers/format_{index:02d}.py"] = f"def format_item_{index}(value):\n    return str(value)\n"
     for name, source in files.items():
@@ -343,6 +417,38 @@ def project_diagnostic(raw: str, tier: str, policy: str, detection: dict[str, An
                   "sent_bytes": len(sent.encode()), "seconds": round(time.perf_counter() - start, 6)}
 
 
+def build_source_packet(root: Path, task: Task, *, compress: bool) -> dict[str, Any]:
+    """Project only nominated dependency files, never the editable source."""
+    raw_rows, sent_rows, receipts = [], [], []
+    started = time.perf_counter()
+    for path in (task.path, *(name for name, _ in task.support)):
+        raw = (root / path).read_bytes().decode("utf-8")
+        content, reason, stubbed = raw, "editable_exact" if path == task.path else "raw_control", []
+        if compress and path != task.path:
+            # Both arms get the same files, in the same order. No pre-supplied answer symbols.
+            result = long_code_compress(raw, query=task.objective, budget_ratio=SOURCE_BUDGET_RATIO)
+            candidate = result["content"]
+            if not result["fidelity"]["passed"]:
+                reason = "fidelity_failed"
+            elif len(candidate.encode()) >= len(raw.encode()):
+                reason = "not_smaller"
+            else:
+                # Check projection parseability independently before submitting it.
+                try:
+                    ast.parse(candidate)
+                except SyntaxError:
+                    reason = "fidelity_failed"
+                else:
+                    content, reason, stubbed = candidate, "applied", result["stubbed"]
+        raw_rows.append({"path": path, "source": raw})
+        sent_rows.append({"path": path, "source": content})
+        receipts.append({"path": path, "reason": reason, "stubbed": stubbed,
+                         "raw_sha256": digest(raw.encode()), "sent_sha256": digest(content.encode()),
+                         "raw_bytes": len(raw.encode()), "sent_bytes": len(content.encode())})
+    return {"raw": canonical(raw_rows).decode(), "sent": canonical(sent_rows).decode(),
+            "files": receipts, "seconds": round(time.perf_counter() - started, 6)}
+
+
 class ExperimentRuntime(DirectCoderRuntime):
     def __init__(self, *args, hint: str = "", compression: str | None = None,
                  compression_backend: str = "native", detection=None, **kwargs):
@@ -352,6 +458,8 @@ class ExperimentRuntime(DirectCoderRuntime):
         self.compression_backend = compression_backend
         self.detection = detection or {}
         self.compression_receipts = []
+        self.source_packet = None
+        self.source_packet_receipt = None
 
     def _prompt(self, run, state):
         prompt = super()._prompt(run, state)
@@ -393,6 +501,19 @@ class ExperimentRuntime(DirectCoderRuntime):
                 self.compression_receipts.append(record)
                 self.engine.emit(run["run_id"], "agent.efficiency.compression_prompt", record)
                 prompt = actual
+        if self.source_packet is not None and self.source_packet_receipt is None:
+            packet = self.source_packet
+            header = ("\nBOUND WORKTREE SOURCE PACKET. The editable file is exact; "
+                      "dependency bodies may be stubbed. Use worktree reads when needed.\n")
+            raw, sent = prompt + header + packet["raw"], prompt + header + packet["sent"]
+            receipt = {"turn": int(state.get("turn") or 0) + 1,
+                       "files": packet["files"], "stage_seconds": packet["seconds"],
+                       "raw_prompt_sha256": digest(raw.encode()), "sent_prompt_sha256": digest(sent.encode()),
+                       "raw_prompt_bytes": len(raw.encode()), "sent_prompt_bytes": len(sent.encode()),
+                       "bytes_saved": len(raw.encode()) - len(sent.encode())}
+            self.source_packet_receipt = receipt
+            self.engine.emit(run["run_id"], "agent.efficiency.source_packet_prompt", receipt)
+            prompt = sent
         if self.hint:
             prompt += "\n[REPORELAY NAVIGATION ONLY]\n" + self.hint
         return prompt
@@ -435,7 +556,8 @@ async def record_failed_verification(engine, runtime, rid, *, baseline=False):
 
 
 async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key: str) -> dict[str, Any]:
-    task = TASKS[row["task"]]
+    source_experiment = "source_packet" in row
+    task = (SOURCE_TASKS if source_experiment else TASKS)[row["task"]]
     diagnostic = "compression" in row
     if diagnostic:
         task = diagnostic_fixture(task)
@@ -481,6 +603,11 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
             break
         if diagnostic and not preflight and worktree_for(engine, run) is not None:
             run, preflight = await record_failed_verification(engine, runtime, rid, baseline=True)
+        if source_experiment and runtime.source_packet is None:
+            bound = worktree_for(engine, run)
+            if bound is not None:
+                runtime.source_packet = build_source_packet(
+                    bound, task, compress=row["source_packet"] == "longcodezip")
         new_epoch = (run.get("checkpoint") or {}).get("worktree_mutation_epoch") or 0
         if row["closeout"] and new_epoch > epoch:
             wt = worktree_for(engine, run)
@@ -528,6 +655,19 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
         and rejection and 400 <= rejection["status"] < 500 else None
     )
     experiment_metrics = {}
+    if source_experiment:
+        receipt = runtime.source_packet_receipt
+        joined = bool(receipt and any(r.get("user_prompt_sha256") == receipt["sent_prompt_sha256"]
+                                      for r in requests))
+        experiment_metrics = {
+            "source_packet_rendered": int(receipt is not None),
+            "source_packet_provider_deliveries": int(joined),
+            "source_packet_provider_compressed_deliveries": int(bool(joined and receipt["bytes_saved"])),
+            "source_packet_provider_prompt_bytes_saved": receipt["bytes_saved"] if joined else 0,
+            "source_packet_stage_seconds": runtime.source_packet["seconds"] if runtime.source_packet else 0,
+            "provider_message_bytes": sum(r["prompt_bytes"] for r in requests),
+            "provider_request_body_bytes": sum(r["request_body_bytes"] for r in requests),
+        }
     if diagnostic:
         joined = {r["user_prompt_sha256"] for r in requests if r.get("user_prompt_sha256")}
         applied = [r for r in runtime.compression_receipts if r["applied"]]
@@ -579,7 +719,8 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
         blocks[(row["task"], row["repeat"])][row["arm"]] = row
     results = {}
     diagnostic = experiment == DIAGNOSTIC_EXPERIMENT
-    for name in DIAGNOSTIC_ARMS if diagnostic else ARMS:
+    source_experiment = experiment == SOURCE_EXPERIMENT
+    for name in EXPERIMENT_ARMS[experiment]:
         arm = grouped[name]
         good = sum(row["verified"] for row in arm)
         calls = sum(row["provider_attempts"] for row in arm) if all("provider_attempts" in row for row in arm) else None
@@ -593,7 +734,7 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
                          "provider_attempts_per_verified": calls / good if calls is not None and good else None,
                          "median_wall_seconds": median([row["wall_seconds"] for row in arm if "wall_seconds" in row])
                          if any("wall_seconds" in row for row in arm) else None}
-    if diagnostic:
+    if diagnostic or source_experiment:
         fields = ("provider_attempts", "provider_message_bytes", "provider_request_body_bytes", "prompt_tokens_observed",
                   "completion_tokens_observed", "wall_seconds", "source_read_calls")
         def complete(row, field):
@@ -615,6 +756,11 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
                 provider_input_tokens_total=sum(r["prompt_tokens_observed"] for r in covered) if len(covered) == len(arm) else None,
                 provider_output_tokens_total=sum(r["completion_tokens_observed"] for r in covered) if len(covered) == len(arm) else None,
             )
+            if source_experiment:
+                for field in ("source_packet_rendered", "source_packet_provider_deliveries",
+                              "source_packet_provider_compressed_deliveries",
+                              "source_packet_provider_prompt_bytes_saved", "source_packet_stage_seconds"):
+                    results[name][field] = sum(r.get(field, 0) for r in arm)
         pairs = []
         for (task, repeat), block in blocks.items():
             control = block.get("closeout")
@@ -659,9 +805,9 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", type=Path, required=True)
-    parser.add_argument("--experiment", choices=("navigation", DIAGNOSTIC_EXPERIMENT), default="navigation")
+    parser.add_argument("--experiment", choices=tuple(EXPERIMENT_ARMS), default="navigation")
     parser.add_argument("--compression-backend", choices=("native", "upstream"), default="native")
-    parser.add_argument("--tasks", nargs="+", choices=list(TASKS), default=list(TASKS))
+    parser.add_argument("--tasks", nargs="+", choices=tuple(TASKS) + tuple(SOURCE_TASKS))
     parser.add_argument("--provider", choices=["scripted", "nim"], default="scripted")
     parser.add_argument("--model", default="nvidia/nemotron-3.5-super-vl-120b-a12b")
     parser.add_argument("--seed", type=int, default=4317)
@@ -671,6 +817,12 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     if not 1 <= args.repeats <= 20 or not 5 <= args.max_turns <= 32:
         parser.error("repeats must be 1–20 and max-turns 5–32")
+    task_set = SOURCE_TASKS if args.experiment == SOURCE_EXPERIMENT else TASKS
+    args.tasks = args.tasks or list(task_set)
+    if any(task not in task_set for task in args.tasks):
+        parser.error("selected task is not part of this experiment")
+    if args.experiment == SOURCE_EXPERIMENT and args.compression_backend != "native":
+        parser.error("source compression uses the BEAST-native LongCodeZip-style implementation")
     if len(set(args.tasks)) != len(args.tasks):
         parser.error("task names must be unique")
     plan = make_plan(tuple(args.tasks), args.repeats, args.seed, experiment=args.experiment)
@@ -713,7 +865,7 @@ def main(argv=None) -> int:
                       "enabled": args.provider == "nim", "consecutive_trials": 2, "distinct_arms": True,
                       "condition": "matching first-turn HTTP 4xx fingerprints before tool execution",
                   },
-                  "heldout_sha256": {name: digest(TASKS[name].heldout.encode()) for name in args.tasks},
+                  "heldout_sha256": {name: digest(task_set[name].heldout.encode()) for name in args.tasks},
                   "claim_boundary": "Synthetic fixtures, no operating-system network isolation. "
                                     "Scripted mode does not measure model efficacy. Live counts are adapter request attempts."}
         if args.experiment == DIAGNOSTIC_EXPERIMENT:
@@ -725,6 +877,16 @@ def main(argv=None) -> int:
                               digest(Path(fn.__code__.co_filename).read_bytes())
                               for fn in (compress_cascade_output, _sqz)
                           })
+        if args.experiment == SOURCE_EXPERIMENT:
+            frozen.update(
+                experiment=args.experiment, compression_backend="beast_native_longcodezip_style",
+                source_budget_ratio=SOURCE_BUDGET_RATIO, source_packet_cadence="first post-bind prompt only",
+                source_backend_sha256=digest(Path(long_code_compress.__code__.co_filename).read_bytes()),
+                source_packet_fixture_sha256={
+                    name: {task_set[name].path: digest(task_set[name].source.encode()),
+                           **{path: digest(code.encode()) for path, code in task_set[name].support}}
+                    for name in args.tasks},
+            )
         write_json(out / "plan.json", frozen)
         rows = []
         prior_rejection = None
