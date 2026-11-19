@@ -150,3 +150,26 @@ manifest digest. Report any preserved-byte savings separately from model
 compute avoided and carry measured costs into the final crystal comparison.
 The existing pipe hash helper is useful as a transport control, not a matched
 end-to-end replay baseline.
+
+## Stage 4 interception census and experiment order
+
+These paths act on different objects. Keep all on the roadmap, but use a
+separate comparison for each mechanism. No live eBPF attachment, existing
+listener adoption, or production policy change belongs in the coding benchmark.
+
+| Lane | Actual path and current evidence boundary | Comparison and required receipt |
+|---|---|---|
+| 4A. Direct-coder stream | NIM and Ollama planner adapters call `StreamingInterceptionEngine`. Native NIM can stop on complete, invalid, repetition, explanation, or estimated budget conditions. | Same NIM SSE request, drain vs complete top-level schema shape vs native policy. Count observed SSE bytes, exit reason, first shape and first completed tool, rejections, repeated proposals and independently verified repairs. Missing usage is unknown. This branch adds the NIM matrix. Match native Ollama streaming separately. |
+| 4B. Governed proxy | `execution/execute.py` routes opted-in schema-carrying requests to `GovernedModelClient` using `constrained_output` and `JsonStreamGate`. Existing TGI evidence combines grammar, gate, candidate chain, and verifier feedback. | First fix one provider/model and schema; separate request constraint/dialect from the incremental gate, then split verifier rejection, repair feedback, fixed retry and fallback routing. Record actual backend, requests, verifier checks and counted failures. |
+| 4C. Compute interception before provider | `ComputePlane.begin` invokes `InferenceComputeInterceptor`. This path can transform/route a request, resolve it deterministically or via verified reuse, or send it upstream. | Pass-through vs shadow proposal vs one independently verified resolved branch at a time. Keep the candidate set fixed first. No avoided-call credit unless the effect verifies and no provider/engine call occurred. |
+| 4D. Placement and specialist escalation | Governed scorecard/circuit/placement logic and `swarm_specialist.py` are distinct from surface/advisory swarm roles. TGI has sequential versus concurrent evidence. | Fixed route vs ranked route, then specialist off/on and serial vs batching in separate paired runs. Charge all candidates, retries, verification, and queueing. Require actual dispatch and model-call receipts, not advisory UI events. |
+| 4E / Stage 5. Reusable context | `SemanticComputePageStore` keeps exact-identity verified application pages. `memory_contract.page_source` exposes page hits, alongside a separate verified semantic cache source. `local_prefix_kv_store.py` concerns engine-prefix compatibility, not application page hits. | Rebuild vs matched page lookup and use. Test stale identity and tamper refusal, then independently verify the dependent result. Separately test the engine's native KV cache with evidence of actual consumption and prefill avoided. |
+| Stage 6. Recovery, not a hit policy | `SemanticRaidStore` stores and reconstructs digest-bound mirrored context packets. `ArtifactFossilLayerStore` checkpoints and replays lineage. The IDE stream has an explicit context-packet persistence hook. | Rebuild vs restore after matched interrupted work. Test intact, one copy damaged and both copies damaged. Charge persistence/recovery, verify restored bytes and the resumed task. Test fossil lineage replay separately. |
+| Stage 7. Socket custody and packet delivery | `socket_guardian.py` has inherited/systemd listener custody, lease handoff and a separate `pidfd_getfd` adoption path. ARDA-aware XDP simulator and AF_XDP worker/echo evidence are separate paths, not proxy/cache hooks. | On authorized fixture listeners compare normal restart/systemd handoff vs Guardian paths, recording continuity, refusal and whether pidfd actually worked. Separately compare the kernel path vs AF_XDP for identical authorized test traffic, distinguishing simulator, actual copy mode and actual zero-copy mode. Require receiver payload verification, fallback counters, CPU and tail latency. |
+| Stage 7B / final. Physical artifacts and replay | Sealed memfd, Git/Xet/whole blobs and crystal interpreter are distinct transport/storage/work-avoidance layers. | Follow Stage 7B above, then charge its measured costs in the held-out crystal economics comparison. |
+
+For Stage 4A, count only provider-reported usage. Closing an SSE reader can hide
+the terminal usage frame even when the provider already did work. Observed SSE
+bytes are application bytes read, not socket/NIC bytes or billed tokens. Time to
+first complete schema shape is not tool authorization. The tool registry,
+worktree approval and independent verification stay unchanged in every arm.

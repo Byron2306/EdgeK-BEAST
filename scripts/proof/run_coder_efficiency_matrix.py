@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse
 import ast
 import asyncio
-from collections import defaultdict
+from collections import Counter, defaultdict
 from dataclasses import dataclass, replace
 import hashlib
 import json
@@ -37,6 +37,8 @@ ARMS = {
     "direct": (False, False), "reporelay": (True, False),
     "closeout": (False, True), "both": (True, True),
 }
+STREAM_EXPERIMENT = "stream-interception"
+STREAM_ARMS = ("drain", "valid_only", "native")
 DIAGNOSTIC_EXPERIMENT = "diagnostic-compression"
 FILTER_EXPERIMENT = "diagnostic-filters"
 FILTER_ARMS = {"raw": "none", "ansi_sgr": "ansi_sgr", "checkpoint_padding": "checkpoint_padding"}
@@ -63,7 +65,7 @@ EXPERIMENT_ARMS = {"navigation": ARMS, DIAGNOSTIC_EXPERIMENT: DIAGNOSTIC_ARMS,
                    NAV_GRAPH_EXPERIMENT: NAV_GRAPH_ARMS, REAL_GRAPH_EXPERIMENT: ("file_list", "graph"),
                    LAZY_GRAPH_EXPERIMENT: ("file_list", "on_demand"),
                    RETRIEVAL_EXPERIMENT: tuple(BACKENDS), CHUNK_EXPERIMENT: ("fixed", "syntax"),
-                   FILTER_EXPERIMENT: FILTER_ARMS}
+                   FILTER_EXPERIMENT: FILTER_ARMS, STREAM_EXPERIMENT: STREAM_ARMS}
 TOOLS = frozenset({
     "workspace.index", "workspace.list", "workspace.read_range", "workspace.search_text",
     "worktree.read_file", "worktree.list", "worktree.search_text",
@@ -306,6 +308,8 @@ def make_plan(tasks: tuple[str, ...], repeats: int, seed: int, *, experiment: st
                    "attempt_id": f"{task}-{repeat:02d}-{arm}"}
             if diagnostic:
                 row["compression"] = EXPERIMENT_ARMS[experiment][arm]
+            if experiment == STREAM_EXPERIMENT:
+                row.update(prebind=True, stream_mode=arm)
             if experiment in PACKET_EXPERIMENTS:
                 row["source_packet"] = arm
                 if experiment in GRAPH_EXPERIMENTS:
@@ -502,13 +506,20 @@ def http_rejection(exc: HTTPError, key: str) -> dict[str, Any]:
 
 
 class MeasuredNIM(NIMPlannerProvider):
-    def __init__(self, *, key: str, model: str):
+    def __init__(self, *, key: str, model: str, stream_mode=None):
         super().__init__(api_key=key, model=model, base_url="https://integrate.api.nvidia.com/v1",
-                         stream=False, max_retries=0, timeout_seconds=45, enable_thinking=False,
+                         stream=stream_mode is not None, stream_policy=stream_mode,
+                         max_retries=0, timeout_seconds=45, enable_thinking=False,
                          allow_reasoning_as_action=False)
         self.requests: list[dict[str, Any]] = []
 
     def _request_json(self, payload):
+        return self._measure(super()._request_json, payload)
+
+    def _request_stream(self, payload):
+        return self._measure(super()._request_stream, payload)
+
+    def _measure(self, send, payload):
         messages = payload.get("messages", [])
         user_content = next((m.get("content") for m in reversed(messages)
                              if m.get("role") == "user"), None)
@@ -519,10 +530,11 @@ class MeasuredNIM(NIMPlannerProvider):
         self.requests.append(record)
         start = time.perf_counter()
         try:
-            result = super()._request_json(payload)
+            result = send(payload)
             usage = result.get("usage") or {}
             record.update(http_response_parsed=True, prompt_tokens=usage.get("prompt_tokens"),
                           completion_tokens=usage.get("completion_tokens"))
+            record.update(result.get("stream_observation") or {})
             return result
         except HTTPError as exc:
             record["http_rejection"] = http_rejection(exc, self.api_key)
@@ -866,7 +878,7 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
     scripted_query = ({"compatible_identity": "packaging/requirements.py",
                        "compact_unicode": "itsdangerous/url_safe.py"}.get(row["task"], "")
                       if row.get("graph_on_demand") else "")
-    delegate = MeasuredNIM(key=key, model=args.model) if args.provider == "nim" else Scripted(
+    delegate = MeasuredNIM(key=key, model=args.model, stream_mode=row.get("stream_mode")) if args.provider == "nim" else Scripted(
         task, prebind=prebind, graph_query=scripted_query)
     provider = MeteredProvider(delegate)
     start = time.perf_counter()
@@ -910,7 +922,7 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
             if row.get("graph_on_demand"):
                 engine.enable_graph_lookup(BoundedWorktreeGraph(
                     bound, set(paths), out / "tmp" / row["attempt_id"] / "lazy.sqlite3"))
-        else:
+        elif "source_packet" in row:
             runtime.source_packet = build_source_packet(bound, task, compress=row["source_packet"] == "longcodezip")
         run = engine.store.get_run(rid)
     closed = preflight = False
@@ -975,6 +987,32 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
         and rejection and 400 <= rejection["status"] < 500 else None
     )
     experiment_metrics = {}
+    if args.experiment == STREAM_EXPERIMENT:
+        actions = [e["payload"].get("decision") or {} for e in events
+                   if e["event_type"] == "agent.coder.decision"]
+        tool_signatures = [canonical([a.get("tool_id"), a.get("arguments") or {}])
+                           for a in actions if a.get("decision_type") == "tool"]
+        first_turn = next((e["created_at"] for e in events
+                           if e["event_type"] == "agent.coder.turn.started"), None)
+        first_tool = next((e["created_at"] for e in events
+                           if e["event_type"] == "agent.tool.completed"
+                           and (e["payload"].get("observation") or {}).get("tool_id") not in {None, "worktree.bind"}), None)
+        experiment_metrics = {
+            "stream_close_requests": sum(bool(r.get("stream_close_requested")) for r in requests),
+            "stream_done_frames": sum(bool(r.get("stream_done_seen")) for r in requests),
+            "stream_requests_with_sse_observation": sum("stream_sse_bytes_read" in r for r in requests),
+            "stream_sse_bytes_read": sum(r.get("stream_sse_bytes_read", 0) for r in requests),
+            "stream_stop_reasons": dict(Counter(r["stream_stop_reason"] for r in requests
+                                                if r.get("stream_stop_reason"))),
+            "stream_first_schema_shape_ms": requests[0].get("first_schema_shape_ms") if requests else None,
+            "seconds_to_first_completed_tool": round(first_tool - first_turn, 6)
+                if first_turn is not None and first_tool is not None else None,
+            "duplicate_tool_decisions": len(tool_signatures) - len(set(tool_signatures)),
+            "tool_decisions_rejected": sum(e["event_type"] == "agent.coder.tool_rejected" for e in events),
+            "provider_pauses": sum(e["event_type"] == "agent.coder.provider_paused" for e in events),
+            "provider_message_bytes": sum(r["prompt_bytes"] for r in requests),
+            "provider_request_body_bytes": sum(r["request_body_bytes"] for r in requests),
+        }
     if source_experiment:
         receipt = runtime.source_packet_receipt
         joined = bool(receipt and any(r.get("user_prompt_sha256") == receipt["sent_prompt_sha256"]
@@ -1080,7 +1118,7 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
                          "provider_attempts_per_verified": calls / good if calls is not None and good else None,
                          "median_wall_seconds": median([row["wall_seconds"] for row in arm if "wall_seconds" in row])
                          if any("wall_seconds" in row for row in arm) else None}
-    if diagnostic or source_experiment:
+    if diagnostic or source_experiment or experiment == STREAM_EXPERIMENT:
         fields = ("provider_attempts", "provider_message_bytes", "provider_request_body_bytes", "prompt_tokens_observed",
                   "completion_tokens_observed", "wall_seconds", "source_read_calls")
         def complete(row, field):
@@ -1102,7 +1140,19 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
                 provider_input_tokens_total=sum(r["prompt_tokens_observed"] for r in covered) if len(covered) == len(arm) else None,
                 provider_output_tokens_total=sum(r["completion_tokens_observed"] for r in covered) if len(covered) == len(arm) else None,
             )
-            if experiment in (CHUNK_EXPERIMENT, FILTER_EXPERIMENT):
+            if experiment == STREAM_EXPERIMENT:
+                for field in ("stream_close_requests", "stream_done_frames", "stream_sse_bytes_read",
+                              "stream_requests_with_sse_observation", "duplicate_tool_decisions",
+                              "tool_decisions_rejected", "provider_pauses"):
+                    results[name][field] = sum(r.get(field, 0) for r in arm)
+                stops = Counter()
+                for row in arm:
+                    stops.update(row.get("stream_stop_reasons", {}))
+                results[name]["stream_stop_reasons"] = dict(stops)
+                for field in ("stream_first_schema_shape_ms", "seconds_to_first_completed_tool"):
+                    values = [r[field] for r in arm if r.get(field) is not None]
+                    results[name][field] = {"n": len(values), "median": median(values) if values else None}
+            if experiment in (CHUNK_EXPERIMENT, FILTER_EXPERIMENT, STREAM_EXPERIMENT):
                 total = results[name]["provider_input_tokens_total"]
                 verified = results[name]["verified"]
                 results[name]["provider_input_tokens_per_verified"] = (
@@ -1116,6 +1166,9 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
         def comparisons(baseline, treatments=None):
             pairs = []
             metrics = fields + (("first_target_read_tool_number",) if experiment in GRAPH_EXPERIMENTS else ())
+            if experiment == STREAM_EXPERIMENT:
+                metrics += ("stream_sse_bytes_read", "seconds_to_first_completed_tool",
+                            "duplicate_tool_decisions", "tool_decisions_rejected", "provider_pauses")
             for (task, repeat), block in blocks.items():
                 control = block.get(baseline)
                 if control is None:
@@ -1134,6 +1187,9 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
         pairs = ({"paired_against_file_list": comparisons("file_list"),
                   "paired_graph_against_symbols": comparisons("symbols", {"graph"})}
                  if experiment == NAV_GRAPH_EXPERIMENT else
+                 {"paired_against_drain": comparisons("drain"),
+                  "paired_native_against_valid_only": comparisons("valid_only", {"native"})}
+                 if experiment == STREAM_EXPERIMENT else
                  {"paired_against_fixed": comparisons("fixed")} if experiment == CHUNK_EXPERIMENT else
                  {"paired_against_raw": comparisons("raw")} if experiment == FILTER_EXPERIMENT else
                  {"paired_against_file_list": comparisons("file_list")} if experiment in UPSTREAM_EXPERIMENTS else
@@ -1258,6 +1314,12 @@ def main(argv=None) -> int:
                   "heldout_sha256": {name: digest(task_set[name].heldout.encode()) for name in args.tasks},
                   "claim_boundary": "Synthetic fixtures, no operating-system network isolation. "
                                     "Scripted mode does not measure model efficacy. Live counts are adapter request attempts."}
+        if args.experiment == STREAM_EXPERIMENT:
+            frozen.update(experiment=args.experiment, nim_stream=args.provider == "nim",
+                          stream_policies=STREAM_ARMS, stream_include_usage=True,
+                          claim_boundary="Same NIM SSE route and configuration across arms. A local close does "
+                                         "not prove server cancellation, tokens saved, or billing avoided. "
+                                         "Scripted controls do not contact a model. No OS network isolation.")
         if args.experiment == FILTER_EXPERIMENT:
             frozen.update(experiment=args.experiment, diagnostic_filters=FILTER_ARMS,
                           diagnostic_preflight="identical verifier with seeded SGR and checkpoint padding",

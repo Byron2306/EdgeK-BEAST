@@ -94,6 +94,7 @@ class NIMPlannerProvider:
         on_token: Any = None,
         on_reasoning: Any = None,
         stream: bool | None = None,
+        stream_policy: str | None = None,
         enable_thinking: bool = False,
         allow_reasoning_as_action: bool = True,
         stream_interceptor: StreamingComputeInterceptor | None = None,
@@ -119,6 +120,9 @@ class NIMPlannerProvider:
         self.on_token = on_token
         self.on_reasoning = on_reasoning
         self.stream = stream
+        if stream_policy not in (None, "drain", "valid_only", "native"):
+            raise ValueError("unknown NIM stream policy")
+        self.stream_policy = stream_policy
         self.enable_thinking = enable_thinking
         self.allow_reasoning_as_action = allow_reasoning_as_action
         self.stream_interceptor = stream_interceptor or StreamingComputeInterceptor(
@@ -184,6 +188,8 @@ class NIMPlannerProvider:
                 os.environ.get("BEAST_NIM_PLANNER_STREAM", "0").strip().lower() in {"1", "true", "yes"}
             ),
         }
+        if payload["stream"] and self.stream_policy is not None:
+            payload["stream_options"] = {"include_usage": True}
         if prompt.startswith(FOCUSED_EXPLANATION_HEADER):
             schema = self.FOCUSED_EXPLANATION_SCHEMA
         elif prompt.startswith(EXPLANATION_HEADER):
@@ -418,13 +424,19 @@ class NIMPlannerProvider:
         max_tokens = int(payload.get("max_tokens") or os.environ.get("BEAST_NIM_MAX_TOKENS", "2048"))
         state = self.stream_interceptor.engine.create_initial_state(max_tokens)
         stopped_upstream = False
+        observed_bytes = 0
+        done_seen = False
+        first_schema_shape_ms = None
+        stream_started = time.perf_counter()
         with _egress.urlopen("nim_planner_provider", request, timeout=self.timeout_seconds) as response:
             for raw_line in response:
+                observed_bytes += len(raw_line)
                 line = raw_line.decode("utf-8", errors="replace").strip()
                 if not line or not line.startswith("data:"):
                     continue
                 data = line[5:].strip()
                 if data == "[DONE]":
+                    done_seen = True
                     break
                 item = json.loads(data)
                 if not isinstance(item, dict):
@@ -455,8 +467,24 @@ class NIMPlannerProvider:
                             pass
                     normalized = self.stream_interceptor.provider_adapter.normalize_event(text)
                     token_count = normalized.token_count if normalized is not None else 1
-                    result = self.stream_interceptor.engine.process_chunk(state, text, token_count)
-                    if result.should_stop:
+                    if self.stream_policy is not None and first_schema_shape_ms is None:
+                        try:
+                            candidate = json.loads(self.last_partial_text)
+                        except (ValueError, RecursionError):
+                            candidate = None
+                        if isinstance(candidate, dict) and self.stream_interceptor.engine._validate_against_contract(candidate):
+                            first_schema_shape_ms = round((time.perf_counter() - stream_started) * 1000, 3)
+                    if self.stream_policy in ("drain", "valid_only"):
+                        state.partial_output += text
+                        state.tokens_emitted += token_count
+                        should_stop = self.stream_policy == "valid_only" and first_schema_shape_ms is not None
+                        if should_stop:
+                            state.early_stopped = state.schema_valid = True
+                            state.governed_object_found = candidate
+                            state.stop_reason = "governed_object_complete"
+                    else:
+                        should_stop = self.stream_interceptor.engine.process_chunk(state, text, token_count).should_stop
+                    if should_stop:
                         stopped_upstream = True
                         close = getattr(response, "close", None)
                         if callable(close):
@@ -476,6 +504,13 @@ class NIMPlannerProvider:
             "usage": usage,
             "finish_reason": finish_reason,
             "stream_interception": report.to_dict(),
+            **({"stream_observation": {
+                "stream_sse_bytes_read": observed_bytes,
+                "stream_done_seen": done_seen,
+                "stream_close_requested": stopped_upstream,
+                "stream_stop_reason": state.stop_reason if stopped_upstream else None,
+                "first_schema_shape_ms": first_schema_shape_ms,
+            }} if self.stream_policy is not None else {}),
         }
 
     def _request_json(self, payload: dict[str, Any]) -> dict[str, Any]:
