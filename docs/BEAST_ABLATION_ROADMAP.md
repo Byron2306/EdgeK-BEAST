@@ -211,3 +211,31 @@ exclude line separators and are not network bytes.
 Terminal usage may be absent after client close. Use observed usage on the
 attempts rather than the governed client's existing cost estimates and never
 infer prevented model computation or billing from closing the client.
+
+### Stage 4C verified pre-provider displacement
+
+`scripts.proof.run_stage4c_preprovider` runs the actual inference interceptor,
+Phase 2 governor, allowlisted deterministic schema validator, and compute
+ledger for shadow and enforced modes. The harness consumes the actual route
+and invokes the fixed governed NIM client only where it calls for provider
+execution. This is a benchmark harness, not a change to Executor defaults
+or to the deployed gateway. Pass-through does not run the interceptor.
+
+All arms share the same fixtures and an independent Draft 2020-12 oracle.
+Where called, NIM uses schema-constrained drain, no feedback or fallback, and
+a matched prompt and seed. Eligible fixtures cover valid data and a type
+violation. Near-misses remove the proof, mismatch its output digest, or mark
+the transform incomplete. The local operation can still run in shadow or
+while checking applicability, but the near-miss result must never substitute
+for the provider. Fixture proofs are explicitly synthetic and are not
+production approval, certificates, crystal replay, or a general router test.
+
+The runner counts at the HTTP transport boundary, then joins those counts to
+the verified result and the compute receipt. A paired avoided-request credit
+requires a verified pass-through answer with one actual request and a verified
+local answer with zero requests. Report verified local zero-call results
+separately so an unverified baseline does not earn paired credit. Mock
+transport controls report no live avoided-request total. No billing or token
+savings are inferred. One repeated block is 15 trials, of which 13 should reach
+the provider. With three repeats, there are 45 planned trials and 39 expected
+provider requests if all controls hold. Use `--request-cap 45` for that run.
