@@ -48,6 +48,7 @@ from app.kernel.agents.planner_provider import CallbackPlannerProvider, Capabili
 from app.kernel.agents.provider_quality import ProviderQualityLedger
 from app.kernel.agents.planner_resilience import build_resilient_nim_provider, build_resilient_ollama_provider
 from app.kernel.agents.planner_runtime import AgentPlannerRuntime
+from app.kernel.agents.direct_coder_runtime import DirectCoderRuntime
 from app.kernel.compute.coding_crystal_runtime import planner_runtime_extras
 from app.kernel.agents.promotion_engine import PromotionEngine
 from app.kernel.evidence.evidence_builder import EvidenceBuilder
@@ -533,6 +534,39 @@ def _launch_for_run(
 ) -> dict[str, Any]:
     run_id = str(run.get("run_id") or "")
     request_payload = run.get("request") if isinstance(run.get("request"), dict) else {}
+    if str(request_payload.get("launch_strategy") or "").strip().lower() == "direct_coder":
+        # The coding model owns governed tool calls. No AgentPlannerRuntime,
+        # heuristic fallback, or implicit planning subagent is instantiated.
+        provider_name = str(run.get("provider") or "").strip().lower()
+        model = str(run.get("model") or "").strip()
+        if provider_name in {"nvidia_nim", "nim", "local_nim"} or _is_nim_model(run):
+            provider = NIMPlannerProvider(
+                model=model,
+                base_url=str(request_payload.get("nim_base_url")
+                             or os.environ.get("NVIDIA_NIM_BASE_URL") or ""),
+                api_key=str(os.environ.get("NVIDIA_API_KEY") or ""),
+                timeout_seconds=float(os.environ.get("BEAST_DIRECT_CODER_TIMEOUT", "90")),
+                max_retries=0,
+                on_token=lambda token: AgentRunEngine(root).emit(
+                    run_id, "agent.model.delta", {"text": str(token)}
+                ),
+            )
+        elif provider_name in {"ollama", "local_ollama"}:
+            provider = OllamaPlannerProvider(
+                model=model,
+                base_url=_ollama_base_url(run),
+                timeout_seconds=float(os.environ.get("BEAST_DIRECT_CODER_TIMEOUT", "90")),
+                on_token=lambda token: AgentRunEngine(root).emit(
+                    run_id, "agent.model.delta", {"text": str(token)}
+                ),
+            )
+        else:
+            raise ValueError(f"direct coder does not support provider {provider_name!r}")
+        TURN_RUNTIMES[run_id] = DirectCoderRuntime(
+            AgentRunEngine(root), provider,
+            max_turns=max_turns if max_turns is not None else 32,
+        )
+        return {"active": True, "reused": False, "engine": "direct_coder_v1"}
     if _prefer_direct_planner(run):
         planner_turns = max_turns if max_turns is not None else _planner_max_turns(run, request_payload)
         return _launch_planner(
