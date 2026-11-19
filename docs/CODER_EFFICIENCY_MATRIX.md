@@ -239,3 +239,32 @@ Use the same `--repo-fixtures` as upstream navigation. One scripted repeat
 is six trials and three live repeats are eighteen trials. At eight turns
 their live request ceiling is 144. Cold build and cumulative snapshot lookup
 time are included in the graph-arm wall time and reported separately.
+
+## Stage 2: bounded retrieval and memory controls
+
+`--experiment retrieval-ablation` compares a file list alone, file list plus
+BM25 lexical retrieval, and file list plus local latent-vector retrieval
+(TF-IDF, rank-24 LSA, cosine; NumPy). This vector baseline is not a neural
+embedding model or BEAST's production vector store. Both retrievers score
+identical fixed-window source chunks using the same task query and can submit
+at most three excerpts within 1,800 bytes of chunk JSON. No provider embedding
+requests, fallback between retrievers, graph, compressed tool output, or
+memory injection. Benchmark tests are not part of the corpus. Corpus and
+query hashes are frozen before calls and the bound worktree must match.
+All arms read/hash the corpus for this parity check; the control does not
+compute a ranking. The receipts record the exact selected snippets and prompt
+hash. Retrieval exposure is checked separately from the first file list.
+
+Use the Stage 1 `--repo-fixtures` directory. Scripted mode gives nine controls
+and does not measure model quality. Three live repeats yield 27 trials, with
+a 216-request ceiling at eight turns. Compare verified output, tokens, reads,
+ranking time and target-file selection versus the file list and vector versus
+lexical. A target-file hit is a navigation proxy, not proof a snippet was
+sufficient. Include no-hit trials.
+
+`python -m scripts.proof.retrieval_ablation` separately executes offline
+Memory Hull controls in a disposable vault. Signed notes for current, stale
+and foreign repo/revision scopes share a query. The test checks scope filtering
+and native rejection of a note whose Markdown was changed after signing.
+It makes no model calls and does not change production recall or demonstrate
+a live effect of supplying memory to a coding model.
