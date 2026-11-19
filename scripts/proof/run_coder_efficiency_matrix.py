@@ -37,10 +37,12 @@ ARMS = {
 DIAGNOSTIC_EXPERIMENT = "diagnostic-compression"
 DIAGNOSTIC_ARMS = {"closeout": "none", "rtk": "rtk", "sqz": "sqz"}
 SOURCE_EXPERIMENT = "source-compression"
+PREBOUND_SOURCE_EXPERIMENT = "source-compression-prebound"
+SOURCE_EXPERIMENTS = (SOURCE_EXPERIMENT, PREBOUND_SOURCE_EXPERIMENT)
 SOURCE_ARMS = ("closeout", "longcodezip")
 SOURCE_BUDGET_RATIO = 0.55
 EXPERIMENT_ARMS = {"navigation": ARMS, DIAGNOSTIC_EXPERIMENT: DIAGNOSTIC_ARMS,
-                   SOURCE_EXPERIMENT: SOURCE_ARMS}
+                   SOURCE_EXPERIMENT: SOURCE_ARMS, PREBOUND_SOURCE_EXPERIMENT: SOURCE_ARMS}
 TOOLS = frozenset({
     "workspace.index", "workspace.list", "workspace.read_range", "workspace.search_text",
     "worktree.read_file", "worktree.list", "worktree.search_text",
@@ -187,8 +189,10 @@ def make_plan(tasks: tuple[str, ...], repeats: int, seed: int, *, experiment: st
                    "attempt_id": f"{task}-{repeat:02d}-{arm}"}
             if diagnostic:
                 row["compression"] = DIAGNOSTIC_ARMS[arm]
-            if experiment == SOURCE_EXPERIMENT:
+            if experiment in SOURCE_EXPERIMENTS:
                 row["source_packet"] = arm
+                if experiment == PREBOUND_SOURCE_EXPERIMENT:
+                    row["prebind"] = True
             rows.append(row)
     return rows
 
@@ -256,12 +260,14 @@ def changed_paths(root: Path) -> list[str]:
 class FixtureEngine(AgentRunEngine):
     """Scope the experiment to one mutable fixture file and one fixed verifier in all arms."""
 
-    def __init__(self, root: Path, task: Task):
+    def __init__(self, root: Path, task: Task, *, prebind: bool = False):
         super().__init__(root)
         self.task = task
+        self.prebind = prebind
 
     def list_tools(self, **kwargs: Any) -> list[dict[str, Any]]:
-        return [tool for tool in super().list_tools(**kwargs) if tool.get("tool_id") in TOOLS]
+        allowed = TOOLS - {"worktree.bind"} if self.prebind else TOOLS
+        return [tool for tool in super().list_tools(**kwargs) if tool.get("tool_id") in allowed]
 
     async def execute_tool(self, run_id: str, tool_id: str, arguments=None, **kwargs):
         args = arguments or {}
@@ -370,9 +376,9 @@ class MeasuredNIM(NIMPlannerProvider):
 class Scripted:
     """Control-plane check only. Decisions deliberately do not depend on the hint."""
 
-    def __init__(self, task: Task):
+    def __init__(self, task: Task, *, prebind: bool = False):
         self.steps = iter([
-            ("worktree.bind", {}),
+            *([] if prebind else [("worktree.bind", {})]),
             ("workspace.read_range", {"path": task.path, "start_line": 1, "line_count": 12}),
             ("worktree.replace_exact", {"path": task.path, "old_text": task.old, "new_text": task.new}),
             ("worktree.verify", {"command": list(PUBLIC)}),
@@ -555,8 +561,32 @@ async def record_failed_verification(engine, runtime, rid, *, baseline=False):
     return engine.store.get_run(rid), False
 
 
+async def bind_fixture_before_first_turn(engine, runtime, run):
+    """Use the real scoped bind and approval, but spend no model turn on setup."""
+    run_id = run["run_id"]
+    tool = "worktree.bind"
+    args = {"objective": engine.task.objective, "base_ref": "HEAD", "provider": "local"}
+    decision = PlannerDecision(decision_type=PlannerDecisionType.TOOL, tool_id=tool, arguments=args)
+    approval_id, parked = runtime._approval(run_id, run, decision, engine.tool_registry.get(tool), {})
+    if parked:
+        raise RuntimeError("fixture prebind did not receive the existing scoped approval")
+    engine.store.transition(run_id, AgentRunState.EXECUTING_TOOL)
+    observation = await engine.execute_tool(run_id, tool, args, approval_id=approval_id)
+    engine.store.transition(run_id, AgentRunState.OBSERVING)
+    snapshot = engine.store.get_run(run_id)
+    bound = worktree_for(engine, snapshot)
+    if bound is None or git(bound, "rev-parse", "HEAD") != git(engine.workspace_root, "rev-parse", "HEAD"):
+        raise RuntimeError("fixture prebind did not produce an exact validated binding")
+    state = runtime._state(run_id)
+    state["observations"] = [runtime._compact_observation(tool, observation)]
+    runtime._save(run_id, state)
+    engine.emit(run_id, "agent.efficiency.prebind_completed", {"base_commit": git(bound, "rev-parse", "HEAD").strip()})
+    return bound
+
+
 async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key: str) -> dict[str, Any]:
     source_experiment = "source_packet" in row
+    prebind = bool(row.get("prebind"))
     task = (SOURCE_TASKS if source_experiment else TASKS)[row["task"]]
     diagnostic = "compression" in row
     if diagnostic:
@@ -569,14 +599,16 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
     ).returncode
     if before["exit"] != 1 or baseline_public != 1:
         raise RuntimeError("fixture must fail both public and independent tests before any agent action")
-    engine = FixtureEngine(root, task)
+    engine = FixtureEngine(root, task, prebind=prebind)
     objective = (task.objective + " Work in one isolated worktree and change only the implementation. "
                  "Verify with the exact argv python -m unittest -q test_public. Do not apply the worktree.")
+    if prebind:
+        objective += " The isolated worktree is already bound; use it without rebinding."
     run = engine.create_run(session_id="efficiency-matrix", objective=objective,
                             mode="agent", provider=args.provider, model=args.model if args.provider == "nim" else "scripted",
                             request={"autonomy": "autopilot", "execution_target": "local", "launch_strategy": "direct_coder"})
     rid = run["run_id"]
-    delegate = MeasuredNIM(key=key, model=args.model) if args.provider == "nim" else Scripted(task)
+    delegate = MeasuredNIM(key=key, model=args.model) if args.provider == "nim" else Scripted(task, prebind=prebind)
     provider = MeteredProvider(delegate)
     start = time.perf_counter()
     hint, hint_seconds, fidelity = "", 0.0, False
@@ -594,6 +626,10 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
                                 compression=row.get("compression"),
                                 compression_backend=getattr(args, "compression_backend", "native"),
                                 detection=getattr(args, "compression_detection", {}))
+    if prebind:
+        bound = await bind_fixture_before_first_turn(engine, runtime, run)
+        runtime.source_packet = build_source_packet(bound, task, compress=row["source_packet"] == "longcodezip")
+        run = engine.store.get_run(rid)
     closed = preflight = False
     terminal = {state.value for state in TERMINAL_STATES} | {"paused", "waiting_for_approval"}
     for _ in range(args.max_turns + 1):
@@ -651,7 +687,8 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
     rejection = requests[0].get("http_rejection") if len(requests) == 1 else None
     first_turn_rejection = (
         rejection if run["state"] == "paused" and provider.decisions == 1 and not preflight
-        and not any(e["event_type"] == "agent.tool.started" for e in events)
+        # Mechanical worktree prebind is not a model action.
+        and not any(e["event_type"] == "agent.coder.decision" for e in events)
         and rejection and 400 <= rejection["status"] < 500 else None
     )
     experiment_metrics = {}
@@ -662,6 +699,10 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
         experiment_metrics = {
             "source_packet_rendered": int(receipt is not None),
             "source_packet_provider_deliveries": int(joined),
+            "source_packet_first_turn_provider_delivered": bool(
+                receipt and receipt["turn"] == 1 and requests
+                and requests[0].get("user_prompt_sha256") == receipt["sent_prompt_sha256"]
+            ),
             "source_packet_provider_compressed_deliveries": int(bool(joined and receipt["bytes_saved"])),
             "source_packet_provider_prompt_bytes_saved": receipt["bytes_saved"] if joined else 0,
             "source_packet_stage_seconds": runtime.source_packet["seconds"] if runtime.source_packet else 0,
@@ -719,7 +760,7 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
         blocks[(row["task"], row["repeat"])][row["arm"]] = row
     results = {}
     diagnostic = experiment == DIAGNOSTIC_EXPERIMENT
-    source_experiment = experiment == SOURCE_EXPERIMENT
+    source_experiment = experiment in SOURCE_EXPERIMENTS
     for name in EXPERIMENT_ARMS[experiment]:
         arm = grouped[name]
         good = sum(row["verified"] for row in arm)
@@ -759,6 +800,7 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
             if source_experiment:
                 for field in ("source_packet_rendered", "source_packet_provider_deliveries",
                               "source_packet_provider_compressed_deliveries",
+                              "source_packet_first_turn_provider_delivered",
                               "source_packet_provider_prompt_bytes_saved", "source_packet_stage_seconds"):
                     results[name][field] = sum(r.get(field, 0) for r in arm)
         pairs = []
@@ -817,11 +859,11 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     if not 1 <= args.repeats <= 20 or not 5 <= args.max_turns <= 32:
         parser.error("repeats must be 1–20 and max-turns 5–32")
-    task_set = SOURCE_TASKS if args.experiment == SOURCE_EXPERIMENT else TASKS
+    task_set = SOURCE_TASKS if args.experiment in SOURCE_EXPERIMENTS else TASKS
     args.tasks = args.tasks or list(task_set)
     if any(task not in task_set for task in args.tasks):
         parser.error("selected task is not part of this experiment")
-    if args.experiment == SOURCE_EXPERIMENT and args.compression_backend != "native":
+    if args.experiment in SOURCE_EXPERIMENTS and args.compression_backend != "native":
         parser.error("source compression uses the BEAST-native LongCodeZip-style implementation")
     if len(set(args.tasks)) != len(args.tasks):
         parser.error("task names must be unique")
@@ -863,7 +905,7 @@ def main(argv=None) -> int:
                   "nim_max_output_tokens": 2048 if args.provider == "nim" else None,
                   "provider_rejection_gate": {
                       "enabled": args.provider == "nim", "consecutive_trials": 2, "distinct_arms": True,
-                      "condition": "matching first-turn HTTP 4xx fingerprints before tool execution",
+                      "condition": "matching first-turn HTTP 4xx fingerprints before any model decision",
                   },
                   "heldout_sha256": {name: digest(task_set[name].heldout.encode()) for name in args.tasks},
                   "claim_boundary": "Synthetic fixtures, no operating-system network isolation. "
@@ -877,10 +919,12 @@ def main(argv=None) -> int:
                               digest(Path(fn.__code__.co_filename).read_bytes())
                               for fn in (compress_cascade_output, _sqz)
                           })
-        if args.experiment == SOURCE_EXPERIMENT:
+        if args.experiment in SOURCE_EXPERIMENTS:
             frozen.update(
                 experiment=args.experiment, compression_backend="beast_native_longcodezip_style",
                 source_budget_ratio=SOURCE_BUDGET_RATIO, source_packet_cadence="first post-bind prompt only",
+                source_binding=("harness_before_first_request" if args.experiment == PREBOUND_SOURCE_EXPERIMENT
+                                else "model_selected_bind"),
                 source_backend_sha256=digest(Path(long_code_compress.__code__.co_filename).read_bytes()),
                 source_packet_fixture_sha256={
                     name: {task_set[name].path: digest(task_set[name].source.encode()),

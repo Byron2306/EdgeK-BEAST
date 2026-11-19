@@ -95,3 +95,70 @@ def test_provider_receipts_join_the_exact_delivered_source_packet(tmp_path, monk
     assert all(arm["verified"] == arm["source_packet_provider_deliveries"] == 1
                for arm in summary["arms"].values())
     assert summary["arms"]["longcodezip"]["source_packet_provider_compressed_deliveries"] == 1
+
+
+def test_prebound_arms_deliver_before_any_model_action(tmp_path, monkeypatch):
+    import io
+
+    from app.kernel.agents import nim_planner_provider
+
+    target = matrix.SOURCE_TASKS["shipped_tariff"]
+    captured = []
+    monkeypatch.setenv("NVIDIA_API_KEY", "fixture-key")
+
+    def respond(_client, request, **kwargs):
+        prompt = json.loads(request.data)["messages"][-1]["content"]
+        captured.append(prompt)
+        decision = {"decision_type": "tool", "tool_id": "worktree.replace_exact",
+                    "arguments": {"path": target.path, "old_text": target.old, "new_text": target.new}}
+        return io.BytesIO(json.dumps({
+            "choices": [{"message": {"content": json.dumps(decision)}}],
+            "usage": {"prompt_tokens": 123, "completion_tokens": 10},
+        }).encode())
+
+    monkeypatch.setattr(nim_planner_provider._egress, "urlopen", respond)
+    report = tmp_path / "prebound"
+    assert matrix.main([
+        "--experiment", "source-compression-prebound", "--provider", "nim",
+        "--tasks", "shipped_tariff", "--request-cap", "16", "--out", str(report),
+    ]) == 0
+    assert len(captured) == 2
+    assert all("BOUND WORKTREE SOURCE PACKET." in prompt and '"tool_id": "worktree.bind", "description"' not in prompt
+               for prompt in captured)
+    assert sum(matrix.STUB_MARK in prompt for prompt in captured) == 1
+    rows = list(map(json.loads, (report / "attempts.jsonl").read_text().splitlines()))
+    for row in rows:
+        assert row["verified"] and row["provider_attempts"] == 1
+        assert row["source_packet_first_turn_provider_delivered"] is True
+        events = list(map(json.loads, (report / "events" / f'{row["attempt_id"]}.jsonl').read_text().splitlines()))
+        bind = next(i for i, e in enumerate(events)
+                    if e["event_type"] == "agent.efficiency.prebind_completed")
+        turn = next(i for i, e in enumerate(events) if e["event_type"] == "agent.coder.turn.started")
+        decision = next(i for i, e in enumerate(events) if e["event_type"] == "agent.coder.decision")
+        assert bind < turn < decision
+
+
+def test_prebound_http_rejection_still_stops_the_matrix(tmp_path, monkeypatch):
+    import io
+    from urllib.error import HTTPError
+
+    from app.kernel.agents import nim_planner_provider
+
+    calls = []
+    monkeypatch.setenv("NVIDIA_API_KEY", "fixture-key")
+
+    def reject(_client, request, **kwargs):
+        calls.append(request.full_url)
+        raise HTTPError(request.full_url, 400, "Bad Request", {},
+                        io.BytesIO(b'{"error":{"code":"invalid_model"}}'))
+
+    monkeypatch.setattr(nim_planner_provider._egress, "urlopen", reject)
+    report = tmp_path / "rejected"
+    assert matrix.main([
+        "--experiment", "source-compression-prebound", "--provider", "nim",
+        "--request-cap", "48", "--out", str(report),
+    ]) == 3
+    assert len(calls) == 2
+    batch = json.loads((report / "summary.json").read_text())["batch"]
+    assert batch["attempted"] == 2
+    assert batch["not_run"] == 4

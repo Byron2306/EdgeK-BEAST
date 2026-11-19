@@ -41,3 +41,19 @@ Do not infer an interaction from pilots on different fixtures.
 Crystals come after the other lanes so the final paired run can distinguish
 actual replay savings from a smaller prompt, an already warm engine, cheaper
 verification, or recovered context.
+
+## Separate the parser, symbols, graph, and RAG
+
+The next context experiments should not add every navigator to the same prompt.
+These are distinct layers, even though parts of BEAST share an index.
+
+| Layer | Confirmed code path | Comparison |
+|---|---|---|
+| Parser (Tree-sitter) | `code_indexers.py` uses optional Tree-sitter grammars and language-specific fallback extractors. The parser status and individual symbol provenance are available. | Tree-sitter enabled vs fallback-only on a frozen cross-language symbol oracle. Keep the graph, task, and retrieval policy constant. Report actual parser per symbol, completeness, false symbols, parse time and warm/cold index cost. |
+| Schema trees / symbol outline | `memory_contract.schema_source` turns indexed symbols for nominated files into schema memory hits and can also emit a capability-contract hit. | Raw exact source vs the same source plus a bounded outline, or symbol outline vs file-only map under matched byte budgets. Do not mix tool-schema changes into the code-symbol arm. Test duplicate names and scoped paths. |
+| Workspace / worktree graph | `WorkspaceGraph` indexes files, symbols, imports, and routes; `WorkspaceGraphService` exposes symbol and context views. The memory contract has a separate graph source. | File list vs symbol outline vs symbol outline + dependency edges. Key indexing and reads to the actual bound worktree revision, compare cold build and warm lookup, and mutate a dependency to verify graph invalidation. Do not credit RepoRelay for graph edges it did not supply. |
+| RAG | The graph has lexical/semantic lookup and a vector path; the coder vector hook is advisory. C4-X also has pgvector benchmark material and a repository adapter. | No retrieval vs lexical vs vector, using the same chunk set, revision and per-prompt budget. Score recall and distractor selection, exact chunks delivered, rereads, cost, and independent verification. Keep graph+RAG fusion for a later interaction test. |
+
+If “tree setter” refers to a separate feature rather than Tree-sitter, its exact
+implementation needs an anchor before it gets an experiment arm. None of these
+features is enabled by the prebound LongCodeZip matrix.

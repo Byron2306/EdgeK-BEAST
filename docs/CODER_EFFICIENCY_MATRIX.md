@@ -135,3 +135,34 @@ python -m scripts.proof.run_coder_efficiency_matrix \
 
 See [the ablation and evidence roadmap](BEAST_ABLATION_ROADMAP.md) for the later
 retrieval, transport, recovery, and crystal comparison lanes.
+
+### Prebound comparison
+
+The original `source-compression` mode remains unchanged. The separate
+`source-compression-prebound` experiment uses the same fixtures, compressor,
+two arms, and deterministic closeout, but binds a fresh worktree mechanically
+before the first model decision. Both arms receive the same paths at turn 1.
+Only the dependency bytes differ. No model can index or read a file before
+receiving its treatment. Rereads after delivery remain available in both arms.
+Neither arm lists bind as a model tool, but the actual bind still produces
+a scoped approval and causal receipt. The plan records the binding policy.
+
+Check that each arm's `source_packet_first_turn_provider_delivered` count
+matches its attempted trials, and that the treatment's compressed-delivery
+count is nonzero. Compare paired token, tool-read, request, and verification
+deltas. Report the original model-managed-bind pilot separately. Binding is
+included in elapsed time but does not consume a model request. The provider
+fail-fast rule still works if the first request is rejected after mechanical
+setup but before the model returns any decision.
+
+```bash
+run_dir=$(mktemp -d "$HOME/beast-longcodezip-prebound.XXXXXX")
+python -m scripts.proof.run_coder_efficiency_matrix \
+  --experiment source-compression-prebound --seed 4322 --out "$run_dir/controls"
+(cd "$run_dir/controls" && sha256sum -c SHA256SUMS)
+# Requires NVIDIA_API_KEY. 30 live trials, at most 240 adapter requests.
+python -m scripts.proof.run_coder_efficiency_matrix \
+  --experiment source-compression-prebound --provider nim --seed 4322 \
+  --repeats 5 --max-turns 8 --request-cap 240 --out "$run_dir/live"
+(cd "$run_dir/live" && sha256sum -c SHA256SUMS)
+```
