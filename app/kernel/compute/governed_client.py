@@ -177,10 +177,13 @@ class GovernedModelClient:
 
         self.candidates = list(candidates)
         if fixed_stream_dialect is not None and (
-                len(self.candidates) != 1 or self.candidates[0].kind != "nim"
-                or fixed_stream_dialect not in dialects_for("nim") or max_attempts != 1
+                not self.candidates or any(c.kind != "nim" for c in self.candidates)
+                or len({c.ident for c in self.candidates}) != len(self.candidates)
+                or len({c.base_url for c in self.candidates}) != 1
+                or fixed_stream_dialect not in dialects_for("nim")
+                or not 1 <= max_attempts <= len(self.candidates)
                 or feedback_turns or avoid is not None or lifecycle is not None or lifecycle_handles):
-            raise ValueError("fixed stream ablation requires one NIM attempt without feedback, reuse or lifecycle hooks")
+            raise ValueError("fixed stream ablation requires distinct NIM candidates on one endpoint without feedback, reuse or lifecycle hooks")
         if drain_stream and fixed_stream_dialect is None:
             raise ValueError("drain_stream requires a fixed dialect")
         self.fixed_stream_dialect = fixed_stream_dialect

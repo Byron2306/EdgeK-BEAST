@@ -239,3 +239,38 @@ transport controls report no live avoided-request total. No billing or token
 savings are inferred. One repeated block is 15 trials, of which 13 should reach
 the provider. With three repeats, there are 45 planned trials and 39 expected
 provider requests if all controls hold. Use `--request-cap 45` for that run.
+
+### Stage 4D scorecard ordering and Stage 4 closeout
+
+Stage 4 ends after this comparison. Run
+`python -m scripts.proof.run_stage4d_ranked_routing --out <new-directory>`
+for the offline controls, then add `--provider nim --request-cap 32` for live.
+The same two Nemotron candidates use the same hosted NIM endpoint and
+schema-constrained drain. Fixed starts with Lightning. Ranked uses BEAST's
+native capability scorecard. Both can attempt each candidate at most once
+and stop after the first independently verified repair. Feedback, dialect
+fallback, specialist dispatch, batching, and reuse are off.
+
+Calibration calls both candidates on two synthetic variants per task family
+(eight requests), then freezes the scorecard. Evaluation holds out different
+variants of those same families, with matched provider seeds and randomized
+arm order within each pair. With the default three variants per family,
+there are six pairs (12 evaluation trials) and at most 24 evaluation requests.
+Trial-local copies prevent evaluation outcomes from retraining the prior.
+Protocol rejects and unavailable calibration usage seal a partial result.
+Report calibration cost separately from evaluation, including real request
+counts, actual usage, verification, first-choice changes, and paired deltas.
+An unchanged order is a valid no-effect result, not evidence of a routing win.
+Calibration and evaluation are small and synthetic, not unseen task families
+or evidence that either model is generally better.
+
+The offline control deliberately gives Lightning an invalid repair on retry
+fixtures and tests whether the ranked arm changes its first choice while
+holding verified results constant. That is a control, not a provider
+capability claim. A useful live result keeps equal or better verification and
+reduces calls or latency; net benefit must also account for calibration.
+
+After 4D, proceed to Stage 5 reuse. Specialist dispatch, batching, and governed
+feedback remain optional follow-up experiments, not prerequisites for closing
+Stage 4. Semantic pages are application-level reuse and are not evidence of
+engine-native KV reuse; keep those Stage 5 comparisons distinct.
