@@ -876,7 +876,7 @@ class BeastCoderApp(App[None]):
                 title = "Verification failed" if tool == "worktree.verify" else "Command failed"
             color = BEAST_GREEN if status == "completed" else "#FF8A93" if status in {"failed", "rejected"} else BEAST_WARN
             text.append(f"• {title}", style=f"bold {color}")
-            subject = path
+            subject = path or str(details.get("subject") or "")
             if not subject and isinstance(args.get("command"), list):
                 subject = " ".join(str(value) for value in args["command"])
             if subject:
@@ -1260,7 +1260,7 @@ class BeastCoderApp(App[None]):
         {"id": "agent", "label": "AGENT", "detail": "autonomous coding · verifies and applies edits"},
         {"id": "plan", "label": "PLAN", "detail": "read-only analysis · no files changed"},
         {"id": "review", "label": "REVIEW", "detail": "source-line review of an attached file"},
-        {"id": "swarm", "label": "SWARM", "detail": "decompose into subtasks and execute them in sequence"},
+        {"id": "swarm", "label": "SWARM", "detail": "real swarm role advice and optional local edit recovery"},
     )
 
     def open_agent_menu(self) -> None:
@@ -1363,10 +1363,6 @@ class BeastCoderApp(App[None]):
             self._pending_mode = "review"
         elif identity == "swarm":
             self._pending_mode = "agent"
-            self._pending_prefix = (
-                "Decompose this request into independent subtasks, then complete every "
-                "subtask in this workspace and verify the combined result: "
-            )
         else:
             self._pending_mode = "agent"
         self.query_one("#coder-input", Input).placeholder = (
@@ -1608,7 +1604,8 @@ class BeastCoderApp(App[None]):
                 # User typed plain text while waiting for a turn - treat as /next then new prompt
                 self._turn_ready = False
                 self._set_mascot("working")
-                await self._run_turn(value, mode=self._pending_mode, prefix=self._pending_prefix)
+                await self._run_turn(value, mode=self._pending_mode, prefix=self._pending_prefix,
+                                     swarm=self._pending_agent == "SWARM")
                 return
             await self.submit_text(value)
         elif self._turn_ready:
@@ -1653,7 +1650,8 @@ class BeastCoderApp(App[None]):
                 self._set_mascot("alert")
                 self._append("error", str(exc))
             return
-        await self._run_turn(value, mode=self._pending_mode, prefix=self._pending_prefix)
+        await self._run_turn(value, mode=self._pending_mode, prefix=self._pending_prefix,
+                             swarm=self._pending_agent == "SWARM")
 
     @staticmethod
     def _pending(items: Any) -> list[dict[str, Any]]:
@@ -2346,6 +2344,7 @@ class BeastCoderApp(App[None]):
         auto_turns: int = 0,
         mode: str = "agent",
         prefix: str = "",
+        swarm: bool = False,
     ) -> None:
         if self._streaming:
             raise RuntimeClientError("a BEAST coding turn is already running")
@@ -2408,6 +2407,7 @@ class BeastCoderApp(App[None]):
                     context_files=context_files,
                     autonomy="autopilot" if self.settings.auto_mode else "manual",
                     permission_mode="nuked" if self._permission_nuked else "normal",
+                    **({"swarm": True} if swarm and mode == "agent" else {}),
                 )
                 run_id = str(run.get("run_id") or "")
                 self._save_settings(last_run_id=run_id)
@@ -2494,7 +2494,19 @@ class BeastCoderApp(App[None]):
                             "details": projected.details,
                         }
                         self.tool_entries.append(row)
-                        if projected.kind != "integration":
+                        if projected.kind == "integration" and projected.tool_id in {"swarm_roles", "swarm_recovery"}:
+                            # Show actual role events and recovery receipts, not fictitious worker turns.
+                            self._action_count += 1
+                            roles = [str(item.get("role") or "") for item in projected.details.get("roles", [])
+                                     if isinstance(item, dict) and item.get("role")]
+                            status = {"fired": "completed", "started": "running"}.get(projected.status, projected.status)
+                            self._actions.append({
+                                "id": self._action_count, "status": status,
+                                "tool_id": "Swarm roles" if projected.tool_id == "swarm_roles" else "Swarm recovery",
+                                "details": {"subject": ", ".join(dict.fromkeys(roles)) or projected.text},
+                                "thinking": projected.text if roles else "",
+                            })
+                        elif projected.kind != "integration":
                             self._update_action(row)
                         if projected.kind == "tool_result" and projected.success:
                             self._record_tool_patch(projected.tool_id, projected.details)

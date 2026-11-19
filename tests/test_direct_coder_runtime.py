@@ -189,3 +189,74 @@ def test_missing_effect_runner_pauses_before_spending_model_turn(tmp_path):
     assert result["state"] == "paused"
     assert "effect runtime script missing" in result["error"]
     assert model.calls == 0
+
+
+def test_swarm_is_explicit_and_failure_proposal_does_not_execute(tmp_path, monkeypatch):
+    from app.kernel.agents import direct_coder_hooks as hooks
+
+    engine = Engine()
+    engine.workspace_root = tmp_path
+    engine.store.run["request"]["swarm"] = True
+    engine.store.claim_swarm_recovery = lambda run_id: True
+    engine.store.run["checkpoint"]["worktree_root"] = str(tmp_path / "bound")
+    monkeypatch.setattr(hooks, "local_binding_identity", lambda run: (str(tmp_path / "bound"), "task", "branch", "base"))
+    monkeypatch.setattr(hooks, "local_binding_error", lambda *_: "")
+    monkeypatch.setattr(hooks, "specialist_enabled", lambda: True)
+    calls = []
+    async def recovery(**kwargs):
+        calls.append(kwargs["target"])
+        return {"path": "a.py", "old_text": "old", "new_text": "new"}, "candidate_grounded", {"generated": True, "model": "local"}
+    monkeypatch.setattr(hooks, "recover", recovery)
+    model = ScriptedCodingModel([tool("worktree.replace_exact", {"path": "a.py"})])
+    async def fail(*args, **kwargs):
+        raise ValueError("missing old_text")
+    engine.execute_tool = fail
+    coder = DirectCoderRuntime(engine, model)
+    asyncio.run(coder.run_one_turn("agent-test"))
+
+    assert calls == ["a.py"]
+    assert engine.calls == []
+    assert any(e == "agent.integration.fired" and p["capability"] == "swarm_roles" and p["roles"]
+               for e, p in engine.events)
+    assert engine.store.run["checkpoint"]["direct_coder"]["observations"][-1]["result"]["candidate"]["old_text"] == "old"
+    assert not any(e.startswith("agent.planner.") for e, _ in engine.events)
+
+
+def test_opt_in_integrations_mark_only_admitted_navigation_as_used(tmp_path, monkeypatch):
+    from app.kernel.agents import direct_coder_hooks as hooks
+
+    engine = Engine()
+    engine.workspace_root = tmp_path
+    profile = engine.store.run
+    monkeypatch.delenv("BEAST_DIRECT_CODER_INTEGRATIONS", raising=False)
+    assert asyncio.run(hooks.prepare(engine, "agent-test", profile)) == []
+    assert engine.events == []
+
+    monkeypatch.setenv("BEAST_DIRECT_CODER_INTEGRATIONS", "1")
+    monkeypatch.setattr(hooks, "_prepare_integrations", lambda *_: {
+        "repo_map": "a.py contains the target.",
+        "events": [
+            {"event_type": "agent.integration.fired",
+             "payload": {"capability": "compression.reporelay", "status": "fired"}},
+            {"event_type": "agent.integration.skipped",
+             "payload": {"capability": "kv_transport", "status": "skipped"}},
+        ],
+    })
+    model = ScriptedCodingModel([PlannerDecision(decision_type=PlannerDecisionType.COMPLETE, summary="Done")])
+    coder = DirectCoderRuntime(engine, model)
+    asyncio.run(coder.run_one_turn("agent-test"))
+    saved = engine.store.run["checkpoint"]["direct_coder"]
+    assert "a.py contains the target." in coder._prompt(profile, saved)
+    assert [event["used_in_prompt"] for _, event in engine.events if "used_in_prompt" in event] == [True, False]
+
+
+def test_swarm_recovery_accepts_only_matching_bound_file_read(tmp_path):
+    from app.kernel.agents.swarm_recovery import _source_evidence
+
+    (tmp_path / "a.py").write_text("VALUE = 1\n")
+    observation = {"tool_id": "worktree.read_file", "status": "completed", "result": {
+        "path": "a.py", "content": "VALUE = 1", "worktree_root": str(tmp_path / "other"),
+    }}
+    assert not _source_evidence(tmp_path, [observation], "a.py")
+    observation["result"]["worktree_root"] = str(tmp_path)
+    assert _source_evidence(tmp_path, [observation], "a.py")

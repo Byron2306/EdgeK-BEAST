@@ -270,7 +270,7 @@ class CoderRuntimeClient:
     async def start_run(
         self, session_id: str, prompt: str, provider: str, model: str,
         *, mode: str = "ask", context_files: tuple[str, ...] = (),
-        autonomy: str | None = None, permission_mode: str = "normal",
+        autonomy: str | None = None, permission_mode: str = "normal", swarm: bool = False,
     ) -> dict[str, Any]:
         if mode not in {"ask", "review", "edit", "agent"}:
             raise ValueError("invalid BEAST composer mode")
@@ -299,6 +299,7 @@ class CoderRuntimeClient:
                     "transport": "beast_coder_tli_v1",
                     "launch_strategy": "direct_coder" if mode in {"agent", "edit"} else "typed_planner",
                     "context_files": list(context_files),
+                    **({"swarm": True} if swarm and mode == "agent" else {}),
                     **editing_scope,
                     **({"read_only_file_review": True, "file_answer_style": "explain" if mode == "ask" else "review"}
                        if mode in {"ask", "review"} and context_files else {}),

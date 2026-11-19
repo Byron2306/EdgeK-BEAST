@@ -62,9 +62,11 @@ def _source_evidence(root, observations, target):
     evidence = {}
     remaining = MAX_SOURCE_CHARS
     for item in reversed(observations):
-        if item.get("status") != "completed" or item.get("tool_id") != "workspace.read_range":
+        if item.get("status") != "completed" or item.get("tool_id") not in {"workspace.read_range", "worktree.read_file"}:
             continue
         result = item.get("result") or {}
+        if item["tool_id"] == "worktree.read_file" and result.get("worktree_root") != str(root):
+            continue
         name, snippet = result.get("path"), result.get("content")
         if not _eligible_path(name, target) or not isinstance(snippet, str) or not snippet.strip() or _contains_secret(snippet):
             continue
@@ -100,7 +102,7 @@ def _plan(kernel_root, swarm_id, parent_id, cause, files, estimated_chars):
     kernel = SwarmKernel(db_path=str(kernel_root / ".beast" / "swarm" / "coder-recovery.sqlite3"))
     return kernel.run({
         "run_id": swarm_id,
-        "objective": "Propose a bounded exact edit after the planner retry failed",
+        "objective": "Propose a bounded exact edit after an agent edit failed",
         "metadata": {"agent_run_id": parent_id, "operation": "invalid_mutation_recovery"},
         "profile": "zeroclaw",
         "task_type": "code_change",
@@ -188,7 +190,7 @@ async def recover(*, workspace, root, observations, target, objective, cause, ru
                 "objective": objective,
                 "source_context": source,
                 "diagnostic_context": (
-                    "The exact edit and its retry were rejected. Return only path, old_text and new_text. "
+                    "An exact edit was rejected. Return only path, old_text and new_text. "
                     "Use an exact target and copy a unique, non-empty old_text from that file's supplied evidence. "
                     "Return empty fields if the evidence is insufficient. Do not modify files or run commands. "
                     f"Failure: {cause}. Planned checks: {', '.join(details['verifier']['checks'])}."

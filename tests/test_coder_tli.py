@@ -1110,7 +1110,7 @@ async def test_down_opens_agent_menu_and_selection_sets_next_mode(tmp_path: Path
 
 
 @pytest.mark.asyncio
-async def test_swarm_menu_sets_decomposition_prefix_for_next_prompt(tmp_path: Path):
+async def test_swarm_menu_requests_runtime_swarm_without_rewriting_objective(tmp_path: Path):
     recorded = []
 
     class MenuClient(FakeRuntimeClient):
@@ -1129,8 +1129,8 @@ async def test_swarm_menu_sets_decomposition_prefix_for_next_prompt(tmp_path: Pa
         await app.submit_text("Add tests")
         await pilot.pause()
     assert recorded, "the swarm prompt must reach the runtime"
-    assert recorded[0][0].startswith("Decompose this request")
-    assert recorded[0][0].endswith("Add tests")
+    assert recorded[0][0] == "Add tests"
+    assert recorded[0][1]["swarm"] is True
 
 
 @pytest.mark.asyncio
