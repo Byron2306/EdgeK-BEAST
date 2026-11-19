@@ -297,7 +297,7 @@ class CoderRuntimeClient:
                 "request": {
                     "prompt": prompt,
                     "transport": "beast_coder_tli_v1",
-                    "launch_strategy": "typed_planner",
+                    "launch_strategy": "direct_coder" if mode in {"agent", "edit"} else "typed_planner",
                     "context_files": list(context_files),
                     **editing_scope,
                     **({"read_only_file_review": True, "file_answer_style": "explain" if mode == "ask" else "review"}
