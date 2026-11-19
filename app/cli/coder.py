@@ -2325,7 +2325,7 @@ class BeastCoderApp(App[None]):
             if run_state == "paused":
                 self._set_mascot("idle")
                 self._turn_ready = True
-                self._append("system", "Planner paused. Use /next to continue this run.", persist=False)
+                self._append("system", "Coding run paused. Use /next to retry or continue this run.", persist=False)
                 return
             try:
                 auto_budget = max(1, int(os.environ.get("BEAST_TLI_MAX_AUTO_TURNS", "48")))
