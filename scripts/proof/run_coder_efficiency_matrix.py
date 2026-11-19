@@ -38,11 +38,15 @@ DIAGNOSTIC_EXPERIMENT = "diagnostic-compression"
 DIAGNOSTIC_ARMS = {"closeout": "none", "rtk": "rtk", "sqz": "sqz"}
 SOURCE_EXPERIMENT = "source-compression"
 PREBOUND_SOURCE_EXPERIMENT = "source-compression-prebound"
+NAV_GRAPH_EXPERIMENT = "worktree-navigation"
+NAV_GRAPH_ARMS = ("file_list", "symbols", "graph")
 SOURCE_EXPERIMENTS = (SOURCE_EXPERIMENT, PREBOUND_SOURCE_EXPERIMENT)
+PACKET_EXPERIMENTS = (*SOURCE_EXPERIMENTS, NAV_GRAPH_EXPERIMENT)
 SOURCE_ARMS = ("closeout", "longcodezip")
 SOURCE_BUDGET_RATIO = 0.55
 EXPERIMENT_ARMS = {"navigation": ARMS, DIAGNOSTIC_EXPERIMENT: DIAGNOSTIC_ARMS,
-                   SOURCE_EXPERIMENT: SOURCE_ARMS, PREBOUND_SOURCE_EXPERIMENT: SOURCE_ARMS}
+                   SOURCE_EXPERIMENT: SOURCE_ARMS, PREBOUND_SOURCE_EXPERIMENT: SOURCE_ARMS,
+                   NAV_GRAPH_EXPERIMENT: NAV_GRAPH_ARMS}
 TOOLS = frozenset({
     "workspace.index", "workspace.list", "workspace.read_range", "workspace.search_text",
     "worktree.read_file", "worktree.list", "worktree.search_text",
@@ -189,9 +193,11 @@ def make_plan(tasks: tuple[str, ...], repeats: int, seed: int, *, experiment: st
                    "attempt_id": f"{task}-{repeat:02d}-{arm}"}
             if diagnostic:
                 row["compression"] = DIAGNOSTIC_ARMS[arm]
-            if experiment in SOURCE_EXPERIMENTS:
+            if experiment in PACKET_EXPERIMENTS:
                 row["source_packet"] = arm
-                if experiment == PREBOUND_SOURCE_EXPERIMENT:
+                if experiment == NAV_GRAPH_EXPERIMENT:
+                    row["graph_packet"] = arm
+                if experiment != SOURCE_EXPERIMENT:
                     row["prebind"] = True
             rows.append(row)
     return rows
@@ -455,6 +461,52 @@ def build_source_packet(root: Path, task: Task, *, compress: bool) -> dict[str, 
             "files": receipts, "seconds": round(time.perf_counter() - started, 6)}
 
 
+def build_graph_packet(root: Path, paths: list[str], arm: str, db_path: Path) -> dict[str, Any]:
+    """Use the real BEAST index, not model guesses, for paths, symbols and edges."""
+    if arm not in NAV_GRAPH_ARMS:
+        raise ValueError("unknown graph arm")
+    start = time.perf_counter()
+    paths = sorted(set(paths))
+    raw = canonical({"files": paths}).decode()
+    payload: dict[str, Any] = {"files": paths}
+    parser_modes: dict[str, int] = defaultdict(int)
+    if arm != "file_list":
+        from app.kernel.data_processing.workspace_graph import WorkspaceGraph
+
+        graph = WorkspaceGraph(str(db_path))
+        indexed = graph.index_repository(str(root), max_files=60, include_patterns=["*.py"])
+        index = graph.graph_snapshot(node_limit=500, edge_limit=1000)
+        if indexed["errors"] or indexed["indexed_files"] != len(paths):
+            raise RuntimeError("worktree graph indexed a different file set")
+        known = set(paths)
+        files = {item["id"]: item["label"] for item in index["nodes"]
+                 if item["type"] == "file" and item["label"] in known}
+        symbols = []
+        for item in index["nodes"]:
+            prop = item["properties"]
+            if item["type"] != "symbol" or (prop.get("file") or prop.get("path")) not in known:
+                continue
+            symbols.append({"path": prop.get("file") or prop.get("path"), "name": item["label"], "line": prop["line"],
+                            "kind": prop.get("kind", "")})
+            parser_modes[prop.get("parser") or "fallback_or_unspecified"] += 1
+        if not symbols:
+            raise RuntimeError("worktree graph produced no symbols")
+        payload["symbols"] = sorted(symbols, key=lambda x: (x["path"], x["line"], x["name"]))
+        if arm == "graph":
+            pairs = {(files[e["source"]], files[e["target"]]) for e in index["edges"]
+                     if e["relation"] == "depends_on" and e["source"] in files and e["target"] in files}
+            if not pairs:
+                raise RuntimeError("worktree graph produced no local dependency edges")
+            payload["edges"] = [{"from": src, "to": dst} for src, dst in sorted(pairs)]
+    sent = canonical(payload).decode()
+    if len(sent.encode()) > 8000:
+        raise RuntimeError("graph packet exceeds the fixed byte ceiling")
+    return {"kind": "navigation", "raw": raw, "sent": sent, "files": [],
+            "navigation": {"arm": arm, "paths": paths, "symbols": len(payload.get("symbols", [])),
+                           "edges": len(payload.get("edges", [])), "parsers": dict(parser_modes)},
+            "seconds": round(time.perf_counter() - start, 6)}
+
+
 class ExperimentRuntime(DirectCoderRuntime):
     def __init__(self, *args, hint: str = "", compression: str | None = None,
                  compression_backend: str = "native", detection=None, **kwargs):
@@ -511,6 +563,9 @@ class ExperimentRuntime(DirectCoderRuntime):
             packet = self.source_packet
             header = ("\nBOUND WORKTREE SOURCE PACKET. The editable file is exact; "
                       "dependency bodies may be stubbed. Use worktree reads when needed.\n")
+            if packet.get("kind") == "navigation":
+                header = ("\nBOUND WORKTREE NAVIGATION PACKET. These paths and optional symbols and edges "
+                          "are navigation only. Use exact source reads to make changes.\n")
             raw, sent = prompt + header + packet["raw"], prompt + header + packet["sent"]
             receipt = {"turn": int(state.get("turn") or 0) + 1,
                        "files": packet["files"], "stage_seconds": packet["seconds"],
@@ -518,7 +573,12 @@ class ExperimentRuntime(DirectCoderRuntime):
                        "raw_prompt_bytes": len(raw.encode()), "sent_prompt_bytes": len(sent.encode()),
                        "bytes_saved": len(raw.encode()) - len(sent.encode())}
             self.source_packet_receipt = receipt
-            self.engine.emit(run["run_id"], "agent.efficiency.source_packet_prompt", receipt)
+            event = "agent.efficiency.source_packet_prompt"
+            if packet.get("kind") == "navigation":
+                receipt["navigation"] = packet["navigation"]
+                receipt["packet"] = json.loads(packet["sent"])
+                event = "agent.efficiency.navigation_packet_prompt"
+            self.engine.emit(run["run_id"], event, receipt)
             prompt = sent
         if self.hint:
             prompt += "\n[REPORELAY NAVIGATION ONLY]\n" + self.hint
@@ -628,7 +688,12 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
                                 detection=getattr(args, "compression_detection", {}))
     if prebind:
         bound = await bind_fixture_before_first_turn(engine, runtime, run)
-        runtime.source_packet = build_source_packet(bound, task, compress=row["source_packet"] == "longcodezip")
+        if "graph_packet" in row:
+            paths = [p for p in git(bound, "ls-files", "-z").split("\0") if p.endswith(".py")]
+            runtime.source_packet = build_graph_packet(
+                bound, paths, row["graph_packet"], out / "tmp" / row["attempt_id"] / "graph.sqlite3")
+        else:
+            runtime.source_packet = build_source_packet(bound, task, compress=row["source_packet"] == "longcodezip")
         run = engine.store.get_run(rid)
     closed = preflight = False
     terminal = {state.value for state in TERMINAL_STATES} | {"paused", "waiting_for_approval"}
@@ -703,8 +768,8 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
                 receipt and receipt["turn"] == 1 and requests
                 and requests[0].get("user_prompt_sha256") == receipt["sent_prompt_sha256"]
             ),
-            "source_packet_provider_compressed_deliveries": int(bool(joined and receipt["bytes_saved"])),
-            "source_packet_provider_prompt_bytes_saved": receipt["bytes_saved"] if joined else 0,
+            "source_packet_provider_compressed_deliveries": int(bool(joined and receipt["bytes_saved"] > 0)),
+            "source_packet_provider_prompt_bytes_saved": max(0, receipt["bytes_saved"]) if joined else 0,
             "source_packet_stage_seconds": runtime.source_packet["seconds"] if runtime.source_packet else 0,
             "provider_message_bytes": sum(r["prompt_bytes"] for r in requests),
             "provider_request_body_bytes": sum(r["request_body_bytes"] for r in requests),
@@ -760,7 +825,7 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
         blocks[(row["task"], row["repeat"])][row["arm"]] = row
     results = {}
     diagnostic = experiment == DIAGNOSTIC_EXPERIMENT
-    source_experiment = experiment in SOURCE_EXPERIMENTS
+    source_experiment = experiment in PACKET_EXPERIMENTS
     for name in EXPERIMENT_ARMS[experiment]:
         arm = grouped[name]
         good = sum(row["verified"] for row in arm)
@@ -803,22 +868,29 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
                               "source_packet_first_turn_provider_delivered",
                               "source_packet_provider_prompt_bytes_saved", "source_packet_stage_seconds"):
                     results[name][field] = sum(r.get(field, 0) for r in arm)
-        pairs = []
-        for (task, repeat), block in blocks.items():
-            control = block.get("closeout")
-            if control is None:
-                continue
-            for arm, row in block.items():
-                if arm == "closeout":
+        def comparisons(baseline, treatments=None):
+            pairs = []
+            metrics = fields + (("first_target_read_tool_number",) if experiment == NAV_GRAPH_EXPERIMENT else ())
+            for (task, repeat), block in blocks.items():
+                control = block.get(baseline)
+                if control is None:
                     continue
-                pairs.append({"task": task, "repeat": repeat, "arm": arm,
-                              "verified_delta": int(row["verified"]) - int(control["verified"]),
-                              "arm_state": row["state"], "control_state": control["state"],
-                              "deltas": {field: round(row[field] - control[field], 6)
-                                         if complete(row, field) and complete(control, field) else None
-                                         for field in fields}})
+                for arm, row in block.items():
+                    if arm == baseline or (treatments is not None and arm not in treatments):
+                        continue
+                    pairs.append({"task": task, "repeat": repeat, "arm": arm,
+                                  "verified_delta": int(row["verified"]) - int(control["verified"]),
+                                  "arm_state": row["state"], "control_state": control["state"],
+                                  "deltas": {field: round(row[field] - control[field], 6)
+                                             if complete(row, field) and complete(control, field) else None
+                                             for field in metrics}})
+            return pairs
+
+        pairs = ({"paired_against_file_list": comparisons("file_list"),
+                  "paired_graph_against_symbols": comparisons("symbols", {"graph"})}
+                 if experiment == NAV_GRAPH_EXPERIMENT else {"paired_against_closeout": comparisons("closeout")})
         return {"evidence_class": "scripted_control_only" if provider == "scripted" else "live_synthetic_pilot",
-                "experiment": experiment, "arms": results, "paired_against_closeout": pairs}
+                "experiment": experiment, "arms": results, **pairs}
     pairs = [{"task": task, "repeat": repeat, "arm": arm,
               "decision_delta": trial["decisions"] - block["direct"]["decisions"],
               "provider_attempt_delta": trial["provider_attempts"] - block["direct"]["provider_attempts"],
@@ -859,7 +931,7 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     if not 1 <= args.repeats <= 20 or not 5 <= args.max_turns <= 32:
         parser.error("repeats must be 1–20 and max-turns 5–32")
-    task_set = SOURCE_TASKS if args.experiment in SOURCE_EXPERIMENTS else TASKS
+    task_set = SOURCE_TASKS if args.experiment in PACKET_EXPERIMENTS else TASKS
     args.tasks = args.tasks or list(task_set)
     if any(task not in task_set for task in args.tasks):
         parser.error("selected task is not part of this experiment")
@@ -931,6 +1003,11 @@ def main(argv=None) -> int:
                            **{path: digest(code.encode()) for path, code in task_set[name].support}}
                     for name in args.tasks},
             )
+        if args.experiment == NAV_GRAPH_EXPERIMENT:
+            frozen.update(experiment=args.experiment, packet_binding="before_first_request",
+                          packet_limit_bytes=8000, packet_cadence="first_request_only",
+                          graph_index_scope="tracked Python files, isolated database per attempt",
+                          graph_backend_sha256=digest((REPO / "app/kernel/data_processing/workspace_graph.py").read_bytes()))
         write_json(out / "plan.json", frozen)
         rows = []
         prior_rejection = None

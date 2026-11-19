@@ -57,3 +57,38 @@ These are distinct layers, even though parts of BEAST share an index.
 If “tree setter” refers to a separate feature rather than Tree-sitter, its exact
 implementation needs an anchor before it gets an experiment arm. None of these
 features is enabled by the prebound LongCodeZip matrix.
+
+## Worktree navigation and output filters
+
+The `worktree-navigation` matrix holds the file set, full-source tool access,
+binding, and closeout constant. Arms are a file list, that list plus real indexed
+symbols, and the same symbols plus local-import dependency edges. It builds the
+real workspace graph in a fresh database per applicable attempt and attaches
+the packet on the first provider request. It reports parser provenance, packet
+size and submission, graph-build time (included in wall time), paired results
+against files, and the incremental graph comparison against symbols. The
+8,000-byte ceiling is shared; actual prompt sizes differ and are charged. This
+is a small synthetic pilot, not an evaluation of large-repo ranking or warm
+graph invalidation. Compression, vector RAG, and crystal replay remain off.
+
+Keep output hygiene experiments separate from this navigation matrix:
+
+- **ANSI:** raw vs strip rendering sequences only. Check split escape sequences,
+  exact filenames, tracebacks, and error codes. Include already-clean output.
+- **Whitespace:** raw vs conservative normalization, preserving Python
+  indentation, diffs, columns when meaningful, and exact edit text. Refuse
+  transformations on structured/mutation inputs; start with diagnostics.
+- **Chunking:** fixed bytes/lines vs syntax-aware chunks with the same input
+  budget and same ranking. Hold retrieval fixed first, then separately test
+  overlap and retrieval. Verify boundaries that split a traceback or symbol,
+  duplicate delivery, and the rate of downstream reads and completions.
+
+For family-crystal custody, take SQLite online backups using
+`scripts/proof/backup_family_crystal_registry.py`. It verifies every record
+through the registry, checks expected IDs/digests and promoted child links,
+and seals a private inventory and manifest. Store another checked copy on
+independent storage. Do not publish the database. A text receipt is not a
+backup. Use `scripts/proof/run_behemoth_phase2.py` on a checked copy to run the
+real interpreter on generated fixtures with independent visible and hidden
+checks, tamper and failed-stage controls. Do not mix those generated controls
+with the later live crystal economics matrix.

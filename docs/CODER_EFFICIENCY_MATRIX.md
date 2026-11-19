@@ -166,3 +166,14 @@ python -m scripts.proof.run_coder_efficiency_matrix \
   --repeats 5 --max-turns 8 --request-cap 240 --out "$run_dir/live"
 (cd "$run_dir/live" && sha256sum -c SHA256SUMS)
 ```
+
+## Worktree navigation
+
+Use `--experiment worktree-navigation` to run prebound file-list, symbol
+outline, and symbol-plus-dependency arms. These are full-source coding runs
+with real BEAST index hints only. Closeout and source reads are unchanged.
+The initial hint does not replace source bodies. The provider-facing packet
+metrics reuse the `source_packet_*` receipt fields. There are separate paired
+comparisons against the file list and from symbols to graph. The no-cloud
+controls use the default scripted provider. The first live block across all
+three task families requires `--request-cap 72` at eight turns and one repeat.
