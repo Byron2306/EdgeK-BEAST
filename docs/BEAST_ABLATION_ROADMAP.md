@@ -195,11 +195,19 @@ rejection is sealed as an abort, not retried under another dialect. An explicit
 
 The mocked server sends a schema-invalid empty edits array, a valid action,
 then trailing bytes and usage. No provider claims from these controls.
-The fixture verifier runs only a canonical known edit after exact proposal
-equality plus public and independent behavior checks. A different but valid
-repair can be rejected in this pilot. Do not treat the exact-edit rate as a
-general coding success rate. The observed content bytes exclude SSE overhead;
-observed SSE line bytes exclude line separators and are not network bytes.
+The original v1 pilot required exact proposal equality. Its repair outcomes
+cannot distinguish wrong fixes from alternate edit spans. Preserve that run as
+formatting and stream evidence, not as behavioral verification. In v2 an edit
+must name the fixture, have a unique nonempty anchor, and keep the patched
+program in the experiment's small Python subset with the original signature.
+A separate, resource-limited worker per check runs public and held-out behavior
+tests. This is not an OS sandbox or a general-purpose Python verifier. An edit
+outside the supported subset is classified separately from a behavior failure.
+V2 reports the exact match only as a diagnostic, and its mock controls use a
+whole-file replacement that is not the canonical edit. Request arms, fixture
+prompts, seeds, and model are unchanged.
+The observed content bytes exclude SSE overhead; observed SSE line bytes
+exclude line separators and are not network bytes.
 Terminal usage may be absent after client close. Use observed usage on the
 attempts rather than the governed client's existing cost estimates and never
 infer prevented model computation or billing from closing the client.

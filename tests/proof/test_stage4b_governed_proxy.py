@@ -66,4 +66,39 @@ def test_4b_well_formed_wrong_edit_does_not_count_as_verified(tmp_path):
     r = asyncio.run(run_trial(tmp_path, row, model="fixture", dialect="openai_json_schema", transport=transport))
     assert r["json_valid"] and not r["verified"]
     assert r["status"] == "verifier_reject"
-    assert r["verifier"]["reason"] == "not_the_canonical_fixture_edit"
+    assert r["verifier"]["reason"] == "fixture_behavior_failed"
+    assert r["verifier"]["anchor_valid"] and r["verifier"]["behavior_executed"]
+
+
+@pytest.mark.parametrize("taskname,replacement", [
+    ("shipping", "def shipping_fee(total):\n    if total >= 50:\n        return 0\n    return 4\n"),
+    ("retry", "def retry_delay(attempt, base=2, cap=30):\n    return min(base * 2 ** max(attempt, 0), cap)\n"),
+    ("normalize", 'import re\n\ndef normalize_provider(label):\n    return re.sub(r"[-\\s]+", "_", label.strip().lower())\n'),
+])
+def test_4b_accepts_noncanonical_whole_file_edit(taskname, replacement):
+    from scripts.proof.run_stage4b_governed_proxy import TASKS, check_repair
+
+    task = TASKS[taskname]
+    r = check_repair(task, {"edits": [{"path": task.path, "old_text": task.source, "new_text": replacement}]})
+    assert r["anchor_valid"] and r["behavior_executed"] and r["passed"]
+    assert not r["canonical_exact_match"]
+    assert r["before_returncodes"] == (1, 1) and r["after_returncodes"] == (0, 0)
+
+
+@pytest.mark.parametrize("path,old,new,reason", [
+    ("../shipping.py", "total > 50", "total >= 50", "disallowed_path"),
+    ("shipping.py", "total", "amount", "ambiguous_anchor"),
+    ("shipping.py", "", "total >= 50", "empty_anchor"),
+    ("shipping.py", "total >= 50", "total > 50", "missing_anchor"),
+    ("shipping.py", "total > 50", "open('/tmp/never-write', 'w')", "outside_fixture_subset"),
+    ("shipping.py", "total > 50", "total > 50", "no_change"),
+])
+def test_4b_refuses_invalid_anchor_or_code_outside_fixture_subset(path, old, new, reason, monkeypatch):
+    from scripts.proof.run_stage4b_governed_proxy import TASKS, check_repair
+
+    def must_not_run(*args, **kwargs):
+        pytest.fail("refused proposals must not start a verifier")
+
+    monkeypatch.setattr("scripts.proof.run_stage4b_governed_proxy.subprocess.run", must_not_run)
+    result = check_repair(TASKS["shipping"], {"edits": [{"path": path, "old_text": old, "new_text": new}]})
+    assert result["reason"] == reason and not result["passed"] and not result["behavior_executed"]
