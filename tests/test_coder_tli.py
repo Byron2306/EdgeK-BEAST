@@ -1317,7 +1317,7 @@ async def test_copy_file_writes_sanitized_last_run_without_changing_clipboard(tm
     app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
     async with app.run_test(size=(100, 30)):
         await app.submit_text("Explain README.md")
-        app.clipboard = "SENTINEL"
+        app.copy_to_clipboard("SENTINEL")
         await app.submit_text("/copy file")
         exported = sorted((tmp_path / ".beast" / "coder").glob("last-run-*.txt"))
         assert len(exported) == 1
