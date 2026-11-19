@@ -26,6 +26,8 @@ from app.kernel.agents.nim_planner_provider import NIMPlannerProvider
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType
 from app.kernel.agents.run_engine import AgentRunEngine
 from app.kernel.agents.run_state import AgentRunState, TERMINAL_STATES
+from app.kernel.agents.tool_models import ToolEffect, ToolRisk, ToolSpec
+from scripts.proof.bounded_worktree_graph import BoundedWorktreeGraph, GRAPH_TOOL, MAX_BYTES, MAX_LOOKUPS
 from app.kernel.agents.tool_runtime import ToolExecutionFailed, local_binding_error, local_binding_identity
 
 REPO = Path(__file__).resolve().parents[2]
@@ -41,14 +43,17 @@ PREBOUND_SOURCE_EXPERIMENT = "source-compression-prebound"
 NAV_GRAPH_EXPERIMENT = "worktree-navigation"
 NAV_GRAPH_ARMS = ("file_list", "symbols", "graph")
 REAL_GRAPH_EXPERIMENT = "real-repo-navigation"
-GRAPH_EXPERIMENTS = (NAV_GRAPH_EXPERIMENT, REAL_GRAPH_EXPERIMENT)
+LAZY_GRAPH_EXPERIMENT = "graph-on-demand"
+UPSTREAM_EXPERIMENTS = (REAL_GRAPH_EXPERIMENT, LAZY_GRAPH_EXPERIMENT)
+GRAPH_EXPERIMENTS = (NAV_GRAPH_EXPERIMENT, *UPSTREAM_EXPERIMENTS)
 SOURCE_EXPERIMENTS = (SOURCE_EXPERIMENT, PREBOUND_SOURCE_EXPERIMENT)
 PACKET_EXPERIMENTS = (*SOURCE_EXPERIMENTS, *GRAPH_EXPERIMENTS)
 SOURCE_ARMS = ("closeout", "longcodezip")
 SOURCE_BUDGET_RATIO = 0.55
 EXPERIMENT_ARMS = {"navigation": ARMS, DIAGNOSTIC_EXPERIMENT: DIAGNOSTIC_ARMS,
                    SOURCE_EXPERIMENT: SOURCE_ARMS, PREBOUND_SOURCE_EXPERIMENT: SOURCE_ARMS,
-                   NAV_GRAPH_EXPERIMENT: NAV_GRAPH_ARMS, REAL_GRAPH_EXPERIMENT: ("file_list", "graph")}
+                   NAV_GRAPH_EXPERIMENT: NAV_GRAPH_ARMS, REAL_GRAPH_EXPERIMENT: ("file_list", "graph"),
+                   LAZY_GRAPH_EXPERIMENT: ("file_list", "on_demand")}
 TOOLS = frozenset({
     "workspace.index", "workspace.list", "workspace.read_range", "workspace.search_text",
     "worktree.read_file", "worktree.list", "worktree.search_text",
@@ -205,9 +210,30 @@ UPSTREAM = {
 }
 
 
-def load_real_tasks(root: Path) -> dict[str, Task]:
+LAZY_UPSTREAM = {
+    **UPSTREAM,
+    "compatible_identity": {
+        **UPSTREAM["package_name"],
+        "module": "packaging/specifiers",
+        "upstream_text": 'strip_trailing_zero=(self._spec[0] != "~="),',
+        "seeded_text": 'strip_trailing_zero=True,',
+        "objective": "Two parsed requirements with compatible-release clauses at different release "
+                     "precision must not compare equal when they allow different versions. Keep equivalent "
+                     "exact-match clauses equal. Fix the shared identity behavior, not the caller.",
+        "public": "from packaging.requirements import Requirement\n"
+                  "assert Requirement('alpha~=1.0') != Requirement('alpha~=1.0.0')",
+        "heldout": "from packaging.requirements import Requirement\n"
+                   "assert Requirement('beta~=2.1') != Requirement('beta~=2.1.0')\n"
+                   "assert Requirement('beta==2.1') == Requirement('beta==2.1.0')\n"
+                   "assert Requirement('beta~=2.1').specifier.contains('2.2')\n"
+                   "assert not Requirement('beta~=2.1.0').specifier.contains('2.2')",
+    },
+}
+
+
+def load_real_tasks(root: Path, *, on_demand: bool = False) -> dict[str, Task]:
     result = {}
-    for name, spec in UPSTREAM.items():
+    for name, spec in (LAZY_UPSTREAM if on_demand else UPSTREAM).items():
         repo = root / spec["repo"]
         commit = spec["commit"]
         if git(repo, "rev-parse", "--verify", f"{commit}^{{commit}}").strip() != commit:
@@ -274,6 +300,8 @@ def make_plan(tasks: tuple[str, ...], repeats: int, seed: int, *, experiment: st
                 row["source_packet"] = arm
                 if experiment in GRAPH_EXPERIMENTS:
                     row["graph_packet"] = arm
+                if experiment == LAZY_GRAPH_EXPERIMENT:
+                    row.update(graph_packet="file_list", graph_on_demand=arm == "on_demand")
                 if experiment != SOURCE_EXPERIMENT:
                     row["prebind"] = True
             rows.append(row)
@@ -348,14 +376,39 @@ class FixtureEngine(AgentRunEngine):
         super().__init__(root)
         self.task = task
         self.prebind = prebind
+        self.lazy_graph = None
+
+    def enable_graph_lookup(self, graph):
+        self.lazy_graph = graph
+
+        async def handler(arguments, context):
+            run = self.store.get_run(context.run_id)
+            bound = worktree_for(self, run)
+            if bound is None or bound.resolve() != graph.root:
+                raise ValueError("graph lookup requires the original bound worktree")
+            pristine = not (run.get("checkpoint") or {}).get("worktree_mutation_epoch")
+            return await asyncio.to_thread(graph.lookup, arguments["query"], pristine=pristine)
+
+        self.tool_registry.register(ToolSpec(
+            tool_id=GRAPH_TOOL, version="1", title="Look up worktree graph",
+            description="Optional: look up local dependencies and symbols for one exact Python path or symbol. "
+                        "Use only if needed. No source bodies. Three lookups at most before editing.",
+            category="worktree", risk=ToolRisk.LOW, effect=ToolEffect.READ,
+            input_schema={"type": "object", "properties": {"query": {"type": "string", "maxLength": 200}},
+                          "required": ["query"], "additionalProperties": False},
+            requires_worktree=True, max_output_bytes=2400, idempotent=False, handler=handler,
+        ))
 
     def list_tools(self, **kwargs: Any) -> list[dict[str, Any]]:
         allowed = TOOLS - {"worktree.bind"} if self.prebind else TOOLS
+        if self.lazy_graph is not None:
+            allowed |= {GRAPH_TOOL}
         return [tool for tool in super().list_tools(**kwargs) if tool.get("tool_id") in allowed]
 
     async def execute_tool(self, run_id: str, tool_id: str, arguments=None, **kwargs):
         args = arguments or {}
-        if tool_id not in TOOLS or kwargs.get("execution_target", "local") != "local":
+        allowed = TOOLS | ({GRAPH_TOOL} if self.lazy_graph is not None else set())
+        if tool_id not in allowed or kwargs.get("execution_target", "local") != "local":
             raise ValueError("benchmark scope: tool or destination not allowed")
         if tool_id == "worktree.replace_exact" and args.get("path") != self.task.path:
             raise ValueError("benchmark scope: only the fixture implementation file can be edited")
@@ -460,9 +513,10 @@ class MeasuredNIM(NIMPlannerProvider):
 class Scripted:
     """Control-plane check only. Decisions deliberately do not depend on the hint."""
 
-    def __init__(self, task: Task, *, prebind: bool = False):
+    def __init__(self, task: Task, *, prebind: bool = False, graph_query: str = ""):
         self.steps = iter([
             *([] if prebind else [("worktree.bind", {})]),
+            *([(GRAPH_TOOL, {"query": graph_query})] if graph_query else []),
             ("workspace.read_range", {"path": task.path, "start_line": 1, "line_count": 12}),
             ("worktree.replace_exact", {"path": task.path, "old_text": task.old, "new_text": task.new}),
             ("worktree.verify", {"command": list(PUBLIC)}),
@@ -753,7 +807,7 @@ async def bind_fixture_before_first_turn(engine, runtime, run):
 async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key: str) -> dict[str, Any]:
     source_experiment = "source_packet" in row
     prebind = bool(row.get("prebind"))
-    task = args.materialized_tasks[row["task"]] if args.experiment == REAL_GRAPH_EXPERIMENT else (
+    task = args.materialized_tasks[row["task"]] if args.experiment in UPSTREAM_EXPERIMENTS else (
         SOURCE_TASKS if source_experiment else TASKS)[row["task"]]
     real_repo = bool(task.provenance)
     diagnostic = "compression" in row
@@ -776,7 +830,11 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
                             mode="agent", provider=args.provider, model=args.model if args.provider == "nim" else "scripted",
                             request={"autonomy": "autopilot", "execution_target": "local", "launch_strategy": "direct_coder"})
     rid = run["run_id"]
-    delegate = MeasuredNIM(key=key, model=args.model) if args.provider == "nim" else Scripted(task, prebind=prebind)
+    scripted_query = ({"compatible_identity": "packaging/requirements.py",
+                       "compact_unicode": "itsdangerous/url_safe.py"}.get(row["task"], "")
+                      if row.get("graph_on_demand") else "")
+    delegate = MeasuredNIM(key=key, model=args.model) if args.provider == "nim" else Scripted(
+        task, prebind=prebind, graph_query=scripted_query)
     provider = MeteredProvider(delegate)
     start = time.perf_counter()
     hint, hint_seconds, fidelity = "", 0.0, False
@@ -801,6 +859,9 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
             runtime.source_packet = build_graph_packet(
                 bound, paths, row["graph_packet"], out / "tmp" / row["attempt_id"] / "graph.sqlite3",
                 real_repo=real_repo, objective=task.objective)
+            if row.get("graph_on_demand"):
+                engine.enable_graph_lookup(BoundedWorktreeGraph(
+                    bound, set(paths), out / "tmp" / row["attempt_id"] / "lazy.sqlite3"))
         else:
             runtime.source_packet = build_source_packet(bound, task, compress=row["source_packet"] == "longcodezip")
         run = engine.store.get_run(rid)
@@ -887,6 +948,13 @@ async def attempt(out: Path, row: dict[str, Any], args: argparse.Namespace, key:
         nav = (runtime.source_packet or {}).get("navigation") or {}
         experiment_metrics.update(cold_index_seconds=nav.get("cold_index_seconds"),
                                   indexed_snapshot_lookup_seconds=nav.get("indexed_snapshot_lookup_seconds"))
+    if args.experiment == LAZY_GRAPH_EXPERIMENT:
+        empty_graph = {"graph_lookup_requests": 0, "graph_lookup_successes": 0,
+                       "graph_lookup_result_bytes": 0, "graph_index_builds": 0}
+        experiment_metrics.update(engine.lazy_graph.stats() if engine.lazy_graph is not None else empty_graph)
+        experiment_metrics["graph_tool_decisions"] = sum(
+            e["event_type"] == "agent.coder.decision" and
+            (e["payload"].get("decision") or {}).get("tool_id") == GRAPH_TOOL for e in events)
     if diagnostic:
         joined = {r["user_prompt_sha256"] for r in requests if r.get("user_prompt_sha256")}
         applied = [r for r in runtime.compression_receipts if r["applied"]]
@@ -1002,16 +1070,21 @@ def summarize(rows: list[dict[str, Any]], provider: str, *, experiment: str = "n
         pairs = ({"paired_against_file_list": comparisons("file_list"),
                   "paired_graph_against_symbols": comparisons("symbols", {"graph"})}
                  if experiment == NAV_GRAPH_EXPERIMENT else
-                 {"paired_against_file_list": comparisons("file_list")} if experiment == REAL_GRAPH_EXPERIMENT else
+                 {"paired_against_file_list": comparisons("file_list")} if experiment in UPSTREAM_EXPERIMENTS else
                  {"paired_against_closeout": comparisons("closeout")})
-        if experiment == REAL_GRAPH_EXPERIMENT:
+        if experiment in UPSTREAM_EXPERIMENTS:
             for arm_name, arm_rows in grouped.items():
                 for field in ("cold_index_seconds", "indexed_snapshot_lookup_seconds"):
                     values = [r[field] for r in arm_rows if r.get(field) is not None]
                     results[arm_name][field] = {"n": len(values), "median": median(values) if values else None,
                                                 "total": sum(values) if values else None}
+        if experiment == LAZY_GRAPH_EXPERIMENT:
+            for name, grouped_rows in grouped.items():
+                for field in ("graph_tool_decisions", "graph_lookup_requests", "graph_lookup_successes",
+                              "graph_lookup_result_bytes", "graph_index_builds"):
+                    results[name][field] = sum(row.get(field, 0) for row in grouped_rows)
         evidence_class = ("scripted_control_only" if provider == "scripted" else
-                          "live_upstream_seeded_pilot" if experiment == REAL_GRAPH_EXPERIMENT else "live_synthetic_pilot")
+                          "live_upstream_seeded_pilot" if experiment in UPSTREAM_EXPERIMENTS else "live_synthetic_pilot")
         return {"evidence_class": evidence_class,
                 "experiment": experiment, "arms": results, **pairs}
     pairs = [{"task": task, "repeat": repeat, "arm": arm,
@@ -1044,7 +1117,7 @@ def main(argv=None) -> int:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--experiment", choices=tuple(EXPERIMENT_ARMS), default="navigation")
     parser.add_argument("--compression-backend", choices=("native", "upstream"), default="native")
-    parser.add_argument("--tasks", nargs="+", choices=tuple(TASKS) + tuple(SOURCE_TASKS) + tuple(UPSTREAM))
+    parser.add_argument("--tasks", nargs="+", choices=tuple(TASKS) + tuple(SOURCE_TASKS) + tuple(LAZY_UPSTREAM))
     parser.add_argument("--repo-fixtures", type=Path, help="parent of pinned packaging and itsdangerous Git checkouts")
     parser.add_argument("--provider", choices=["scripted", "nim"], default="scripted")
     parser.add_argument("--model", default="nvidia/nemotron-3.5-super-vl-120b-a12b")
@@ -1055,10 +1128,10 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     if not 1 <= args.repeats <= 20 or not 5 <= args.max_turns <= 32:
         parser.error("repeats must be 1–20 and max-turns 5–32")
-    if args.experiment == REAL_GRAPH_EXPERIMENT:
+    if args.experiment in UPSTREAM_EXPERIMENTS:
         if args.repo_fixtures is None:
             parser.error("real-repo-navigation requires --repo-fixtures")
-        task_set = load_real_tasks(args.repo_fixtures)
+        task_set = load_real_tasks(args.repo_fixtures, on_demand=args.experiment == LAZY_GRAPH_EXPERIMENT)
         args.materialized_tasks = task_set
     else:
         task_set = SOURCE_TASKS if args.experiment in PACKET_EXPERIMENTS else TASKS
@@ -1138,7 +1211,7 @@ def main(argv=None) -> int:
                           packet_limit_bytes=8000, packet_cadence="first_request_only",
                           graph_index_scope="tracked Python files, isolated database per attempt",
                           graph_backend_sha256=digest((REPO / "app/kernel/data_processing/workspace_graph.py").read_bytes()))
-        if args.experiment == REAL_GRAPH_EXPERIMENT:
+        if args.experiment in UPSTREAM_EXPERIMENTS:
             for name in args.tasks:
                 task = task_set[name]
                 upstream = out / "tmp" / f"{name}-pristine"
@@ -1159,6 +1232,10 @@ def main(argv=None) -> int:
                                          "behavior checks. Not historical issues or model-training-blinded. "
                                          "Cold index build and lookup against the built index are measured separately. "
                                          "These task fixtures are not OS-network-isolated.")
+        if args.experiment == LAZY_GRAPH_EXPERIMENT:
+            frozen.update(first_packet="file_list_in_both_arms", graph_lookup_tool=GRAPH_TOOL,
+                          graph_lookup_max_calls=MAX_LOOKUPS, graph_lookup_max_result_bytes=MAX_BYTES,
+                          graph_index_scope="initial tracked Python files, lazy per-trial index, no mutation")
         write_json(out / "plan.json", frozen)
         rows = []
         prior_rejection = None

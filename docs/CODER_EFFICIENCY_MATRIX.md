@@ -210,3 +210,32 @@ end-to-end model run and does not measure cache reuse between worktrees.
 One repeat across both packages is four trials with a 32-request ceiling
 at eight turns. Three repeats are twelve live trials with a 96-request ceiling.
 Always run scripted controls first. Keep RAG off for the paired comparison.
+
+## Stage 1: graph lookup on demand
+
+`--experiment graph-on-demand` compares the same first-turn file list and
+standard read/closeout tools in both arms. Only the treatment also advertises
+`worktree.graph_lookup`. There is no upfront graph context or indexing in
+either arm. A valid lookup lazily builds one isolated index of the initial
+bound worktree. Later lookups reuse it. The tool accepts an exact tracked
+Python path or symbol, returns local one-hop dependency edges and a few
+symbol locations (up to 1,200 bytes of result JSON), and accepts at most
+three handler calls per trial. The handler refuses after any edit, instead
+of returning a stale index. The regular tool receipt records its outcome.
+RAG, compression, and crystal replay stay off.
+
+The trial set reuses the pinned package-name and compact Unicode fixtures
+and adds a compatible-release identity defect that crosses the Requirement
+and Specifier layers. The plain package-name case is an easy counterexample
+where a graph lookup need not be useful. These are seeded defects on pinned
+upstream source, not historical bug resolutions. Scripted smoke checks wiring
+by using lookup for the two dependency cases and skipping it for package-name.
+The live treatment is free to choose. Report all trials, including no-call
+ones, with lookup decisions, invocations, results, builds, request counts,
+tokens, reads, and verified outcomes. No-call trials avoid graph query/build
+cost, not the overhead of advertising the extra tool.
+
+Use the same `--repo-fixtures` as upstream navigation. One scripted repeat
+is six trials and three live repeats are eighteen trials. At eight turns
+their live request ceiling is 144. Cold build and cumulative snapshot lookup
+time are included in the graph-arm wall time and reported separately.
