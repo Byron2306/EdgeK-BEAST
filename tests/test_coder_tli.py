@@ -1380,3 +1380,63 @@ async def test_direct_timeline_keeps_reasoning_and_edit_delta_per_action(tmp_pat
         app.action_toggle_action_reasoning(app._actions[0]["id"])
         expanded = app._actions_text().plain
         assert "Read the target." in expanded and "Make a bounded edit." not in expanded
+
+
+@pytest.mark.asyncio
+async def test_direct_diff_dock_appears_on_edit_while_output_is_paused(tmp_path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        app._begin_action()
+        app._follow_output = False
+        app._record_tool_patch("worktree.replace_exact", {
+            "path": "a.py", "diff": "diff --git a/a.py b/a.py\n@@ -1 +1 @@\n-a\n+b\n",
+        })
+        app._sync()
+        await pilot.pause()
+        dock = app.query_one("#coder-diff-scroll")
+        assert dock.display
+        assert "+b" in _plain(app.query_one("#coder-diff", Static).render())
+        assert not app._follow_output
+        await pilot.press("f7")
+        assert not dock.display
+        await pilot.press("f7")
+        assert dock.display
+
+
+@pytest.mark.asyncio
+async def test_direct_history_shows_numbered_edits_one_reasoning_preview_and_one_summary(tmp_path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+    async with app.run_test(size=(120, 40)):
+        app._actions.extend([
+            {"id": 1, "status": "completed", "tool_id": "workspace.read_range",
+             "thinking": "First thought. " + "Long repeated text. " * 50},
+            {"id": 2, "status": "completed", "tool_id": "worktree.replace_exact",
+             "thinking": "Second thought.", "details": {"path": "a.py", "action_diff": "@@ -5,2 +5,2 @@\n same\n-a\n+b\n"}},
+        ])
+        app.action_toggle_action_reasoning(1)
+        assert len(app._actions_text().plain) < 440
+        app.action_toggle_action_reasoning(2)
+        app._action_summary = "Verified change."
+        text = app._actions_text().plain
+        assert "First thought." not in text and "Second thought." in text
+        assert "6 +b" in text and "6 -a" in text
+        assert text.count("Verified change.") == 1
+        assert text.index("Edited") < text.index("Verified change.")
+
+
+@pytest.mark.asyncio
+async def test_receipts_have_visible_toggle_without_replacing_action_history(tmp_path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        app._begin_action()
+        app._update_action({"kind": "tool_call", "tool_id": "worktree.read_file",
+                            "details": {"arguments": {"path": "a.py"}}})
+        app._sync()
+        await pilot.pause()
+        toggle = app.query_one("#coder-receipts-toggle")
+        pane = app.query_one("#tool-scroll")
+        assert toggle.display and not pane.display
+        await pilot.click("#coder-receipts-toggle")
+        assert pane.display and "Read" in _plain(app.query_one("#coder-inline-tools", Static).render())
+        await pilot.press("f9")
+        assert not pane.display

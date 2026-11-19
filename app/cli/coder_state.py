@@ -308,7 +308,12 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
             "advisory", str(payload.get("summary") or "Direct coder completed."),
             sequence, details=payload,
         )
-    if event.event in {"agent.coder.runtime_unavailable", "agent.coder.tool_rejected"}:
+    if event.event == "agent.coder.tool_rejected":
+        return ProjectedEvent(
+            "action_rejected", str(payload.get("message") or ""), sequence,
+            tool_id=str(payload.get("tool_id") or ""), details=payload,
+        )
+    if event.event == "agent.coder.runtime_unavailable":
         return ProjectedEvent(
             "advisory", str(payload.get("message") or ""), sequence, details=payload,
         )

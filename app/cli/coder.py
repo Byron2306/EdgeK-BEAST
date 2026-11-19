@@ -20,7 +20,8 @@ from textual import events
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, VerticalScroll
-from textual.widgets import Input, Static
+from textual.css.query import NoMatches
+from textual.widgets import Button, Input, Static
 
 try:
     # Imported before Textual starts so textual-image can safely detect Kitty
@@ -86,7 +87,8 @@ class ToolEventPanel(Static):
     can_focus = True
 
     async def on_click(self) -> None:
-        await self.app.toggle_tool_details()  # type: ignore[attr-defined]
+        if not self.screen.has_class("action-timeline"):
+            await self.app.toggle_tool_details()  # type: ignore[attr-defined]
 
     def on_key(self, event: events.Key) -> None:
         if event.key in {"enter", "space"}:
@@ -184,8 +186,19 @@ class ConversationScroll(VerticalScroll):
             app.screen.set_class(not at_end, "show-jump")  # type: ignore[attr-defined]
             app.query_one("#coder-identity", Static).update(app._identity_text())  # type: ignore[attr-defined]
 
+    def _pause_follow(self) -> None:
+        app = self.app
+        app._follow_output = False  # type: ignore[attr-defined]
+        with suppress(NoMatches):
+            app.screen.add_class("show-jump")
+            app.query_one("#coder-identity", Static).update(app._identity_text())  # type: ignore[attr-defined]
+
+    def scroll_page_up(self, *args: Any, **kwargs: Any) -> None:
+        self._pause_follow()
+        super().scroll_page_up(*args, **kwargs)
+
     def _on_mouse_scroll_up(self, event: events.MouseScrollUp) -> None:
-        self.app._follow_output = False  # type: ignore[attr-defined]
+        self._pause_follow()
         super()._on_mouse_scroll_up(event)
 
 
@@ -254,6 +267,7 @@ class BeastCoderApp(App[None]):
         Binding("f6", "jump_latest", "Jump to latest", show=False),
         Binding("f7", "toggle_diff", "Toggle live diff", show=False),
         Binding("f8", "toggle_thinking", "Toggle thinking", show=False),
+        Binding("f9", "toggle_receipts", "Toggle tool calls and receipts", show=False),
         Binding("escape", "close_menu", "Close menu", show=False),
         Binding("down", "menu_down", "Agent menu", show=False, priority=True),
         Binding("up", "menu_up", "Menu up", show=False, priority=True),
@@ -286,17 +300,20 @@ class BeastCoderApp(App[None]):
     #coder-body {{ height: 1fr; min-height: 0; }}
     #conversation-scroll {{ width: 1fr; height: 1fr; min-height: 0; padding: 1 2; scrollbar-color: {BEAST_GREEN}; }}
     #coder-transcript, #coder-inline-tools, #coder-approvals {{ height: auto; }}
-    #coder-diff {{
+    #coder-diff-scroll {{
         display: none;
         height: auto;
-        max-height: 30;
+        max-height: 12;
+    }}
+    Screen.has-diff #coder-diff-scroll {{ display: block; }}
+    #coder-diff {{
+        height: auto;
         margin: 1 0;
         padding: 0 1;
         border: round {BEAST_BORDER};
         background: {BEAST_PANEL};
     }}
     #coder-diff:focus {{ border: round {BEAST_ACID}; }}
-    Screen.has-diff #coder-diff {{ display: block; }}
     #coder-thinking {{
         display: none;
         height: auto;
@@ -309,7 +326,7 @@ class BeastCoderApp(App[None]):
     }}
     #coder-thinking:focus {{ border: round {BEAST_ACID}; }}
     Screen.has-thinking #coder-thinking {{ display: block; }}
-    Screen.action-timeline #coder-thinking {{ height: 5; margin: 0 1; }}
+    Screen.action-timeline #coder-thinking {{ height: 4; margin: 0 1; }}
     #coder-ide-compat {{
         display: none;
         height: auto;
@@ -360,7 +377,26 @@ class BeastCoderApp(App[None]):
     }}
     #tool-scroll {{
         display: none;
+        height: auto;
+        max-height: 10;
+        margin: 0 1;
+        padding: 0 1;
+        border: round {BEAST_BORDER};
+        background: {BEAST_PANEL};
     }}
+    Screen.show-receipts #tool-scroll {{ display: block; }}
+    #coder-receipts-toggle {{
+        display: none;
+        height: 1;
+        min-height: 1;
+        margin: 0 1;
+        padding: 0 1;
+        border: none;
+        width: auto;
+        color: {BEAST_ACID};
+        background: {BEAST_PANEL_ALT};
+    }}
+    Screen.action-timeline #coder-receipts-toggle {{ display: block; }}
     #coder-input {{
         height: 3;
         border: tall {BEAST_BORDER};
@@ -438,7 +474,8 @@ class BeastCoderApp(App[None]):
         self._action_count = 0
         self._expanded_actions: set[int] = set()
         self._last_thinking_paint = 0.0
-        self._show_cumulative_diff = False
+        self._show_cumulative_diff = True
+        self._action_summary = ""
         # IDE compatibility.
         self.ide_compat: dict[str, Any] = {}
         self.ide_compat_expanded = False
@@ -472,14 +509,16 @@ class BeastCoderApp(App[None]):
                 yield Static(self._transcript_text(), id="coder-transcript")
                 yield ApprovalPanel(self._approval_text(), id="coder-approvals")
                 yield ToolEventPanel(self._tools_text(), id="coder-inline-tools")
-                yield DiffPanel(self._diff_text(), id="coder-diff")
                 yield IdeCompatPanel(self._ide_compat_text(), id="coder-ide-compat")
                 yield Static(
                     sprite_mascot(self.mascot_state, self._mascot_frame),
                     id="coder-beastie",
                 )
-            with VerticalScroll(id="tool-scroll"):
-                yield Static(self._tools_text(), id="coder-tools")
+        yield Button("Show tool calls + receipts · F9", id="coder-receipts-toggle")
+        with VerticalScroll(id="tool-scroll"):
+            yield Static(self._tools_text(), id="coder-tools")
+        with VerticalScroll(id="coder-diff-scroll"):
+            yield DiffPanel(self._diff_text(), id="coder-diff")
         yield ThinkingPanel(self._thinking_text(), id="coder-thinking")
         yield JumpLatestPanel("▼  JUMP TO LATEST  ·  F6 / Ctrl+End", id="coder-jump")
         yield Static("", id="coder-menu")
@@ -695,7 +734,12 @@ class BeastCoderApp(App[None]):
             "error": "bold #D35E68",
         }
         labels = {"user": "YOU", "assistant": "BEAST", "system": "SYSTEM", "error": "ERROR"}
-        for index, item in enumerate(self.transcript_entries):
+        entries = [
+            item for item in self.transcript_entries
+            if not (self._action_summary and (item.get("metadata") or {}).get("action_summary")
+                    and (item.get("metadata") or {}).get("run_id") == self.settings.last_run_id)
+        ]
+        for index, item in enumerate(entries):
             role = str(item.get("role") or "system")
             text.append(f"{labels.get(role, role.upper())}> ", style=styles.get(role, BEAST_MUTED))
             content = str(item.get("content") or "")
@@ -707,7 +751,7 @@ class BeastCoderApp(App[None]):
                 text.append(content, style=BEAST_GREEN)
             else:
                 text.append(content, style=styles.get(role, BEAST_TEXT))
-            if index < len(self.transcript_entries) - 1:
+            if index < len(entries) - 1:
                 text.append("\n\n")
         return text
 
@@ -783,49 +827,93 @@ class BeastCoderApp(App[None]):
             text.append(f"  ·  {len(self.pending_approvals) - 1} more pending", style=BEAST_MUTED)
         return text
 
+    @staticmethod
+    def _changed_lines(patch: str) -> list[tuple[int, str, str]]:
+        lines: list[tuple[int, str, str]] = []
+        old = new = None
+        for line in patch.splitlines():
+            if line.startswith(("diff --git ", "--- ", "+++ ")):
+                old = new = None
+                continue
+            header = re.match(r"^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@", line)
+            if header:
+                old, new = map(int, header.groups())
+            elif old is not None and new is not None:
+                if line.startswith("+"):
+                    lines.append((new, "+", line[1:]))
+                    new += 1
+                elif line.startswith("-"):
+                    lines.append((old, "-", line[1:]))
+                    old += 1
+                elif line.startswith(" "):
+                    old += 1
+                    new += 1
+        return lines
+
     def _actions_text(self) -> Text:
         text = Text("ACTIONS\n", style=f"bold {BEAST_ACID}")
         for action in self._actions[-24:]:
-            tool = action.get("tool_id", "")
+            tool = action.get("tool_id") or ""
             details = action.get("details") or {}
             args = action.get("arguments") or {}
             path = str(details.get("path") or args.get("path") or "")
             status = action.get("status") or "thinking"
-            title = {"workspace.read_range": "Read", "worktree.read_file": "Read",
-                     "worktree.replace_exact": "Edit", "worktree.write_file": "Write",
-                     "worktree.verify": "Verify", "worktree.diff": "Inspect diff"}.get(tool, tool or "Thinking")
-            color = BEAST_GREEN if status == "completed" else "#FF8A93" if status == "failed" else BEAST_WARN
-            text.append(f"{title}{'  ' + path if path else ''}  ·  {status}", style=color)
-            if details.get("returncode") is not None:
-                text.append(f"  ·  exit {details['returncode']}", style=color)
+            if not tool:
+                continue
+            patch = details.get("action_diff") or ""
+            changed = self._changed_lines(patch) if status == "completed" else []
+            code = details.get("returncode")
+            title = {
+                "workspace.read_range": "Read", "worktree.read_file": "Read",
+                "worktree.replace_exact": "Edited" if status == "completed" else "Edit",
+                "worktree.write_file": "Created" if status == "completed" else "Write",
+                "worktree.bind": "Bound worktree" if status == "completed" else "Bind worktree",
+                "workspace.search_text": "Searched", "worktree.search_text": "Searched",
+                "worktree.verify": "Verified" if status == "completed" else "Verifying",
+                "worktree.diff": "Inspected diff",
+            }.get(tool, tool)
+            if status == "failed" and code is not None:
+                title = "Verification failed" if tool == "worktree.verify" else "Command failed"
+            color = BEAST_GREEN if status == "completed" else "#FF8A93" if status in {"failed", "rejected"} else BEAST_WARN
+            text.append(f"• {title}", style=f"bold {color}")
+            subject = path
+            if not subject and isinstance(args.get("command"), list):
+                subject = " ".join(str(value) for value in args["command"])
+            if subject:
+                text.append(f"  {subject[:125]}", style=BEAST_TEXT)
+            if changed:
+                added = sum(mark == "+" for _, mark, _ in changed)
+                text.append(f"  (+{added} −{len(changed) - added})", style=BEAST_MUTED)
+            if code is not None:
+                text.append(f"  ·  exit {code}", style=color)
+            elif status != "completed":
+                text.append(f"  ·  {status}", style=color)
+            text.append("\n")
+            for line_no, mark, body in changed[:6]:
+                style = f"{BEAST_GREEN} on #04170F" if mark == "+" else "#FFB3B8 on #1B0508"
+                text.append(f"  {line_no:>4} {mark}{body[:160]}\n", style=style)
+            if len(changed) > 6:
+                text.append(f"    + {len(changed) - 6} preview lines · F7 for full diff\n", style=BEAST_MUTED)
+            if status in {"failed", "rejected"} and action.get("error"):
+                text.append("    " + str(action["error"]).splitlines()[0][:180] + "\n", style=color)
             reason = action.get("thinking") or ""
             if reason:
                 opened = action["id"] in self._expanded_actions
-                text.append("  ▾ Thinking" if opened else "  ▸ Thinking", style=Style(
+                text.append("    ▾ Thinking\n" if opened else "    ▸ Thinking\n", style=Style(
                     color=BEAST_MUTED, meta={"@click": f"app.toggle_action_reasoning({action['id']})"},
                 ))
                 if opened:
-                    text.append("\n    " + reason[:1800].strip().replace("\n", "\n    "), style=BEAST_MUTED)
-                    if action.get("receipt", {}).get("observation_id"):
-                        text.append("\n    receipt " + action["receipt"]["observation_id"], style=BEAST_MUTED)
-            if status == "failed" and action.get("error"):
-                text.append("\n  " + str(action["error"]).splitlines()[0][:180], style=color)
-            text.append("\n")
-            patch = details.get("action_diff") or ""
-            if status == "completed" and patch:
-                for line in patch.splitlines()[:18]:
-                    style = (BEAST_GREEN if line.startswith("+") and not line.startswith("+++")
-                             else "#FF8A93" if line.startswith("-") and not line.startswith("---")
-                             else BEAST_MUTED)
-                    text.append("  " + line + "\n", style=style)
-                if len(patch.splitlines()) > 18:
-                    text.append("  … F7 for the full worktree diff\n", style=BEAST_MUTED)
+                    preview = " ".join(reason.split())
+                    text.append("    " + preview[:230] + ("…" if len(preview) > 230 else "") + "\n",
+                                style=BEAST_MUTED)
+        if self._action_summary:
+            text.append("\n" + self._action_summary + "\n", style=BEAST_TEXT)
         return text
 
     def action_toggle_action_reasoning(self, action_id: int) -> None:
-        if action_id in self._expanded_actions:
-            self._expanded_actions.remove(action_id)
-        else:
+        was_open = action_id in self._expanded_actions
+        self._expanded_actions.clear()
+        if not was_open:
             self._expanded_actions.add(action_id)
         if self.is_mounted:
             self.query_one("#coder-inline-tools", ToolEventPanel).update(self._actions_text())
@@ -835,7 +923,8 @@ class BeastCoderApp(App[None]):
         self._expanded_actions.clear()
         self._current_action = None
         self.thinking_bundle = ""
-        self._show_cumulative_diff = False
+        self._show_cumulative_diff = True
+        self._action_summary = ""
 
     def _begin_action(self) -> None:
         self._action_count += 1
@@ -860,7 +949,7 @@ class BeastCoderApp(App[None]):
             if row["tool_id"] not in {"worktree.replace_exact", "worktree.write_file"}:
                 action["details"].pop("action_diff", None)
             action["receipt"] = row.get("receipt") or {}
-            action["error"] = row.get("text") if row.get("status") == "failed" else ""
+            action["error"] = row.get("text") if row.get("status") in {"failed", "rejected"} else ""
         if self.thinking_bundle:
             action["thinking"] = self.thinking_bundle
             self.thinking_bundle = ""
@@ -1025,7 +1114,7 @@ class BeastCoderApp(App[None]):
             self._show_cumulative_diff = not self._show_cumulative_diff
             self.diff_expanded = self._show_cumulative_diff
         self._sync()
-        if self.diff_expanded and self.is_mounted:
+        if self.diff_expanded and self.is_mounted and not self._actions:
             self.call_after_refresh(self._scroll_transcript_end)
 
     def action_toggle_diff(self) -> None:
@@ -1039,6 +1128,12 @@ class BeastCoderApp(App[None]):
                         style=BEAST_MUTED)
             return text
         dot = "◐" if self._status_dot % 2 == 0 else "◑"
+        if self._actions:
+            text.append(f"THINKING  {dot} · current action\n", style=f"bold {BEAST_WARN}")
+            preview = " ".join(self.thinking_bundle.split())
+            limit = 180 if self.thinking_expanded else 85
+            text.append(preview[:limit].strip() + ("…" if len(preview) > limit else ""), style=BEAST_WARN)
+            return text
         text.append(f"THINKING  {dot}\n", style=f"bold {BEAST_WARN}")
         text.append("▸ Tap to show reasoning · ", style=BEAST_MUTED)
         text.append(str(self._status_dot), style=BEAST_MUTED)
@@ -1054,6 +1149,15 @@ class BeastCoderApp(App[None]):
         return text
 
     def toggle_thinking_expanded(self) -> None:
+        if self._actions:
+            if self.thinking_bundle:
+                self.thinking_expanded = not self.thinking_expanded
+                self._paint_thinking(force=True)
+            else:
+                latest = next((action for action in reversed(self._actions) if action.get("thinking")), None)
+                if latest:
+                    self.action_toggle_action_reasoning(latest["id"])
+            return
         self.thinking_expanded = not self.thinking_expanded
         self._sync()
 
@@ -1303,9 +1407,14 @@ class BeastCoderApp(App[None]):
         self.query_one("#coder-identity", Static).update(self._identity_text())
         self.query_one("#coder-transcript", Static).update(self._transcript_text())
         self.query_one("#coder-approvals", ApprovalPanel).update(self._approval_text())
-        self.query_one("#coder-tools", Static).update(self._tools_text())
+        show_receipts = bool(self._actions and self.details_expanded)
+        self.query_one("#coder-receipts-toggle", Button).label = (
+            ("Hide" if show_receipts else "Show") + " tool calls + receipts · F9"
+        )
+        if show_receipts:
+            self.query_one("#coder-tools", Static).update(self._tools_text())
         self.query_one("#coder-inline-tools", ToolEventPanel).update(
-            self._actions_text() if self._actions and not self.details_expanded else self._tools_text()
+            self._actions_text() if self._actions else self._tools_text()
         )
         with suppress(Exception):
             self.query_one("#coder-diff", DiffPanel).update(self._diff_text())
@@ -1313,7 +1422,9 @@ class BeastCoderApp(App[None]):
             self.query_one("#coder-thinking", ThinkingPanel).update(self._thinking_text())
         with suppress(Exception):
             self.query_one("#coder-ide-compat", IdeCompatPanel).update(self._ide_compat_text())
-        self.screen.set_class(bool(self.tool_entries), "has-tools")
+        self.screen.set_class(bool(self.tool_entries or self._actions), "has-tools")
+        self.screen.set_class(bool(self._actions), "action-timeline")
+        self.screen.set_class(show_receipts, "show-receipts")
         self.screen.set_class(bool(self.pending_approvals), "has-approvals")
         self.screen.set_class(
             bool(self.diff_bundle.get("diff")) and (not self._actions or self._show_cumulative_diff),
@@ -1364,7 +1475,10 @@ class BeastCoderApp(App[None]):
     def _animate_mascot(self) -> None:
         self._mascot_frame = (self._mascot_frame + 1) % 120
         self._status_dot = (self._status_dot + 1) % 2
-        if self.is_mounted:
+        if not self.is_mounted:
+            return
+        # A final animation tick can overlap widget teardown.
+        with suppress(NoMatches):
             self.query_one("#coder-wordmark", Static).update(
                 beast_wordmark(
                     compact=self._compact_layout or self._branding_compact,
@@ -1453,6 +1567,13 @@ class BeastCoderApp(App[None]):
             return
         self.copy_to_clipboard(sanitized)
         self.notify("Last BEAST run sent to the clipboard.", title="Copy last run")
+
+    async def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "coder-receipts-toggle":
+            await self.toggle_tool_details()
+
+    async def action_toggle_receipts(self) -> None:
+        await self.toggle_tool_details()
 
     async def toggle_tool_details(self) -> None:
         self.details_expanded = not self.details_expanded
@@ -2323,7 +2444,7 @@ class BeastCoderApp(App[None]):
                         self._sync()
                         continue
                     projected = project_runtime_event(runtime_event)
-                    if projected.kind == "token" and not grounded:
+                    if projected.kind == "token" and not grounded and not self._actions:
                         assistant += projected.text
                         # Planner control packets are rendered as tool cards,
                         # not as assistant prose. Keep the raw JSON out of the
@@ -2342,6 +2463,10 @@ class BeastCoderApp(App[None]):
                         else:
                             self.thinking_bundle = str(projected.text or "")
                         self._paint_thinking()
+                    elif projected.kind == "action_rejected":
+                        self._update_action({"kind": "tool_result", "details": {}, "status": "rejected",
+                                             "tool_id": projected.tool_id, "text": projected.text})
+                        self._sync()
                     elif projected.kind == "answer_error":
                         answer_error = projected.text
                     elif projected.kind == "advisory":
@@ -2399,6 +2524,9 @@ class BeastCoderApp(App[None]):
                 if grounded and not final_text:
                     answer_error = answer_error or str(result.get("error") or "No grounded answer was returned.")
                 final_metadata = {"run_id": run_id, "receipt_ids": receipts, "turn_complete": True}
+                if self._actions and final_text and run_state == "completed" and not answer_error:
+                    final_metadata["action_summary"] = True
+                    self._action_summary = final_text
                 self.transcript_entries[assistant_index] = {
                     "role": "assistant",
                     "content": final_text,
@@ -2407,7 +2535,7 @@ class BeastCoderApp(App[None]):
                 self.store.append("assistant", final_text, metadata=final_metadata)
                 self._sync()
                 self._set_mascot("finished" if run_state == "completed" and not answer_error else "alert")
-                if run_state == "completed" and not answer_error:
+                if run_state == "completed" and not answer_error and not self._action_summary:
                     self._append_completion_summary(run_id, run_state, advisory, receipts)
                 if answer_error or run_state != "completed":
                     self._append("error", answer_error or f"AgentRun ended as {run_state}.")
