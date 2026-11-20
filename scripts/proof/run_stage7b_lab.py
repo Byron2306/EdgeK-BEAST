@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-from contextlib import ExitStack
+from contextlib import ExitStack, contextmanager
 import hashlib
 import json
 import os
@@ -53,20 +53,9 @@ def read_health(address, child):
     raise RuntimeError(f"Commons health unavailable at {address}, inspect its log")
 
 
-def run(out, ledger, base_port):
-    run_id = "stage7b-" + uuid4().hex
+@contextmanager
+def commons_lab(out, ledger, base_port, *, before_launch=None):
     lab = out / "lab"
-    report = out / "report"
-    report.mkdir()
-    runtime = SensoriumRuntime(journal_path=report / "sensorium.sqlite3", export_root=out / "outbox")
-
-    def observed(event_type, payload):
-        return runtime.observe_owned(
-            event_type=event_type, source="stage7b_lab",
-            payload_schema="beast.stage7b.readiness.v1", workspace_id=run_id,
-            payload={"run_id": run_id, **payload},
-        ).to_dict()
-
     with ExitStack() as stack:
         sockets = []
         for slot in range(3):
@@ -78,6 +67,8 @@ def run(out, ledger, base_port):
                        cwd=REPO, check=True, stdout=subprocess.DEVNULL)
         trust = attest(lab, lattice_root=ledger, ttl_seconds=3600)
         manifest = json.loads((lab / "manifest.json").read_text())
+        if before_launch:
+            before_launch(lab, manifest)
         children = []
         for entry, listener in zip(manifest["nodes"], sockets, strict=True):
             node = entry["node_id"]
@@ -98,12 +89,29 @@ def run(out, ledger, base_port):
             stack.callback(stop, child)
             children.append((entry, child))
             listener.close()
-        events = []
         for entry, child in children:
             health = read_health(f"http://127.0.0.1:{entry['port']}", child)
             if health.get("ok") is not True:
                 raise RuntimeError(f"Commons health did not pass: {entry['node_id']}")
-            events.append(observed("health.verified", {"node_id": entry["node_id"], "ok": True}))
+        yield lab, manifest, trust
+
+
+def run(out, ledger, base_port):
+    run_id = "stage7b-" + uuid4().hex
+    report = out / "report"
+    report.mkdir()
+    runtime = SensoriumRuntime(journal_path=report / "sensorium.sqlite3", export_root=out / "outbox")
+
+    def observed(event_type, payload):
+        return runtime.observe_owned(
+            event_type=event_type, source="stage7b_lab",
+            payload_schema="beast.stage7b.readiness.v1", workspace_id=run_id,
+            payload={"run_id": run_id, **payload},
+        ).to_dict()
+
+    with commons_lab(out, ledger, base_port) as (lab, manifest, trust):
+        events = [observed("health.verified", {"node_id": entry["node_id"], "ok": True})
+                  for entry in manifest["nodes"]]
         custody = asyncio.run(bootstrap(lab, out / "client-state"))
         events.append(observed("artifact.build_verified", {
             "manifest_digest": custody["manifest_digest"], "scope": "commons_seed_custody"}))
