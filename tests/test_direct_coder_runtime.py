@@ -305,3 +305,26 @@ def test_direct_trial_records_bound_failure_before_edit_and_pass_before_completi
                       "worktree.replace_exact", "worktree.verify"]
     assert model.calls == 3 and completed == [True]
     assert engine.store.run["state"] == "completed"
+
+
+
+def test_nested_unittest_verified_handoff():
+    from app.kernel.agents.verification_planner import verified_handoff_command
+
+    run = {
+        "request": {
+            "post_session_closure": "verified_handoff",
+            "post_session_test_runner": "unittest",
+            "required_test_files": ["tests/test_engine.py"],
+        }
+    }
+
+    assert verified_handoff_command(run) == [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v",
+    ]

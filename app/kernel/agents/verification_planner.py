@@ -34,10 +34,52 @@ def verified_handoff_command(run: dict[str, Any]) -> list[str] | None:
         raise ValueError(f"{error}: required_test_files must name 1 to 16 distinct relative Python files")
     if runner == "pytest":
         return ["python3", "-m", "pytest", "-q", "--", *tests]
-    if not all(re.fullmatch(r"test_[A-Za-z0-9_]+\.py", path) for path in tests):
-        raise ValueError(f"{error}: unittest requires explicit root-level test_*.py filenames")
+
+    parsed = [path.split("/") for path in tests]
+
+    if not all(
+        parts
+        and re.fullmatch(r"test_[A-Za-z0-9_]+\.py", parts[-1])
+        for parts in parsed
+    ):
+        raise ValueError(
+            f"{error}: unittest requires safe relative test_*.py filenames"
+        )
+
+    parents = {
+        "/".join(parts[:-1])
+        for parts in parsed
+    }
+
+    if len(parents) != 1:
+        raise ValueError(
+            f"{error}: unittest test files must share one discovery root"
+        )
+
+    discovery_root = next(iter(parents))
+
+    if discovery_root:
+        return [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            discovery_root,
+            "-v",
+        ]
+
     if len(tests) == 1:
-        return ["python3", "-m", "unittest", "discover", "-p", tests[0], "-q"]
+        return [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-p",
+            tests[0],
+            "-q",
+        ]
+
     return ["python3", "-m", "unittest", "-q", *tests]
 
 
