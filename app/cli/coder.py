@@ -149,6 +149,24 @@ class IdeCompatPanel(Static):
             event.stop()
 
 
+class CrystalLatticePanel(Static):
+    """Live crystal reuse + lattice promotion status for the current run.
+
+    Shows verified crystal promotions, lattice node/edge composition, and
+    autopromotion activity. Click to expand/collapse.
+    """
+
+    can_focus = True
+
+    async def on_click(self) -> None:
+        self.app.toggle_crystal_lattice_expanded()  # type: ignore[attr-defined]
+
+    def on_key(self, event: events.Key) -> None:
+        if event.key in {"enter", "space"}:
+            self.app.call_later(self.app.toggle_crystal_lattice_expanded)  # type: ignore[attr-defined]
+            event.stop()
+
+
 class JumpLatestPanel(Static):
     """One-key/one-tap return to the live tail of the conversation."""
 
@@ -253,6 +271,7 @@ class BeastCoderApp(App[None]):
         Binding("f6", "jump_latest", "Jump to latest", show=False),
         Binding("f7", "toggle_diff", "Toggle live diff", show=False),
         Binding("f8", "toggle_thinking", "Toggle thinking", show=False),
+        Binding("f9", "toggle_crystal_lattice", "Toggle crystal/lattice", show=False),
         Binding("escape", "close_menu", "Close menu", show=False),
         Binding("down", "menu_down", "Agent menu", show=False, priority=True),
         Binding("up", "menu_up", "Menu up", show=False, priority=True),
@@ -320,6 +339,18 @@ class BeastCoderApp(App[None]):
     }}
     #coder-ide-compat:focus {{ border: round {BEAST_GREEN}; }}
     Screen.has-ide-compat #coder-ide-compat {{ display: block; }}
+    #coder-crystal-lattice {{
+        display: none;
+        height: auto;
+        max-height: 22;
+        margin: 1 0;
+        padding: 0 1;
+        border: round {BEAST_WARN};
+        background: {BEAST_PANEL_ALT};
+        color: {BEAST_WARN};
+    }}
+    #coder-crystal-lattice:focus {{ border: round {BEAST_ACID}; }}
+    Screen.has-crystal-lattice #coder-crystal-lattice {{ display: block; }}
     #coder-jump {{
         display: none;
         height: 1;
@@ -435,6 +466,9 @@ class BeastCoderApp(App[None]):
         self.ide_compat: dict[str, Any] = {}
         self.ide_compat_expanded = False
         self.execution_target: str = "local"
+        # Crystal reuse + lattice compounding.
+        self.crystal_lattice: dict[str, Any] = {}
+        self.crystal_lattice_expanded = False
         self._work_started_at: float | None = None
         self._status_dot = 0
         self._menu_kind = ""
@@ -467,6 +501,7 @@ class BeastCoderApp(App[None]):
                 yield DiffPanel(self._diff_text(), id="coder-diff")
                 yield ThinkingPanel(self._thinking_text(), id="coder-thinking")
                 yield IdeCompatPanel(self._ide_compat_text(), id="coder-ide-compat")
+                yield CrystalLatticePanel(self._crystal_lattice_text(), id="coder-crystal-lattice")
                 yield Static(
                     sprite_mascot(self.mascot_state, self._mascot_frame),
                     id="coder-beastie",
@@ -1001,6 +1036,66 @@ class BeastCoderApp(App[None]):
     def action_toggle_ide_compat(self) -> None:
         self.call_later(self.toggle_ide_compat_expanded)
 
+    def _crystal_lattice_text(self) -> Text:
+        text = Text()
+        if not self.crystal_lattice:
+            text.append("CRYSTAL / LATTICE\n", style=f"bold {BEAST_MUTED}")
+            text.append("Crystal reuse decisions and lattice promotions appear here.",
+                        style=BEAST_MUTED)
+            return text
+        dot = "●" if self._status_dot % 2 == 0 else "○"
+        decisions = self.crystal_lattice.get("decisions") or []
+        promotions = self.crystal_lattice.get("promotions") or []
+        reductions = self.crystal_lattice.get("reductions") or []
+        autopromo = self.crystal_lattice.get("autopromotion") or {}
+        text.append(f"CRYSTAL/LATTICE  {dot}\n", style=f"bold {BEAST_WARN}")
+        text.append(f"Decisions: {len(decisions)}  ·  Promotions: {len(promotions)}  ·  Reductions: {len(reductions)}\n",
+                    style=BEAST_MUTED)
+
+        def section(title: str, items: list[dict[str, Any]]) -> None:
+            if not items:
+                return
+            text.append(f"  {title}\n", style=f"bold {BEAST_GREEN}")
+            for item in items[:5]:
+                action = str(item.get("action") or item.get("kind") or "item")
+                conf = item.get("confidence")
+                conf_str = f" ({int(conf * 100)}%)" if isinstance(conf, (int, float)) else ""
+                text.append(f"    • {action}{conf_str}", style=BEAST_GREEN)
+                reason = str(item.get("reason") or "")
+                if reason:
+                    text.append(f"      {reason[:70]}\n", style=BEAST_MUTED)
+                text.append("\n")
+            if len(items) > 5:
+                text.append(f"    … {len(items) - 5} more\n", style=BEAST_MUTED)
+
+        section("Decisions", decisions)
+        section("Promotions", promotions)
+        section("Reductions", reductions)
+
+        if autopromo:
+            text.append(f"  Autopromotion: scanned={autopromo.get('scanned', 0)}  "
+                        f"promoted={autopromo.get('promoted_count', 0)}  "
+                        f"rejected={autopromo.get('rejected_count', 0)}\n",
+                        style=BEAST_MUTED)
+
+        limit = 2000 if self.crystal_lattice_expanded else 120
+        visible = json.dumps(self.crystal_lattice, sort_keys=True, default=str)[:limit]
+        text.append(visible, style=BEAST_MUTED)
+        raw = json.dumps(self.crystal_lattice, sort_keys=True, default=str)
+        if len(raw) > limit:
+            text.append(
+                f"\n… {len(raw) - limit} more characters · tap to expand\n",
+                style=f"bold {BEAST_MUTED}",
+            )
+        return text
+
+    def toggle_crystal_lattice_expanded(self) -> None:
+        self.crystal_lattice_expanded = not self.crystal_lattice_expanded
+        self._sync()
+
+    def action_toggle_crystal_lattice(self) -> None:
+        self.call_later(self.toggle_crystal_lattice_expanded)
+
     def _append_completion_summary(self, run_id: str, run_state: str, advisory: str, receipts: list[str]) -> None:
         """Render a rich end-of-task summary banner after a completed agent run."""
         status = str(self.diff_bundle.get("status") or "").upper()
@@ -1190,11 +1285,14 @@ class BeastCoderApp(App[None]):
             self.query_one("#coder-thinking", ThinkingPanel).update(self._thinking_text())
         with suppress(Exception):
             self.query_one("#coder-ide-compat", IdeCompatPanel).update(self._ide_compat_text())
+        with suppress(Exception):
+            self.query_one("#coder-crystal-lattice", CrystalLatticePanel).update(self._crystal_lattice_text())
         self.screen.set_class(bool(self.tool_entries), "has-tools")
         self.screen.set_class(bool(self.pending_approvals), "has-approvals")
         self.screen.set_class(bool(self.diff_bundle.get("diff")), "has-diff")
         self.screen.set_class(bool(self.thinking_bundle), "has-thinking")
         self.screen.set_class(bool(self.ide_compat), "has-ide-compat")
+        self.screen.set_class(bool(self.crystal_lattice), "has-crystal-lattice")
         self.screen.set_class(not self._follow_output, "show-jump")
         self.screen.set_class(
             not self._welcome_active
@@ -2103,6 +2201,7 @@ class BeastCoderApp(App[None]):
             self._live_diffs.clear()
             self.diff_bundle = {}
             self.thinking_bundle = ""
+            self.crystal_lattice = {}
         assistant = ""
         advisory = ""
         answer_error = ""
@@ -2187,6 +2286,26 @@ class BeastCoderApp(App[None]):
                         answer_error = projected.text
                     elif projected.kind == "advisory":
                         advisory = projected.text
+                    elif projected.kind == "crystal":
+                        # Crystal/lattice events: reuse decisions, promotions,
+                        # reductions, autopromotion activity. Accumulate into the
+                        # crystal_lattice bundle for the live panel.
+                        details = projected.details if isinstance(projected.details, dict) else {}
+                        status = projected.status or ""
+                        kind_map = {
+                            "refused": ("decisions", {"action": "refused", "reason": str(details.get("reason") or "")}),
+                            "promoted": ("promotions", {"action": "promoted", "reason": str(details.get("reason") or "")}),
+                            "failed": ("reductions", {"action": "failed", "reason": str(details.get("reason") or "")}),
+                            "aborted": ("reductions", {"action": "aborted", "reason": str(details.get("reason") or "")}),
+                        }
+                        section, item = kind_map.get(status, ("decisions", {"action": status, "reason": str(details.get("reason") or "")}))
+                        item = {**item, **{k: v for k, v in details.items() if k not in item}}
+                        self.crystal_lattice.setdefault(section, [])
+                        self.crystal_lattice[section].append(item)
+                        # Keep only the most recent 10 per section.
+                        self.crystal_lattice[section] = self.crystal_lattice[section][-10:]
+                        self.screen.set_class(bool(self.crystal_lattice), "has-crystal-lattice")
+                        self._sync()
                     elif projected.kind == "diff":
                         if str(projected.details.get("diff") or "").strip():
                             self._merge_diff(projected.details, status=projected.status or "ready")

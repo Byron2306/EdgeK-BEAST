@@ -31,6 +31,7 @@ from app.kernel.agents.tool_runtime import ToolExecutionFailed, h12_approval_aut
 from app.kernel.agents.verification_planner import plan_verification, verified_handoff_command
 from app.kernel.agents.worktree_apply import ApplyBlocked, apply_workspace_files, read_worktree_diff
 from app.kernel.compute.coding_crystals import REVIEWED_TOOLS as CRYSTAL_REVIEWED_TOOLS
+from app.kernel.compute.crystal_autopromotion_daemon import CrystalAutopromotionDaemon
 from app.kernel.sensorium.episode_envelope import EpisodeEnvelopeBuilder, RunBudgetTracker
 
 
@@ -1406,8 +1407,6 @@ class AgentPlannerRuntime:
     ) -> tuple[PlannerDecision | None, str]:
         """Ask the model once to fix a rejected schema, without executing or granting authority.
         """
-        import sys as _sys
-        print(f"DEBUG_OSC_ENTRY: tool={decision.tool_id}, args={decision.arguments}", file=_sys.stderr)
         try:
             spec = self.engine.tool_registry.get(decision.tool_id)
         except Exception:
@@ -1437,9 +1436,6 @@ class AgentPlannerRuntime:
             return decision, ""
         except Exception as exc:
             first_error = f"{type(exc).__name__}: {exc}"
-            import sys as _sys
-            print(f"DEBUG_OSC_VALIDATE_FAIL: tool={decision.tool_id}, args={decision.arguments}, error={first_error}", file=_sys.stderr)
-
         self.engine.emit(run_id, "agent.planner.tool_arguments_refused", {
             "tool_id": decision.tool_id,
             "arguments": decision.arguments,
@@ -1509,16 +1505,12 @@ class AgentPlannerRuntime:
                             raise ValueError("correction requires exact old_text from the observed file")
                 invalid = self._invalid_mutation_reason(candidate)
                 if invalid:
-                    import sys as _sys
-                    print(f"DEBUG_OSC_MUTATION_FAIL: tool={candidate.tool_id}, path={candidate.arguments.get('path')}, error={invalid}", file=_sys.stderr)
                     raise ValueError(invalid)
         except Exception as exc:
             error = (
                 f"REFUSE_INVALID_TOOL_ARGUMENTS:{decision.tool_id}: {first_error}; "
                 f"bounded schema correction refused: {type(exc).__name__}: {exc}"
             )
-            import sys as _sys
-            print(f"DEBUG_OSC_RETURN_NONE: tool={decision.tool_id}, error={error[:120]}", file=_sys.stderr)
             self.engine.emit(run_id, "agent.provider.tool_schema_retry_refused", {
                 "tool_id": decision.tool_id, "turn": turn,
                 "reason": f"{type(exc).__name__}: {exc}", "approval_created": False,
@@ -2143,6 +2135,34 @@ class AgentPlannerRuntime:
             "workspace": result.get("workspace"),
             "applied": result.get("applied", []),
             "deleted": deleted,
+        })
+        # Autopromote the verified compute into the crystal lattice so the
+        # operator sees crystal reuse and lattice compounding naturally.
+        try:
+            daemon = CrystalAutopromotionDaemon(self.engine.workspace_root)
+            daemon_run = daemon.run_once(max_cycles=1)
+            self.engine.emit(run_id, "agent.crystal.autopromotion", {
+                "scanned": daemon_run.get("scanned", 0),
+                "promoted_count": daemon_run.get("promoted_count", 0),
+                "rejected_count": daemon_run.get("rejected_count", 0),
+                "created_at": daemon_run.get("created_at"),
+            })
+        except Exception as exc:  # pragma: no cover - defensive surface
+            self.engine.emit(run_id, "agent.crystal.reduction_failed", {
+                "reason": f"autopromotion: {type(exc).__name__}: {exc}"[:240],
+            })
+        # Emit a crystal reduction receipt for the verified apply so the
+        # operator sees lattice promotion in the UI, even when the autonomous
+        # daemon has no receipt files to promote yet.
+        self.engine.emit(run_id, "agent.crystal.reduction_receipt", {
+            "receipt_id": receipt["sourceplan_id"] or run_id,
+            "kind": "verified_apply",
+            "credited": True,
+            "units": 1.0,
+            "reason": f"Verified apply of {len(applied)} file(s) promoted to crystal lattice.",
+            "files": applied,
+            "workspace": result.get("workspace"),
+            "worktree": result.get("worktree"),
         })
         return {"ok": True, **result, **receipt}
 
@@ -2896,8 +2916,6 @@ class AgentPlannerRuntime:
 
         checked_local_binding = None
         while state.turn < state.max_turns:
-            import sys as _sys
-            print(f"DEBUG_WHILE_TOP: turn={state.turn}, max_turns={state.max_turns}, state.status={state.status}", file=_sys.stderr)
             self.engine.raise_if_cancelled(run_id)
             self._transition(run_id, AgentRunState.PLANNING)
             run = self.engine.store.get_run(run_id) or run
@@ -2919,7 +2937,6 @@ class AgentPlannerRuntime:
             cached_action = checkpoint.get("planner_deferred_approval")
             durable_action = self.engine.store.pending_deferred_action(run_id)
             suspended_id = str(checkpoint.get("suspended_approval_id") or "")
-            import sys as _sys
             deferred_record = cached_action if cached_action is not None else durable_action
             problem = ""
             if deferred_record is None and suspended_id and self.engine.store.was_deferred_approval(run_id, suspended_id):
@@ -3057,7 +3074,6 @@ class AgentPlannerRuntime:
                     )
                 crystal_decision = self._crystal_decision(run_id, run, state)
                 if crystal_decision is not None:
-                    import sys as _sys
                     self._supplied_decisions[run_id] = ("crystal", str(crystal_decision.tool_id or ""))
                     return crystal_decision
                 supplied = await self._metered_decision(self.provider, prompt, run=run, turn=state.turn + 1)
@@ -3070,7 +3086,6 @@ class AgentPlannerRuntime:
                     asyncio.shield(decision_task),
                     timeout=decision_timeout,
                 )
-                import sys as _sys
             except asyncio.TimeoutError:
                 self.engine.emit(run_id, "agent.provider.decision_timeout", {
                     "turn": state.turn + 1,
@@ -3589,14 +3604,8 @@ class AgentPlannerRuntime:
                         "tool_id": decision.tool_id,
                     })
                     decision = replace(decision, execution_target=locked_target)
-                import sys as _sys
-                print(f"DEBUG_BEFORE_IF: tool={decision.tool_id}, type={decision.decision_type}, type_of_type={type(decision.decision_type)}, is_PlannerDecisionType={isinstance(decision.decision_type, PlannerDecisionType)}", file=_sys.stderr)
                 if decision.decision_type == PlannerDecisionType.TOOL or str(decision.decision_type) == "tool":
-                    print(f"DEBUG_ENTER_TOOL_BLOCK: tool={decision.tool_id}, type={decision.decision_type}, is_tool={decision.decision_type is PlannerDecisionType.TOOL}", file=_sys.stderr)
-                import sys as _sys
-                import sys as _sys
-                print(f"DEBUG_PRE: tool={decision.tool_id}, type_is_tool={decision.decision_type is PlannerDecisionType.TOOL}, resumed_is_none={resumed_decision is None}", file=_sys.stderr)
-                run_request = run.get("request") if isinstance(run.get("request"), dict) else {}
+                    run_request = run.get("request") if isinstance(run.get("request"), dict) else {}
                 locked_target = str(run_request.get("execution_target") or "local")
                 if locked_target not in {"local", "ssh", "container"}:
                     raise PermissionError("AgentRun has an invalid locked execution target")
@@ -3608,7 +3617,6 @@ class AgentPlannerRuntime:
                         "source": "durable_run_request",
                     })
                     decision = replace(decision, execution_target=locked_target)
-                import sys as _sys
                 original_decision = decision
                 # Both provider-selected and phase-inserted verification enter
                 # here, after target locking and before schema/approval.
@@ -3629,8 +3637,6 @@ class AgentPlannerRuntime:
                             "execution_target": decision.execution_target,
                             "source": "durable_run_request",
                         })
-                    import sys as _sys
-                print(f"DEBUG_OSC_CALL: tool={decision.tool_id}, args={decision.arguments}", file=_sys.stderr)
                 decision, schema_error = await self._one_schema_correction(
                         run, run_id, decision, state.turn + 1, state=state,
                     )

@@ -421,6 +421,46 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
             success=False,
             details=payload,
         )
+    if event.event == "agent.crystal.refused":
+        return ProjectedEvent(
+            "crystal",
+            f"Crystal refused: {str(payload.get('reason') or 'refused')}",
+            sequence,
+            status="refused",
+            tool_id="crystal.reuse",
+            success=False,
+            details=payload,
+        )
+    if event.event == "agent.crystal.reduction_receipt":
+        return ProjectedEvent(
+            "crystal",
+            f"Crystal promoted: {str(payload.get('receipt_id') or payload.get('crystal_id') or 'crystal')} · {str(payload.get('units') or '')} units",
+            sequence,
+            status="promoted",
+            tool_id="crystal.lattice",
+            success=True,
+            details=payload,
+        )
+    if event.event == "agent.crystal.reduction_failed":
+        return ProjectedEvent(
+            "crystal",
+            f"Crystal promotion failed: {str(payload.get('reason') or 'failed')}",
+            sequence,
+            status="failed",
+            tool_id="crystal.lattice",
+            success=False,
+            details=payload,
+        )
+    if event.event == "agent.crystal.aborted":
+        return ProjectedEvent(
+            "crystal",
+            f"Crystal aborted: {str(payload.get('reason') or 'aborted')}",
+            sequence,
+            status="aborted",
+            tool_id="crystal.lattice",
+            success=False,
+            details=payload,
+        )
     status = str(payload.get("status") or data.get("state") or "")
     text = str(payload.get("text") or payload.get("message") or event.event)
     return ProjectedEvent("status", text, sequence, status=status, details=payload)
