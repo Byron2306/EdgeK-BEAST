@@ -392,6 +392,12 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
         "agent.family_crystal.refused": (
             "skipped", "execution", "Family crystal refused"
         ),
+        "agent.family_crystal.execution_fault": (
+            "refused", "execution", "Family crystal execution fault"
+        ),
+        "agent.crystal.fail_closed": (
+            "refused", "execution", "Crystal execution failed closed"
+        ),
 
         "agent.episode.sealed": ("fired", "postflight", "Episode sealed"),
     }

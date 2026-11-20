@@ -2548,6 +2548,46 @@ class BeastCoderApp(App[None]):
                                 "details": {"subject": ", ".join(dict.fromkeys(roles)) or projected.text},
                                 "thinking": projected.text if roles else "",
                             })
+                        elif projected.kind == "integration" and (
+                            projected.tool_id.startswith("family_crystal")
+                            or projected.tool_id.startswith("family_lattice")
+                            or projected.tool_id.startswith("compound_crystal")
+                            or projected.tool_id.startswith("crystal.")
+                            or projected.tool_id.startswith("crystal_")
+                        ):
+                            # Crystal/lattice execution is operator-visible control flow.
+                            # These events must remain visible live, not merely durable
+                            # in the event ledger / receipt drawer.
+                            self._action_count += 1
+
+                            status = {
+                                "fired": "completed",
+                                "observed": "completed",
+                                "started": "running",
+                                "skipped": "failed",
+                                "refused": "failed",
+                            }.get(projected.status, projected.status or "completed")
+
+                            capability = projected.tool_id
+                            if capability.startswith("family_crystal"):
+                                label = "Crystal"
+                            elif capability.startswith("family_lattice"):
+                                label = "Lattice"
+                            elif capability.startswith("compound_crystal"):
+                                label = "Compound crystal"
+                            else:
+                                label = "Crystal"
+
+                            self._actions.append({
+                                "id": self._action_count,
+                                "status": status,
+                                "tool_id": label,
+                                "details": {
+                                    "subject": projected.text,
+                                    "capability": capability,
+                                },
+                                "thinking": "",
+                            })
                         elif projected.kind != "integration":
                             self._update_action(row)
                         if projected.kind == "tool_result" and projected.success:
