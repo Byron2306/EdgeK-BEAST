@@ -36,6 +36,7 @@ from scripts.gauntlet_large_tasks import constant, constant_decoy
 from scripts.proof.run_behemoth_phase2 import install_fixture, verify_independent
 from scripts.proof.run_stage7b_capsule_replay import select_record, sha, snapshot
 from scripts.proof.run_stage7b_lab import commons_lab
+from scripts.proof.stage7b_public_contract import public_contract_messages
 
 OWNER, BUCKET, REVISION = "edgek", "stage7b-receiver", "reviewed-v1"
 ARTIFACT_PATH = "crystal/family.json"
@@ -168,7 +169,7 @@ def control_proposal(task, content, failure):
     return {"old_text": line, "new_text": f"MAX_BATCH_SIZE = {int(line.split(' = ')[1]) + 13}"}
 
 
-def cold_attempt(task, fixture, worktree, api_key, model):
+def cold_attempt(task, fixture, worktree, api_key, model, *, public_contract=False):
     started = time.perf_counter()
     source = (fixture / task["target"]).read_text(encoding="utf-8")
     observed = cap._run_verify(task["verify"], fixture)
@@ -181,6 +182,8 @@ def cold_attempt(task, fixture, worktree, api_key, model):
                          "Return only JSON with string fields old_text and new_text. Preserve indentation."},
                         {"role": "user", "content": f"File: {task['target']}\n{source}\n"
                          f"Visible failing test output:\n{observed['output'][-1800:]}"}]
+            if public_contract:
+                messages = public_contract_messages(task, source, observed["output"])
             with httpx.Client(timeout=60, follow_redirects=False, trust_env=False) as client:
                 class MeteredClient:
                     def post(self, *args, **kwargs):
@@ -250,7 +253,7 @@ def experiment(args, api_key):
     crystal_pin = record["crystal_object"].digest
     rng = random.Random(args.seed)
     cases = []
-    for index in range(args.repeats):
+    for index in range(0 if args.near_miss_only else args.repeats):
         old = rng.randrange(150, 850)
         cases.append((f"receiver-{index + 1}", constant(
             "heldout", f"receivercase{index + 1}", "MAX_BATCH_SIZE", old, old + 13, ("RETRY_DELAY", 8))))
@@ -275,13 +278,15 @@ def experiment(args, api_key):
             row = {"run_id": run_id, "case": case, "order": order, "role": task["role"]}
             for arm in order:
                 if arm == "cold":
-                    row["cold"] = cold_attempt(task, source, trial / "cold", api_key, args.model)
+                    row["cold"] = cold_attempt(task, source, trial / "cold", api_key, args.model,
+                                               public_contract=args.near_miss_only)
                     continue
                 candidate, receipt = asyncio.run(receive(
                     lab, entry, trial / "receiver-state", reader, artifact_pin, crystal_pin, manifest_pin, run_id))
                 replay = replay_attempt(task, source, trial / "replayed", candidate, record, run_id)
                 # A refused replay never publishes its tree. Fallback always starts from the pristine fixture.
-                fallback = (cold_attempt(task, source, trial / "fallback", api_key, args.model)
+                fallback = (cold_attempt(task, source, trial / "fallback", api_key, args.model,
+                                         public_contract=args.near_miss_only)
                             if not replay["verified"] and not replay["worker_accepted"] else None)
                 row.update(transfer=receipt, replay=replay, fallback=fallback,
                            receiver_verified=replay["verified"] or bool(fallback and fallback["verified"]),
@@ -307,6 +312,8 @@ def experiment(args, api_key):
         "one synthetic config family, no network wire bytes or billed compute inferred. Nodes use a historical lattice trust anchor.",
         "code_head": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
         "mode": "live_nim" if api_key else "scripted_control", "model": args.model if api_key else None,
+        "prompt_profile": "near_miss_full_public_contract_v1" if args.near_miss_only else "failure_output_v1",
+        "near_miss_cold_verified": near["cold"]["verified"],
         "seed": args.seed, "crystal_id": record["crystal_object"].crystal_id, "crystal_digest": crystal_pin,
         "registry_snapshot_sha256": registry_digest, "artifact_digest": artifact_pin,
         "registry_record_digest": record["record_digest"], "commons_manifest_digest": manifest_pin,
@@ -316,7 +323,7 @@ def experiment(args, api_key):
         "equal_final_trees": sum(row["equal_final_trees"] is True for row in main_rows),
         "near_miss_replay_refused": near_refused,
         "near_miss_fallback_verified": bool(near["fallback"] and near["fallback"]["verified"]),
-        "paired_live_requests_avoided_equal_verified_trees": len(matched_live) if api_key else None,
+        "paired_live_requests_avoided_equal_verified_trees": len(matched_live) if api_key and not args.near_miss_only else None,
         "median_live_receiver_minus_cold_wall_ms": (
             median(row["receiver_wall_ms"] - row["cold"]["wall_ms"] for row in matched_live)
             if matched_live else None),
@@ -335,7 +342,7 @@ def experiment(args, api_key):
     if not controls_ok:
         return 1
     # Distinguish an intact report with missing live cold solves from a completed comparison.
-    if api_key and (not matched_live or len(matched_live) != len(main_rows)
+    if api_key and (len(matched_live) != len(main_rows)
                     or not near["cold"]["verified"] or not summary["near_miss_fallback_verified"]):
         return 2
     return 0
@@ -350,6 +357,8 @@ def main():
     parser.add_argument("--base-port", type=int, default=18111)
     parser.add_argument("--seed", type=int, default=38731)
     parser.add_argument("--repeats", type=int, default=3, choices=range(1, 11), metavar="1..10")
+    parser.add_argument("--near-miss-only", action="store_true",
+                        help="run only the near-miss with the full public contract shown to both NIM arms")
     parser.add_argument("--mode", choices=("controls", "nim"), default="controls")
     parser.add_argument("--model", default=MODEL)
     args = parser.parse_args()
