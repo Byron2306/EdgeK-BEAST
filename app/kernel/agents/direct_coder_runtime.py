@@ -260,7 +260,28 @@ class DirectCoderRuntime:
                 try:
                     decision = self.crystals.decision(run_id, run, state)
                 except Exception as exc:
-                    self._emit(run_id, "agent.crystal.refused", reason=f"activation_error:{type(exc).__name__}")
+                    message = str(exc)[:1200]
+                    self._emit(
+                        run_id,
+                        "agent.crystal.refused",
+                        reason=f"activation_error:{type(exc).__name__}",
+                        message=message,
+                    )
+                    self._emit(
+                        run_id,
+                        "agent.crystal.fail_closed",
+                        reason="admitted_crystal_execution_fault",
+                        exception_type=type(exc).__name__,
+                        message=message,
+                    )
+                    decision = PlannerDecision(
+                        decision_type=PlannerDecisionType.BLOCKED,
+                        blocker=(
+                            "Admitted crystal execution failed: "
+                            f"{type(exc).__name__}: {message}"
+                        ),
+                    )
+                    source = "crystal"
                 if decision is not None:
                     source = "crystal"
                 elif command and not (run.get("checkpoint") or {}).get("worktree_root"):

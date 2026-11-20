@@ -1129,7 +1129,19 @@ class DirectCoderCrystals:
                 family_session._refuse(
                     f"session_error:{type(exc).__name__}"
                 )
+                self.engine.emit(
+                    run_id,
+                    "agent.family_crystal.execution_fault",
+                    {
+                        "crystal_id": family_session.crystal.crystal_id,
+                        "task_family": family_session.crystal.task_family,
+                        "stage": family_session.stage,
+                        "exception_type": type(exc).__name__,
+                        "message": str(exc)[:1200],
+                    },
+                )
                 self.family_sessions.pop(run_id, None)
+                raise
 
         session = self.sessions.get(run_id)
         if session is None:
