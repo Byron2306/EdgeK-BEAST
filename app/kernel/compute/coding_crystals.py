@@ -231,6 +231,35 @@ def verify_output(observation: Mapping[str, Any]) -> str:
     return text or str(observation.get("error") or "")
 
 
+def _same_observed_edit(content: str, proposal: Mapping[str, str], observation: Mapping[str, Any]) -> bool:
+    """Require exact file equivalence when the tool used a different replacement span."""
+    arguments = observation.get("arguments") or {}
+    old_text, new_text = arguments.get("old_text"), arguments.get("new_text")
+    if not isinstance(old_text, str) or not old_text or not isinstance(new_text, str):
+        return False
+    if (old_text, new_text) == (proposal["old_text"], proposal["new_text"]):
+        return True
+
+    result = observation.get("result") or {}
+    if (observation.get("status") != "completed" or observation.get("truncated")
+            or result.get("path") != arguments.get("path") or result.get("replacements") != 1):
+        return False
+
+    def sha256(text: str) -> str:
+        return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+    # read_range joins lines without the final LF. Accept a reconstruction only
+    # if the exact-edit receipt confirms it is the full pre-edit file.
+    before = next((text for text in (content, content + "\n")
+                   if sha256(text) == result.get("before_sha256")), None)
+    canonical_old = proposal["old_text"]
+    if before is None or before.count(canonical_old) != 1 or before.count(old_text) != 1:
+        return False
+    canonical = before.replace(canonical_old, proposal["new_text"], 1)
+    actual = before.replace(old_text, new_text, 1)
+    return actual == canonical and sha256(actual) == result.get("after_sha256")
+
+
 class CodingCrystalExtractor:
     """Compress a verified Episode Envelope into the reviewed fix-failing-assertion recipe, or refuse."""
 
@@ -278,8 +307,7 @@ class CodingCrystalExtractor:
             return self._refuse(registry, envelope, "evidence_not_bound")
         content = str((read_obs.get("result") or {}).get("content") or "")
         proposal = resolve_constant(verify_output(verify_obs), content)
-        arguments = replace_obs.get("arguments") or {}
-        if not proposal or proposal["old_text"] != arguments.get("old_text") or proposal["new_text"] != arguments.get("new_text"):
+        if not proposal or not _same_observed_edit(content, proposal, replace_obs):
             return self._refuse(registry, envelope, "edit_not_reproducible")
         candidate = CodingCrystalCandidate(
             crystal_id="", task_family=envelope.task_family, steps=RECIPE_FIX_FAILING_ASSERTION,
