@@ -307,3 +307,27 @@ engine-local. The Ollama legacy context-array trial used the same model tag
 but did not reduce prompt evaluation. The separate checked-in SGLang ML-KEM
 run identifies a test-oracle payload and no verified transport. None of this
 establishes raw KV import, transfer, or consumption between different engines.
+
+#### Native slot transfer and fresh-consumer comparison
+
+After reproducing the same-process warm hit and restart miss with the pinned
+Qwen GGUF and llama.cpp revision, run
+`scripts.proof.run_stage5b_slot_transfer` on that rebuilt runtime. The source
+revision implements the native `/slots/0?action=save` and `action=restore`
+endpoints with `--slot-save-path`. Use three owned loopback server processes
+per repeat: donor, cold receiver, and restored receiver. The donor primes one
+continuation and saves slot 0. Copy that slot file into the restored receiver's
+private directory, verify byte length and both SHA-256 digests, and restore
+it before the receiver's first and only completion. The cold receiver gets
+no slot file. Both receivers use an identical probe and sampling settings.
+
+The pass condition requires distinct processes, matching native save/restore
+counts and bytes, zero cache in the cold control, a destination cache hit
+plus fewer newly evaluated prompt tokens, and identical returned text and
+token-ID hashes. A restore acknowledgement alone is insufficient. The
+harness alternates receiver order, records save/copy/restore timings separately,
+retains the build and model digests and server logs, and does not retain raw
+slot files. This is same-host file transport between compatible llama.cpp
+processes, not network transport, cross-engine portability, or an end-to-end
+speed claim. Mock controls include a positive acknowledgement with zero
+actual consumption, an output mismatch, and copy corruption.
