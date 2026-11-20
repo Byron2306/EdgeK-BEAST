@@ -441,7 +441,7 @@ class DirectCoderFamilySession:
 
         return child, plan
 
-    def _decisions_from_plan(plan):
+    def _decisions_from_plan(self, plan):
         decisions = []
 
         for edit in plan.get("edits") or ():
