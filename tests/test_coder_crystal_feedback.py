@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 from app.kernel.compute.coding_crystals import CodingCrystalRegistry
-from app.kernel.compute.coder_crystal_feedback import trial_request, scope_digest
+from app.kernel.compute.coder_crystal_feedback import observed_trial_family, scope_digest, trial_request, verifier_outcome
 
 
 class CoderCrystalFeedbackTests(unittest.TestCase):
@@ -35,6 +35,32 @@ class CoderCrystalFeedbackTests(unittest.TestCase):
             self.assertIsNone(registry.scoped_refusal("candidate", b))
             self.assertIsNone(registry.scoped_refusal("other-candidate", a))
 
+    def test_trial_request_does_not_prelabel_every_task_as_assertion_family(self):
+        request = trial_request("agent", ("service.py", "test_service.py"), enabled=True)
+        self.assertNotIn("task_family", request)
+
+    def test_observed_family_requires_constant_resolver_applicability(self):
+        request = {"implementation_target": "service.py"}
+        constant = [
+            {"tool_id": "worktree.verify", "status": "failed",
+             "result": {"stderr": "Ran 1 test\nFAILED (failures=1)\nAssertionError: 3 != 5"}},
+            {"tool_id": "workspace.read_range", "status": "completed",
+             "arguments": {"path": "service.py"}, "result": {"content": "LIMIT = 3\n"}},
+        ]
+        self.assertEqual(observed_trial_family(request, constant), "fix-failing-assertion")
+        parser = [
+            {"tool_id": "worktree.verify", "status": "failed",
+             "result": {"stderr": "Ran 1 test\nFAILED (errors=1)\nValueError: too many values to unpack"}},
+            {"tool_id": "workspace.read_range", "status": "completed",
+             "arguments": {"path": "service.py"}, "result": {"content": "def parse(x):\n    return x.split(\"=\")\n"}},
+        ]
+        self.assertEqual(observed_trial_family(request, parser), "")
+
+    def test_verifier_outcome_accepts_executed_unittest_errors(self):
+        command = ["python3", "-m", "unittest", "discover", "-p", "test_service.py", "-q"]
+        observation = {"tool_id": "worktree.verify", "arguments": {"command": command}, "status": "failed",
+                       "result": {"returncode": 1, "stderr": "Ran 3 tests in 0.001s\nFAILED (errors=3)"}}
+        self.assertEqual(verifier_outcome(observation, command), 1)
 
 class FeedbackLoopTests(unittest.TestCase):
     def test_prior_negative_skips_activation_but_preserves_good_context(self):
@@ -56,7 +82,7 @@ class FeedbackLoopTests(unittest.TestCase):
             (root / "service.py").write_text("PAGE = 3\nOTHER = 3\n")
             (root / "test_service.py").write_text("# Trial contract\n")
             candidate = CodingCrystalCandidate(
-                "", request["task_family"], RECIPE_FIX_FAILING_ASSERTION, CRYSTAL_PARAMETERS,
+                "", "fix-failing-assertion", RECIPE_FIX_FAILING_ASSERTION, CRYSTAL_PARAMETERS,
                 coding_catalog_digest(), "source", "sha256:" + "1" * 64,
             ).sealed()
             registry = CodingCrystalRegistry(root / "registry.sqlite3")
