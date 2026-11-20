@@ -23,6 +23,7 @@ class DirectCoderFamilySession:
         "fix-logic-operator",
         "fix-off-by-one",
         "fix-unhandled-exception",
+        "refactor-rename-symbol",
     })
 
     def __init__(self, crystal, registry, *, root: Path, target: str,
@@ -48,6 +49,7 @@ class DirectCoderFamilySession:
         self.current_lattice_leaf = None
         self.compound_dag = None
         self.compound_rows = {}
+        self.compound_fragments = []
 
         if self.crystal.component_ids:
             from app.kernel.compute import family_crystals as fc
@@ -226,6 +228,13 @@ class DirectCoderFamilySession:
                 "lattice_id": self.crystal.crystal_id,
                 "stages_executed": len(self._families()),
                 "final_failures": current_failures,
+                "fragments": list(self.compound_fragments),
+                "fragment_count": len(self.compound_fragments),
+                "mutated_paths": sorted({
+                    path
+                    for item in self.compound_fragments
+                    for path in item.get("paths") or ()
+                }),
                 "leaf_ids": [
                     leaf.get("crystal_id")
                     for leaf in self.lattice_topology.get("leaves") or ()
@@ -366,42 +375,72 @@ class DirectCoderFamilySession:
             return None
 
     def _build_plan(self, verify_result):
+        """Resolve the current executable leaf, not merely the immediate graph child."""
+        import re
+
         from app.kernel.compute import family_crystals as fc
 
-        child = self._stage_crystal()
-        if child is None:
+        families = self._families()
+        if not 0 <= self.stage < len(families):
             return None, None
 
-        family = child.task_family
-        if family not in self.LIVE_FAMILIES:
+        expected_family = families[self.stage]
+
+        if self.lattice_topology is not None:
+            leaves = list(self.lattice_topology.get("leaves") or ())
+            if self.stage >= len(leaves):
+                return None, None
+
+            leaf = dict(leaves[self.stage])
+            if leaf.get("task_family") != expected_family:
+                return None, None
+
+            try:
+                record = self.registry.get(str(leaf.get("crystal_id") or ""))
+            except (LookupError, ValueError):
+                return None, None
+
+            if record.get("status") != "promoted":
+                return None, None
+
+            child = record["crystal_object"]
+        else:
+            child = self.crystal
+
+        if child.task_family != expected_family:
+            return None, None
+
+        spec = fc.FAMILIES.get(child.task_family)
+        if not spec:
             return child, None
 
-        spec = fc.FAMILIES.get(family) or {}
-        resolver_name = spec.get("resolver")
-        resolver = fc.RESOLVERS.get(resolver_name)
+        resolver = fc.RESOLVERS.get(spec["resolver"])
         if resolver is None:
             return child, None
 
-        verify = {
-            "returncode": int(verify_result["returncode"]),
-            "output": self._output(verify_result),
-            "failures": self._failures(verify_result),
-            "tests_run": 0,
-        }
+        observed = dict(verify_result or {})
+        output = self._output(observed)
+        observed["output"] = output
+        observed["failures"] = self._failures(observed)
+
+        if type(observed.get("tests_run")) is not int:
+            match = re.search(r"^Ran (\d+) tests?", output, re.M)
+            observed["tests_run"] = int(match.group(1)) if match else 0
 
         try:
-            plan = resolver(fc.Context(
-                self.root,
-                self.target,
-                list(self.verify_command),
-                verify,
-            ))
-        except (OSError, PermissionError, ValueError, SyntaxError):
-            return child, None
+            plan = resolver(
+                fc.Context(
+                    self.root,
+                    self.target,
+                    list(self.verify_command),
+                    observed,
+                )
+            )
+        except (PermissionError, OSError, ValueError, SyntaxError):
+            plan = None
 
         return child, plan
 
-    @staticmethod
     def _decisions_from_plan(plan):
         decisions = []
 
@@ -449,7 +488,60 @@ class DirectCoderFamilySession:
                 child_family=child.task_family,
             )
 
-        self.pending = self._decisions_from_plan(plan)
+        from app.kernel.compute.direct_coder_compound import (
+            CompoundFragmentError,
+            compose_fragments,
+            fragment_from_legacy_plan,
+        )
+
+        try:
+            fragment = fragment_from_legacy_plan(
+                plan,
+                fragment_id=(
+                    f"{self.crystal.crystal_id}:stage:{self.stage}:"
+                    f"{child.crystal_id}"
+                ),
+                producer=child.crystal_id,
+                provenance_lane=child.task_family,
+            )
+            compound_plan = compose_fragments([fragment])
+        except CompoundFragmentError as exc:
+            return self._refuse(
+                "compound_fragment_not_admitted",
+                child_id=child.crystal_id,
+                child_family=child.task_family,
+                detail=str(exc),
+            )
+
+        fragment_row = fragment.to_dict()
+        self.compound_fragments.append({
+            "stage": self.stage,
+            "fragment": fragment_row,
+            "plan_digest": compound_plan["plan_digest"],
+            "paths": list(compound_plan["paths"]),
+        })
+
+        self.engine.emit(
+            self.run_id,
+            "agent.compound_crystal.fragment.admitted",
+            {
+                "lattice_id": self.crystal.crystal_id,
+                "stage": self.stage,
+                "child_id": child.crystal_id,
+                "child_family": child.task_family,
+                "fragment_id": fragment.fragment_id,
+                "fragment_digest": fragment_row["fragment_digest"],
+                "plan_digest": compound_plan["plan_digest"],
+                "paths": list(compound_plan["paths"]),
+                "provenance_lane": fragment.provenance_lane,
+            },
+        )
+
+        # Execution remains on the existing governed Direct Coder tool path.
+        # The compound layer only validates/composes the mutation plan.
+        self.pending = self._decisions_from_plan(
+            compound_plan["legacy_plan"]
+        )
         if not self.pending:
             return self._refuse(
                 "resolver_plan_has_no_live_mutation",

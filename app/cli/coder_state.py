@@ -374,6 +374,9 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
         "agent.family_lattice.refused": (
             "skipped", "execution", "Crystal lattice refused"
         ),
+        "agent.compound_crystal.fragment.admitted": (
+            "fired", "execution", "Compound patch fragment admitted"
+        ),
         "agent.compound_crystal.stage.admitted": (
             "fired", "execution", "Compound proof stage admitted"
         ),
