@@ -138,5 +138,82 @@ class UIRequestTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(requests[0]["launch_strategy"], "direct_coder")
         self.assertNotIn("crystal_trial_profile", requests[0])
         self.assertEqual(requests[1]["launch_strategy"], "direct_coder")
+        self.assertEqual(
+            requests[1]["crystal_trial_profile"],
+            "native_crystal_feedback_v1",
+        )
         self.assertEqual(requests[1]["post_session_closure"], "verified_handoff")
         self.assertFalse(requests[1]["apply_on_completion"])
+
+
+class CoderBlindNestedTestsTrial(unittest.IsolatedAsyncioTestCase):
+    async def test_blind_agent_discovers_tests_directory_for_crystal_trial(self):
+        import json
+        import tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+
+        import httpx
+
+        from app.cli.coder_client import CoderRuntimeClient
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "engine.py").write_text(
+                "def value():\n    return 1\n",
+                encoding="utf-8",
+            )
+            (root / "tests").mkdir()
+            (root / "tests" / "test_engine.py").write_text(
+                "import unittest\n",
+                encoding="utf-8",
+            )
+
+            requests = []
+
+            def receive(request):
+                requests.append(json.loads(request.content)["request"])
+                return httpx.Response(
+                    200,
+                    json={"ok": True, "run": {"run_id": "nested-test"}},
+                )
+
+            client = CoderRuntimeClient(
+                "http://127.0.0.1:18100",
+                root,
+                transport=httpx.MockTransport(receive),
+            )
+
+            try:
+                with patch.dict(
+                    "os.environ",
+                    {"BEAST_CODER_CRYSTAL_TRIAL": "1"},
+                ):
+                    await client.start_run(
+                        "session",
+                        "Fix the implementation",
+                        "local",
+                        "test",
+                        mode="agent",
+                    )
+            finally:
+                await client.aclose()
+
+            request = requests[0]
+
+            self.assertEqual(
+                request["crystal_trial_profile"],
+                "native_crystal_feedback_v1",
+            )
+            self.assertEqual(
+                request["implementation_target"],
+                "engine.py",
+            )
+            self.assertEqual(
+                request["required_test_files"],
+                ["tests/test_engine.py"],
+            )
+            self.assertEqual(
+                request["context_files"],
+                ["engine.py", "tests/test_engine.py"],
+            )

@@ -22,9 +22,17 @@ def trial_request(mode, files, *, enabled):
         if not name.endswith(".py"):
             continue
         if Path(name).name.startswith("test_"):
-            if not re.fullmatch(r"test_[A-Za-z0-9_]+\.py", name):
+            relative = Path(name)
+            if (
+                relative.is_absolute()
+                or ".." in relative.parts
+                or not re.fullmatch(
+                    r"test_[A-Za-z0-9_]+\.py",
+                    relative.name,
+                )
+            ):
                 return {}
-            tests.append(name)
+            tests.append(relative.as_posix())
         else:
             targets.append(name)
     if len(targets) != 1 or not tests:

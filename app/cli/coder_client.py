@@ -324,16 +324,33 @@ class CoderRuntimeClient:
                 p for p in self.workspace.glob("*.py")
                 if p.is_file() and not p.is_symlink()
             )
-            discovered_tests = [
-                p for p in visible if p.name.startswith("test_")
-            ]
             discovered_targets = [
                 p for p in visible if not p.name.startswith("test_")
             ]
+
+            discovered_tests = [
+                p for p in visible if p.name.startswith("test_")
+            ]
+
+            tests_dir = self.workspace / "tests"
+            if tests_dir.is_dir() and not tests_dir.is_symlink():
+                discovered_tests.extend(
+                    sorted(
+                        p
+                        for p in tests_dir.rglob("test_*.py")
+                        if p.is_file()
+                        and not p.is_symlink()
+                        and p.resolve().is_relative_to(self.workspace)
+                    )
+                )
+
             if len(discovered_targets) == 1 and discovered_tests:
                 effective_context_files = [
-                    discovered_targets[0].name,
-                    *[p.name for p in discovered_tests],
+                    discovered_targets[0].relative_to(self.workspace).as_posix(),
+                    *[
+                        p.relative_to(self.workspace).as_posix()
+                        for p in discovered_tests
+                    ],
                 ]
 
         test_files = [
