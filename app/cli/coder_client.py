@@ -16,6 +16,8 @@ from urllib.parse import quote
 
 import httpx
 
+from app.kernel.compute.coder_crystal_feedback import trial_enabled, trial_request
+
 
 class RuntimeClientError(RuntimeError):
     """A runtime or transport response that cannot be presented as success."""
@@ -301,6 +303,7 @@ class CoderRuntimeClient:
                     "context_files": list(context_files),
                     **({"swarm": True} if swarm and mode == "agent" else {}),
                     **editing_scope,
+                    **trial_request(mode, context_files, enabled=trial_enabled(os.environ)),
                     **({"read_only_file_review": True, "file_answer_style": "explain" if mode == "ask" else "review"}
                        if mode in {"ask", "review"} and context_files else {}),
                     "workspace_root": str(self.workspace),

@@ -325,6 +325,26 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
         )
     if event.event == "agent.run.advisory":
         return ProjectedEvent("advisory", str(payload.get("text") or ""), sequence, details=payload)
+    crystal_events = {
+        "agent.crystal.activated": ("fired", "execution", "Native crystal activated"),
+        "agent.crystal.completed": ("fired", "execution", "Native crystal replay verified"),
+        "agent.crystal.aborted": ("skipped", "execution", "Native crystal aborted"),
+        "agent.crystal.refused": ("skipped", "eligibility", "Native crystal refused"),
+        "agent.crystal.negative_recorded": ("fired", "postflight", "Scoped negative recorded"),
+        "agent.crystal.negative_applied": ("skipped", "eligibility", "Prior scoped negative blocked activation"),
+        "agent.route.decision": ("observed", "eligibility", "Crystal route nomination"),
+        "agent.episode.sealed": ("fired", "postflight", "Episode sealed"),
+    }
+    if event.event in crystal_events:
+        status, stage, headline = crystal_events[event.event]
+        capability = event.event.removeprefix("agent.")
+        reason = str(payload.get("reason") or payload.get("route") or "")
+        label = " · ".join(part for part in (headline, reason, str(payload.get("crystal_id") or "")) if part)
+        if event.event == "agent.episode.sealed" and data.get("run_id"):
+            label += f" · {data['run_id']}"
+        return ProjectedEvent("integration", label, sequence, status=status, tool_id=capability,
+                              executed=event.event == "agent.crystal.completed",
+                              success=status == "fired", details={**payload, "stage": stage, "capability": capability})
     if event.event.startswith("agent.integration.") or event.event == "agent.stream.interception":
         capability = str(payload.get("capability") or "stream.interception")
         if event.event == "agent.stream.interception":

@@ -14,7 +14,6 @@ import hashlib
 import json
 import logging
 import os
-import shutil
 from collections.abc import Callable, Mapping
 from pathlib import Path
 from typing import Any
@@ -405,95 +404,20 @@ class CoderIntegrationCoordinator:
                 family = str(metadata.get("task_family") or "")
                 hit = self.family_lookup(objective=objective, metadata=metadata)
 
-            if hit and metadata.get("read_only") is True:
+            if hit:
+                # A family-registry match is not a governed workspace operation.
+                # Coder execution belongs to the native planner, not this receipt path.
                 events.append(self._event(
                     "family_crystal", "fired", mode="read_only_promoted_lookup",
-                    reason="promoted_family_crystal_hit_read_only",
+                    reason="promoted_family_crystal_nominated_not_executed",
                     artifacts={"crystal_id": hit.get("crystal_id", ""), "task_family": family},
                 ))
-            elif hit:
-                # Load the full promoted crystal from the registry and replay it
-                db_path = hit.get("storage_path")
-                crystal_id = hit.get("crystal_id")
-                if db_path and crystal_id:
-                    registry = _family_crystals.FamilyRegistry(db_path)
-                    record = registry.get(crystal_id)
-                    crystal = record.get("crystal_object")
-                    if isinstance(crystal, _family_crystals.FamilyCrystal):
-                        # Execute the governed replay in a scratch worktree
-                        worktree_root = self.workspace / ".beast" / "crystal_replay" / crystal_id
-                        if worktree_root.exists():
-                            shutil.rmtree(worktree_root)
-                        worktree_root.parent.mkdir(parents=True, exist_ok=True)
-                        shutil.copytree(self.workspace, worktree_root, ignore=shutil.ignore_patterns('.beast/crystal_replay*', 'crystal_replay*'))
-
-                        parameters = {
-                            "implementation_target": str(metadata.get("implementation_target") or ""),
-                            "verify_command": list(metadata.get("verify_command") or ["python3", "-m", "pytest", "-q"]),
-                        }
-                        result = _family_crystals.replay_family(crystal, parameters, self.workspace, worktree_root)
-
-                        if result.get("ok"):
-                            events.append(
-                                self._event(
-                                    "family_crystal",
-                                    "fired",
-                                    mode="governed_replay",
-                                    reason="family_crystal_replay_verified",
-                                    metrics={
-                                        "tool_calls": result.get("tool_calls", 0),
-                                        "changed_files": len(result.get("changed", [])),
-                                        "wall_ms": result.get("wall_ms", 0),
-                                    },
-                                    artifacts={
-                                        "crystal_id": crystal_id,
-                                        "task_family": family,
-                                        "replay_trace_digest": str(hashlib.sha256(json.dumps(result.get("trace", []), sort_keys=True).encode()).hexdigest()[:16]),
-                                    },
-                                )
-                            )
-                        else:
-                            events.append(
-                                self._event(
-                                    "family_crystal",
-                                    "skipped",
-                                    mode="governed_replay",
-                                    reason=f"family_crystal_replay_refused: {result.get('reason')}",
-                                    artifacts={"crystal_id": crystal_id, "task_family": family},
-                                )
-                            )
-                        shutil.rmtree(worktree_root, ignore_errors=True)
-                    else:
-                        events.append(
-                            self._event(
-                                "family_crystal",
-                                "skipped",
-                                mode="governed_replay",
-                                reason="promoted_crystal_not_loadable",
-                                artifacts={"crystal_id": crystal_id, "task_family": family},
-                            )
-                        )
-                else:
-                    events.append(
-                        self._event(
-                            "family_crystal",
-                            "skipped",
-                            mode="read_only_promoted_lookup",
-                            reason="promoted_family_crystal_hit_but_no_replay_context",
-                            artifacts={"crystal_id": crystal_id, "task_family": family},
-                        )
-                    )
             else:
-                events.append(
-                    self._event(
-                        "family_crystal",
-                        "skipped",
-                        mode="read_only_promoted_lookup",
-                        reason="no_promoted_family_crystal",
-                    )
-                )
+                events.append(self._event("family_crystal", "skipped", mode="read_only_promoted_lookup",
+                                          reason="no_promoted_family_crystal"))
         except Exception as exc:
-            events.append(self._event("family_crystal", "failed", mode="governed_replay", reason=type(exc).__name__))
+            events.append(self._event("family_crystal", "failed", mode="read_only_promoted_lookup",
+                                      reason=type(exc).__name__))
 
         try:
             if self.crystal_status is None:
@@ -742,7 +666,9 @@ class CoderIntegrationCoordinator:
         except Exception as exc:
             events.append(self._event("memory_hull.seal", "failed", mode="sealed_local_residue", reason=type(exc).__name__))
 
-        if not _is_enabled(self.environ, "BEAST_CODING_CRYSTALS"):
+        from app.kernel.compute.coder_crystal_feedback import trial_enabled
+
+        if not (_is_enabled(self.environ, "BEAST_CODING_CRYSTALS") or trial_enabled(self.environ)):
             events.append(self._event("coding_crystal.production", "skipped", mode="opt_in", reason="feature_flag_disabled"))
             return {"events": events}
         try:

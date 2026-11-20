@@ -312,6 +312,9 @@ class CodingCrystalRegistry:
                 "CREATE TABLE IF NOT EXISTS coding_crystal_negatives (id INTEGER PRIMARY KEY AUTOINCREMENT, "
                 "task_family TEXT NOT NULL, crystal_id TEXT NOT NULL, kind TEXT NOT NULL, evidence_digest TEXT NOT NULL, "
                 "created_at REAL NOT NULL);"
+                "CREATE TABLE IF NOT EXISTS coding_crystal_scoped_refusals (crystal_id TEXT NOT NULL, "
+                "scope_digest TEXT NOT NULL, run_id TEXT NOT NULL, receipt_digest TEXT NOT NULL, "
+                "PRIMARY KEY(crystal_id,scope_digest));"
             )
 
     def _connect(self) -> sqlite3.Connection:
@@ -422,6 +425,29 @@ class CodingCrystalRegistry:
                 "WHERE task_family=? ORDER BY id", (task_family,)).fetchall()
         return [dict(row) for row in rows]
 
+    def scoped_refusal(self, crystal_id: str, scope: str) -> dict[str, str] | None:
+        with self._connect() as connection:
+            row = connection.execute(
+                "SELECT run_id, receipt_digest FROM coding_crystal_scoped_refusals "
+                "WHERE crystal_id=? AND scope_digest=?", (crystal_id, scope)).fetchone()
+        if row is None:
+            return None
+        body = {"crystal_id": crystal_id, "scope_digest": scope, "run_id": row["run_id"],
+                "reason": "resolver_refused_before_mutation"}
+        if _digest(body) != row["receipt_digest"]:
+            raise ValueError("scoped crystal negative receipt integrity mismatch")
+        return {**body, "receipt_digest": row["receipt_digest"]}
+
+    def record_scoped_refusal(self, crystal_id: str, scope: str, run_id: str) -> dict[str, str]:
+        receipt = _digest({"crystal_id": crystal_id, "scope_digest": scope, "run_id": run_id,
+                           "reason": "resolver_refused_before_mutation"})
+        with self._connect() as connection:
+            connection.execute("INSERT OR IGNORE INTO coding_crystal_scoped_refusals VALUES(?,?,?,?)",
+                               (crystal_id, scope, run_id, receipt))
+        saved = self.scoped_refusal(crystal_id, scope)
+        assert saved is not None
+        return saved
+
     def active_for_family(self, task_family: str) -> CodingCrystalCandidate | None:
         with self._connect() as connection:
             rows = connection.execute(
@@ -510,11 +536,13 @@ class CodingCrystalPlanner:
     """Select a promoted crystal for a run, gate applicability, consume a one-use capability, open a session."""
 
     def __init__(self, registry: CodingCrystalRegistry, authority: CodingCrystalAuthority, ledger: Any, *,
-                 replay_candidate_id: str = "", economy: Any = None, lattice: Any = None):
+                 replay_candidate_id: str = "", economy: Any = None, lattice: Any = None,
+                 scoped_negatives: bool = False):
         self.registry = registry
         self.authority = authority
         self.ledger = ledger
         self.replay_candidate_id = replay_candidate_id
+        self.scoped_negatives = scoped_negatives
         self.economy = economy  # optional CrystalReuseEconomy: shadow-accounted reduction receipts (D7)
         self.lattice = lattice  # optional CrystalLattice: demotion propagates to every containing composite
 
@@ -590,6 +618,17 @@ class CodingCrystalPlanner:
         reason, parameters = self._applicability(run, root)
         if reason:
             return refuse(reason)
+        scope = ""
+        if self.scoped_negatives and not self.replay_candidate_id:
+            from app.kernel.compute.coder_crystal_feedback import scope_digest
+
+            scope = scope_digest(root, run)
+            negative = self.registry.scoped_refusal(candidate.crystal_id, scope) if scope else None
+            if negative:
+                engine.emit(run_id, "agent.crystal.negative_applied", {
+                    **negative, "source_run_id": negative["run_id"], "run_id": run_id,
+                })
+                return None  # Provider fallback, before issuing or consuming a capability.
         request_digest = self.authority.request_digest(candidate, run_id, parameters)
         capability = dict(capability) if capability is not None else self.authority.issue(
             candidate, run_id=run_id, parameters=parameters, appraisal_ref=record_digest)
@@ -608,9 +647,27 @@ class CodingCrystalPlanner:
                if candidate.component_ids else {}),
         })
         return CodingCrystalSession(candidate, parameters, planner=self, engine=engine, run_id=run_id,
-                                    capability=capability)
+                                    capability=capability, negative_scope=scope)
 
     # Session callbacks -------------------------------------------------------------------------
+    def on_resolver_refused(self, session: CodingCrystalSession, run: Mapping[str, Any]) -> None:
+        if not session.negative_scope:
+            return
+        from app.kernel.compute.coder_crystal_feedback import scope_digest
+
+        # A resolver refusal after an earlier composite mutation is not a pre-mutation negative.
+        if any(step["opcode"] == "worktree.replace_exact" for step in session.candidate.steps[:session.cursor]):
+            return
+        root = Path(session.engine.workspace_root)
+        if scope_digest(root, run) != session.negative_scope:
+            return
+        receipt = self.registry.record_scoped_refusal(
+            session.candidate.crystal_id, session.negative_scope, session.run_id)
+        if self.lattice is not None:
+            witness = self.lattice.witness_scoped_refusal(receipt)
+            receipt = {**receipt, **witness}
+        session.engine.emit(session.run_id, "agent.crystal.negative_recorded", receipt)
+
     def on_success(self, session: CodingCrystalSession) -> None:
         if not self.replay_candidate_id:
             self.registry.record_reuse(session.candidate.crystal_id, run_id=session.run_id, outcome="verified")
@@ -655,13 +712,14 @@ class CodingCrystalSession:
     MAX_ISSUES_PER_STEP = 2
 
     def __init__(self, candidate: CodingCrystalCandidate, parameters: Mapping[str, Any], *, planner: Any, engine: Any,
-                 run_id: str, capability: Mapping[str, Any]):
+                 run_id: str, capability: Mapping[str, Any], negative_scope: str = ""):
         self.candidate = candidate
         self.parameters = dict(parameters)
         self.planner = planner
         self.engine = engine
         self.run_id = run_id
         self.capability = dict(capability)
+        self.negative_scope = negative_scope
         self.cursor = 0
         self.aborted = ""
         self.succeeded = False
@@ -764,6 +822,8 @@ class CodingCrystalSession:
                 self._proposal = resolve_constant(self._verify_output, self._target_content)
                 if not self._proposal:
                     self.abort("resolver_refused")
+                    if self.negative_scope:
+                        self.planner.on_resolver_refused(self, run)
                     return None
                 self._advance()
                 continue

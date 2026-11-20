@@ -210,6 +210,16 @@ class CrystalLattice:
             extra["witness"] = witness
         return {"outcome": outcome, "reason": reason, "crystal_id": composite.crystal_id, **extra}
 
+    def witness_scoped_refusal(self, receipt: Mapping[str, Any]) -> dict[str, Any]:
+        """Witness a pre-actuation refusal without demoting an admitted node."""
+        node_id = str(receipt["crystal_id"])
+        if self.node(node_id)["status"] != "admitted":
+            raise PermissionError("scoped refusal needs an admitted lattice node")
+        with self._lock:
+            return self._witness("scoped_refusal", node_id, {
+                key: receipt[key] for key in ("scope_digest", "run_id", "receipt_digest", "reason")
+            })
+
     def admit_composite(self, composite: CodingCrystalCandidate, *, verifier: Any, publisher_id: str,
                         approved_by: str) -> dict[str, Any]:
         children = list(composite.component_ids)
@@ -413,7 +423,7 @@ class CrystalLattice:
                 "nodes": self.nodes(), "edges": self.edges(), "verification": self.verify()}
 
 
-def default_lattice(workspace: str | Path, registry: Any) -> CrystalLattice:
+def default_lattice(workspace: str | Path, registry: Any, *, isolated: bool = False) -> CrystalLattice:
     """Production wiring: .beast lattice, witnessed on the gateway's existing lattice ledger and Commons crystal chain."""
     import os
 
@@ -421,9 +431,12 @@ def default_lattice(workspace: str | Path, registry: Any) -> CrystalLattice:
     from app.kernel.security.crystal_lattice_ledger import CrystalLatticeLedger
 
     project = Path(__file__).resolve().parents[3]
-    commons_root = Path(os.environ.get("BEAST_COMMONS_ROOT") or project / "data" / "commons_spaces")
+    trial_root = Path(workspace) / ".beast" / "crystals" / "trial-witness"
+    commons_root = (trial_root if isolated else
+                    Path(os.environ.get("BEAST_COMMONS_ROOT") or project / "data" / "commons_spaces"))
+    lattice_root = trial_root if isolated else project / "benchmarks" / "results" / "crystal_lattice_ledger"
     return CrystalLattice(Path(workspace) / ".beast" / "crystals" / "crystal_lattice.sqlite3", registry=registry,
-                          lattice_ledger=CrystalLatticeLedger(project / "benchmarks" / "results" / "crystal_lattice_ledger"),
+                          lattice_ledger=CrystalLatticeLedger(lattice_root),
                           chain=CrystalChainLedger(commons_root / ".crystal_chain" / "blocks.jsonl",
                                                    node_id=os.environ.get("BEAST_COMMONS_NODE_ID", "local-commons")))
 

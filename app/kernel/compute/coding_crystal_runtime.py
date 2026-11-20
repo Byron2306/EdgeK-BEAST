@@ -19,6 +19,8 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
+from app.kernel.compute.coder_crystal_feedback import trial_enabled
+
 ENABLE_ENV = "BEAST_CODING_CRYSTALS"
 KEY_ENV = "BEAST_CODING_CRYSTAL_KEY"
 DEFAULT_KEY_PATH = Path("~/.local/state/beast/compute_plane/authority/arda-runtime-ed25519.pem").expanduser()
@@ -76,7 +78,8 @@ def _key_id(key: Any) -> str:
 
 
 def _build(workspace: Path, env: Mapping[str, str]) -> tuple[dict[str, Any], str]:
-    if not _enabled(env):
+    trial = trial_enabled(env)
+    if not (_enabled(env) or trial):
         return {}, "disabled"
     key, reason = _load_key(env)
     if key is None:
@@ -109,17 +112,17 @@ def _build(workspace: Path, env: Mapping[str, str]) -> tuple[dict[str, Any], str
                                  governor_settlement=governor.receipts.settle if governor else None)
     economy = CrystalReuseEconomy(shadow, envelope_store=envelopes, local_user_id=str(env.get(USER_ENV) or "operator"))
     lattice = None
-    if str(env.get(LATTICE_ENV) or "").strip().lower() in {"1", "true", "yes", "on"}:  # lattice spine, default off
+    if trial or str(env.get(LATTICE_ENV) or "").strip().lower() in {"1", "true", "yes", "on"}:  # lattice spine, default off
         from app.kernel.compute.crystal_lattice_spine import default_lattice
 
-        lattice = default_lattice(workspace, registry)
+        lattice = default_lattice(workspace, registry, isolated=trial)
     extras: dict[str, Any] = {
-        "crystal_planner": CodingCrystalPlanner(registry, authority, ledger, economy=economy, lattice=lattice),
+        "crystal_planner": CodingCrystalPlanner(registry, authority, ledger, economy=economy, lattice=lattice, scoped_negatives=trial),
         "envelope_store": envelopes,
     }
     from app.kernel.compute.adaptive_router import CodingCrystalRouter, router_enabled
 
-    if router_enabled(env):  # D9, default off: routing nominates; D6 activation gates still decide
+    if trial or router_enabled(env):  # D9, default off: routing nominates; D6 activation gates still decide
         extras["adaptive_router"] = CodingCrystalRouter(registry, envelopes, lattice=lattice)
     if governor is not None:
         governor.lattice = lattice
