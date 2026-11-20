@@ -374,6 +374,15 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
         "agent.family_lattice.refused": (
             "skipped", "execution", "Crystal lattice refused"
         ),
+        "agent.compound_crystal.stage.admitted": (
+            "fired", "execution", "Compound proof stage admitted"
+        ),
+        "agent.compound_crystal.completed": (
+            "fired", "postflight", "Compound proof DAG completed"
+        ),
+        "agent.compound_crystal.refused": (
+            "skipped", "execution", "Compound proof DAG refused"
+        ),
         "agent.family_crystal.refused": (
             "skipped", "execution", "Family crystal refused"
         ),

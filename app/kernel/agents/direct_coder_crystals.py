@@ -46,6 +46,8 @@ class DirectCoderFamilySession:
 
         self.lattice_topology = None
         self.current_lattice_leaf = None
+        self.compound_dag = None
+        self.compound_rows = {}
 
         if self.crystal.component_ids:
             from app.kernel.compute import family_crystals as fc
@@ -56,6 +58,12 @@ class DirectCoderFamilySession:
                 self.registry,
                 self.crystal,
             )
+
+            # The proof DAG must admit envelope/evidence/plan before Direct
+            # Coder is permitted to execute the first lattice mutation.
+            self.compound_dag = None
+            self.compound_rows = {}
+            self._init_compound_dag(baseline_result)
 
     @staticmethod
     def _output(result):
@@ -76,6 +84,230 @@ class DirectCoderFamilySession:
 
     def _families(self):
         return self.crystal.component_families or (self.crystal.task_family,)
+
+    def _compound_emit(self, stage, row):
+        self.engine.emit(self.run_id, "agent.compound_crystal.stage.admitted", {
+            "lattice_id": self.crystal.crystal_id,
+            "stage": stage,
+            "proof_digest": row.get("proof_digest"),
+            "output_digest": row.get("output_digest"),
+            "verifier": row.get("verifier"),
+        })
+
+    def _init_compound_dag(self, baseline_result):
+        """Bind the live lattice execution to the existing compound proof DAG.
+
+        This does not replace Direct Coder execution. It makes the already-live
+        execution proof-carrying before the first mutation is admitted.
+        """
+        if self.lattice_topology is None:
+            return
+
+        from app.kernel.compute.compound_crystallization import (
+            CompoundCrystallizationDAG,
+            StageReceipt,
+        )
+
+        dag = CompoundCrystallizationDAG()
+
+        envelope = {
+            "run_id": self.run_id,
+            "lattice_id": self.crystal.crystal_id,
+            "task_family": self.crystal.task_family,
+            "target": self.target,
+            "verify_command": list(self.verify_command),
+            "baseline_failures": self.previous_failures,
+        }
+        envelope_row = StageReceipt(
+            "envelope",
+            {},
+            envelope,
+            "direct_coder_lattice_envelope_v1",
+            {
+                "passed": 0 < self.previous_failures < 10**9,
+                "baseline_failures": self.previous_failures,
+            },
+        ).to_dict()
+        dag.admit(envelope_row)
+
+        topology = self.lattice_topology
+        evidence = {
+            "root": topology.get("root"),
+            "leaves": list(topology.get("leaves") or ()),
+            "leaf_count": topology.get("leaf_count"),
+            "component_families": list(
+                topology.get("component_families") or ()
+            ),
+            "expected_failures": topology.get("expected_failures"),
+        }
+        evidence_row = StageReceipt(
+            "evidence",
+            {"envelope": envelope_row["proof_digest"]},
+            evidence,
+            "direct_coder_lattice_topology_v1",
+            {
+                "passed": (
+                    int(topology.get("leaf_count") or 0)
+                    == len(self._families())
+                    and int(topology.get("leaf_count") or 0) > 1
+                ),
+                "leaf_count": topology.get("leaf_count"),
+            },
+        ).to_dict()
+        dag.admit(evidence_row, predecessors=("envelope",))
+
+        plan = {
+            "lattice_id": self.crystal.crystal_id,
+            "ordered_families": list(self._families()),
+            "ordered_leaves": [
+                {
+                    "crystal_id": leaf.get("crystal_id"),
+                    "task_family": leaf.get("task_family"),
+                    "parent_id": leaf.get("parent_id"),
+                    "path": list(leaf.get("path") or ()),
+                }
+                for leaf in topology.get("leaves") or ()
+            ],
+            "postcondition": "independent worktree verifier reaches zero failures",
+        }
+        plan_row = StageReceipt(
+            "plan",
+            {
+                "envelope": envelope_row["proof_digest"],
+                "evidence": evidence_row["proof_digest"],
+            },
+            plan,
+            "direct_coder_lattice_plan_v1",
+            {
+                "passed": (
+                    len(plan["ordered_leaves"])
+                    == len(plan["ordered_families"])
+                    and all(
+                        leaf["task_family"] == family
+                        for leaf, family in zip(
+                            plan["ordered_leaves"],
+                            plan["ordered_families"],
+                            strict=True,
+                        )
+                    )
+                ),
+                "stage_count": len(plan["ordered_leaves"]),
+            },
+        ).to_dict()
+        dag.admit(
+            plan_row,
+            predecessors=("envelope", "evidence"),
+        )
+
+        self.compound_dag = dag
+        self.compound_rows = {
+            "envelope": envelope_row,
+            "evidence": evidence_row,
+            "plan": plan_row,
+        }
+
+        self._compound_emit("envelope", envelope_row)
+        self._compound_emit("evidence", evidence_row)
+        self._compound_emit("plan", plan_row)
+
+    def _finalize_compound_dag(self, current_failures):
+        if getattr(self, "compound_dag", None) is None:
+            return True
+
+        from app.kernel.compute.compound_crystallization import (
+            CompoundAdmissionError,
+            StageReceipt,
+        )
+
+        try:
+            plan_row = self.compound_rows["plan"]
+
+            execute = {
+                "lattice_id": self.crystal.crystal_id,
+                "stages_executed": len(self._families()),
+                "final_failures": current_failures,
+                "leaf_ids": [
+                    leaf.get("crystal_id")
+                    for leaf in self.lattice_topology.get("leaves") or ()
+                ],
+            }
+            execute_row = StageReceipt(
+                "execute",
+                {"plan": plan_row["proof_digest"]},
+                execute,
+                "direct_coder_governed_execution_v1",
+                {
+                    "passed": (
+                        self.stage == len(self._families()) - 1
+                        and current_failures == 0
+                    ),
+                    "stages_executed": len(self._families()),
+                },
+            ).to_dict()
+            self.compound_dag.admit(
+                execute_row,
+                predecessors=("plan",),
+            )
+
+            verification = {
+                "lattice_id": self.crystal.crystal_id,
+                "verify_command": list(self.verify_command),
+                "final_failures": current_failures,
+                "postcondition": current_failures == 0,
+            }
+            verify_row = StageReceipt(
+                "verify",
+                {
+                    "execute": execute_row["proof_digest"],
+                    "plan": plan_row["proof_digest"],
+                },
+                verification,
+                "direct_coder_independent_worktree_verify_v1",
+                {
+                    "passed": current_failures == 0,
+                    "final_failures": current_failures,
+                },
+            ).to_dict()
+            self.compound_dag.admit(
+                verify_row,
+                predecessors=("execute", "plan"),
+            )
+
+        except (CompoundAdmissionError, KeyError, ValueError) as exc:
+            self.engine.emit(
+                self.run_id,
+                "agent.compound_crystal.refused",
+                {
+                    "lattice_id": self.crystal.crystal_id,
+                    "reason": type(exc).__name__,
+                    "detail": str(exc),
+                },
+            )
+            return False
+
+        self.compound_rows["execute"] = execute_row
+        self.compound_rows["verify"] = verify_row
+
+        self._compound_emit("execute", execute_row)
+        self._compound_emit("verify", verify_row)
+
+        receipt = self.compound_dag.receipt()
+
+        self.engine.emit(
+            self.run_id,
+            "agent.compound_crystal.completed",
+            {
+                "lattice_id": self.crystal.crystal_id,
+                "stages": list(receipt),
+                "stage_count": len(receipt),
+                "final_failures": current_failures,
+                "proof_digests": {
+                    stage: row.get("proof_digest")
+                    for stage, row in receipt.items()
+                },
+            },
+        )
+        return True
 
     def _latest_verify(self, state):
         observations = state.get("observations") or ()
@@ -347,6 +579,15 @@ class DirectCoderFamilySession:
             self.waiting_for_verify = False
 
             if final_stage:
+                if (
+                    self.lattice_topology is not None
+                    and not self._finalize_compound_dag(current)
+                ):
+                    return self._refuse(
+                        "compound_dag_postcondition_failed",
+                        failures_after=current,
+                    )
+
                 self.done = True
                 self.succeeded = True
                 try:
