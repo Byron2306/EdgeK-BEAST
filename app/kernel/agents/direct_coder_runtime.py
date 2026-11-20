@@ -263,6 +263,12 @@ class DirectCoderRuntime:
                     self._emit(run_id, "agent.crystal.refused", reason=f"activation_error:{type(exc).__name__}")
                 if decision is not None:
                     source = "crystal"
+                elif command and not (run.get("checkpoint") or {}).get("worktree_root"):
+                    decision = PlannerDecision(
+                        decision_type=PlannerDecisionType.TOOL, tool_id="worktree.bind",
+                        arguments={"objective": str(run.get("objective") or "Direct Coder crystal preflight")},
+                        rationale="Bind an isolated worktree before evidence-driven crystal routing.")
+                    source = "runtime"
                 elif command and (run.get("checkpoint") or {}).get("worktree_root") and "baseline_rc" not in state:
                     decision = PlannerDecision(decision_type=PlannerDecisionType.TOOL, tool_id="worktree.verify",
                                                arguments={"command": command}, rationale="Capture the bound pre-edit verifier.")
