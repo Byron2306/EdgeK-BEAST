@@ -30,10 +30,29 @@ class DirectCoderCrystals:
         router = self.extras.get("adaptive_router")
         if not planner or not router:
             return None
+        routed_run = run
         if not state.get("crystal_checked"):
+            from app.kernel.compute.coder_crystal_feedback import observed_trial_family
+
+            request = dict(run.get("request") or {})
+            family = observed_trial_family(request, state.get("observations") or ())
+            # Crystal applicability is evidence-driven. Before the canonical
+            # baseline and target read exist, Direct Coder performs deterministic
+            # preflight instead of guessing a family from the prompt.
+            if not family:
+                if "baseline_rc" not in state or not state.get("target_inspection_attempted"):
+                    return None
+                state["crystal_checked"] = True
+                self.engine.merge_checkpoint(run_id, {"direct_coder": state})
+                route = router.route_run({**run, "request": {**request, "task_family": ""}}).to_dict()
+                route["observed_task_family"] = ""
+                self.engine.emit(run_id, "agent.route.decision", route)
+                return None
+            routed_run = {**run, "request": {**request, "task_family": family}}
             state["crystal_checked"] = True
             self.engine.merge_checkpoint(run_id, {"direct_coder": state})
-            route = router.route_run(run).to_dict()
+            route = router.route_run(routed_run).to_dict()
+            route["observed_task_family"] = family
             self.engine.emit(run_id, "agent.route.decision", route)
             if route.get("route") != "crystal_replay":
                 return None
@@ -51,7 +70,7 @@ class DirectCoderCrystals:
                 if not verdict.permits():
                     return None
             self.sessions[run_id] = planner.activate(
-                run, run_id, engine=self.engine, nominated_crystal_id=str(route["crystal_id"]))
+                routed_run, run_id, engine=self.engine, nominated_crystal_id=str(route["crystal_id"]))
         session = self.sessions.get(run_id)
         if session is None:
             return None
@@ -61,7 +80,6 @@ class DirectCoderCrystals:
         except Exception as exc:
             session.abort(f"session_error:{type(exc).__name__}")
             return None
-
     async def complete(self, run_id, objective, verified):
         if not verified or self.extras.get("envelope_store") is None:
             return
