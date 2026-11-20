@@ -31,6 +31,7 @@ from app.kernel.commons.remote_client import CommonsEgressGate, RemoteCommonsGat
 from app.kernel.commons.remote_protocol import CommonsRequestSigner, canonical_json, sha256_bytes
 from app.kernel.compute import crystal_memfd_capsule as cap, governed_egress
 from app.kernel.compute.family_crystals import FamilyCrystal, FamilyRegistry
+from app.kernel.security.local_provider_keys import KeyStoreError, load_key
 from scripts.gauntlet_large_tasks import constant, constant_decoy
 from scripts.proof.run_behemoth_phase2 import install_fixture, verify_independent
 from scripts.proof.run_stage7b_capsule_replay import select_record, sha, snapshot
@@ -38,7 +39,7 @@ from scripts.proof.run_stage7b_lab import commons_lab
 
 OWNER, BUCKET, REVISION = "edgek", "stage7b-receiver", "reviewed-v1"
 ARTIFACT_PATH = "crystal/family.json"
-MODEL = "nvidia/nemotron-3-super-120b-a12b"
+MODEL = "nvidia/nemotron-3.5-super-vl-120b-a12b"
 NIM_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
 
 
@@ -359,7 +360,13 @@ def main():
         parser.error("base port must leave room for three unprivileged ports")
     api_key = os.environ.pop("NVIDIA_API_KEY", "")  # Do not pass the secret to any lab or replay subprocess.
     if args.mode == "nim" and not api_key:
-        parser.error("NVIDIA_API_KEY required for --mode nim")
+        try:
+            api_key = load_key("nvidia_nim")
+        except KeyStoreError as exc:
+            parser.error(str(exc))
+        if not api_key:
+            parser.error("NVIDIA_API_KEY not set and no saved key. Run "
+                         "python -m app.kernel.security.local_provider_keys set nvidia_nim once.")
 
     def interrupted(_sig, _frame):
         raise KeyboardInterrupt
