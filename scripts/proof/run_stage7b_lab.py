@@ -13,7 +13,6 @@ import json
 import os
 from pathlib import Path
 import signal
-import socket
 import subprocess
 import sys
 import time
@@ -25,6 +24,7 @@ from app.kernel.sensorium.runtime import SensoriumRuntime
 from app.kernel.storage.durable_inference_storage import DurableInferenceStorage
 from scripts.attest_remote_commons_lab import attest
 from scripts.bootstrap_remote_commons_lab import bootstrap
+from scripts.proof.stage7b_loopback import reserve_lab_listener
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -59,8 +59,7 @@ def commons_lab(out, ledger, base_port, *, before_launch=None):
     with ExitStack() as stack:
         sockets = []
         for slot in range(3):
-            listener = stack.enter_context(socket.socket())
-            listener.bind(("127.0.0.1", base_port + slot))
+            listener = stack.enter_context(reserve_lab_listener(base_port + slot))
             sockets.append(listener)
         subprocess.run([sys.executable, "scripts/provision_remote_commons_lab.py",
                         "--root", str(lab), "--base-port", str(base_port), "--nodes", "3"],
