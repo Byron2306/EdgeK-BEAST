@@ -126,3 +126,32 @@ def test_pipe_baseline_copies_twice(tmp_path):
     _c, payload, manifest, _wt = _capsule(tmp_path)
     base = cap.pipe_copy_baseline(payload)
     assert base["transport_copies_bytes"] == 2 * len(payload) and base["sha256_child"] == cap.sha256_bytes(payload)
+
+
+def test_pipe_and_memfd_replay_the_same_capsule(tmp_path):
+    _, payload, manifest, worktree = _capsule(tmp_path)
+    via_pipe = cap.handoff_to_pipe_replay_child(payload, manifest)
+    assert via_pipe["ok"] is True, via_pipe.get("refused")
+    assert via_pipe["capsule"]["payload_sha256_child"] == manifest["payload_sha256"]
+    assert via_pipe["parent_observed"]["pipe_bytes_sent"] == via_pipe["capsule"]["capsule_bytes"]
+    first_tree = worktree.rename(tmp_path / "pipe-tree")
+
+    fd, sealed = cap.seal_capsule(manifest, payload, env=ON)
+    try:
+        via_memfd = cap.handoff_to_replay_child(fd, manifest, admit_token="same-fixture")
+    finally:
+        os.close(fd)
+    assert via_memfd["ok"] is True, via_memfd.get("refused")
+    assert via_pipe["capsule"]["capsule_bytes"] == sealed["capsule_bytes"]
+    assert via_pipe["postcondition"]["target_sha256"] == via_memfd["postcondition"]["target_sha256"]
+    assert (first_tree / "billing/config.py").read_bytes() == (worktree / "billing/config.py").read_bytes()
+    assert via_pipe["replay"]["model_calls"] == via_memfd["replay"]["model_calls"] == 0
+
+
+def test_pipe_refuses_tampered_frame_before_replay(tmp_path):
+    _, payload, manifest, worktree = _capsule(tmp_path)
+    tampered = payload.replace(b'"expect_returncode":0', b'"expect_returncode":1', 1)
+    assert tampered != payload
+    result = cap.handoff_to_pipe_replay_child(tampered, manifest)
+    assert result["ok"] is False and "tampered" in result["refused"]
+    assert "replay" not in result and not worktree.exists()
