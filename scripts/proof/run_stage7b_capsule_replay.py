@@ -21,7 +21,44 @@ from app.kernel.compute.family_crystals import FamilyRegistry, tree_digest
 from scripts.gauntlet_large_tasks import constant, constant_decoy
 from scripts.proof.run_behemoth_phase2 import install_fixture, verify_independent
 
-DEFAULT_CRYSTAL = "family-crystal:f3f8ad2739d13e5733d13336"
+class SelectionError(ValueError):
+    pass
+
+
+def select_record(registry, *, crystal_id=None, composite_id=None):
+    def reviewed(record):
+        return record["status"] == "promoted" and (record.get("promotion") or {}).get("approved_by")
+
+    def load(identifier):
+        try:
+            return registry.get(identifier)
+        except LookupError as exc:
+            raise SelectionError(f"crystal not found in this registry: {identifier}") from exc
+
+    if composite_id:
+        composite = load(composite_id)
+        children = composite["crystal_object"].component_ids
+        if not reviewed(composite) or not children:
+            raise SelectionError(f"{composite_id} is not a reviewed promoted composite")
+        candidates = [load(child) for child in children]
+    elif crystal_id:
+        candidates = [load(crystal_id)]
+    else:
+        candidates = [load(crystal.crystal_id) for crystal in registry.promoted()
+                      if crystal.task_family == "fix-config-constant" and not crystal.component_ids]
+    matches = [record for record in candidates if reviewed(record)
+               and record["crystal_object"].task_family == "fix-config-constant"
+               and not record["crystal_object"].component_ids]
+    if len(matches) == 1:
+        return matches[0]
+    if len(matches) > 1:
+        choices = ", ".join(record["crystal_object"].crystal_id for record in matches)
+        raise SelectionError(f"multiple eligible crystals ({choices}); pin one with --crystal-id")
+    if crystal_id:
+        actual = candidates[0]["crystal_object"]
+        raise SelectionError(f"{crystal_id} is in family {actual.task_family!r} with status "
+                             f"{candidates[0]['status']!r}; requires a reviewed promoted standalone fix-config-constant")
+    raise SelectionError("no reviewed promoted standalone fix-config-constant found in the selected scope")
 
 
 def snapshot(db, target):
@@ -95,19 +132,18 @@ def run_trial(arm, case, mode, payload, manifest, worktree, task, root):
 
 
 def run(args):
-    args.out.mkdir(mode=0o700, exist_ok=False)
-    os.environ[cap.CAPSULE_ENV] = "1"
     rows, pairs = [], []
     with TemporaryDirectory(prefix="beast-stage7b-capsule-") as temp:
         temp = Path(temp)
         registry = temp / "registry.sqlite3"
         snapshot(args.db, registry)
         db_sha = sha(registry)
-        record = FamilyRegistry(registry).get(args.crystal_id)
+        record = select_record(FamilyRegistry(registry), crystal_id=args.crystal_id,
+                               composite_id=args.composite_id)
         candidate = record["crystal_object"]
-        if (record["status"] != "promoted" or not (record.get("promotion") or {}).get("approved_by")
-                or candidate.task_family != "fix-config-constant" or candidate.component_ids):
-            raise ValueError("requires the promoted, standalone fix-config-constant crystal")
+        args.out.mkdir(mode=0o700, exist_ok=False)
+        os.environ[cap.CAPSULE_ENV] = "1"
+        print(f"SELECTED_CRYSTAL={candidate.crystal_id}", flush=True)
         rng = random.Random(args.seed)
         cases = []
         for index in range(args.repeats):
@@ -180,7 +216,9 @@ def run(args):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--db", type=Path, required=True, help="existing promoted registry snapshot")
-    parser.add_argument("--crystal-id", default=DEFAULT_CRYSTAL)
+    selection = parser.add_mutually_exclusive_group()
+    selection.add_argument("--crystal-id", help="pin a reviewed standalone fix-config-constant")
+    selection.add_argument("--composite-id", help="select the eligible child of this promoted composite")
     parser.add_argument("--seed", type=int, default=27321)
     parser.add_argument("--repeats", type=int, default=3, choices=range(1, 11), metavar="1..10")
     parser.add_argument("--out", type=Path, required=True)
@@ -189,7 +227,10 @@ def main():
     args.out = args.out.resolve()
     if not args.db.is_file():
         parser.error("registry snapshot does not exist")
-    return run(args)
+    try:
+        return run(args)
+    except SelectionError as exc:
+        parser.error(str(exc))
 
 
 if __name__ == "__main__":
