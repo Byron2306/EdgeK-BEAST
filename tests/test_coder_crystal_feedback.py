@@ -78,6 +78,9 @@ class FeedbackLoopTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             request = trial_request("agent", ("service.py", "test_service.py"), enabled=True)
+            # This unit test exercises an already-nominated legacy crystal.
+            # Normal Direct Coder requests intentionally no longer prelabel task_family.
+            request = {**request, "task_family": "fix-failing-assertion"}
             run = {"request": request}
             (root / "service.py").write_text("PAGE = 3\nOTHER = 3\n")
             (root / "test_service.py").write_text("# Trial contract\n")
