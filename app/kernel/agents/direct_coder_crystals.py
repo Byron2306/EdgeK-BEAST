@@ -745,6 +745,18 @@ class DirectCoderCrystals:
         self.sessions = {}
         self.family_sessions = {}
 
+    def admitted_mutation_paths(self, run_id):
+        """Return only mutation paths admitted by the active compound fragment."""
+        session = self.family_sessions.get(run_id)
+        if session is None:
+            return set()
+
+        paths = set()
+        for row in session.compound_fragments:
+            for path in row.get("paths") or ():
+                paths.add(str(path))
+        return paths
+
     @classmethod
     def prepare(cls, engine, run, env):
         from app.kernel.compute.coder_crystal_feedback import trial_enabled
@@ -1121,8 +1133,20 @@ class DirectCoderCrystals:
                     "worktree.replace_exact", "worktree.write_file"
                 }:
                     family_session.mutation_observed(state)
+
+                if decision is None and family_session.done and family_session.refused:
+                    self.family_sessions.pop(run_id, None)
+                    return PlannerDecision(
+                        decision_type=PlannerDecisionType.BLOCKED,
+                        blocker=(
+                            "Admitted promoted crystal lattice refused during "
+                            "deterministic execution"
+                        ),
+                    )
+
                 if family_session.done:
                     self.family_sessions.pop(run_id, None)
+
                 if decision is not None:
                     return decision
             except Exception as exc:

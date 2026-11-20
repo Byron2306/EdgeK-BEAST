@@ -398,6 +398,9 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
         "agent.crystal.fail_closed": (
             "refused", "execution", "Crystal execution failed closed"
         ),
+        "agent.crystal.tool.dispatched": (
+            "fired", "execution", "Crystal tool dispatched"
+        ),
 
         "agent.episode.sealed": ("fired", "postflight", "Episode sealed"),
     }
@@ -459,6 +462,8 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
                 reason,
                 crystal_id,
                 child_id,
+                str(payload.get("tool_id") or ""),
+                str(payload.get("path") or ""),
             )
             if part
         )

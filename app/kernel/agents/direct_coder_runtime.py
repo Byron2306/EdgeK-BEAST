@@ -322,6 +322,20 @@ class DirectCoderRuntime:
                 source = "runtime"
         self._emit(run_id, "agent.coder.decision", turn=turn + 1,
                    decision=decision.as_dict())
+
+        if (
+            source == "crystal"
+            and decision.decision_type is PlannerDecisionType.TOOL
+        ):
+            self._emit(
+                run_id,
+                "agent.crystal.tool.dispatched",
+                tool_id=decision.tool_id,
+                path=str(decision.arguments.get("path") or ""),
+                command=list(decision.arguments.get("command") or ()),
+                turn=turn + 1,
+            )
+
         if decision.decision_type is PlannerDecisionType.BLOCKED:
             self._transition(run_id, AgentRunState.PAUSED,
                              error=str(decision.blocker or "coding model requested help")[:400])
@@ -374,8 +388,30 @@ class DirectCoderRuntime:
             canonical = None
             try:
                 if command and decision.tool_id in {"worktree.replace_exact", "worktree.write_file"}:
-                    if decision.arguments.get("path") != request.get("implementation_target"):
-                        raise ValueError("Trial edits are limited to the attached implementation target")
+                    path = str(decision.arguments.get("path") or "")
+                    allowed_paths = {
+                        str(request.get("implementation_target") or "")
+                    }
+
+                    if self.crystals is not None:
+                        admitted_paths = getattr(
+                            self.crystals,
+                            "admitted_mutation_paths",
+                            None,
+                        )
+                        if callable(admitted_paths):
+                            allowed_paths.update(
+                                admitted_paths(run_id)
+                            )
+
+                    allowed_paths.discard("")
+
+                    if path not in allowed_paths:
+                        raise ValueError(
+                            "Trial edit path is not bound to the implementation "
+                            "target or an admitted crystal fragment"
+                        )
+
                     if state.get("baseline_binding") != (run.get("checkpoint") or {}).get("worktree_root"):
                         raise ValueError("The bound worktree changed after baseline verification")
                 if command and decision.tool_id == "worktree.run":
