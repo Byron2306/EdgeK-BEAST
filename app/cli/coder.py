@@ -2119,22 +2119,64 @@ class BeastCoderApp(App[None]):
             if not argument:
                 self._append("system", f"Workspace: {self.settings.workspace}", persist=False)
                 return
+            target_store = ConversationStore(Path(argument))
+            saved = target_store.load_settings()
+
+            # Preserve durable per-workspace session/run identity when switching
+            # back to an existing coding workspace. Provider/model follow the
+            # current operator selection unless the destination already records
+            # an active session/run.
             new_settings = CoderSettings(
                 workspace=Path(argument),
-                provider=self.settings.provider,
-                model=self.settings.model,
+                provider=saved.provider if saved.last_run_id else self.settings.provider,
+                model=saved.model if saved.last_run_id else self.settings.model,
+                session_id=saved.session_id,
+                last_run_id=saved.last_run_id,
+                auto_mode=saved.auto_mode,
+                session_title=saved.session_title,
             )
             if self._injected_runtime and self._runtime_client_factory is None:
                 raise ValueError("workspace switching is unavailable for the injected runtime client")
             await self.runtime.aclose()
-            self.store = ConversationStore(new_settings.workspace)
+            self.store = target_store
             self.settings = new_settings
             self.store.save_settings(self.settings)
             self.runtime = self._new_runtime(new_settings.workspace)
             self.transcript_entries = self.store.messages()
             self.tool_entries.clear()
             self._reset_actions()
+
+            # Rehydrate the durable AgentRun timeline when returning to an
+            # existing workspace. Conversation text and execution evidence are
+            # separate stores; both must be restored for an honest UI.
+            if self.settings.last_run_id:
+                try:
+                    for runtime_event in await self.runtime.run_events(
+                        self.settings.last_run_id,
+                        limit=2000,
+                    ):
+                        projected = project_runtime_event(runtime_event)
+                        if projected.kind in {"tool_call", "tool_result", "integration"}:
+                            self.tool_entries.append({
+                                "kind": projected.kind,
+                                "text": projected.text,
+                                "sequence": projected.sequence,
+                                "status": projected.status,
+                                "tool_id": projected.tool_id,
+                                "executed": projected.executed,
+                                "success": projected.success,
+                                "receipt": projected.receipt,
+                                "details": projected.details,
+                            })
+                except (RuntimeClientError, json.JSONDecodeError) as exc:
+                    self._append(
+                        "system",
+                        f"Run event history unavailable: {exc}",
+                        persist=False,
+                    )
+
             self._append("system", f"Workspace selected: {new_settings.workspace}")
+            self._sync()
             return
         if name == "status":
             status = await self.runtime.runtime_status(self.settings.last_run_id)

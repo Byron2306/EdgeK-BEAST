@@ -333,13 +333,96 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
         "agent.crystal.negative_recorded": ("fired", "postflight", "Scoped negative recorded"),
         "agent.crystal.negative_applied": ("skipped", "eligibility", "Prior scoped negative blocked activation"),
         "agent.route.decision": ("observed", "eligibility", "Crystal route nomination"),
+
+        # Promoted family / lattice runtime. These are first-class execution
+        # events, not hidden implementation details: the operator must be able
+        # to see discovery, nomination, every lattice stage, verification, and
+        # terminal outcome in /last and the inline tool stream.
+        "agent.family_crystal.discovery": (
+            "observed", "eligibility", "Family crystal discovery"
+        ),
+        "agent.family_crystal.nominated": (
+            "fired", "eligibility", "Promoted family crystal nominated"
+        ),
+        "agent.family_crystal.not_nominated": (
+            "skipped", "eligibility", "Family crystal not nominated"
+        ),
+        "agent.family_crystal.stage.started": (
+            "fired", "execution", "Family crystal stage started"
+        ),
+        "agent.family_crystal.stage.verified": (
+            "fired", "execution", "Family crystal stage verified"
+        ),
+        "agent.family_crystal.completed": (
+            "fired", "postflight", "Promoted family crystal completed"
+        ),
+        "agent.family_crystal.refused": (
+            "skipped", "execution", "Family crystal refused"
+        ),
+
         "agent.episode.sealed": ("fired", "postflight", "Episode sealed"),
     }
     if event.event in crystal_events:
         status, stage, headline = crystal_events[event.event]
         capability = event.event.removeprefix("agent.")
         reason = str(payload.get("reason") or payload.get("route") or "")
-        label = " · ".join(part for part in (headline, reason, str(payload.get("crystal_id") or "")) if part)
+
+        # Surface family/lattice evidence instead of reducing it to an opaque
+        # integration event. Fields are intentionally tolerant because older
+        # and newer crystal receipts use slightly different names.
+        family = str(
+            payload.get("task_family")
+            or payload.get("family")
+            or payload.get("component_family")
+            or payload.get("child_family")
+            or ""
+        )
+        crystal_id = str(payload.get("crystal_id") or payload.get("composite_id") or "")
+        child_id = str(payload.get("child_id") or "")
+
+        stage_index = payload.get("stage_index", payload.get("index"))
+        stage_count = payload.get("stage_count", payload.get("total_stages"))
+        if stage_index is not None:
+            try:
+                shown_stage = int(stage_index) + 1
+            except (TypeError, ValueError):
+                shown_stage = stage_index
+            stage_text = (
+                f"stage {shown_stage}/{stage_count}"
+                if stage_count is not None
+                else f"stage {shown_stage}"
+            )
+        else:
+            stage_text = ""
+
+        before = payload.get("failures_before")
+        after = payload.get("failures_after")
+        reduction = (
+            f"failures {before}→{after}"
+            if before is not None and after is not None
+            else ""
+        )
+
+        similarity = payload.get("similarity")
+        similarity_text = (
+            f"similarity={similarity}"
+            if similarity is not None
+            else ""
+        )
+
+        label = " · ".join(
+            part for part in (
+                headline,
+                family,
+                stage_text,
+                reduction,
+                similarity_text,
+                reason,
+                crystal_id,
+                child_id,
+            )
+            if part
+        )
         if event.event == "agent.episode.sealed" and data.get("run_id"):
             label += f" · {data['run_id']}"
         return ProjectedEvent("integration", label, sequence, status=status, tool_id=capability,

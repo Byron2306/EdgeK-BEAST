@@ -250,6 +250,33 @@ class CoderRuntimeClient:
             )
         return await self._get_json("/health")
 
+    async def run_events(
+        self,
+        run_id: str,
+        *,
+        after: int = 0,
+        limit: int = 2000,
+    ) -> list[RuntimeEvent]:
+        body = await self._get_json(
+            f"/edgek/agent-runs/{run_id}/events",
+            root_path=str(self.workspace),
+            after=max(0, int(after)),
+            limit=max(1, min(int(limit), 5000)),
+        )
+        rows = body.get("events") if isinstance(body.get("events"), list) else []
+        out: list[RuntimeEvent] = []
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            out.append(
+                RuntimeEvent(
+                    event=str(row.get("event") or row.get("event_type") or ""),
+                    data=dict(row),
+                    event_id=str(row.get("sequence") or ""),
+                )
+            )
+        return out
+
     async def ensure_session(self, provider: str, model: str) -> dict[str, Any]:
         body = await self._post_json(
             "/edgek/ide/agent-sessions/create",
@@ -281,8 +308,45 @@ class CoderRuntimeClient:
         ).strip().lower()
         if autonomy_mode not in {"autopilot", "manual"}:
             raise ValueError("autonomy must be 'autopilot' or 'manual'")
-        test_files = [path for path in context_files if Path(path).name.startswith("test_") and path.endswith(".py")]
-        target = next((path for path in context_files if path.endswith(".py") and path not in test_files), "")
+        effective_context_files = list(context_files)
+
+        # Crystal trials must also work from the normal /agent workflow where the
+        # operator lets Direct Coder explore the repository instead of attaching
+        # files manually. For a simple unambiguous Python repair workspace,
+        # deterministically derive the same target/test scope that explicit
+        # context files would have supplied.
+        if (
+            mode in {"edit", "agent"}
+            and trial_enabled(os.environ)
+            and not effective_context_files
+        ):
+            visible = sorted(
+                p for p in self.workspace.glob("*.py")
+                if p.is_file() and not p.is_symlink()
+            )
+            discovered_tests = [
+                p for p in visible if p.name.startswith("test_")
+            ]
+            discovered_targets = [
+                p for p in visible if not p.name.startswith("test_")
+            ]
+            if len(discovered_targets) == 1 and discovered_tests:
+                effective_context_files = [
+                    discovered_targets[0].name,
+                    *[p.name for p in discovered_tests],
+                ]
+
+        test_files = [
+            path for path in effective_context_files
+            if Path(path).name.startswith("test_") and path.endswith(".py")
+        ]
+        target = next(
+            (
+                path for path in effective_context_files
+                if path.endswith(".py") and path not in test_files
+            ),
+            "",
+        )
         editing_scope = {}
         if mode in {"edit", "agent"} and target:
             editing_scope["implementation_target"] = target
@@ -300,10 +364,14 @@ class CoderRuntimeClient:
                     "prompt": prompt,
                     "transport": "beast_coder_tli_v1",
                     "launch_strategy": "direct_coder" if mode in {"agent", "edit"} else "typed_planner",
-                    "context_files": list(context_files),
+                    "context_files": effective_context_files,
                     **({"swarm": True} if swarm and mode == "agent" else {}),
                     **editing_scope,
-                    **trial_request(mode, context_files, enabled=trial_enabled(os.environ)),
+                    **trial_request(
+                        mode,
+                        effective_context_files,
+                        enabled=trial_enabled(os.environ),
+                    ),
                     **({"read_only_file_review": True, "file_answer_style": "explain" if mode == "ask" else "review"}
                        if mode in {"ask", "review"} and context_files else {}),
                     "workspace_root": str(self.workspace),
