@@ -457,15 +457,35 @@ class DirectCoderFamilySession:
             ))
 
         for path, content in sorted(dict(plan.get("rewrite") or {}).items()):
-            decisions.append(PlannerDecision(
-                decision_type=PlannerDecisionType.TOOL,
-                tool_id="worktree.write_file",
-                arguments={
-                    "path": str(path),
-                    "content": str(content),
-                },
-                rationale="Apply deterministic promoted family-crystal rewrite.",
-            ))
+            rel = str(path)
+            candidate = self.root / rel
+
+            if candidate.exists():
+                decisions.append(PlannerDecision(
+                    decision_type=PlannerDecisionType.TOOL,
+                    tool_id="worktree.replace_exact",
+                    arguments={
+                        "path": rel,
+                        "old_text": candidate.read_text(),
+                        "new_text": str(content),
+                    },
+                    rationale=(
+                        "Apply deterministic promoted family-crystal rewrite "
+                        "to an existing file."
+                    ),
+                ))
+            else:
+                decisions.append(PlannerDecision(
+                    decision_type=PlannerDecisionType.TOOL,
+                    tool_id="worktree.write_file",
+                    arguments={
+                        "path": rel,
+                        "content": str(content),
+                    },
+                    rationale=(
+                        "Create deterministic promoted family-crystal file."
+                    ),
+                ))
 
         return decisions
 
