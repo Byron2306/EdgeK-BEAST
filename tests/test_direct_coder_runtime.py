@@ -293,7 +293,7 @@ def test_direct_trial_records_bound_failure_before_edit_and_pass_before_completi
     engine.execute_tool = execute
     done = PlannerDecision(decision_type=PlannerDecisionType.COMPLETE, summary="Verified")
     model = ScriptedCodingModel([
-        tool("worktree.bind"), tool("worktree.replace_exact", {"path": "a.py"}), done, done,
+        tool("worktree.replace_exact", {"path": "a.py"}), done, done,
     ])
     coder = DirectCoderRuntime(engine, model, crystal_stack=stack)
 
@@ -303,5 +303,5 @@ def test_direct_trial_records_bound_failure_before_edit_and_pass_before_completi
     asyncio.run(run())
     assert called == ["worktree.bind", "worktree.verify", "workspace.read_range",
                       "worktree.replace_exact", "worktree.verify"]
-    assert model.calls == 4 and completed == [True]
+    assert model.calls == 3 and completed == [True]
     assert engine.store.run["state"] == "completed"
