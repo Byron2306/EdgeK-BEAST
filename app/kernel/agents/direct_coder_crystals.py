@@ -2,10 +2,310 @@
 from __future__ import annotations
 
 import asyncio
+from pathlib import Path
 from types import SimpleNamespace
 
+from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType
 from app.kernel.compute.coder_crystal_feedback import PROFILE
 from app.kernel.sensorium.episode_envelope import EpisodeEnvelopeBuilder, RunBudgetTracker, episode_observations
+
+
+
+class DirectCoderFamilySession:
+    """Drive one promoted FamilyCrystal through the native Direct Coder tool path.
+
+    The session never edits files itself. Resolvers may probe scratch copies, but
+    admitted mutations are emitted as ordinary governed PlannerDecision objects.
+    """
+
+    LIVE_FAMILIES = frozenset({
+        "fix-config-constant",
+        "fix-logic-operator",
+        "fix-off-by-one",
+        "fix-unhandled-exception",
+    })
+
+    def __init__(self, crystal, registry, *, root: Path, target: str,
+                 verify_command, baseline_result, engine, run_id: str):
+        self.crystal = crystal
+        self.registry = registry
+        self.root = root
+        self.target = target
+        self.verify_command = list(verify_command)
+        self.engine = engine
+        self.run_id = run_id
+
+        self.stage = 0
+        self.pending = []
+        self.waiting_for_verify = False
+        self.previous_failures = self._failures(baseline_result)
+        self.last_verify_marker = None
+        self.done = False
+        self.succeeded = False
+        self.refused = False
+
+    @staticmethod
+    def _output(result):
+        return "\\n".join(
+            str((result or {}).get(key) or "")
+            for key in ("stdout", "stderr")
+        ).strip()
+
+    @classmethod
+    def _failures(cls, result):
+        from app.kernel.compute import family_crystals as fc
+
+        result = result or {}
+        rc = result.get("returncode")
+        if type(rc) is not int:
+            return 10**9
+        return fc.failure_count(cls._output(result), rc)
+
+    def _families(self):
+        return self.crystal.component_families or (self.crystal.task_family,)
+
+    def _latest_verify(self, state):
+        observations = state.get("observations") or ()
+        for index in range(len(observations) - 1, -1, -1):
+            item = observations[index]
+            if not isinstance(item, dict):
+                continue
+            if item.get("tool_id") != "worktree.verify":
+                continue
+            result = item.get("result")
+            if isinstance(result, dict) and type(result.get("returncode")) is int:
+                return index, result
+        return None, None
+
+    def _refuse(self, reason, **extra):
+        self.done = True
+        self.refused = True
+        self.engine.emit(self.run_id, "agent.family_crystal.refused", {
+            "crystal_id": self.crystal.crystal_id,
+            "task_family": self.crystal.task_family,
+            "stage": self.stage,
+            "reason": reason,
+            **extra,
+        })
+        try:
+            self.registry.record_negative(
+                self.crystal.task_family,
+                kind=reason,
+                crystal_id=self.crystal.crystal_id,
+            )
+        except Exception:
+            pass
+        return None
+
+    def _stage_crystal(self):
+        if not self.crystal.component_ids:
+            return self.crystal
+
+        try:
+            child_id = self.crystal.component_ids[self.stage]
+            return self.registry.get(child_id)["crystal_object"]
+        except (IndexError, LookupError, ValueError):
+            return None
+
+    def _build_plan(self, verify_result):
+        from app.kernel.compute import family_crystals as fc
+
+        child = self._stage_crystal()
+        if child is None:
+            return None, None
+
+        family = child.task_family
+        if family not in self.LIVE_FAMILIES:
+            return child, None
+
+        spec = fc.FAMILIES.get(family) or {}
+        resolver_name = spec.get("resolver")
+        resolver = fc.RESOLVERS.get(resolver_name)
+        if resolver is None:
+            return child, None
+
+        verify = {
+            "returncode": int(verify_result["returncode"]),
+            "output": self._output(verify_result),
+            "failures": self._failures(verify_result),
+            "tests_run": 0,
+        }
+
+        try:
+            plan = resolver(fc.Context(
+                self.root,
+                self.target,
+                list(self.verify_command),
+                verify,
+            ))
+        except (OSError, PermissionError, ValueError, SyntaxError):
+            return child, None
+
+        return child, plan
+
+    @staticmethod
+    def _decisions_from_plan(plan):
+        decisions = []
+
+        for edit in plan.get("edits") or ():
+            decisions.append(PlannerDecision(
+                decision_type=PlannerDecisionType.TOOL,
+                tool_id="worktree.replace_exact",
+                arguments={
+                    "path": str(edit["path"]),
+                    "old_text": str(edit["old_text"]),
+                    "new_text": str(edit["new_text"]),
+                },
+                rationale="Apply deterministic promoted family-crystal edit.",
+            ))
+
+        for path, content in sorted(dict(plan.get("rewrite") or {}).items()):
+            decisions.append(PlannerDecision(
+                decision_type=PlannerDecisionType.TOOL,
+                tool_id="worktree.write_file",
+                arguments={
+                    "path": str(path),
+                    "content": str(content),
+                },
+                rationale="Apply deterministic promoted family-crystal rewrite.",
+            ))
+
+        return decisions
+
+    def _prepare_stage(self, state):
+        marker, verify_result = self._latest_verify(state)
+        if verify_result is None:
+            return self._refuse("missing_verifier_evidence")
+
+        child, plan = self._build_plan(verify_result)
+        if child is None:
+            return self._refuse("missing_lattice_child")
+
+        if child.task_family == "toolchain-regenerate":
+            return self._refuse("toolchain_family_not_live_admitted")
+
+        if not plan:
+            return self._refuse(
+                "resolver_not_applicable",
+                child_id=child.crystal_id,
+                child_family=child.task_family,
+            )
+
+        self.pending = self._decisions_from_plan(plan)
+        if not self.pending:
+            return self._refuse(
+                "resolver_plan_has_no_live_mutation",
+                child_id=child.crystal_id,
+                child_family=child.task_family,
+            )
+
+        self.engine.emit(self.run_id, "agent.family_crystal.stage.started", {
+            "crystal_id": self.crystal.crystal_id,
+            "task_family": self.crystal.task_family,
+            "stage": self.stage,
+            "child_id": child.crystal_id,
+            "child_family": child.task_family,
+            "mutations": len(self.pending),
+            "failures_before": self.previous_failures,
+        })
+
+        return self.pending.pop(0)
+
+    def next_decision(self, run, state):
+        if self.done:
+            return None
+
+        if self.pending:
+            return self.pending.pop(0)
+
+        if self.waiting_for_verify:
+            marker, result = self._latest_verify(state)
+
+            # We have not yet seen the verifier issued for this stage.
+            if marker is None or marker == self.last_verify_marker:
+                return PlannerDecision(
+                    decision_type=PlannerDecisionType.TOOL,
+                    tool_id="worktree.verify",
+                    arguments={"command": list(self.verify_command)},
+                    rationale="Verify deterministic family-crystal mutation.",
+                )
+
+            current = self._failures(result)
+            final_stage = self.stage == len(self._families()) - 1
+            expected = "pass" if final_stage else "improve"
+
+            passed = (
+                current == 0
+                if final_stage
+                else current < self.previous_failures
+            )
+
+            self.engine.emit(self.run_id, "agent.family_crystal.stage.verified", {
+                "crystal_id": self.crystal.crystal_id,
+                "task_family": self.crystal.task_family,
+                "stage": self.stage,
+                "expect": expected,
+                "failures_before": self.previous_failures,
+                "failures_after": current,
+                "passed": passed,
+            })
+
+            if not passed:
+                return self._refuse(
+                    "stage_postcondition_failed",
+                    failures_before=self.previous_failures,
+                    failures_after=current,
+                    expected=expected,
+                )
+
+            self.previous_failures = current
+            self.waiting_for_verify = False
+
+            if final_stage:
+                self.done = True
+                self.succeeded = True
+                try:
+                    self.registry.record_reuse(
+                        self.crystal.crystal_id,
+                        run_id=self.run_id,
+                        outcome="verified",
+                    )
+                except Exception:
+                    pass
+
+                self.engine.emit(self.run_id, "agent.family_crystal.completed", {
+                    "crystal_id": self.crystal.crystal_id,
+                    "task_family": self.crystal.task_family,
+                    "composite": bool(self.crystal.component_ids),
+                    "stages": len(self._families()),
+                    "final_failures": current,
+                })
+                return PlannerDecision(
+                    decision_type=PlannerDecisionType.COMPLETE,
+                    summary=(
+                        "Promoted family crystal verified successfully"
+                        if not self.crystal.component_ids
+                        else "Promoted crystal lattice verified successfully"
+                    ),
+                )
+
+            self.stage += 1
+            return self._prepare_stage(state)
+
+        decision = self._prepare_stage(state)
+        if decision is None:
+            return None
+
+        # Remaining mutations are served before verification.
+        return decision
+
+    def mutation_observed(self, state):
+        """Mark the stage ready for its verifier after the final emitted edit."""
+        if self.done or self.pending:
+            return
+        marker, _ = self._latest_verify(state)
+        self.last_verify_marker = marker
+        self.waiting_for_verify = True
 
 
 class DirectCoderCrystals:
@@ -15,6 +315,7 @@ class DirectCoderCrystals:
         self.env = dict(env or {})
         self.budget = RunBudgetTracker(engine.store, engine.emit)
         self.sessions = {}
+        self.family_sessions = {}
 
     @classmethod
     def prepare(cls, engine, run, env):
@@ -200,6 +501,55 @@ class DirectCoderCrystals:
                     "children": list(family_nomination["crystal"].component_ids),
                 }
 
+                latest_result = None
+                for item in reversed(state.get("observations") or ()):
+                    if (
+                        isinstance(item, dict)
+                        and item.get("tool_id") == "worktree.verify"
+                        and isinstance(item.get("result"), dict)
+                        and type(item["result"].get("returncode")) is int
+                    ):
+                        latest_result = item["result"]
+                        break
+
+                crystal = family_nomination["crystal"]
+
+                live_families = (
+                    crystal.component_families
+                    if crystal.component_ids
+                    else (crystal.task_family,)
+                )
+
+                if (
+                    latest_result is not None
+                    and all(
+                        f in DirectCoderFamilySession.LIVE_FAMILIES
+                        for f in live_families
+                    )
+                ):
+                    session = DirectCoderFamilySession(
+                        crystal,
+                        family_nomination["registry"],
+                        root=family_nomination["root"],
+                        target=family_nomination["task"]["target"],
+                        verify_command=family_nomination["task"]["verify"],
+                        baseline_result=latest_result,
+                        engine=self.engine,
+                        run_id=run_id,
+                    )
+                    self.family_sessions[run_id] = session
+
+                    state["crystal_checked"] = True
+                    self.engine.merge_checkpoint(
+                        run_id,
+                        {"direct_coder": state},
+                    )
+
+                    decision = session.next_decision(run, state)
+                    if decision is not None:
+                        session.mutation_observed(state)
+                        return decision
+
             family = observed_trial_family(request, state.get("observations") or ())
             # Crystal applicability is evidence-driven. Before the canonical
             # baseline and target read exist, Direct Coder performs deterministic
@@ -236,6 +586,24 @@ class DirectCoderCrystals:
                     return None
             self.sessions[run_id] = planner.activate(
                 routed_run, run_id, engine=self.engine, nominated_crystal_id=str(route["crystal_id"]))
+        family_session = self.family_sessions.get(run_id)
+        if family_session is not None:
+            try:
+                decision = family_session.next_decision(run, state)
+                if decision is not None and decision.tool_id in {
+                    "worktree.replace_exact", "worktree.write_file"
+                }:
+                    family_session.mutation_observed(state)
+                if family_session.done:
+                    self.family_sessions.pop(run_id, None)
+                if decision is not None:
+                    return decision
+            except Exception as exc:
+                family_session._refuse(
+                    f"session_error:{type(exc).__name__}"
+                )
+                self.family_sessions.pop(run_id, None)
+
         session = self.sessions.get(run_id)
         if session is None:
             return None
