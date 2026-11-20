@@ -635,20 +635,27 @@ def lattice_topology(registry: "FamilyRegistry", crystal: FamilyCrystal) -> dict
     seen: set[str] = set()
     leaves: list[dict[str, str]] = []
 
-    def walk(node: FamilyCrystal) -> dict[str, Any]:
+    def walk(node: FamilyCrystal, path: tuple[str, ...] = ()) -> dict[str, Any]:
         if node.crystal_id in seen:
             raise PermissionError(f"lattice cycle detected: {node.crystal_id}")
         seen.add(node.crystal_id)
+
+        node_path = (*path, node.crystal_id)
 
         if not node.component_ids:
             leaves.append({
                 "crystal_id": node.crystal_id,
                 "task_family": node.task_family,
+                "path": list(node_path),
+                "parent_id": path[-1] if path else "",
+                "depth": len(node_path) - 1,
             })
             return {
                 "crystal_id": node.crystal_id,
                 "task_family": node.task_family,
                 "composite": False,
+                "path": list(node_path),
+                "depth": len(node_path) - 1,
                 "children": [],
             }
 
@@ -658,12 +665,14 @@ def lattice_topology(registry: "FamilyRegistry", crystal: FamilyCrystal) -> dict
             if record.get("status") != "promoted":
                 raise PermissionError(f"lattice child not promoted: {child_id}")
             child = record["crystal_object"]
-            children.append(walk(child))
+            children.append(walk(child, node_path))
 
         return {
             "crystal_id": node.crystal_id,
             "task_family": node.task_family,
             "composite": True,
+            "path": list(node_path),
+            "depth": len(node_path) - 1,
             "children": children,
         }
 

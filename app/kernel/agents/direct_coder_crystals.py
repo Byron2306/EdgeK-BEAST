@@ -44,6 +44,19 @@ class DirectCoderFamilySession:
         self.succeeded = False
         self.refused = False
 
+        self.lattice_topology = None
+        self.current_lattice_leaf = None
+
+        if self.crystal.component_ids:
+            from app.kernel.compute import family_crystals as fc
+
+            # Discovery already validated this topology. Reconstruct it here so
+            # execution receipts are independently bound to the admitted graph.
+            self.lattice_topology = fc.lattice_topology(
+                self.registry,
+                self.crystal,
+            )
+
     @staticmethod
     def _output(result):
         return "\\n".join(
@@ -87,6 +100,19 @@ class DirectCoderFamilySession:
             "reason": reason,
             **extra,
         })
+
+        if self.crystal.component_ids:
+            leaf = dict(self.current_lattice_leaf or {})
+            self.engine.emit(self.run_id, "agent.family_lattice.refused", {
+                "lattice_id": self.crystal.crystal_id,
+                "lattice_family": self.crystal.task_family,
+                "stage": self.stage,
+                "leaf_id": leaf.get("crystal_id"),
+                "parent_id": leaf.get("parent_id"),
+                "path": list(leaf.get("path") or ()),
+                "reason": reason,
+                **extra,
+            })
         try:
             self.registry.record_negative(
                 self.crystal.task_family,
@@ -199,6 +225,47 @@ class DirectCoderFamilySession:
                 child_family=child.task_family,
             )
 
+        self.current_lattice_leaf = None
+
+        if self.lattice_topology is not None:
+            leaves = list(self.lattice_topology.get("leaves") or ())
+
+            if self.stage >= len(leaves):
+                return self._refuse(
+                    "lattice_stage_out_of_bounds",
+                    stage=self.stage,
+                    leaf_count=len(leaves),
+                )
+
+            leaf = dict(leaves[self.stage])
+
+            # Fail closed if flattened runtime execution has drifted away from
+            # the topology admitted during discovery.
+            if leaf.get("task_family") != child.task_family:
+                return self._refuse(
+                    "lattice_execution_binding_mismatch",
+                    expected_leaf_id=leaf.get("crystal_id"),
+                    expected_family=leaf.get("task_family"),
+                    resolved_child_id=child.crystal_id,
+                    resolved_family=child.task_family,
+                )
+
+            self.current_lattice_leaf = leaf
+
+            self.engine.emit(self.run_id, "agent.family_lattice.stage.started", {
+                "lattice_id": self.crystal.crystal_id,
+                "lattice_family": self.crystal.task_family,
+                "stage": self.stage,
+                "leaf_id": leaf.get("crystal_id"),
+                "resolved_child_id": child.crystal_id,
+                "child_family": child.task_family,
+                "parent_id": leaf.get("parent_id"),
+                "path": list(leaf.get("path") or ()),
+                "depth": leaf.get("depth"),
+                "mutations": len(self.pending),
+                "failures_before": self.previous_failures,
+            })
+
         self.engine.emit(self.run_id, "agent.family_crystal.stage.started", {
             "crystal_id": self.crystal.crystal_id,
             "task_family": self.crystal.task_family,
@@ -250,6 +317,24 @@ class DirectCoderFamilySession:
                 "passed": passed,
             })
 
+            if self.lattice_topology is not None:
+                leaf = dict(self.current_lattice_leaf or {})
+
+                self.engine.emit(self.run_id, "agent.family_lattice.stage.verified", {
+                    "lattice_id": self.crystal.crystal_id,
+                    "lattice_family": self.crystal.task_family,
+                    "stage": self.stage,
+                    "leaf_id": leaf.get("crystal_id"),
+                    "parent_id": leaf.get("parent_id"),
+                    "path": list(leaf.get("path") or ()),
+                    "depth": leaf.get("depth"),
+                    "expect": expected,
+                    "failures_before": self.previous_failures,
+                    "failures_after": current,
+                    "failure_delta": current - self.previous_failures,
+                    "passed": passed,
+                })
+
             if not passed:
                 return self._refuse(
                     "stage_postcondition_failed",
@@ -280,6 +365,16 @@ class DirectCoderFamilySession:
                     "stages": len(self._families()),
                     "final_failures": current,
                 })
+
+                if self.lattice_topology is not None:
+                    self.engine.emit(self.run_id, "agent.family_lattice.completed", {
+                        "lattice_id": self.crystal.crystal_id,
+                        "lattice_family": self.crystal.task_family,
+                        "leaf_count": self.lattice_topology.get("leaf_count"),
+                        "stages": len(self._families()),
+                        "final_failures": current,
+                        "verified": current == 0,
+                    })
                 return PlannerDecision(
                     decision_type=PlannerDecisionType.COMPLETE,
                     summary=(
