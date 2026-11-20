@@ -201,16 +201,27 @@ def _negative(steps: list[dict[str, Any]]) -> tuple[dict[str, Any], ...]:
     return tuple(rows)
 
 
+def episode_observations(store: Any, run_id: str, *, run=None, events=None) -> list[Mapping[str, Any]]:
+    """Read the same full receipts for extraction that were sealed in the envelope."""
+    run = run if run is not None else store.get_run(run_id) or {}
+    if (run.get("request") or {}).get("launch_strategy") == "direct_coder":
+        events = events if events is not None else EpisodeEnvelopeBuilder._events(store, run_id)
+        return [observation for event in events
+                if event.get("event_type") in {"agent.tool.completed", "agent.tool.failed"}
+                and isinstance((observation := (event.get("payload") or {}).get("observation")), Mapping)]
+    checkpoint = run.get("checkpoint") or {}
+    planner = checkpoint.get("planner") or {}
+    return [item for item in planner.get("observations") or [] if isinstance(item, Mapping)]
+
+
 class EpisodeEnvelopeBuilder:
     def build(self, store: Any, run_id: str) -> EpisodeEnvelope:
         run = store.get_run(run_id)
         if not run:
             raise KeyError(f"unknown agent run: {run_id}")
         request = run.get("request") if isinstance(run.get("request"), Mapping) else {}
-        checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), Mapping) else {}
-        planner = checkpoint.get("planner") if isinstance(checkpoint.get("planner"), Mapping) else {}
-        observations = [item for item in planner.get("observations") or [] if isinstance(item, Mapping)]
         events = self._events(store, run_id)
+        observations = episode_observations(store, run_id, run=run, events=events)
         sources = [
             str((event.get("payload") or {}).get("source") or "model")
             for event in events

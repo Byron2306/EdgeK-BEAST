@@ -260,3 +260,48 @@ def test_swarm_recovery_accepts_only_matching_bound_file_read(tmp_path):
     assert not _source_evidence(tmp_path, [observation], "a.py")
     observation["result"]["worktree_root"] = str(tmp_path)
     assert _source_evidence(tmp_path, [observation], "a.py")
+
+
+def test_direct_trial_records_bound_failure_before_edit_and_pass_before_completion():
+    from app.kernel.compute.coder_crystal_feedback import trial_request
+
+    engine = Engine()
+    engine.store.run["request"].update(trial_request("agent", ("a.py", "test_a.py"), enabled=True))
+    called, completed = [], []
+    stack = SimpleNamespace(
+        decision=lambda *_: None,
+        budget=SimpleNamespace(start=lambda *_: None, mark_wall=lambda *_: None, record_tool_call=lambda *_, **__: None,
+                               record_model_turn=lambda *_, **__: None),
+    )
+
+    async def complete(run_id, objective, verified):
+        completed.append(verified)
+
+    stack.complete = complete
+    async def execute(run_id, tool_id, arguments, **kwargs):
+        called.append(tool_id)
+        if tool_id == "worktree.bind":
+            engine.store.run["checkpoint"]["worktree_root"] = "/isolated/test"
+        edited = "worktree.replace_exact" in called
+        if tool_id == "worktree.verify":
+            assert arguments["command"] == ["python3", "-m", "unittest", "discover", "-p", "test_a.py", "-q"]
+            return {"tool_id": tool_id, "arguments": arguments,
+                    "status": "completed" if edited else "failed",
+                    "result": {"returncode": 0 if edited else 1, "ok": edited,
+                               "stderr": "Ran 2 tests\n" + ("OK" if edited else "FAILED (failures=1)")}}
+        return {"tool_id": tool_id, "arguments": arguments, "status": "completed", "result": {}}
+    engine.execute_tool = execute
+    done = PlannerDecision(decision_type=PlannerDecisionType.COMPLETE, summary="Verified")
+    model = ScriptedCodingModel([
+        tool("worktree.bind"), tool("worktree.replace_exact", {"path": "a.py"}), done, done,
+    ])
+    coder = DirectCoderRuntime(engine, model, crystal_stack=stack)
+
+    async def run():
+        for _ in range(6):
+            await coder.run_one_turn("agent-test")
+    asyncio.run(run())
+    assert called == ["worktree.bind", "worktree.verify", "workspace.read_range",
+                      "worktree.replace_exact", "worktree.verify"]
+    assert model.calls == 4 and completed == [True]
+    assert engine.store.run["state"] == "completed"

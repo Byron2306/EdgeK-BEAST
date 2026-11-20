@@ -107,7 +107,7 @@ class CoderIntegrationCoordinator:
         elif capability_name == "coding_crystal.production":
             if mode_name == "armed_awaiting_verified_completion":
                 stage, operation = "eligibility", "production_readiness"
-            elif mode_name in {"candidate_extraction", "verified_awaiting_operator_promotion"}:
+            elif mode_name in {"candidate_extraction", "verified_awaiting_operator_promotion", "refused"}:
                 stage, operation = "postflight", "candidate_extraction"
             else:
                 stage, operation = "eligibility", "production_readiness"
@@ -680,7 +680,7 @@ class CoderIntegrationCoordinator:
                 result = self.crystal_producer(workspace=self.workspace, run_id=run_id, env=self.environ, approved_by="")
             status = str(result.get("status") or "unknown")
             fired = status == "verified_awaiting_operator_promotion"
-            events.append(self._event("coding_crystal.production", "fired" if fired else "skipped", mode=status, reason=status, artifacts={"crystal_id": result.get("crystal_id", "")}))
+            events.append(self._event("coding_crystal.production", "fired" if fired else "skipped", mode=status, reason=str(result.get("reason") or status), artifacts={"crystal_id": result.get("crystal_id", "")}))
 
 
         except Exception as exc:

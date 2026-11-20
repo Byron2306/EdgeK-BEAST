@@ -233,8 +233,9 @@ def learn_from_run(workspace: str | Path, run_id: str, *, env: Mapping[str, str]
     envelope = extras["envelope_store"].get(run_id)
     from app.kernel.agents.run_engine import AgentRunEngine
 
-    run = AgentRunEngine(Path(workspace)).store.get_run(run_id) or {}
-    observations = ((run.get("checkpoint") or {}).get("planner") or {}).get("observations") or []
+    from app.kernel.sensorium.episode_envelope import episode_observations
+
+    observations = episode_observations(AgentRunEngine(Path(workspace)).store, run_id)
     candidate = CodingCrystalExtractor().extract(envelope, observations, registry=registry)
     if candidate is None:
         negatives = registry.negatives(envelope.task_family)

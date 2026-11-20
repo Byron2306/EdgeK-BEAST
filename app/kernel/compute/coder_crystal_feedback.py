@@ -29,7 +29,7 @@ def trial_request(mode, files, *, enabled):
             targets.append(name)
     if len(targets) != 1 or not tests:
         return {}
-    return {"launch_strategy": "typed_planner", "crystal_trial_profile": PROFILE,
+    return {"launch_strategy": "direct_coder", "crystal_trial_profile": PROFILE,
             "post_session_closure": "verified_handoff", "post_session_test_runner": "unittest",
             "implementation_target": targets[0], "required_test_files": tests,
             # A nomination only. The native resolver must see a live failure before any edit.
@@ -64,3 +64,23 @@ def scope_digest(root: Path, run) -> str:
         files.append((relative.as_posix(), hashlib.sha256(raw).hexdigest()))
     identity = [PROFILE, request.get("post_session_test_runner"), files]
     return "sha256:" + hashlib.sha256(json.dumps(identity, separators=(",", ":")).encode()).hexdigest()
+
+
+def verifier_outcome(observation, command):
+    """Recognize an executed canonical unittest result, not a tool/infrastructure failure."""
+    if observation.get("tool_id") != "worktree.verify":
+        return None
+    if (observation.get("arguments") or {}).get("command") != command:
+        return None
+    result = observation.get("result") or {}
+    rc = result.get("returncode")
+    output = f"{result.get('stdout') or ''}\n{result.get('stderr') or ''}"
+    if not re.search(r"^Ran [1-9][0-9]* tests?\b", output, re.M):
+        return None
+    if type(rc) is not int:
+        return None
+    if rc == 0 and observation.get("status") == "completed" and result.get("ok") is True:
+        return rc
+    if rc == 1 and observation.get("status") == "failed" and re.search(r"^FAILED \(failures=[1-9][0-9]*\)$", output, re.M):
+        return rc
+    return None

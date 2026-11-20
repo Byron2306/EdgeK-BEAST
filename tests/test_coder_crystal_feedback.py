@@ -12,7 +12,7 @@ class CoderCrystalFeedbackTests(unittest.TestCase):
         self.assertEqual(trial_request("review", ("service.py", "test_service.py"), enabled=True), {})
         self.assertEqual(trial_request("agent", ("service.py", "test_service.py"), enabled=False), {})
         self.assertEqual(trial_request("agent", ("service.py", "test_service.py"), enabled=True)["launch_strategy"],
-                         "typed_planner")
+                         "direct_coder")
 
     def test_negative_is_durable_and_applies_only_to_exact_context(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -108,6 +108,6 @@ class UIRequestTests(unittest.IsolatedAsyncioTestCase):
             await client.aclose()
         self.assertEqual(requests[0]["launch_strategy"], "direct_coder")
         self.assertNotIn("crystal_trial_profile", requests[0])
-        self.assertEqual(requests[1]["launch_strategy"], "typed_planner")
+        self.assertEqual(requests[1]["launch_strategy"], "direct_coder")
         self.assertEqual(requests[1]["post_session_closure"], "verified_handoff")
         self.assertFalse(requests[1]["apply_on_completion"])
