@@ -356,6 +356,24 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
         "agent.family_crystal.completed": (
             "fired", "postflight", "Promoted family crystal completed"
         ),
+        "agent.family_lattice.selected": (
+            "fired", "eligibility", "Crystal lattice selected"
+        ),
+        "agent.family_lattice.expanded": (
+            "observed", "eligibility", "Crystal lattice topology"
+        ),
+        "agent.family_lattice.stage.started": (
+            "fired", "execution", "Lattice stage started"
+        ),
+        "agent.family_lattice.stage.verified": (
+            "fired", "execution", "Lattice stage verified"
+        ),
+        "agent.family_lattice.completed": (
+            "fired", "postflight", "Crystal lattice completed"
+        ),
+        "agent.family_lattice.refused": (
+            "skipped", "execution", "Crystal lattice refused"
+        ),
         "agent.family_crystal.refused": (
             "skipped", "execution", "Family crystal refused"
         ),

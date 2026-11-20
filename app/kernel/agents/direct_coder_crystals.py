@@ -474,6 +474,42 @@ class DirectCoderCrystals:
             "component_families": list(crystal.component_families),
             "storage_path": top.get("storage_path"),
         })
+
+        # A promoted composite is also a governed lattice root. Preserve the
+        # immediate graph structure for evidence/UI while execution continues
+        # through the already-reviewed family-crystal session machinery.
+        if crystal.component_ids:
+            from app.kernel.compute.family_crystals import lattice_topology
+
+            try:
+                topology = lattice_topology(registry, crystal)
+            except (LookupError, PermissionError, ValueError) as exc:
+                self.engine.emit(run_id, "agent.family_lattice.refused", {
+                    "crystal_id": crystal.crystal_id,
+                    "task_family": crystal.task_family,
+                    "reason": f"topology_invalid:{type(exc).__name__}",
+                })
+                return None
+
+            nomination["lattice_topology"] = topology
+
+            self.engine.emit(run_id, "agent.family_lattice.selected", {
+                "crystal_id": crystal.crystal_id,
+                "task_family": crystal.task_family,
+                "similarity": top.get("similarity"),
+                "leaf_count": topology["leaf_count"],
+                "expected_failures": topology["expected_failures"],
+            })
+
+            self.engine.emit(run_id, "agent.family_lattice.expanded", {
+                "crystal_id": crystal.crystal_id,
+                "task_family": crystal.task_family,
+                "root": topology["root"],
+                "leaves": topology["leaves"],
+                "leaf_count": topology["leaf_count"],
+                "component_families": topology["component_families"],
+            })
+
         return nomination
 
     def decision(self, run_id, run, state):

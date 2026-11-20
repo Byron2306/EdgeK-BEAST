@@ -163,9 +163,11 @@ class FamilyCrystal:
                 raise ValueError("family crystal step has unreviewed fields")
             registry.resolve(str(step["opcode"]))
         if self.component_ids:
-            if len(set(self.component_ids)) < 2 or len(self.component_ids) != len(self.component_families):
+            if len(set(self.component_ids)) < 2:
                 raise ValueError("a composite needs at least two distinct children")
-            if self.expected_failures != len(self.component_ids):
+            if not self.component_families:
+                raise ValueError("composite needs flattened component families")
+            if self.expected_failures != len(self.component_families):
                 raise ValueError("composite failure contract mismatch")
             authority = set(self.authority)
             if not authority or list(self.authority) != sorted(authority):
@@ -445,10 +447,12 @@ def stage_steps(composite: FamilyCrystal, child: FamilyCrystal, index: int) -> t
     child.validate()
     if not composite.component_ids or not 0 <= index < len(composite.component_ids):
         raise PermissionError("not a lattice stage")
-    if composite.component_ids[index] != child.crystal_id or composite.component_families[index] != child.task_family:
+    if composite.component_ids[index] != child.crystal_id:
         raise PermissionError("child is not this composite's stage")
-    if child.component_ids:
-        raise PermissionError("nested composites are not reviewed")
+
+    # A child may itself be an admitted composite. Its internal verifier
+    # transitions remain intact; only its terminal verification is rebound to
+    # the expectation imposed by the parent lattice.
     expect = "pass" if index == len(composite.component_ids) - 1 else "improve"
     steps = [dict(s) for s in child.steps]
     finals = [i for i, s in enumerate(steps) if s["opcode"] == "worktree.verify"]
@@ -558,13 +562,42 @@ def extract_family(family: str, envelope: Any, *, root: Path, parameters: Mappin
 
 
 def compose(children: Sequence[FamilyCrystal], *, source_run_id: str) -> FamilyCrystal:
-    families = tuple(c.task_family for c in children)
-    return FamilyCrystal(crystal_id="", task_family="composite:" + "+".join(families), steps=recipe(families),
-                         catalog_digest=catalog_digest(), source_run_id=source_run_id,
-                         source_envelope_digest=_digest([c.source_envelope_digest for c in children]),
-                         expected_failures=len(children), component_ids=tuple(c.crystal_id for c in children),
-                         component_families=families,
-                         authority=tuple(sorted(set.intersection(*(recipe_authority([f]) for f in families))))).sealed()
+    if len({c.crystal_id for c in children}) < 2:
+        raise ValueError("a composite needs at least two distinct children")
+
+    for child in children:
+        child.validate()
+
+    # component_ids describe the immediate graph structure.
+    # component_families describe the flattened atomic execution lattice.
+    families = tuple(
+        family
+        for child in children
+        for family in (child.component_families or (child.task_family,))
+    )
+
+    authority_sets = [
+        set(child.authority) if child.authority else recipe_authority(
+            child.component_families or (child.task_family,)
+        )
+        for child in children
+    ]
+    authority = set.intersection(*authority_sets)
+
+    return FamilyCrystal(
+        crystal_id="",
+        task_family="composite:" + "+".join(families),
+        steps=recipe(families),
+        catalog_digest=catalog_digest(),
+        source_run_id=source_run_id,
+        source_envelope_digest=_digest(
+            [c.source_envelope_digest for c in children]
+        ),
+        expected_failures=sum(int(c.expected_failures) for c in children),
+        component_ids=tuple(c.crystal_id for c in children),
+        component_families=families,
+        authority=tuple(sorted(authority)),
+    ).sealed()
 
 
 # -- applicability (nominates only) ------------------------------------------------------------------------------------
@@ -590,6 +623,58 @@ def applicability(crystal: FamilyCrystal, root: Path, task: Mapping[str, Any], o
                 "resolver_plan": bool(plan)}
     return {"crystal_id": crystal.crystal_id, "similarity": round(sum(WEIGHTS[k] for k, v in features.items() if v), 4),
             "features": features, "matcher": "beast.family_applicability.v1 (local, deterministic, nominates only)"}
+
+
+
+def lattice_topology(registry: "FamilyRegistry", crystal: FamilyCrystal) -> dict[str, Any]:
+    """Return the admitted recursive composition graph plus flattened atomic leaves.
+
+    Graph identity remains nested while execution capability is flattened.
+    Tampered or missing children fail closed.
+    """
+    seen: set[str] = set()
+    leaves: list[dict[str, str]] = []
+
+    def walk(node: FamilyCrystal) -> dict[str, Any]:
+        if node.crystal_id in seen:
+            raise PermissionError(f"lattice cycle detected: {node.crystal_id}")
+        seen.add(node.crystal_id)
+
+        if not node.component_ids:
+            leaves.append({
+                "crystal_id": node.crystal_id,
+                "task_family": node.task_family,
+            })
+            return {
+                "crystal_id": node.crystal_id,
+                "task_family": node.task_family,
+                "composite": False,
+                "children": [],
+            }
+
+        children = []
+        for child_id in node.component_ids:
+            record = registry.get(child_id)
+            if record.get("status") != "promoted":
+                raise PermissionError(f"lattice child not promoted: {child_id}")
+            child = record["crystal_object"]
+            children.append(walk(child))
+
+        return {
+            "crystal_id": node.crystal_id,
+            "task_family": node.task_family,
+            "composite": True,
+            "children": children,
+        }
+
+    root = walk(crystal)
+    return {
+        "root": root,
+        "leaves": leaves,
+        "leaf_count": len(leaves),
+        "component_families": list(crystal.component_families),
+        "expected_failures": crystal.expected_failures,
+    }
 
 
 def discover(registry: FamilyRegistry, root: Path, task: Mapping[str, Any], observed: Mapping[str, Any]) -> list[dict[str, Any]]:
@@ -836,4 +921,4 @@ def _lookup_promoted_in_db(path: Path, task_family: str) -> dict[str, Any] | Non
 
 __all__ = ["CATALOG_VERSION", "FAMILIES", "FAMILY_ENV", "FAMILY_DB_ENV", "FAMILY_TOOL_IDS", "FamilyCrystal", "FamilyRegistry", "RESOLVERS", "applicability",
            "apply_plan", "catalog_digest", "compose", "discover", "replay_stage", "stage_steps", "recipe_authority", "extract_family", "failure_count", "family_crystals_enabled",
-           "family_crystal_db_paths", "family_opcode_registry", "infer_task_family", "lookup_promoted_family_crystal", "recipe", "replay_family", "route", "run_verify", "tree_digest"]
+           "family_crystal_db_paths", "family_opcode_registry", "infer_task_family", "lookup_promoted_family_crystal", "lattice_topology", "recipe", "replay_family", "route", "run_verify", "tree_digest"]
