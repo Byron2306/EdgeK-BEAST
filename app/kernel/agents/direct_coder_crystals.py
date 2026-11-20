@@ -762,6 +762,7 @@ class DirectCoderCrystals:
         task family from the prompt.
         """
         from pathlib import Path
+        import re
 
         from app.kernel.agents.verification_planner import verified_handoff_command
         from app.kernel.compute import family_crystals as fc
@@ -776,8 +777,6 @@ class DirectCoderCrystals:
 
         request = dict(run.get("request") or {})
         target = str(request.get("implementation_target") or "").strip()
-        if not target:
-            return None
 
         try:
             command = list(verified_handoff_command(dict(run)) or ())
@@ -812,11 +811,75 @@ class DirectCoderCrystals:
             "failures": fc.failure_count(output, int(latest["returncode"])),
         }
 
+        root = Path(worktree_text).resolve()
+
+        if not target:
+            candidates = []
+
+            # Strongest signal: import failure names the implementation module.
+            for module in re.findall(
+                r"ImportError: cannot import name '[^']+' from '([\\w.]+)'",
+                output,
+            ):
+                rel = module.replace(".", "/") + ".py"
+                path = root / rel
+                if path.is_file() and not path.is_symlink():
+                    candidates.append(rel)
+
+            # Second signal: implementation files appearing in verifier tracebacks.
+            for raw in re.findall(r'^\s*File "([^"]+\.py)"', output, re.M):
+                path = Path(raw)
+                try:
+                    rel = path.resolve().relative_to(root)
+                except (OSError, ValueError):
+                    continue
+
+                if (
+                    rel.parts
+                    and rel.parts[0] not in {"tests", "test"}
+                    and not rel.name.startswith("test_")
+                    and path.is_file()
+                    and not path.is_symlink()
+                ):
+                    candidates.append(str(rel))
+
+            # Last conservative fallback: exactly one top-level implementation file.
+            if not candidates:
+                top_level = sorted(
+                    path
+                    for path in root.glob("*.py")
+                    if (
+                        path.is_file()
+                        and not path.is_symlink()
+                        and not path.name.startswith("test_")
+                        and path.name != "conftest.py"
+                    )
+                )
+                if len(top_level) == 1:
+                    candidates.append(top_level[0].name)
+
+            candidates = list(dict.fromkeys(candidates))
+
+            if len(candidates) != 1:
+                self.engine.emit(run_id, "agent.family_crystal.not_nominated", {
+                    "reason": "implementation_target_ambiguous",
+                    "candidate_targets": candidates,
+                    "observed_failures": observed["failures"],
+                })
+                return None
+
+            target = candidates[0]
+
+            self.engine.emit(run_id, "agent.family_crystal.target_derived", {
+                "target": target,
+                "source": "verifier_evidence",
+                "observed_failures": observed["failures"],
+            })
+
         task = {
             "target": target,
             "verify": command,
         }
-        root = Path(worktree_text).resolve()
 
         ranked = []
         registries = {}

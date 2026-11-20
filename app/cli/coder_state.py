@@ -338,6 +338,9 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
         # events, not hidden implementation details: the operator must be able
         # to see discovery, nomination, every lattice stage, verification, and
         # terminal outcome in /last and the inline tool stream.
+        "agent.family_crystal.target_derived": (
+            "observed", "eligibility", "Implementation target derived from verifier evidence"
+        ),
         "agent.family_crystal.discovery": (
             "observed", "eligibility", "Family crystal discovery"
         ),
