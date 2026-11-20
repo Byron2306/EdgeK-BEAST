@@ -164,7 +164,7 @@ listener adoption, or production policy change belongs in the coding benchmark.
 | 4C. Compute interception before provider | `ComputePlane.begin` invokes `InferenceComputeInterceptor`. This path can transform/route a request, resolve it deterministically or via verified reuse, or send it upstream. | Pass-through vs shadow proposal vs one independently verified resolved branch at a time. Keep the candidate set fixed first. No avoided-call credit unless the effect verifies and no provider/engine call occurred. |
 | 4D. Placement and specialist escalation | Governed scorecard/circuit/placement logic and `swarm_specialist.py` are distinct from surface/advisory swarm roles. TGI has sequential versus concurrent evidence. | Fixed route vs ranked route, then specialist off/on and serial vs batching in separate paired runs. Charge all candidates, retries, verification, and queueing. Require actual dispatch and model-call receipts, not advisory UI events. |
 | 4E / Stage 5. Reusable context | `SemanticComputePageStore` keeps exact-identity verified application pages. `memory_contract.page_source` exposes page hits, alongside a separate verified semantic cache source. `local_prefix_kv_store.py` concerns engine-prefix compatibility, not application page hits. | Rebuild vs matched page lookup and use. Test stale identity and tamper refusal, then independently verify the dependent result. Separately test the engine's native KV cache with evidence of actual consumption and prefill avoided. |
-| Stage 6. Recovery, not a hit policy | `SemanticRaidStore` stores and reconstructs digest-bound mirrored context packets. `ArtifactFossilLayerStore` checkpoints and replays lineage. The IDE stream has an explicit context-packet persistence hook. | Rebuild vs restore after matched interrupted work. Test intact, one copy damaged and both copies damaged. Charge persistence/recovery, verify restored bytes and the resumed task. Test fossil lineage replay separately. |
+| Stage 6. Recovery, not a hit policy | `SemanticRaidStore` stores and reconstructs digest-bound mirrored context packets. `ArtifactFossilLayerStore` checkpoints and replays lineage. The IDE stream has an explicit context-packet persistence hook. | Rebuild vs restore after matched interrupted work. Test intact, one copy damaged, two unavailable, and loss of all three payload copies. Charge persistence/recovery, verify restored bytes and the resumed task. Test fossil lineage replay separately. |
 | Stage 7. Socket custody and packet delivery | `socket_guardian.py` has inherited/systemd listener custody, lease handoff and a separate `pidfd_getfd` adoption path. ARDA-aware XDP simulator and AF_XDP worker/echo evidence are separate paths, not proxy/cache hooks. | On authorized fixture listeners compare normal restart/systemd handoff vs Guardian paths, recording continuity, refusal and whether pidfd actually worked. Separately compare the kernel path vs AF_XDP for identical authorized test traffic, distinguishing simulator, actual copy mode and actual zero-copy mode. Require receiver payload verification, fallback counters, CPU and tail latency. |
 | Stage 7B / final. Physical artifacts and replay | Sealed memfd, Git/Xet/whole blobs and crystal interpreter are distinct transport/storage/work-avoidance layers. | Follow Stage 7B above, then charge its measured costs in the held-out crystal economics comparison. |
 
@@ -331,3 +331,29 @@ slot files. This is same-host file transport between compatible llama.cpp
 processes, not network transport, cross-engine portability, or an end-to-end
 speed claim. Mock controls include a positive acknowledgement with zero
 actual consumption, an output mismatch, and copy corruption.
+
+### Stage 6 Semantic RAID checkpoint recovery
+
+Run `python -m scripts.proof.run_stage6_semantic_raid --out <new-directory>`.
+The preparation subprocess builds a real ContextPacket, persists it via the
+real Semantic RAID store, binds the exact persisted projection to a checkpoint
+digest, and exits before the synthetic task changes the worktree. Fresh
+subprocesses either rebuild the same context from source, or invoke the
+RAID reconstruction path and resume from its recovered payload. An independent
+outer check verifies the resulting function and whole fixture-tree digest.
+Recovery avoids the context-builder source reads, not the separate reads
+needed to validate the target and contract immediately before mutation.
+
+The store has **three** payload copies, not two. Lanes are rebuild, intact
+restore, corrupt primary, corrupt primary plus a missing mirror, loss of all
+valid payload copies, and missing manifest. The first two faults must repair
+one and two refs respectively. The last two must refuse with no edits and
+no context rebuild. The harness requires the recorded shard to exist in the
+manifest so an empty reconstruction cannot count as a successful resume.
+
+Default scope is 90 arms across 15 preparations, with 60 expected resumes
+and 30 expected refusals. Compare context costs separately from subprocess
+startup, persistence, and storage. The process boundary is orderly exit at
+a pre-mutation checkpoint on one filesystem, not power loss, independent
+disk redundancy, on-wire transfer, or live inference resumption. The
+Artifact Fossil lineage experiment is separate and not credited here.
