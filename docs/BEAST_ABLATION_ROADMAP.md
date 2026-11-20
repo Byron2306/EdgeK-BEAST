@@ -357,3 +357,27 @@ startup, persistence, and storage. The process boundary is orderly exit at
 a pre-mutation checkpoint on one filesystem, not power loss, independent
 disk redundancy, on-wire transfer, or live inference resumption. The
 Artifact Fossil lineage experiment is separate and not credited here.
+
+### Stage 7A Socket Guardian continuity
+
+Run `python -m scripts.proof.run_stage7a_socket_continuity --out <new-directory>`
+under the ordinary user, with no changes to ptrace or kernel policy. Each lane
+creates its own disposable loopback listener, stops its fixture worker, attempts
+new connections without retries during a controlled gap, and starts a fresh
+replacement. Compare a plain close and rebind with a real signed Guardian
+SCM_RIGHTS handoff. A separate Guardian lane instruments whether pidfd_getfd
+actually ran when the harness tried to adopt its own direct child's listener.
+That lane still uses the signed Guardian handoff to the replacement. Permission
+or availability errors are reported as unavailable, not equivalent to SCM
+handoff success or listener failure.
+
+The harness records both client outcomes and application-observed request IDs,
+listener inode continuity, replacement PID and readiness timing. The default
+disposable load is four requests before and after and twelve during the gap,
+under the configured listen backlog. It tests queueing for new connections
+across a worker restart, not survival of already established connections,
+sustained overload, restart of the Guardian, host policy enforcement, or
+continuity of a deployed service. The evidence is separate from AF_XDP and
+physical artifact transport. Return code 2 means at least one lane was
+unavailable; 1 means a measured or harness failure; 0 means all selected
+lanes passed.
