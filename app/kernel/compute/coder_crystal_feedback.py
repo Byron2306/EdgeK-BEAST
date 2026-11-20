@@ -31,9 +31,7 @@ def trial_request(mode, files, *, enabled):
         return {}
     return {"launch_strategy": "direct_coder", "crystal_trial_profile": PROFILE,
             "post_session_closure": "verified_handoff", "post_session_test_runner": "unittest",
-            "implementation_target": targets[0], "required_test_files": tests,
-            # A nomination only. The native resolver must see a live failure before any edit.
-            "task_family": "fix-failing-assertion"}
+            "implementation_target": targets[0], "required_test_files": tests}
 
 
 def scope_digest(root: Path, run) -> str:
@@ -81,6 +79,38 @@ def verifier_outcome(observation, command):
         return None
     if rc == 0 and observation.get("status") == "completed" and result.get("ok") is True:
         return rc
-    if rc == 1 and observation.get("status") == "failed" and re.search(r"^FAILED \(failures=[1-9][0-9]*\)$", output, re.M):
+    if rc == 1 and observation.get("status") == "failed" and re.search(
+            r"^FAILED \((?=[^)]*(?:failures|errors)=[1-9][0-9]*)[^)]*\)$", output, re.M):
         return rc
     return None
+
+
+def observed_trial_family(request, observations):
+    """Classify only after a canonical failing verifier and exact target source were observed.
+
+    The legacy v1 coding crystal is a constant-replacement recipe. Do not label
+    arbitrary unittest failures as that family merely because they use unittest.
+    Broader repair families live in family_crystals and have their own applicability matcher.
+    """
+    target = str((request or {}).get("implementation_target") or "")
+    if not target:
+        return ""
+    verify = read = None
+    for item in observations or ():
+        if not isinstance(item, dict):
+            continue
+        tool = str(item.get("tool_id") or "")
+        if tool == "worktree.verify" and item.get("status") == "failed":
+            verify = item
+        elif tool == "workspace.read_range" and item.get("status") == "completed":
+            args = item.get("arguments") or {}
+            if args.get("path") == target:
+                read = item
+    if not verify or not read:
+        return ""
+    result = verify.get("result") if isinstance(verify.get("result"), dict) else {}
+    output = "\n".join(str(result.get(key) or "") for key in ("stdout", "stderr")).strip()
+    read_result = read.get("result") if isinstance(read.get("result"), dict) else {}
+    content = str(read_result.get("content") or "")
+    from app.kernel.compute.coding_crystals import resolve_constant
+    return "fix-failing-assertion" if resolve_constant(output, content) else ""
