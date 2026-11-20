@@ -109,7 +109,7 @@ def run(out, ledger, base_port):
             payload={"run_id": run_id, **payload},
         ).to_dict()
 
-    with commons_lab(out, ledger, base_port) as (lab, manifest, trust):
+    with commons_lab(out, ledger, base_port) as (lab, manifest, trust), ExitStack() as stack:
         events = [observed("health.verified", {"node_id": entry["node_id"], "ok": True})
                   for entry in manifest["nodes"]]
         custody = asyncio.run(bootstrap(lab, out / "client-state"))
