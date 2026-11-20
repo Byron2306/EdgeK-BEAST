@@ -250,13 +250,17 @@ class EpisodeEnvelopeBuilder:
             })
         budget = run.get("budget") if isinstance(run.get("budget"), Mapping) else {}
         target = _safe_scalar(request.get("implementation_target") or "")
+        task_family = str(_safe_scalar(request.get("task_family") or "") or "")
+        if not task_family and request.get("launch_strategy") == "direct_coder":
+            from app.kernel.compute.coder_crystal_feedback import observed_trial_family
+            task_family = observed_trial_family(request, observations)
         return EpisodeEnvelope(
             schema=ENVELOPE_SCHEMA,
             run_id=str(run_id),
             origin="agent_run",
             workspace_digest=_digest(str(run.get("root_path") or "")),
             objective_digest=_digest(str(run.get("objective") or "")),
-            task_family=str(_safe_scalar(request.get("task_family") or "") or "unclassified"),
+            task_family=task_family or "unclassified",
             mode=str(run.get("mode") or ""),
             provider=str(_safe_scalar(run.get("provider") or "") or ""),
             model=str(_safe_scalar(run.get("model") or "") or ""),
