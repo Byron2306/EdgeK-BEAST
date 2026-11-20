@@ -274,3 +274,36 @@ After 4D, proceed to Stage 5 reuse. Specialist dispatch, batching, and governed
 feedback remain optional follow-up experiments, not prerequisites for closing
 Stage 4. Semantic pages are application-level reuse and are not evidence of
 engine-native KV reuse; keep those Stage 5 comparisons distinct.
+
+### Stage 5A semantic pages and the separate native-KV recreation
+
+Run `python -m scripts.proof.run_stage5a_semantic_pages --out <new-directory>`.
+No model, key or provider is required. This pilot uses BEAST's real worktree
+graph builder and file-backed semantic page store. The dependent operation
+follows the resulting entry-point dependency graph and reads a limit constant
+from the selected source. Its expected closure, selected file, and limit are
+independent fixture facts. The exact hit and tamper fallback must also produce
+the same context and answer hashes as fresh reconstruction. A stale page is
+checked against a separate fresh rebuild of the changed sources.
+
+The five lanes are original rebuild, exact hit, changed rebuild, stale lookup
+after an actual dependency change, and tampered lookup. Each timed lane includes
+binding to current source bytes and computing the dependent result. The exact
+arm additionally includes lookup, hash verification and writing the real reuse
+receipt. Cold page creation (index build plus write) is reported separately.
+Default scope is 75 trials across 8, 24 and 48 files. This measures application
+graph work avoided, not model tokens, inference, native KV, or portability.
+
+For the separate native-KV recreation, the historical llama.cpp proof used
+the `qwen2.5:0.5b` Q4_K_M GGUF Ollama model blob
+`sha256:c5396e06af294bd101b30dce59131a76d2b773e76950acc870eda801d3ab0515`
+and CPU llama.cpp commit `a5822222909b785f23ddc74ce3c8f85bd0e38562`.
+The evidence links are `docs/forge_kv_proof_status.md`,
+`evidence/forge_kv/llamacpp_prompt_cache_20260720T115125Z.json`, and
+`evidence/forge_kv/llamacpp_restart_boundary_20260720T131312Z.json`.
+The matching blob, quantization, and runtime build are joined in the
+Milestone 11 cross-runtime evidence. Its native cache observations are
+engine-local. The Ollama legacy context-array trial used the same model tag
+but did not reduce prompt evaluation. The separate checked-in SGLang ML-KEM
+run identifies a test-oracle payload and no verified transport. None of this
+establishes raw KV import, transfer, or consumption between different engines.
