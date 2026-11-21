@@ -2140,7 +2140,7 @@ class AgentPlannerRuntime:
         # operator sees crystal reuse and lattice compounding naturally.
         try:
             daemon = CrystalAutopromotionDaemon(self.engine.workspace_root)
-            daemon_run = daemon.run_once(max_cycles=1)
+            daemon_run = daemon.run_once()
             self.engine.emit(run_id, "agent.crystal.autopromotion", {
                 "scanned": daemon_run.get("scanned", 0),
                 "promoted_count": daemon_run.get("promoted_count", 0),
