@@ -2148,8 +2148,12 @@ class AgentPlannerRuntime:
                 "created_at": daemon_run.get("created_at"),
             })
         except Exception as exc:  # pragma: no cover - defensive surface
-            self.engine.emit(run_id, "agent.crystal.reduction_failed", {
-                "reason": f"autopromotion: {type(exc).__name__}: {exc}"[:240],
+            self.engine.emit(run_id, "agent.crystal.autopromotion", {
+                "scanned": 0,
+                "promoted_count": 0,
+                "rejected_count": 0,
+                "created_at": None,
+                "error": f"autopromotion: {type(exc).__name__}: {exc}"[:240],
             })
         # Emit a crystal reduction receipt for the verified apply so the
         # operator sees lattice promotion in the UI, even when the autonomous
