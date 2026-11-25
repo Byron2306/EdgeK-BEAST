@@ -176,6 +176,9 @@ def start_mcp_http_server(host: str = "127.0.0.1", port: int = 8765) -> None:
 def start_gateway(host: str = "127.0.0.1", port: int = 8101, reload: bool = False,
                   socket_mode: str = "direct", guardian_service: str = "beast") -> None:
     import uvicorn
+    from app.kernel.agents.direct_coder_defaults import apply_direct_coder_env_defaults
+
+    apply_direct_coder_env_defaults()
     if socket_mode == "guardian":
         if reload:
             raise RuntimeError("Guardian socket mode forbids Uvicorn reload subprocesses")
@@ -2371,6 +2374,12 @@ def build_parser() -> argparse.ArgumentParser:
     ui_parser.add_argument("--workspace", help="Workspace folder path")
     ui_parser.add_argument("--gateway-url", default=DEFAULT_GATEWAY, help="BEAST gateway URL")
     ui_parser.add_argument("--classic", action="store_true", help="Launch the legacy Mission Console dashboard")
+    ui_parser.add_argument(
+        "--engine",
+        choices=("direct_coder", "typed_planner"),
+        default=None,
+        help="Coding engine for bin/beast ui (default: direct_coder). Use typed_planner to keep the NIM/heuristic planner path.",
+    )
 
     ide_parser = subparsers.add_parser("ide", help="Launch the BEAST Electron IDE with the active workspace")
     ide_parser.add_argument("--workspace", help="Workspace folder path")
@@ -2739,7 +2748,7 @@ def main() -> None:
         os.environ["BEAST_GATEWAY_URL"] = gateway_url
         from app.cli.ui import run
 
-        run(workspace=args.workspace, base_url=gateway_url, classic=args.classic)
+        run(workspace=args.workspace, base_url=gateway_url, classic=args.classic, engine=args.engine)
         return
     if args.command == "ide":
         emit(command_ide(args), args.agent)

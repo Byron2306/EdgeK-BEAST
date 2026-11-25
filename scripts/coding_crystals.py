@@ -103,6 +103,14 @@ def _dispatch(args: argparse.Namespace) -> int:
         return 0
     if args.command == "learn":
         report = learn_from_run(args.workspace, args.run_id, approved_by=args.approve_by)
+        if args.approve_by and report.get("status") == "promoted":
+            from app.kernel.compute.coder_crystal_feedback import trial_enabled
+            from app.kernel.compute.coding_crystal_runtime import planner_runtime_extras
+
+            if trial_enabled(os.environ):
+                planner = planner_runtime_extras(args.workspace)["crystal_planner"]
+                report["lattice_admission"] = planner.lattice.add_crystal(
+                    report["crystal_id"], publisher_id=planner.authority.key_id)
         print(json.dumps(report, indent=2, sort_keys=True, default=str))
         return 0 if report.get("status") in {"promoted", "verified_awaiting_operator_promotion"} else 1
     if args.command == "ledger":

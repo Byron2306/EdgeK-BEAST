@@ -130,8 +130,32 @@ def write_attempt_refused(fd: int) -> dict[str, Any]:
     return {"refused": False}
 
 
+def _decode_frame(base: memoryview, expected_manifest_digest: str) -> tuple[dict[str, Any], memoryview, int]:
+    """Validate the exact same framing and hashes regardless of transport."""
+    size = base.nbytes
+    if size <= HEADER.size or size > MAX_CAPSULE:
+        raise PermissionError("capsule size out of bounds")
+    with base[:HEADER.size] as head:
+        (length,) = HEADER.unpack(head)
+    if not 0 < length < size - HEADER.size:
+        raise PermissionError("capsule manifest length out of bounds")
+    with base[HEADER.size:HEADER.size + length] as raw:
+        manifest = json.loads(bytes(raw))
+    _check_manifest(manifest)
+    if manifest["manifest_digest"] != expected_manifest_digest:
+        raise PermissionError("capsule manifest is not the one offered")
+    payload = base[HEADER.size + length:]
+    try:
+        if payload.nbytes != manifest["payload_bytes"] or sha256_bytes(payload) != manifest["payload_sha256"]:
+            raise PermissionError("capsule payload digest mismatch: tampered capsule refused")
+    except BaseException:
+        payload.release()
+        raise
+    return manifest, payload, length
+
+
 def open_capsule(fd: int, *, expected_manifest_digest: str) -> tuple[dict[str, Any], memoryview, Any, dict[str, Any]]:
-    """Check the seals, mmap read-only, check the manifest and the payload digest (hashed in place, no copy)."""
+    """Require seals and a read-only mapping, then validate the shared frame."""
     seals = fcntl.fcntl(fd, fcntl.F_GET_SEALS)
     if seals & SEALS != SEALS:
         raise PermissionError(f"capsule is not sealed (seals={seal_names(seals)})")
@@ -140,21 +164,9 @@ def open_capsule(fd: int, *, expected_manifest_digest: str) -> tuple[dict[str, A
         raise PermissionError("capsule size out of bounds")
     mapped = mmap.mmap(fd, size, access=mmap.ACCESS_READ)
     base = memoryview(mapped)
-    payload = None
     try:
-        with base[:HEADER.size] as head:
-            (length,) = HEADER.unpack(head)
-        with base[HEADER.size:HEADER.size + length] as raw:
-            manifest = json.loads(bytes(raw))
-        _check_manifest(manifest)
-        if manifest["manifest_digest"] != expected_manifest_digest:
-            raise PermissionError("capsule manifest is not the one offered")
-        payload = base[HEADER.size + length:]
-        if payload.nbytes != manifest["payload_bytes"] or sha256_bytes(payload) != manifest["payload_sha256"]:
-            raise PermissionError("capsule payload digest mismatch: tampered capsule refused")
-    except Exception:
-        if payload is not None:
-            payload.release()
+        manifest, payload, length = _decode_frame(base, expected_manifest_digest)
+    except BaseException:
         base.release()
         mapped.close()
         raise
@@ -295,59 +307,95 @@ def net_dev() -> dict[str, dict[str, int]]:
     return rows
 
 
-def _child(sock_fd: int) -> int:
+def _replay_payload(manifest, payload, stats, out):
+    """One hydration, interpreter and postcondition path for both transports."""
     from app.kernel.compute.coding_crystals import CodingCrystalCandidate
 
+    out["capsule"] = {**stats, "payload_sha256_child": manifest["payload_sha256"],
+                      "manifest_digest": manifest["manifest_digest"]}
+    t_parse = time.perf_counter()
+    body = json.loads(bytes(payload))  # one userland parse copy, counted below
+    out["capsule"]["payload_bytes_parse_copy"] = payload.nbytes
+    if body["crystal"].get("kind") == "family_crystal":  # separate reviewed families catalog
+        from app.kernel.compute.family_crystals import FamilyCrystal, replay_family, replay_stage
+
+        candidate, replayer = FamilyCrystal.from_dict(body["crystal"]), replay_family
+        stage = body["parameters"].get("lattice_stage")
+        if stage:  # one child of a lattice composite; the composite (validated) fixes the stage contract
+            composite = FamilyCrystal.from_dict(stage["composite"])
+            out["lattice_stage"] = {"composite_id": composite.crystal_id, "index": int(stage["index"])}
+
+            def replayer(c, p, r, w, _comp=composite, _i=int(stage["index"])):
+                return replay_stage(_comp, c, _i, p, r, w)
+    else:
+        candidate, replayer = CodingCrystalCandidate.from_dict(body["crystal"]), replay_crystal
+    if candidate.crystal_id != manifest["crystal_id"] or candidate.digest != manifest["crystal_digest"]:
+        raise PermissionError("capsule crystal does not match its manifest")
+    out["hydrate_ms"] = round((time.perf_counter() - t_parse) * 1000, 3)
+    root, worktree = Path(body["binding"]["root"]), Path(body["binding"]["worktree"])
+    replay = replayer(candidate, body["parameters"], root, worktree)
+    out["replay"] = replay
+    out["postcondition"] = check_postcondition(worktree, body["postcondition"]) if replay["ok"] else {"passed": False}
+    out["ok"] = bool(replay["ok"] and out["postcondition"]["passed"])
+
+
+def _child(sock_fd: int) -> int:
     guard = NetworkGuard().install()
     before = net_dev()
-    sock = socket.socket(fileno=sock_fd)
     started = time.perf_counter()
-    msg, fds, _flags, _addr = socket.recv_fds(sock, 65536, 1)
-    offer = json.loads(msg)
-    out: dict[str, Any] = {"pid": os.getpid(), "admit_token_echo": offer.get("admit_token"), "fds_received": len(fds),
-                           "fd_pass_message_bytes": len(msg)}
-    peer = struct.unpack("3i", sock.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, struct.calcsize("3i")))
-    out["peer_pid_is_parent"] = peer[0] == os.getppid() or peer[0] == offer.get("parent_pid")
+    with socket.socket(fileno=sock_fd) as sock:
+        msg, fds, flags, _addr = socket.recv_fds(sock, 65536, 1)
+        out: dict[str, Any] = {"pid": os.getpid(), "fds_received": len(fds),
+                               "fd_pass_message_bytes": len(msg)}
+        try:
+            if flags & (socket.MSG_CTRUNC | socket.MSG_TRUNC) or len(fds) != 1:
+                raise PermissionError("expected exactly one capsule fd")
+            offer = json.loads(msg)
+            out["admit_token_echo"] = offer.get("admit_token")
+            peer = struct.unpack("3i", sock.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, struct.calcsize("3i")))
+            out["peer_pid_is_parent"] = peer[0] == os.getppid() or peer[0] == offer.get("parent_pid")
+            opened = time.perf_counter()
+            manifest, payload, keep, stats = open_capsule(fds[0], expected_manifest_digest=offer["manifest_digest"])
+            out["receive_and_frame_ms"] = round((time.perf_counter() - started) * 1000, 3)
+            out["open_and_verify_frame_ms"] = round((time.perf_counter() - opened) * 1000, 3)
+            try:
+                _replay_payload(manifest, payload, stats, out)
+            finally:
+                payload.release()
+                keep[0].release()
+                keep[1].close()
+        except Exception as exc:  # noqa: BLE001 - refusals must reach the parent
+            out.update(ok=False, refused=f"{type(exc).__name__}: {exc}")
+        finally:
+            for fd in fds:
+                os.close(fd)
+        out["child_wall_ms"] = round((time.perf_counter() - started) * 1000, 3)
+        out["network"] = {**guard.counts, "net_dev_before": before, "net_dev_after": net_dev()}
+        sock.sendall(_canon(out))
+    return 0
+
+
+def _pipe_replay_child(expected_manifest_digest: str) -> int:
+    guard = NetworkGuard().install()
+    before = net_dev()
+    started = time.perf_counter()
+    out: dict[str, Any] = {"pid": os.getpid()}
     try:
-        if len(fds) != 1:
-            raise PermissionError("expected exactly one capsule fd")
-        manifest, payload, keep, stats = open_capsule(fds[0], expected_manifest_digest=offer["manifest_digest"])
-        out["capsule"] = {**stats, "payload_sha256_child": sha256_bytes(payload), "manifest_digest": manifest["manifest_digest"]}
-        t_parse = time.perf_counter()
-        body = json.loads(bytes(payload))  # one userland parse copy, counted below
-        out["capsule"]["payload_bytes_parse_copy"] = payload.nbytes
-        if body["crystal"].get("kind") == "family_crystal":  # separate reviewed families catalog
-            from app.kernel.compute.family_crystals import FamilyCrystal, replay_family, replay_stage
-
-            candidate, replayer = FamilyCrystal.from_dict(body["crystal"]), replay_family
-            stage = body["parameters"].get("lattice_stage")
-            if stage:  # one child of a lattice composite; the composite (validated) fixes the stage contract
-                composite = FamilyCrystal.from_dict(stage["composite"])
-                out["lattice_stage"] = {"composite_id": composite.crystal_id, "index": int(stage["index"])}
-
-                def replayer(c, p, r, w, _comp=composite, _i=int(stage["index"])):
-                    return replay_stage(_comp, c, _i, p, r, w)
-        else:
-            candidate, replayer = CodingCrystalCandidate.from_dict(body["crystal"]), replay_crystal
-        if candidate.crystal_id != manifest["crystal_id"] or candidate.digest != manifest["crystal_digest"]:
-            raise PermissionError("capsule crystal does not match its manifest")
-        out["hydrate_ms"] = round((time.perf_counter() - t_parse) * 1000, 3)
-        root, worktree = Path(body["binding"]["root"]), Path(body["binding"]["worktree"])
-        replay = replayer(candidate, body["parameters"], root, worktree)
-        out["replay"] = replay
-        out["postcondition"] = check_postcondition(worktree, body["postcondition"]) if replay["ok"] else {"passed": False}
-        payload.release()
-        keep[0].release()
-        keep[1].close()
-        os.close(fds[0])
-        out["ok"] = bool(replay["ok"] and out["postcondition"]["passed"])
-    except Exception as exc:  # noqa: BLE001 - every refusal is reported to the parent
-        out["ok"] = False
-        out["refused"] = f"{type(exc).__name__}: {exc}"
+        frame = sys.stdin.buffer.read(MAX_CAPSULE + 1)
+        out["pipe_bytes_read"] = len(frame)
+        opened = time.perf_counter()
+        with memoryview(frame) as base:
+            manifest, payload, length = _decode_frame(base, expected_manifest_digest)
+            out["receive_and_frame_ms"] = round((time.perf_counter() - started) * 1000, 3)
+            out["open_and_verify_frame_ms"] = round((time.perf_counter() - opened) * 1000, 3)
+            with payload:
+                _replay_payload(manifest, payload, {"capsule_bytes": len(frame), "mmaps": 0,
+                                "manifest_header_bytes_copied": length}, out)
+    except Exception as exc:  # noqa: BLE001 - refusals must reach the parent
+        out.update(ok=False, refused=f"{type(exc).__name__}: {exc}")
     out["child_wall_ms"] = round((time.perf_counter() - started) * 1000, 3)
     out["network"] = {**guard.counts, "net_dev_before": before, "net_dev_after": net_dev()}
-    sock.sendall(_canon(out))
-    sock.close()
+    print(json.dumps(out))
     return 0
 
 
@@ -395,6 +443,30 @@ def handoff_to_replay_child(fd: int, manifest: Mapping[str, Any], *, admit_token
     return result
 
 
+def handoff_to_pipe_replay_child(payload: bytes, manifest: Mapping[str, Any], *,
+                                 python: str | None = None, isolate: bool = True) -> dict[str, Any]:
+    """Send the real capsule frame through stdin and execute the same replay worker."""
+    _require()
+    header = _canon(dict(manifest))
+    frame_size = HEADER.size + len(header) + len(payload)
+    if frame_size > MAX_CAPSULE:
+        raise PermissionError("capsule size out of bounds")
+    t_prepare = time.perf_counter()
+    frame = b"".join((HEADER.pack(len(header)), header, payload))
+    prepare_ms = round((time.perf_counter() - t_prepare) * 1000, 3)
+    prefix = isolation_prefix() if isolate else []
+    started = time.perf_counter()
+    child = subprocess.run([*prefix, python or sys.executable, "-m", "app.kernel.compute.crystal_memfd_capsule",
+                            "pipe-replay-child", "--manifest-digest", manifest["manifest_digest"]],
+                           cwd=REPO_ROOT, input=frame, stdout=subprocess.PIPE, timeout=180, check=True)
+    result = json.loads(child.stdout)
+    result["parent_observed"] = {"pipe_bytes_sent": min(frame_size, result["pipe_bytes_read"]),
+                                 "frame_prepare_ms": prepare_ms, "child_returncode": child.returncode,
+                                 "isolation": "unshare -rn (empty netns)" if prefix else "none",
+                                 "end_to_end_ms": round((time.perf_counter() - started) * 1000, 3)}
+    return result
+
+
 def pipe_copy_baseline(capsule: bytes, *, python: str | None = None) -> dict[str, Any]:
     """Baseline: push the same capsule bytes through a pipe to a child (write copy + read copy)."""
     started = time.perf_counter()
@@ -415,12 +487,18 @@ def main(argv: list[str] | None = None) -> int:
     child = sub.add_parser("replay-child")
     child.add_argument("--sock-fd", type=int, required=True)
     sub.add_parser("pipe-child")
+    pipe_replay = sub.add_parser("pipe-replay-child")
+    pipe_replay.add_argument("--manifest-digest", required=True)
     args = parser.parse_args(argv)
-    return _child(args.sock_fd) if args.cmd == "replay-child" else _pipe_child()
+    if args.cmd == "replay-child":
+        return _child(args.sock_fd)
+    if args.cmd == "pipe-replay-child":
+        return _pipe_replay_child(args.manifest_digest)
+    return _pipe_child()
 
 
 __all__ = ["CAPSULE_ENV", "NetworkGuard", "build_manifest", "build_payload", "capsule_enabled", "check_postcondition",
-           "handoff_to_replay_child", "open_capsule", "pipe_copy_baseline", "replay_crystal", "seal_capsule",
+           "handoff_to_replay_child", "handoff_to_pipe_replay_child", "open_capsule", "pipe_copy_baseline", "replay_crystal", "seal_capsule",
            "seal_names", "write_attempt_refused"]
 
 if __name__ == "__main__":

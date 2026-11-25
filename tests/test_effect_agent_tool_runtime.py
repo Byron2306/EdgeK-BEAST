@@ -71,3 +71,17 @@ def test_effect_callback_preserves_engine_context_for_worktree_binding(tmp_path)
     completed = _runtime_events(engine, run_id, "agent.tool.completed")
     assert completed[-1]["payload"]["runtime"] == "effect_ts"
 
+
+
+def test_local_pytest_uses_gateway_interpreter_and_explicit_async_plugin():
+    import importlib.util
+    import sys
+    from app.kernel.agents.worktree_tools import _local_worktree_command
+
+    assert importlib.util.find_spec("pytest_asyncio") is not None
+    assert _local_worktree_command(["pytest", "-q", "tests"]) == [
+        sys.executable, "-m", "pytest", "-p", "pytest_asyncio.plugin", "-q", "tests",
+    ]
+    assert _local_worktree_command(["python3", "-m", "pytest", "-p", "no:asyncio"]) == [
+        sys.executable, "-m", "pytest", "-p", "no:asyncio",
+    ]

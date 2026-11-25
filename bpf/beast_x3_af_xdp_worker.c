@@ -23,6 +23,7 @@
 #include <bpf/bpf.h>
 #include <bpf/libbpf.h>
 #include <linux/if_link.h>
+#include <linux/if_xdp.h>
 #include <xdp/xsk.h>
 
 #define BATCH_SIZE 64U
@@ -45,6 +46,7 @@ struct worker_config {
     bool zero_copy;
     bool generic_xdp;
     bool echo;
+    bool ready_json;
     const char *program_name;
     const char *pin_dir;          /* optional: pin only the named --pin-map maps here */
     const char *pin_maps[4];
@@ -98,7 +100,7 @@ static void usage(const char *program) {
     fprintf(stderr,
         "Usage: %s --interface IFACE --object FILE [--queue N] [--duration SEC] "
         "[--frame-size BYTES] [--frame-count N] [--zero-copy] [--generic-xdp] [--echo] "
-        "[--program NAME] [--reuse-pin MAP=PATH]... [--pin-dir DIR --pin-map MAP]...\n", program);
+        "[--ready-json] [--program NAME] [--reuse-pin MAP=PATH]... [--pin-dir DIR --pin-map MAP]...\n", program);
 }
 
 static int parse_args(int argc, char **argv, struct worker_config *config) {
@@ -112,6 +114,7 @@ static int parse_args(int argc, char **argv, struct worker_config *config) {
         {"zero-copy", no_argument, NULL, 'z'},
         {"generic-xdp", no_argument, NULL, 'g'},
         {"echo", no_argument, NULL, 'e'},
+        {"ready-json", no_argument, NULL, 'R'},
         {"program", required_argument, NULL, 'p'},
         {"reuse-pin", required_argument, NULL, 'r'},
         {"pin-dir", required_argument, NULL, 'P'},
@@ -121,7 +124,7 @@ static int parse_args(int argc, char **argv, struct worker_config *config) {
     };
     int option;
     *config = (struct worker_config){.frame_size = 2048, .frame_count = 2048, .program_name = "beast_x3_redirect"};
-    while ((option = getopt_long(argc, argv, "i:o:q:d:s:n:zgep:r:P:m:h", options, NULL)) != -1) {
+    while ((option = getopt_long(argc, argv, "i:o:q:d:s:n:zgeRp:r:P:m:h", options, NULL)) != -1) {
         switch (option) {
         case 'i': config->interface = optarg; break;
         case 'o': config->object_path = optarg; break;
@@ -132,6 +135,7 @@ static int parse_args(int argc, char **argv, struct worker_config *config) {
         case 'z': config->zero_copy = true; break;
         case 'g': config->generic_xdp = true; break;
         case 'e': config->echo = true; break;
+        case 'R': config->ready_json = true; break;
         case 'p': config->program_name = optarg; break;
         case 'r': {
             char *split = strchr(optarg, '=');
@@ -392,6 +396,17 @@ int main(int argc, char **argv) {
         fprintf(stderr, "AF_XDP worker setup failed: %s (%d)\n", strerror(-result), result);
         cleanup(&state);
         return 1;
+    }
+
+    if (config.ready_json) {
+        struct xdp_options options = {0};
+        socklen_t size = sizeof(options);
+        const char *mode = "unknown";
+        if (getsockopt(xsk_socket__fd(state.xsk), SOL_XDP, XDP_OPTIONS, &options, &size) == 0
+                && size >= sizeof(options))
+            mode = (options.flags & XDP_OPTIONS_ZEROCOPY) ? "zero_copy" : "copy";
+        fprintf(stderr, "BEAST_READY {\"observed_mode\":\"%s\"}\n", mode);
+        fflush(stderr);
     }
 
     unsigned long long started = monotonic_ns();

@@ -148,6 +148,7 @@ class EffectTSBridge:
         self._ops: Dict[str, Callable[[Dict[str, Any]], Any]] = {}
         self._pending: Dict[str, _Pending] = {}
         self._lock = threading.Lock()
+        self._start_lock = threading.Lock()
         self._process: Optional[subprocess.Popen] = None
         self._reader: Optional[threading.Thread] = None
         self._stderr_lines: List[str] = []
@@ -201,8 +202,17 @@ class EffectTSBridge:
         self._callback_url = f"http://127.0.0.1:{server.server_address[1]}/op"
 
     def _start(self) -> None:
+        with self._start_lock:
+            self._start_locked()
+
+    def _start_locked(self) -> None:
         if self._process is not None:
-            return
+            if self._process.poll() is None:
+                return
+            if self._reader is not None:
+                self._reader.join()
+            self._process = None
+            self._stderr_lines.clear()
         if self._node is None:
             raise EffectUnavailable("node binary not found on PATH")
         if not self._runner.exists():
@@ -239,6 +249,15 @@ class EffectTSBridge:
             if pending is not None:
                 pending.response = response
                 pending.done.set()
+        with self._lock:
+            pending_requests = list(self._pending.values())
+            self._pending.clear()
+        for pending in pending_requests:
+            pending.response = {"ok": False, "error": {
+                "message": "Effect runner exited before replying",
+                "tag": "EffectUnavailable",
+            }}
+            pending.done.set()
 
     def _read_stderr(self) -> None:
         assert self._process and self._process.stderr
@@ -330,6 +349,19 @@ class EffectTSBridge:
             return response.get("value")
         error = response.get("error") or {}
         raise EffectError(error.get("message", "effect failed"), tag=error.get("tag", "Error"))
+
+    def check_ready(self) -> None:
+        """Exercise the actual Effect interpreter, not just Node or file presence."""
+        try:
+            if self.run(succeed("beast-effect-ready"), timeout_s=5) != "beast-effect-ready":
+                raise EffectUnavailable("unexpected Effect runtime handshake")
+        except (EffectError, EffectUnavailable, OSError) as exc:
+            detail = self.stderr_tail.strip().splitlines()
+            detail = next((line.strip() for line in detail if "Error" in line), str(exc))
+            raise EffectUnavailable(
+                f"{detail}. From the BEAST checkout run: "
+                "npm ci --prefix desktop-ide --omit=dev --ignore-scripts"
+            ) from exc
 
     async def arun(self, program: Dict[str, Any], timeout_s: float = 60.0) -> Any:
         import asyncio

@@ -508,6 +508,16 @@ app = FastAPI(
     description="Governed local AI execution broker for agentic coding",
     version=str(BUILD_IDENTITY.get("backend_gateway_version") or "0.1.0")
 )
+
+@app.on_event("startup")
+def _apply_direct_coder_env_defaults() -> None:
+    # Do not mutate the process environment while the test suite is running.
+    if os.environ.get("PYTEST_CURRENT_TEST"):
+        return
+    from app.kernel.agents.direct_coder_defaults import apply_direct_coder_env_defaults
+
+    apply_direct_coder_env_defaults()
+
 app.include_router(evidence_reuse_router)
 
 # Mount G3 routes

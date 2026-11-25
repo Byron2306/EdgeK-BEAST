@@ -210,6 +210,16 @@ class CrystalLattice:
             extra["witness"] = witness
         return {"outcome": outcome, "reason": reason, "crystal_id": composite.crystal_id, **extra}
 
+    def witness_scoped_refusal(self, receipt: Mapping[str, Any]) -> dict[str, Any]:
+        """Witness a pre-actuation refusal without demoting an admitted node."""
+        node_id = str(receipt["crystal_id"])
+        if self.node(node_id)["status"] != "admitted":
+            raise PermissionError("scoped refusal needs an admitted lattice node")
+        with self._lock:
+            return self._witness("scoped_refusal", node_id, {
+                key: receipt[key] for key in ("scope_digest", "run_id", "receipt_digest", "reason")
+            })
+
     def admit_composite(self, composite: CodingCrystalCandidate, *, verifier: Any, publisher_id: str,
                         approved_by: str) -> dict[str, Any]:
         children = list(composite.component_ids)
@@ -413,7 +423,13 @@ class CrystalLattice:
                 "nodes": self.nodes(), "edges": self.edges(), "verification": self.verify()}
 
 
-def default_lattice(workspace: str | Path, registry: Any, *, env: Mapping[str, str] | None = None) -> CrystalLattice:
+def default_lattice(
+    workspace: str | Path,
+    registry: Any,
+    *,
+    env: Mapping[str, str] | None = None,
+    isolated: bool = False,
+) -> CrystalLattice:
     """Production wiring: .beast lattice, witnessed on the gateway's existing lattice ledger and Commons crystal chain."""
     import os
 
@@ -422,10 +438,15 @@ def default_lattice(workspace: str | Path, registry: Any, *, env: Mapping[str, s
 
     project = Path(__file__).resolve().parents[3]
     environ = os.environ if env is None else env
-    commons_root = Path(environ.get("BEAST_COMMONS_ROOT") or project / "data" / "commons_spaces")
-    lattice_ledger_root = Path(
-        environ.get("BEAST_CRYSTAL_LATTICE_LEDGER_ROOT")
-        or project / "benchmarks" / "results" / "crystal_lattice_ledger"
+    trial_root = Path(workspace) / ".beast" / "crystals" / "trial-witness"
+    commons_root = (
+        trial_root if isolated else
+        Path(environ.get("BEAST_COMMONS_ROOT") or project / "data" / "commons_spaces")
+    )
+    lattice_ledger_root = (
+        trial_root if isolated else
+        Path(environ.get("BEAST_CRYSTAL_LATTICE_LEDGER_ROOT")
+             or project / "benchmarks" / "results" / "crystal_lattice_ledger")
     )
     return CrystalLattice(Path(workspace) / ".beast" / "crystals" / "crystal_lattice.sqlite3", registry=registry,
                           lattice_ledger=CrystalLatticeLedger(lattice_ledger_root),

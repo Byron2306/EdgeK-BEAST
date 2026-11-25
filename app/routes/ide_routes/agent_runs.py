@@ -42,12 +42,13 @@ from app.kernel.operations_console.context_console import ContextManifestConsole
 from app.kernel.agents.ollama_planner_provider import OllamaPlannerProvider
 from app.kernel.agents.nim_planner_provider import NIMPlannerProvider
 from app.kernel.compute.crystal_reuse_gateway import CrystalReuseGateway
-from app.kernel.compute.nim_picker import HOSTED_NEMOTRON_BASE_URL, HOSTED_NEMOTRON_MODEL
+from app.kernel.compute.nim_picker import HOSTED_NEMOTRON_BASE_URL, HOSTED_NEMOTRON_MODEL, canonical_nim_model
 from app.kernel.local.ollama_kv_manager import OllamaKVManager
 from app.kernel.agents.planner_provider import CallbackPlannerProvider, CapabilityScoredPlannerProvider, FallbackPlannerProvider, HeuristicPlannerProvider, ScriptedPlannerProvider
 from app.kernel.agents.provider_quality import ProviderQualityLedger
 from app.kernel.agents.planner_resilience import build_resilient_nim_provider, build_resilient_ollama_provider
 from app.kernel.agents.planner_runtime import AgentPlannerRuntime
+from app.kernel.agents.direct_coder_runtime import DirectCoderRuntime
 from app.kernel.compute.coding_crystal_runtime import planner_runtime_extras
 from app.kernel.agents.promotion_engine import PromotionEngine
 from app.kernel.evidence.evidence_builder import EvidenceBuilder
@@ -533,6 +534,46 @@ def _launch_for_run(
 ) -> dict[str, Any]:
     run_id = str(run.get("run_id") or "")
     request_payload = run.get("request") if isinstance(run.get("request"), dict) else {}
+    if str(request_payload.get("launch_strategy") or "").strip().lower() == "direct_coder":
+        # The coding model owns governed tool calls. No AgentPlannerRuntime,
+        # heuristic fallback, or implicit planning subagent is instantiated.
+        engine = AgentRunEngine(root)
+        provider_name = str(run.get("provider") or "").strip().lower()
+        model = str(run.get("model") or "").strip()
+        if provider_name in {"nvidia_nim", "nim", "local_nim"} or _is_nim_model(run):
+            provider = NIMPlannerProvider(
+                model=canonical_nim_model(model),
+                base_url=str(request_payload.get("nim_base_url")
+                             or os.environ.get("NVIDIA_NIM_BASE_URL") or ""),
+                api_key=str(os.environ.get("NVIDIA_API_KEY") or ""),
+                timeout_seconds=float(os.environ.get("BEAST_DIRECT_CODER_TIMEOUT", "90")),
+                max_retries=0,
+                stream=os.environ.get("BEAST_DIRECT_CODER_STREAM", "1").lower() in {"1", "true", "yes"},
+                enable_thinking=os.environ.get("BEAST_DIRECT_CODER_THINKING", "1").lower() in {"1", "true", "yes"},
+                allow_reasoning_as_action=False,
+                on_reasoning=lambda token: engine.emit(
+                    run_id, "agent.model.reasoning", {"text": str(token), "delta": True}
+                ),
+                on_token=lambda token: engine.emit(
+                    run_id, "agent.model.delta", {"text": str(token)}
+                ),
+            )
+        elif provider_name in {"ollama", "local_ollama"}:
+            provider = OllamaPlannerProvider(
+                model=model,
+                base_url=_ollama_base_url(run),
+                timeout_seconds=float(os.environ.get("BEAST_DIRECT_CODER_TIMEOUT", "90")),
+                on_token=lambda token: engine.emit(
+                    run_id, "agent.model.delta", {"text": str(token)}
+                ),
+            )
+        else:
+            raise ValueError(f"direct coder does not support provider {provider_name!r}")
+        TURN_RUNTIMES[run_id] = DirectCoderRuntime(
+            engine, provider,
+            max_turns=max_turns if max_turns is not None else 32,
+        )
+        return {"active": True, "reused": False, "engine": "direct_coder_v1"}
     if _prefer_direct_planner(run):
         planner_turns = max_turns if max_turns is not None else _planner_max_turns(run, request_payload)
         return _launch_planner(
@@ -648,12 +689,16 @@ def register_agent_runs_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[
             request_payload["prompt"] = prompt
         if not str(request_payload.get("workspace_root") or "").strip():
             request_payload["workspace_root"] = str(root)
+        provider_name = str(payload.get("provider") or session.get("provider") or "")
+        model_id = str(payload.get("model") or session.get("model") or "")
+        if provider_name.strip().lower() in {"nvidia_nim", "nim", "local_nim"}:
+            model_id = canonical_nim_model(model_id)
         run = AgentRunEngine(root).create_run(
             session_id=session_id,
             objective=prompt,
             mode=str(payload.get("mode") or session.get("mode") or "agent"),
-            provider=str(payload.get("provider") or session.get("provider") or ""),
-            model=str(payload.get("model") or session.get("model") or ""),
+            provider=provider_name,
+            model=model_id,
             request=request_payload,
             budget=payload.get("budget") if isinstance(payload.get("budget"), dict) else session.get("budget") if isinstance(session.get("budget"), dict) else {},
             run_id=str(payload.get("run_id") or ""),

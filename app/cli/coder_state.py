@@ -133,7 +133,12 @@ class CoderSettings:
             raise ValueError(f"workspace must be an existing directory: {workspace}")
         object.__setattr__(self, "workspace", workspace)
         object.__setattr__(self, "provider", str(self.provider or "ollama").strip())
-        object.__setattr__(self, "model", str(self.model or "beast-auto").strip())
+        model = str(self.model or "beast-auto").strip()
+        if self.provider.lower() in {"nvidia_nim", "nim", "local_nim"}:
+            from app.kernel.compute.nim_picker import canonical_nim_model
+
+            model = canonical_nim_model(model)
+        object.__setattr__(self, "model", model)
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -298,8 +303,175 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
         error = str(payload.get("error") or "No grounded file answer was accepted.")
         return ProjectedEvent("answer_error", error + (f" Coverage: {coverage}." if coverage else ""),
                               sequence, details=payload)
+    if event.event == "agent.coder.completed":
+        return ProjectedEvent(
+            "advisory", str(payload.get("summary") or "Direct coder completed."),
+            sequence, details=payload,
+        )
+    if event.event == "agent.coder.tool_rejected":
+        return ProjectedEvent(
+            "action_rejected", str(payload.get("message") or ""), sequence,
+            tool_id=str(payload.get("tool_id") or ""), details=payload,
+        )
+    if event.event == "agent.coder.runtime_unavailable":
+        return ProjectedEvent(
+            "advisory", str(payload.get("message") or ""), sequence, details=payload,
+        )
+    if event.event == "agent.coder.provider_paused":
+        return ProjectedEvent(
+            "advisory",
+            "Coding model unavailable: " + str(payload.get("message") or payload.get("reason") or "retry with /next")[:300],
+            sequence, status="paused", details=payload,
+        )
     if event.event == "agent.run.advisory":
         return ProjectedEvent("advisory", str(payload.get("text") or ""), sequence, details=payload)
+    crystal_events = {
+        "agent.crystal.activated": ("fired", "execution", "Native crystal activated"),
+        "agent.crystal.completed": ("fired", "execution", "Native crystal replay verified"),
+        "agent.crystal.aborted": ("skipped", "execution", "Native crystal aborted"),
+        "agent.crystal.refused": ("skipped", "eligibility", "Native crystal refused"),
+        "agent.crystal.negative_recorded": ("fired", "postflight", "Scoped negative recorded"),
+        "agent.crystal.negative_applied": ("skipped", "eligibility", "Prior scoped negative blocked activation"),
+        "agent.route.decision": ("observed", "eligibility", "Crystal route nomination"),
+
+        # Promoted family / lattice runtime. These are first-class execution
+        # events, not hidden implementation details: the operator must be able
+        # to see discovery, nomination, every lattice stage, verification, and
+        # terminal outcome in /last and the inline tool stream.
+        "agent.family_crystal.target_derived": (
+            "observed", "eligibility", "Implementation target derived from verifier evidence"
+        ),
+        "agent.family_crystal.discovery": (
+            "observed", "eligibility", "Family crystal discovery"
+        ),
+        "agent.family_crystal.nominated": (
+            "fired", "eligibility", "Promoted family crystal nominated"
+        ),
+        "agent.family_crystal.not_nominated": (
+            "skipped", "eligibility", "Family crystal not nominated"
+        ),
+        "agent.family_crystal.stage.started": (
+            "fired", "execution", "Family crystal stage started"
+        ),
+        "agent.family_crystal.stage.verified": (
+            "fired", "execution", "Family crystal stage verified"
+        ),
+        "agent.family_crystal.completed": (
+            "fired", "postflight", "Promoted family crystal completed"
+        ),
+        "agent.family_lattice.selected": (
+            "fired", "eligibility", "Crystal lattice selected"
+        ),
+        "agent.family_lattice.expanded": (
+            "observed", "eligibility", "Crystal lattice topology"
+        ),
+        "agent.family_lattice.stage.started": (
+            "fired", "execution", "Lattice stage started"
+        ),
+        "agent.family_lattice.stage.verified": (
+            "fired", "execution", "Lattice stage verified"
+        ),
+        "agent.family_lattice.completed": (
+            "fired", "postflight", "Crystal lattice completed"
+        ),
+        "agent.family_lattice.refused": (
+            "skipped", "execution", "Crystal lattice refused"
+        ),
+        "agent.compound_crystal.fragment.admitted": (
+            "fired", "execution", "Compound patch fragment admitted"
+        ),
+        "agent.compound_crystal.stage.admitted": (
+            "fired", "execution", "Compound proof stage admitted"
+        ),
+        "agent.compound_crystal.completed": (
+            "fired", "postflight", "Compound proof DAG completed"
+        ),
+        "agent.compound_crystal.refused": (
+            "skipped", "execution", "Compound proof DAG refused"
+        ),
+        "agent.family_crystal.refused": (
+            "skipped", "execution", "Family crystal refused"
+        ),
+        "agent.family_crystal.execution_fault": (
+            "refused", "execution", "Family crystal execution fault"
+        ),
+        "agent.crystal.fail_closed": (
+            "refused", "execution", "Crystal execution failed closed"
+        ),
+        "agent.crystal.tool.dispatched": (
+            "fired", "execution", "Crystal tool dispatched"
+        ),
+
+        "agent.episode.sealed": ("fired", "postflight", "Episode sealed"),
+    }
+    if event.event in crystal_events:
+        status, stage, headline = crystal_events[event.event]
+        capability = event.event.removeprefix("agent.")
+        reason = str(payload.get("reason") or payload.get("route") or "")
+
+        # Surface family/lattice evidence instead of reducing it to an opaque
+        # integration event. Fields are intentionally tolerant because older
+        # and newer crystal receipts use slightly different names.
+        family = str(
+            payload.get("task_family")
+            or payload.get("family")
+            or payload.get("component_family")
+            or payload.get("child_family")
+            or ""
+        )
+        crystal_id = str(payload.get("crystal_id") or payload.get("composite_id") or "")
+        child_id = str(payload.get("child_id") or "")
+
+        stage_index = payload.get("stage_index", payload.get("index"))
+        stage_count = payload.get("stage_count", payload.get("total_stages"))
+        if stage_index is not None:
+            try:
+                shown_stage = int(stage_index) + 1
+            except (TypeError, ValueError):
+                shown_stage = stage_index
+            stage_text = (
+                f"stage {shown_stage}/{stage_count}"
+                if stage_count is not None
+                else f"stage {shown_stage}"
+            )
+        else:
+            stage_text = ""
+
+        before = payload.get("failures_before")
+        after = payload.get("failures_after")
+        reduction = (
+            f"failures {before}→{after}"
+            if before is not None and after is not None
+            else ""
+        )
+
+        similarity = payload.get("similarity")
+        similarity_text = (
+            f"similarity={similarity}"
+            if similarity is not None
+            else ""
+        )
+
+        label = " · ".join(
+            part for part in (
+                headline,
+                family,
+                stage_text,
+                reduction,
+                similarity_text,
+                reason,
+                crystal_id,
+                child_id,
+                str(payload.get("tool_id") or ""),
+                str(payload.get("path") or ""),
+            )
+            if part
+        )
+        if event.event == "agent.episode.sealed" and data.get("run_id"):
+            label += f" · {data['run_id']}"
+        return ProjectedEvent("integration", label, sequence, status=status, tool_id=capability,
+                              executed=event.event == "agent.crystal.completed",
+                              success=status == "fired", details={**payload, "stage": stage, "capability": capability})
     if event.event.startswith("agent.integration.") or event.event == "agent.stream.interception":
         capability = str(payload.get("capability") or "stream.interception")
         if event.event == "agent.stream.interception":

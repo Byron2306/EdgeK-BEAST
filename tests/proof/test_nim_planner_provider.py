@@ -114,3 +114,27 @@ def test_nim_focused_explanation_schema_uses_only_ref_and_text(monkeypatch):
     assert set(item["required"]) == {"ref", "text"}
     assert set(item["properties"]) == {"ref", "text"}
     assert payload["nvext"]["guided_json"] == schema
+
+
+def test_streamed_reasoning_reaches_callback_before_final_response(monkeypatch):
+    import io
+    import json
+    from app.kernel.agents import nim_planner_provider as nim
+
+    reasoning = []
+    def frames(*_args, **_kwargs):
+        class Response(io.BytesIO):
+            def __iter__(self):
+                yield b'data: {"choices":[{"delta":{"reasoning_content":"Inspect files."}}]}\n'
+                assert reasoning == ["Inspect files."]
+                action = json.dumps({"decision_type": "tool", "tool_id": "workspace.list", "arguments": {}})
+                yield ("data: " + json.dumps({"choices":[{"delta":{"content":action}}]}) + "\n").encode()
+                yield b"data: [DONE]\n"
+        return Response()
+
+    monkeypatch.setenv("BEAST_NIM_PLANNER_STREAM", "1")
+    monkeypatch.setattr(nim._egress, "urlopen", frames)
+    provider = NIMPlannerProvider(model="nvidia/test", api_key="fixture", on_reasoning=reasoning.append)
+    decision = asyncio.run(provider.next_decision("prompt", run={}, turn=1))
+    assert decision.tool_id == "workspace.list"
+    assert reasoning == ["Inspect files."]

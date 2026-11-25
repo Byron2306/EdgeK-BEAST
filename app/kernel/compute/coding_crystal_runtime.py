@@ -19,6 +19,8 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
+from app.kernel.compute.coder_crystal_feedback import trial_enabled
+
 ENABLE_ENV = "BEAST_CODING_CRYSTALS"
 AUTO_PROMOTE_ENV = "BEAST_CODING_CRYSTAL_AUTO_PROMOTE"
 KEY_ENV = "BEAST_CODING_CRYSTAL_KEY"
@@ -78,7 +80,8 @@ def _key_id(key: Any) -> str:
 
 
 def _build(workspace: Path, env: Mapping[str, str]) -> tuple[dict[str, Any], str]:
-    if not _enabled(env):
+    trial = trial_enabled(env)
+    if not (_enabled(env) or trial):
         return {}, "disabled"
     key, reason = _load_key(env)
     if key is None:
@@ -111,19 +114,19 @@ def _build(workspace: Path, env: Mapping[str, str]) -> tuple[dict[str, Any], str
                                  governor_settlement=governor.receipts.settle if governor else None)
     economy = CrystalReuseEconomy(shadow, envelope_store=envelopes, local_user_id=str(env.get(USER_ENV) or "operator"))
     lattice = None
-    if str(env.get(LATTICE_ENV) or "").strip().lower() in {"1", "true", "yes", "on"}:  # lattice spine, default off
+    if trial or str(env.get(LATTICE_ENV) or "").strip().lower() in {"1", "true", "yes", "on"}:  # lattice spine, default off
         from app.kernel.compute.crystal_lattice_spine import default_lattice
 
-        lattice = default_lattice(workspace, registry, env=env)
+        lattice = default_lattice(workspace, registry, env=env, isolated=trial)
     extras: dict[str, Any] = {
-        "crystal_planner": CodingCrystalPlanner(registry, authority, ledger, economy=economy, lattice=lattice),
+        "crystal_planner": CodingCrystalPlanner(registry, authority, ledger, economy=economy, lattice=lattice, scoped_negatives=trial),
         "envelope_store": envelopes,
     }
     if str(env.get(AUTO_PROMOTE_ENV) or "").strip().lower() in {"1", "true", "yes", "on"}:
         extras["crystal_learner"] = CodingCrystalAutoLearner(workspace, env=env, planner=extras["crystal_planner"])
     from app.kernel.compute.adaptive_router import CodingCrystalRouter, router_enabled
 
-    if router_enabled(env):  # D9, default off: routing nominates; D6 activation gates still decide
+    if trial or router_enabled(env):  # D9, default off: routing nominates; D6 activation gates still decide
         extras["adaptive_router"] = CodingCrystalRouter(registry, envelopes, lattice=lattice)
     if governor is not None:
         governor.lattice = lattice
@@ -287,8 +290,9 @@ def learn_from_run(workspace: str | Path, run_id: str, *, env: Mapping[str, str]
     envelope = extras["envelope_store"].get(run_id)
     from app.kernel.agents.run_engine import AgentRunEngine
 
-    run = AgentRunEngine(Path(workspace)).store.get_run(run_id) or {}
-    observations = ((run.get("checkpoint") or {}).get("planner") or {}).get("observations") or []
+    from app.kernel.sensorium.episode_envelope import episode_observations
+
+    observations = episode_observations(AgentRunEngine(Path(workspace)).store, run_id)
     candidate = CodingCrystalExtractor().extract(envelope, observations, registry=registry)
     if candidate is None:
         negatives = registry.negatives(envelope.task_family)

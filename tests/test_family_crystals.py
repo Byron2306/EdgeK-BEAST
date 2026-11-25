@@ -286,3 +286,176 @@ def test_hard_lattice_discovery_and_negatives_on_fresh_tasks(tmp_path):
     top = ranked[0]
     if top["crystal_id"] == comp.crystal_id and top["similarity"] >= 0.95:
         assert fc.replay_family(comp, params(diff), root, root.parent / "wt")["ok"] is False  # must fall back, never accept
+
+
+def test_nested_family_composite_preserves_graph_and_flattens_execution():
+    from app.kernel.compute.family_crystals import (
+        FamilyCrystal,
+        catalog_digest,
+        compose,
+        recipe,
+        recipe_authority,
+    )
+
+    def leaf(family, suffix):
+        from app.kernel.compute.family_crystals import _digest
+        return FamilyCrystal(
+            crystal_id="",
+            task_family=family,
+            steps=recipe((family,)),
+            catalog_digest=catalog_digest(),
+            source_run_id=f"run-{suffix}",
+            source_envelope_digest=_digest(["env", suffix]),
+            expected_failures=1,
+        ).sealed()
+
+    a = leaf("fix-off-by-one", "a")
+    b = leaf("fix-config-constant", "b")
+    c = leaf("fix-logic-operator", "c")
+
+    ab = compose([a, b], source_run_id="run-ab")
+    abc = compose([ab, c], source_run_id="run-abc")
+
+    assert ab.component_ids == (a.crystal_id, b.crystal_id)
+    assert ab.component_families == (
+        "fix-off-by-one",
+        "fix-config-constant",
+    )
+
+    # Graph structure remains nested.
+    assert abc.component_ids == (ab.crystal_id, c.crystal_id)
+
+    # Execution semantics flatten into atomic capabilities.
+    assert abc.component_families == (
+        "fix-off-by-one",
+        "fix-config-constant",
+        "fix-logic-operator",
+    )
+    assert abc.expected_failures == 3
+    assert abc.steps == recipe(abc.component_families)
+
+    expected_authority = (
+        set(ab.authority)
+        & recipe_authority(("fix-logic-operator",))
+    )
+    assert set(abc.authority) == expected_authority
+
+    abc.validate()
+
+
+def test_nested_composite_can_execute_as_parent_lattice_stage():
+    from app.kernel.compute.family_crystals import (
+        FamilyCrystal,
+        _digest,
+        catalog_digest,
+        compose,
+        recipe,
+        stage_steps,
+    )
+
+    def leaf(family, suffix):
+        return FamilyCrystal(
+            crystal_id="",
+            task_family=family,
+            steps=recipe((family,)),
+            catalog_digest=catalog_digest(),
+            source_run_id=f"run-{suffix}",
+            source_envelope_digest=_digest(["env", suffix]),
+            expected_failures=1,
+        ).sealed()
+
+    a = leaf("fix-off-by-one", "a")
+    b = leaf("fix-config-constant", "b")
+    c = leaf("fix-logic-operator", "c")
+
+    ab = compose([a, b], source_run_id="run-ab")
+    abc = compose([ab, c], source_run_id="run-abc")
+
+    first = stage_steps(abc, ab, 0)
+    second = stage_steps(abc, c, 1)
+
+    first_verifiers = [
+        step["expect"]
+        for step in first
+        if step["opcode"] == "worktree.verify"
+    ]
+    second_verifiers = [
+        step["expect"]
+        for step in second
+        if step["opcode"] == "worktree.verify"
+    ]
+
+    # AB internally performs A then B, but because another parent capability
+    # remains its terminal PASS becomes IMPROVE.
+    assert first_verifiers == ["fail", "improve", "improve"]
+
+    # C is the terminal parent stage.
+    assert second_verifiers == ["fail", "pass"]
+
+
+def test_lattice_topology_preserves_nested_graph(tmp_path):
+    from app.kernel.compute.family_crystals import (
+        FamilyCrystal,
+        FamilyRegistry,
+        _digest,
+        catalog_digest,
+        compose,
+        lattice_topology,
+        recipe,
+    )
+    from app.kernel.compute.heldout_replay import ReplayReceipt
+
+    def leaf(family, suffix):
+        return FamilyCrystal(
+            crystal_id="",
+            task_family=family,
+            steps=recipe((family,)),
+            catalog_digest=catalog_digest(),
+            source_run_id=f"run-{suffix}",
+            source_envelope_digest=_digest(["env", suffix]),
+            expected_failures=1,
+        ).sealed()
+
+    def promote(registry, crystal):
+        registry.add_candidate(crystal)
+        registry.promote(
+            crystal.crystal_id,
+            ReplayReceipt(
+                crystal.crystal_id,
+                3,
+                3,
+                True,
+                "heldout passed",
+            ),
+            approved_by="byron",
+        )
+
+    registry = FamilyRegistry(tmp_path / "families.sqlite3")
+
+    a = leaf("fix-off-by-one", "a")
+    b = leaf("fix-config-constant", "b")
+    c = leaf("fix-logic-operator", "c")
+
+    for crystal in (a, b, c):
+        promote(registry, crystal)
+
+    ab = compose([a, b], source_run_id="run-ab")
+    promote(registry, ab)
+
+    abc = compose([ab, c], source_run_id="run-abc")
+    promote(registry, abc)
+
+    graph = lattice_topology(registry, abc)
+
+    assert graph["root"]["crystal_id"] == abc.crystal_id
+    assert graph["root"]["children"][0]["crystal_id"] == ab.crystal_id
+    assert graph["root"]["children"][0]["children"][0]["crystal_id"] == a.crystal_id
+    assert graph["root"]["children"][0]["children"][1]["crystal_id"] == b.crystal_id
+    assert graph["root"]["children"][1]["crystal_id"] == c.crystal_id
+
+    assert [x["task_family"] for x in graph["leaves"]] == [
+        "fix-off-by-one",
+        "fix-config-constant",
+        "fix-logic-operator",
+    ]
+    assert graph["leaf_count"] == 3

@@ -6,6 +6,17 @@ import httpx
 HOSTED_NEMOTRON_MODEL = "nvidia/nemotron-3.5-lightning-30b-a3b"
 HOSTED_NEMOTRON_BASE_URL = "https://integrate.api.nvidia.com/v1"
 
+_HOSTED_MODEL_LABELS = {
+    "nemotron 3.5 super vl 120b a12b": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "nemotron 3.5 lightning 30b a3b": "nvidia/nemotron-3.5-lightning-30b-a3b",
+}
+
+
+def canonical_nim_model(model: str) -> str:
+    """Map known UI display names without altering explicit or custom model IDs."""
+    value = str(model or "").strip()
+    return _HOSTED_MODEL_LABELS.get(" ".join(value.casefold().split()), value)
+
 
 async def verify_hosted_nemotron(client: httpx.AsyncClient, api_key: str) -> dict:
     def receipt(status: str) -> dict:

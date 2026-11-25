@@ -953,7 +953,7 @@ async def test_gateway_pause_does_not_auto_submit_a_second_turn(tmp_path: Path):
         await app.submit_text("Inspect this")
         assert posts == ["run-coder"]
         assert app._turn_ready
-        assert any("Planner paused" in row["content"] for row in app.transcript_entries)
+        assert any("Coding run paused" in row["content"] for row in app.transcript_entries)
 
 
 @pytest.mark.asyncio
@@ -1110,7 +1110,7 @@ async def test_down_opens_agent_menu_and_selection_sets_next_mode(tmp_path: Path
 
 
 @pytest.mark.asyncio
-async def test_swarm_menu_sets_decomposition_prefix_for_next_prompt(tmp_path: Path):
+async def test_swarm_menu_requests_runtime_swarm_without_rewriting_objective(tmp_path: Path):
     recorded = []
 
     class MenuClient(FakeRuntimeClient):
@@ -1129,8 +1129,8 @@ async def test_swarm_menu_sets_decomposition_prefix_for_next_prompt(tmp_path: Pa
         await app.submit_text("Add tests")
         await pilot.pause()
     assert recorded, "the swarm prompt must reach the runtime"
-    assert recorded[0][0].startswith("Decompose this request")
-    assert recorded[0][0].endswith("Add tests")
+    assert recorded[0][0] == "Add tests"
+    assert recorded[0][1]["swarm"] is True
 
 
 @pytest.mark.asyncio
@@ -1399,3 +1399,134 @@ async def test_policy_blocked_shows_the_planner_blocker(tmp_path: Path):
     assert "policy_blocked" in errors[-1]
     assert blocker in errors[-1]
     assert not any(not str(text).strip() for text in assistants)
+
+
+
+@pytest.mark.asyncio
+async def test_copy_file_writes_sanitized_last_run_without_changing_clipboard(tmp_path: Path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+    async with app.run_test(size=(100, 30)):
+        await app.submit_text("Explain README.md")
+        app.copy_to_clipboard("SENTINEL")
+        await app.submit_text("/copy file")
+        exported = sorted((tmp_path / ".beast" / "coder").glob("last-run-*.txt"))
+        assert len(exported) == 1
+        content = exported[0].read_text(encoding="utf-8")
+        assert "Explain README.md" in content
+        assert "obs-coder" in content
+        assert "/copy file" not in content
+        assert "\\x1b[" not in content
+        assert app.clipboard == "SENTINEL"
+        assert exported[0].stat().st_mode & 0o777 == 0o600
+
+
+@pytest.mark.asyncio
+async def test_input_submits_in_worker_so_diff_binding_responds_during_turn(tmp_path):
+    class HeldRuntime(FakeRuntimeClient):
+        async def start_turn(self, run_id):
+            await asyncio.sleep(0.7)
+            return {"run_id": run_id, "state": "completed"}
+
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=HeldRuntime(tmp_path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        app.query_one(Input).value = "/agent Change the fixture"
+        await pilot.press("enter")
+        assert app._streaming, "the input handler must return before the turn completes"
+        before = app.diff_expanded
+        await pilot.press("f7")
+        assert app.diff_expanded is not before
+        assert app._streaming
+
+
+def test_worktree_snapshot_replaces_live_edit_and_next_edit_keeps_other_files(tmp_path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+    a = "diff --git a/a.py b/a.py\n--- a/a.py\n+++ b/a.py\n@@ -1 +1 @@\n-a\n+A\n"
+    b = a.replace("a.py", "b.py").replace("-a\n+A\n", "-b\n+B\n")
+    app._record_tool_patch("worktree.replace_exact", {"path": "a.py", "diff": a})
+    app._record_tool_patch("worktree.diff", {"diff": a + b})
+    assert app.diff_bundle["files"] == ["a.py", "b.py"]
+    assert app.diff_bundle["added"] == 2
+    app._record_tool_patch("worktree.replace_exact", {"path": "a.py", "diff": a.replace("+A\n", "+AA\n")})
+    assert app.diff_bundle["diff"].count("diff --git") == 2
+    assert "+AA\n" in app.diff_bundle["diff"]
+
+
+@pytest.mark.asyncio
+async def test_direct_timeline_keeps_reasoning_and_edit_delta_per_action(tmp_path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+    async with app.run_test(size=(120, 40)):
+        app._begin_action()
+        app.thinking_bundle = "Read the target."
+        app._update_action({"kind": "tool_call", "tool_id": "workspace.read_range", "details": {}})
+        app._update_action({"kind": "tool_result", "tool_id": "workspace.read_range", "status": "completed", "details": {}})
+        app._begin_action()
+        app.thinking_bundle = "Make a bounded edit."
+        app._update_action({"kind": "tool_call", "tool_id": "worktree.replace_exact", "details": {}})
+        app._update_action({"kind": "tool_result", "tool_id": "worktree.replace_exact", "status": "completed",
+                            "details": {"path": "a.py", "action_diff": "@@ -1 +1 @@\n-a\n+b\n"}})
+        assert [x["thinking"] for x in app._actions] == ["Read the target.", "Make a bounded edit."]
+        collapsed = app._actions_text().plain
+        assert "Read the target." not in collapsed and "+b" in collapsed
+        app.action_toggle_action_reasoning(app._actions[0]["id"])
+        expanded = app._actions_text().plain
+        assert "Read the target." in expanded and "Make a bounded edit." not in expanded
+
+
+@pytest.mark.asyncio
+async def test_direct_diff_dock_appears_on_edit_while_output_is_paused(tmp_path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        app._begin_action()
+        app._follow_output = False
+        app._record_tool_patch("worktree.replace_exact", {
+            "path": "a.py", "diff": "diff --git a/a.py b/a.py\n@@ -1 +1 @@\n-a\n+b\n",
+        })
+        app._sync()
+        await pilot.pause()
+        dock = app.query_one("#coder-diff-scroll")
+        assert dock.display
+        assert "+b" in _plain(app.query_one("#coder-diff", Static).render())
+        assert not app._follow_output
+        await pilot.press("f7")
+        assert not dock.display
+        await pilot.press("f7")
+        assert dock.display
+
+
+@pytest.mark.asyncio
+async def test_direct_history_shows_numbered_edits_one_reasoning_preview_and_one_summary(tmp_path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+    async with app.run_test(size=(120, 40)):
+        app._actions.extend([
+            {"id": 1, "status": "completed", "tool_id": "workspace.read_range",
+             "thinking": "First thought. " + "Long repeated text. " * 50},
+            {"id": 2, "status": "completed", "tool_id": "worktree.replace_exact",
+             "thinking": "Second thought.", "details": {"path": "a.py", "action_diff": "@@ -5,2 +5,2 @@\n same\n-a\n+b\n"}},
+        ])
+        app.action_toggle_action_reasoning(1)
+        assert len(app._actions_text().plain) < 440
+        app.action_toggle_action_reasoning(2)
+        app._action_summary = "Verified change."
+        text = app._actions_text().plain
+        assert "First thought." not in text and "Second thought." in text
+        assert "6 +b" in text and "6 -a" in text
+        assert text.count("Verified change.") == 1
+        assert text.index("Edited") < text.index("Verified change.")
+
+
+@pytest.mark.asyncio
+async def test_receipts_have_visible_toggle_without_replacing_action_history(tmp_path):
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=FakeRuntimeClient(tmp_path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        app._begin_action()
+        app._update_action({"kind": "tool_call", "tool_id": "worktree.read_file",
+                            "details": {"arguments": {"path": "a.py"}}})
+        app._sync()
+        await pilot.pause()
+        toggle = app.query_one("#coder-receipts-toggle")
+        pane = app.query_one("#tool-scroll")
+        assert toggle.display and not pane.display
+        await pilot.click("#coder-receipts-toggle")
+        assert pane.display and "Read" in _plain(app.query_one("#coder-inline-tools", Static).render())
+        await pilot.press("f9")
+        assert not pane.display

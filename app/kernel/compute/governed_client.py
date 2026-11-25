@@ -130,6 +130,7 @@ class CallOutcome:
     receipt_id: str = ""
     governor_receipt: str = ""
     teardown: Dict[str, Any] = field(default_factory=dict)
+    stream_observation: Dict[str, Any] = field(default_factory=dict)
 
     def public(self) -> Dict[str, Any]:
         return {"provider": self.candidate.provider, "model": self.candidate.model, "placement": self.candidate.placement,
@@ -169,11 +170,24 @@ class GovernedModelClient:
                  transport: httpx.AsyncBaseTransport | None = None, avoid: AvoidHook | None = None,
                  lifecycle: Any = None, lifecycle_handles: Mapping[str, Any] | None = None,
                  use_scorecard: bool | None = None, max_attempts: int = 3, episode_token_limit: float | None = None,
-                 feedback_turns: bool = True):
+                 feedback_turns: bool = True, fixed_stream_dialect: str | None = None,
+                 drain_stream: bool = False):
         from app.kernel.compute import capability_scorecard as _cs
         from app.kernel.governance.governor_spine import ComputeGovernorSpine, GovernorReceiptLog
 
         self.candidates = list(candidates)
+        if fixed_stream_dialect is not None and (
+                not self.candidates or any(c.kind != "nim" for c in self.candidates)
+                or len({c.ident for c in self.candidates}) != len(self.candidates)
+                or len({c.base_url for c in self.candidates}) != 1
+                or fixed_stream_dialect not in dialects_for("nim")
+                or not 1 <= max_attempts <= len(self.candidates)
+                or feedback_turns or avoid is not None or lifecycle is not None or lifecycle_handles):
+            raise ValueError("fixed stream ablation requires distinct NIM candidates on one endpoint without feedback, reuse or lifecycle hooks")
+        if drain_stream and fixed_stream_dialect is None:
+            raise ValueError("drain_stream requires a fixed dialect")
+        self.fixed_stream_dialect = fixed_stream_dialect
+        self.drain_stream = bool(drain_stream)
         self.scorecard = scorecard if scorecard is not None else CapabilityScorecard()
         self.breaker = breaker or CircuitBreaker()
         self.governor = governor or ComputeGovernorSpine(receipts=GovernorReceiptLog(None), enforce=True)
@@ -264,7 +278,16 @@ class GovernedModelClient:
         started = time.perf_counter()
         usage: Dict[str, Any] = {}
         chars = 0
+        capture = self.fixed_stream_dialect is not None
+        if capture:
+            stats = out.stream_observation
+            stats.update(requests=1, http_status=None, content_bytes=0, sse_line_bytes=0,
+                         done_seen=False, first_schema_ms=None, prompt_tokens=None,
+                         completion_tokens=None, invalid_candidates=0, strict_document_valid=False)
+            deltas = []
         async with client.stream("POST", url, json=body, headers=headers, timeout=httpx.Timeout(cand.timeout_s, connect=10.0)) as resp:
+            if capture:
+                stats["http_status"] = resp.status_code
             if resp.status_code >= 400:
                 text = (await resp.aread()).decode("utf-8", "replace")
                 out.status, out.error = "http_error", f"{resp.status_code}:{text[:300]}"
@@ -281,18 +304,36 @@ class GovernedModelClient:
                     out.status, out.stop_reason = "stream_stall", ("ttft_timeout" if first else "inter_chunk_stall")
                     await resp.aclose()
                     break
+                if capture:
+                    stats["sse_line_bytes"] += len(line.encode("utf-8"))
                 line = line.strip()
                 if not line:
                     continue
                 delta, done, chunk_usage = self._parse_line(cand.kind, line)
                 if chunk_usage:
                     usage.update(chunk_usage)
+                    if capture:
+                        for name in ("prompt_tokens", "completion_tokens"):
+                            value = chunk_usage.get(name)
+                            if type(value) is int and value >= 0:
+                                stats[name] = value
+                if capture and done:
+                    stats["done_seen"] = True
                 if delta:
                     if first:
                         out.ttft_ms = (time.perf_counter() - started) * 1000
                         first = False
                     chars += len(delta)
+                    if capture:
+                        deltas.append(delta)
+                        stats["content_bytes"] += len(delta.encode("utf-8"))
                     verdict = gate.feed(delta)
+                    if capture and verdict == "stop" and stats["first_schema_ms"] is None:
+                        stats["first_schema_ms"] = round((time.perf_counter() - started) * 1000, 3)
+                    if self.drain_stream:
+                        if done:
+                            break
+                        continue
                     if verdict == "stop":
                         out.early_stop, out.stop_reason = True, gate.stop_reason
                         await resp.aclose()
@@ -307,6 +348,16 @@ class GovernedModelClient:
                 if done:
                     break
         out.latency_ms = (time.perf_counter() - started) * 1000
+        if capture:
+            from app.kernel.compute.json_stream_gate import schema_valid
+
+            stats["invalid_candidates"] = gate.finish()["invalid_candidates"]
+            try:
+                document = json.loads("".join(deltas))
+            except (ValueError, RecursionError):
+                pass
+            else:
+                stats["strict_document_valid"] = schema_valid(document, gate.schema)[0]
         out.tokens_prompt = int(usage.get("prompt_tokens") or 0)
         if not out.tokens_prompt:
             # usage arrives in the final chunk, which an early stop never reads: estimate from the request
@@ -542,7 +593,8 @@ class GovernedModelClient:
             if gpu_scheduler.enabled():
                 self.__dict__.setdefault("gpu_prepare_events", []).append(await asyncio.to_thread(gpu_scheduler.ensure_tgi_gpu))
         dropped: set = set()  # optional knobs (chat_template_kwargs, reasoning_effort, stream_options) a server rejected
-        dialects = list(dialects_for(cand.kind))
+        dialects = ([self.fixed_stream_dialect] if self.fixed_stream_dialect is not None
+                    else list(dialects_for(cand.kind)))
         i = 0
         while i < len(dialects):
             dialect = dialects[i]
@@ -556,7 +608,7 @@ class GovernedModelClient:
             except httpx.HTTPError as exc:
                 out.status, out.error = "transport_error", redact(f"{type(exc).__name__}: {exc}", secrets)[:300]
                 return out
-            if out.status == "http_error" and out.error.startswith(("400", "422")):
+            if self.fixed_stream_dialect is None and out.status == "http_error" and out.error.startswith(("400", "422")):
                 stripped = set(body) - set(strip_unsupported(body, out.error))
                 if stripped - dropped:
                     dropped |= stripped  # retry the SAME dialect without the rejected knob

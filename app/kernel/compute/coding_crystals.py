@@ -280,6 +280,35 @@ def verify_output(observation: Mapping[str, Any]) -> str:
     return text or str(observation.get("error") or "")
 
 
+def _same_observed_edit(content: str, proposal: Mapping[str, str], observation: Mapping[str, Any]) -> bool:
+    """Require exact file equivalence when the tool used a different replacement span."""
+    arguments = observation.get("arguments") or {}
+    old_text, new_text = arguments.get("old_text"), arguments.get("new_text")
+    if not isinstance(old_text, str) or not old_text or not isinstance(new_text, str):
+        return False
+    if (old_text, new_text) == (proposal["old_text"], proposal["new_text"]):
+        return True
+
+    result = observation.get("result") or {}
+    if (observation.get("status") != "completed" or observation.get("truncated")
+            or result.get("path") != arguments.get("path") or result.get("replacements") != 1):
+        return False
+
+    def sha256(text: str) -> str:
+        return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+    # read_range joins lines without the final LF. Accept a reconstruction only
+    # if the exact-edit receipt confirms it is the full pre-edit file.
+    before = next((text for text in (content, content + "\n")
+                   if sha256(text) == result.get("before_sha256")), None)
+    canonical_old = proposal["old_text"]
+    if before is None or before.count(canonical_old) != 1 or before.count(old_text) != 1:
+        return False
+    canonical = before.replace(canonical_old, proposal["new_text"], 1)
+    actual = before.replace(old_text, new_text, 1)
+    return actual == canonical and sha256(actual) == result.get("after_sha256")
+
+
 class CodingCrystalExtractor:
     """Compress a verified Episode Envelope into the reviewed fix-failing-assertion recipe, or refuse."""
 
@@ -329,8 +358,13 @@ class CodingCrystalExtractor:
         content = str((read_obs.get("result") or {}).get("content") or "")
         proposal = resolve_constant(verify_output(verify_obs), content)
         arguments = replace_obs.get("arguments") or {}
-        if (not proposal or not same_assignment_line(proposal["old_text"], arguments.get("old_text"))
-                or not same_assignment_line(proposal["new_text"], arguments.get("new_text"))):
+        if not proposal or not (
+            _same_observed_edit(content, proposal, replace_obs)
+            or (
+                same_assignment_line(proposal["old_text"], arguments.get("old_text"))
+                and same_assignment_line(proposal["new_text"], arguments.get("new_text"))
+            )
+        ):
             return self._refuse(registry, envelope, "edit_not_reproducible")
         candidate = CodingCrystalCandidate(
             crystal_id="", task_family=envelope.task_family, steps=RECIPE_FIX_FAILING_ASSERTION,
@@ -363,6 +397,9 @@ class CodingCrystalRegistry:
                 "CREATE TABLE IF NOT EXISTS coding_crystal_negatives (id INTEGER PRIMARY KEY AUTOINCREMENT, "
                 "task_family TEXT NOT NULL, crystal_id TEXT NOT NULL, kind TEXT NOT NULL, evidence_digest TEXT NOT NULL, "
                 "created_at REAL NOT NULL);"
+                "CREATE TABLE IF NOT EXISTS coding_crystal_scoped_refusals (crystal_id TEXT NOT NULL, "
+                "scope_digest TEXT NOT NULL, run_id TEXT NOT NULL, receipt_digest TEXT NOT NULL, "
+                "PRIMARY KEY(crystal_id,scope_digest));"
             )
 
     def _connect(self) -> sqlite3.Connection:
@@ -473,6 +510,29 @@ class CodingCrystalRegistry:
                 "WHERE task_family=? ORDER BY id", (task_family,)).fetchall()
         return [dict(row) for row in rows]
 
+    def scoped_refusal(self, crystal_id: str, scope: str) -> dict[str, str] | None:
+        with self._connect() as connection:
+            row = connection.execute(
+                "SELECT run_id, receipt_digest FROM coding_crystal_scoped_refusals "
+                "WHERE crystal_id=? AND scope_digest=?", (crystal_id, scope)).fetchone()
+        if row is None:
+            return None
+        body = {"crystal_id": crystal_id, "scope_digest": scope, "run_id": row["run_id"],
+                "reason": "resolver_refused_before_mutation"}
+        if _digest(body) != row["receipt_digest"]:
+            raise ValueError("scoped crystal negative receipt integrity mismatch")
+        return {**body, "receipt_digest": row["receipt_digest"]}
+
+    def record_scoped_refusal(self, crystal_id: str, scope: str, run_id: str) -> dict[str, str]:
+        receipt = _digest({"crystal_id": crystal_id, "scope_digest": scope, "run_id": run_id,
+                           "reason": "resolver_refused_before_mutation"})
+        with self._connect() as connection:
+            connection.execute("INSERT OR IGNORE INTO coding_crystal_scoped_refusals VALUES(?,?,?,?)",
+                               (crystal_id, scope, run_id, receipt))
+        saved = self.scoped_refusal(crystal_id, scope)
+        assert saved is not None
+        return saved
+
     def active_for_family(self, task_family: str) -> CodingCrystalCandidate | None:
         with self._connect() as connection:
             rows = connection.execute(
@@ -561,11 +621,13 @@ class CodingCrystalPlanner:
     """Select a promoted crystal for a run, gate applicability, consume a one-use capability, open a session."""
 
     def __init__(self, registry: CodingCrystalRegistry, authority: CodingCrystalAuthority, ledger: Any, *,
-                 replay_candidate_id: str = "", economy: Any = None, lattice: Any = None):
+                 replay_candidate_id: str = "", economy: Any = None, lattice: Any = None,
+                 scoped_negatives: bool = False):
         self.registry = registry
         self.authority = authority
         self.ledger = ledger
         self.replay_candidate_id = replay_candidate_id
+        self.scoped_negatives = scoped_negatives
         self.economy = economy  # optional CrystalReuseEconomy: shadow-accounted reduction receipts (D7)
         self.lattice = lattice  # optional CrystalLattice: demotion propagates to every containing composite
 
@@ -641,6 +703,17 @@ class CodingCrystalPlanner:
         reason, parameters = self._applicability(run, root)
         if reason:
             return refuse(reason)
+        scope = ""
+        if self.scoped_negatives and not self.replay_candidate_id:
+            from app.kernel.compute.coder_crystal_feedback import scope_digest
+
+            scope = scope_digest(root, run)
+            negative = self.registry.scoped_refusal(candidate.crystal_id, scope) if scope else None
+            if negative:
+                engine.emit(run_id, "agent.crystal.negative_applied", {
+                    **negative, "source_run_id": negative["run_id"], "run_id": run_id,
+                })
+                return None  # Provider fallback, before issuing or consuming a capability.
         request_digest = self.authority.request_digest(candidate, run_id, parameters)
         capability = dict(capability) if capability is not None else self.authority.issue(
             candidate, run_id=run_id, parameters=parameters, appraisal_ref=record_digest)
@@ -659,9 +732,27 @@ class CodingCrystalPlanner:
                if candidate.component_ids else {}),
         })
         return CodingCrystalSession(candidate, parameters, planner=self, engine=engine, run_id=run_id,
-                                    capability=capability)
+                                    capability=capability, negative_scope=scope)
 
     # Session callbacks -------------------------------------------------------------------------
+    def on_resolver_refused(self, session: CodingCrystalSession, run: Mapping[str, Any]) -> None:
+        if not session.negative_scope:
+            return
+        from app.kernel.compute.coder_crystal_feedback import scope_digest
+
+        # A resolver refusal after an earlier composite mutation is not a pre-mutation negative.
+        if any(step["opcode"] == "worktree.replace_exact" for step in session.candidate.steps[:session.cursor]):
+            return
+        root = Path(session.engine.workspace_root)
+        if scope_digest(root, run) != session.negative_scope:
+            return
+        receipt = self.registry.record_scoped_refusal(
+            session.candidate.crystal_id, session.negative_scope, session.run_id)
+        if self.lattice is not None:
+            witness = self.lattice.witness_scoped_refusal(receipt)
+            receipt = {**receipt, **witness}
+        session.engine.emit(session.run_id, "agent.crystal.negative_recorded", receipt)
+
     def on_success(self, session: CodingCrystalSession) -> None:
         if not self.replay_candidate_id:
             self.registry.record_reuse(session.candidate.crystal_id, run_id=session.run_id, outcome="verified")
@@ -706,13 +797,14 @@ class CodingCrystalSession:
     MAX_ISSUES_PER_STEP = 2
 
     def __init__(self, candidate: CodingCrystalCandidate, parameters: Mapping[str, Any], *, planner: Any, engine: Any,
-                 run_id: str, capability: Mapping[str, Any]):
+                 run_id: str, capability: Mapping[str, Any], negative_scope: str = ""):
         self.candidate = candidate
         self.parameters = dict(parameters)
         self.planner = planner
         self.engine = engine
         self.run_id = run_id
         self.capability = dict(capability)
+        self.negative_scope = negative_scope
         self.cursor = 0
         self.aborted = ""
         self.succeeded = False
@@ -815,6 +907,8 @@ class CodingCrystalSession:
                 self._proposal = resolve_constant(self._verify_output, self._target_content)
                 if not self._proposal:
                     self.abort("resolver_refused")
+                    if self.negative_scope:
+                        self.planner.on_resolver_refused(self, run)
                     return None
                 self._advance()
                 continue

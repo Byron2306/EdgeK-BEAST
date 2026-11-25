@@ -18036,8 +18036,12 @@ def run(
     workspace: str | Path | None = None,
     base_url: str | None = None,
     classic: bool = False,
+    engine: str | None = None,
 ) -> None:
     """Launch the conversation-first TLI, with the dashboard kept as opt-in."""
+    from app.kernel.agents.direct_coder_defaults import apply_direct_coder_env_defaults
+
+    apply_direct_coder_env_defaults()
     if classic:
         BeastMissionConsole(base_url=base_url).run()
         return
@@ -18047,7 +18051,7 @@ def run(
     # cycle while making `beast ui` the lean coding surface by default.
     from app.cli.coder import run as run_coder
 
-    run_coder(workspace=workspace, base_url=base_url)
+    run_coder(workspace=workspace, base_url=base_url, engine=engine)
 
 
 if __name__ == "__main__":

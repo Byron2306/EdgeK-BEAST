@@ -17,6 +17,8 @@ from urllib.parse import quote
 
 import httpx
 
+from app.kernel.compute.coder_crystal_feedback import trial_enabled, trial_request
+
 
 class RuntimeClientError(RuntimeError):
     """A runtime or transport response that cannot be presented as success."""
@@ -100,9 +102,14 @@ class CoderRuntimeClient:
         *,
         transport: httpx.AsyncBaseTransport | None = None,
         timeout: float = 60.0,
+        engine: str | None = None,
     ) -> None:
         self.base_url = str(base_url).rstrip("/")
         self.workspace = Path(workspace).expanduser().resolve()
+        raw_engine = str(engine or os.environ.get("BEAST_TLI_ENGINE") or "direct_coder").strip().lower()
+        if raw_engine not in {"direct_coder", "typed_planner"}:
+            raise ValueError("engine must be 'direct_coder' or 'typed_planner'")
+        self.engine = raw_engine
         self._client = httpx.AsyncClient(
             base_url=self.base_url,
             transport=transport,
@@ -249,6 +256,33 @@ class CoderRuntimeClient:
             )
         return await self._get_json("/health")
 
+    async def run_events(
+        self,
+        run_id: str,
+        *,
+        after: int = 0,
+        limit: int = 2000,
+    ) -> list[RuntimeEvent]:
+        body = await self._get_json(
+            f"/edgek/agent-runs/{run_id}/events",
+            root_path=str(self.workspace),
+            after=max(0, int(after)),
+            limit=max(1, min(int(limit), 5000)),
+        )
+        rows = body.get("events") if isinstance(body.get("events"), list) else []
+        out: list[RuntimeEvent] = []
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            out.append(
+                RuntimeEvent(
+                    event=str(row.get("event") or row.get("event_type") or ""),
+                    data=dict(row),
+                    event_id=str(row.get("sequence") or ""),
+                )
+            )
+        return out
+
     async def ensure_session(self, provider: str, model: str) -> dict[str, Any]:
         body = await self._post_json(
             "/edgek/ide/agent-sessions/create",
@@ -271,7 +305,7 @@ class CoderRuntimeClient:
     async def start_run(
         self, session_id: str, prompt: str, provider: str, model: str,
         *, mode: str = "ask", context_files: tuple[str, ...] = (),
-        autonomy: str | None = None, permission_mode: str = "normal",
+        autonomy: str | None = None, permission_mode: str = "normal", swarm: bool = False,
     ) -> dict[str, Any]:
         if mode not in {"ask", "review", "edit", "agent"}:
             raise ValueError("invalid BEAST composer mode")
@@ -285,14 +319,72 @@ class CoderRuntimeClient:
         ).strip().lower()
         if autonomy_mode not in {"autopilot", "manual"}:
             raise ValueError("autonomy must be 'autopilot' or 'manual'")
-        test_files = [path for path in context_files if Path(path).name.startswith("test_") and path.endswith(".py")]
-        target = next((path for path in context_files if path.endswith(".py") and path not in test_files), "")
+        effective_context_files = list(context_files)
+
+        # Crystal trials must also work from the normal /agent workflow where the
+        # operator lets Direct Coder explore the repository instead of attaching
+        # files manually. For a simple unambiguous Python repair workspace,
+        # deterministically derive the same target/test scope that explicit
+        # context files would have supplied.
+        if (
+            mode in {"edit", "agent"}
+            and trial_enabled(os.environ)
+            and not effective_context_files
+        ):
+            visible = sorted(
+                p for p in self.workspace.glob("*.py")
+                if p.is_file() and not p.is_symlink()
+            )
+            discovered_targets = [
+                p for p in visible if not p.name.startswith("test_")
+            ]
+
+            discovered_tests = [
+                p for p in visible if p.name.startswith("test_")
+            ]
+
+            tests_dir = self.workspace / "tests"
+            if tests_dir.is_dir() and not tests_dir.is_symlink():
+                discovered_tests.extend(
+                    sorted(
+                        p
+                        for p in tests_dir.rglob("test_*.py")
+                        if p.is_file()
+                        and not p.is_symlink()
+                        and p.resolve().is_relative_to(self.workspace)
+                    )
+                )
+
+            if len(discovered_targets) == 1 and discovered_tests:
+                effective_context_files = [
+                    discovered_targets[0].relative_to(self.workspace).as_posix(),
+                    *[
+                        p.relative_to(self.workspace).as_posix()
+                        for p in discovered_tests
+                    ],
+                ]
+
+        test_files = [
+            path for path in effective_context_files
+            if Path(path).name.startswith("test_") and path.endswith(".py")
+        ]
+        target = next(
+            (
+                path for path in effective_context_files
+                if path.endswith(".py") and path not in test_files
+            ),
+            "",
+        )
         editing_scope = {}
         if mode in {"edit", "agent"} and target:
             editing_scope["implementation_target"] = target
             if test_files:
                 editing_scope["required_test_files"] = test_files
         read_only = mode in {"ask", "review"}
+        if self.engine == "typed_planner":
+            launch_strategy = "typed_planner"
+        else:
+            launch_strategy = "direct_coder" if mode in {"agent", "edit"} else "typed_planner"
         body = await self._post_json(
             "/edgek/agent-runs",
             {
@@ -304,15 +396,25 @@ class CoderRuntimeClient:
                 "request": {
                     "prompt": prompt,
                     "transport": "beast_coder_tli_v1",
-                    "launch_strategy": "typed_planner",
-                    "context_files": list(context_files),
+                    "launch_strategy": launch_strategy,
+                    "context_files": effective_context_files,
+                    **({"swarm": True} if swarm and mode == "agent" else {}),
                     **editing_scope,
+                    **trial_request(
+                        mode,
+                        effective_context_files,
+                        enabled=trial_enabled(os.environ),
+                    ),
                     **({"read_only_file_review": True, "file_answer_style": "explain" if mode == "ask" else "review"}
                        if read_only and context_files else {}),
                     "workspace_root": str(self.workspace),
                     "execution_target": "local",
                     "autonomy": autonomy_mode,
-                    "apply_on_completion": autonomy_mode == "autopilot" and not read_only,
+                    "apply_on_completion": (
+                        autonomy_mode == "autopilot"
+                        and not read_only
+                        and launch_strategy == "typed_planner"
+                    ),
                     "permission_mode": permission_mode,
                 },
                 "launch": True,
