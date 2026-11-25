@@ -48,3 +48,17 @@ def test_resolve_context_files_finds_extensionless_and_this_file(tmp_path: Path)
     only.mkdir()
     (only / "beast").write_text("print('hi')\n")
     assert resolve_context_files(only, "proceed reading this file, summarize all functions") == ("beast",)
+
+
+def test_suggest_weak_spots_that_require_patching_is_analysis():
+    prompt = "read through the beast file and suggest any weak spots that require patching."
+    assert is_analysis_prompt(prompt)
+    assert is_review_prompt(prompt)
+    assert route_composer_mode("agent", prompt) == "review"
+    assert route_composer_mode("agent", "/agent " + prompt) == "review"
+
+
+def test_explicit_apply_or_edit_stays_on_the_agent_path():
+    assert route_composer_mode("agent", "apply those fixes to the beast file") == "agent"
+    assert route_composer_mode("agent", "edit the beast file and patch the typo") == "agent"
+    assert route_composer_mode("agent", "make the change to beast") == "agent"

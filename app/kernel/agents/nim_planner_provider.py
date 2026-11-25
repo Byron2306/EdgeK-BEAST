@@ -285,9 +285,14 @@ class NIMPlannerProvider:
             raise RuntimeError("NVIDIA_API_KEY is required for the NIM planner")
         request_timeout = self._request_timeout(run=run, default_timeout=self.timeout_seconds)
         if self.route_dampener is not None and self.route_dampener.suppressed(self.route_id):
-            self.last_route = {"provider": "nvidia_nim", "engine": "nvidia_nim", "model": self.model, "route_kind": "dampened", "reason": "persistent_bad_route_memory"}
-            self.last_usage = {"engine": "nvidia_nim", "model": self.model, "base_url": self.base_url, "timeout_seconds": request_timeout, "route": self._route_event("timeout")}
-            raise PlannerDecisionError("NIM route dampened after repeated slow or failed planner turns")
+            cooldown = float(os.environ.get("BEAST_NIM_ROUTE_PROBE_COOLDOWN_SECONDS", "300"))
+            if not self.route_dampener.allow_probe(self.route_id, cooldown_seconds=cooldown):
+                self.last_route = {"provider": "nvidia_nim", "engine": "nvidia_nim", "model": self.model, "route_kind": "dampened", "reason": "persistent_bad_route_memory"}
+                # Do not record another timeout here: that would keep the
+                # circuit open forever as each skipped call adds penalty.
+                self.last_usage = {"engine": "nvidia_nim", "model": self.model, "base_url": self.base_url, "timeout_seconds": request_timeout, "route": {"route_id": self.route_id, "event": "suppressed", "suppressed": True}}
+                raise PlannerDecisionError("NIM route dampened after repeated slow or failed planner turns")
+            self.last_route = {"provider": "nvidia_nim", "engine": "nvidia_nim", "model": self.model, "route_kind": "half_open", "reason": "dampener_probe"}
         started = time.perf_counter()
         repair = ""
         last_error = ""

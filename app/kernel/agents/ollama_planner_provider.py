@@ -212,9 +212,12 @@ class OllamaPlannerProvider:
             self.last_usage = {}
             self.last_route = {"provider": "ollama", "engine": "ollama", "route_kind": "direct_file_review", "reason": "review_evidence"}
         if self.route_dampener is not None and self.route_dampener.suppressed(self.route_id):
-            self.last_route = {"provider": "ollama", "engine": self.engine or "ollama", "route_kind": "dampened", "reason": "persistent_bad_route_memory"}
-            self.last_usage = {"route": self._route_event("timeout"), "timeout_seconds": self._request_timeout(prompt, run=run, turn=turn)}
-            raise PlannerDecisionError("Ollama route dampened after repeated slow or failed planner turns")
+            cooldown = float(os.environ.get("BEAST_OLLAMA_ROUTE_PROBE_COOLDOWN_SECONDS", "300"))
+            if not self.route_dampener.allow_probe(self.route_id, cooldown_seconds=cooldown):
+                self.last_route = {"provider": "ollama", "engine": self.engine or "ollama", "route_kind": "dampened", "reason": "persistent_bad_route_memory"}
+                self.last_usage = {"route": {"route_id": self.route_id, "event": "suppressed", "suppressed": True}, "timeout_seconds": self._request_timeout(prompt, run=run, turn=turn)}
+                raise PlannerDecisionError("Ollama route dampened after repeated slow or failed planner turns")
+            self.last_route = {"provider": "ollama", "engine": self.engine or "ollama", "route_kind": "half_open", "reason": "dampener_probe"}
         await self._preflight()
         self._prepare_sensorium(run)
         if file_review:

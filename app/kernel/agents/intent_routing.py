@@ -15,17 +15,33 @@ _PATCH = re.compile(
     r"\b(fix|change|modify|update|implement|add|remove|replace|refactor|write|patch|edit|make it|create)\b",
     re.IGNORECASE,
 )
+_EXPLICIT_APPLY = re.compile(
+    r"\b(?:apply|make (?:the|this|those|these) changes?|go ahead and (?:fix|patch|change|edit)|please (?:fix|patch|edit|change))\b",
+    re.IGNORECASE,
+)
+# "suggest any weak spots that require patching" is a review request, not a mutation.
+_REQUIRE_PATCHING = re.compile(
+    r"\b(?:that\s+)?(?:require|need|requiring|needing)\s+patching\b",
+    re.IGNORECASE,
+)
+_SUGGEST_ISSUES = re.compile(
+    r"\b(?:suggest|find|list|identify)\b.{0,80}\b(?:weak\s+spots?|weaknesses|issues|fixes|improvements|problems|risks|changes)\b",
+    re.IGNORECASE,
+)
 _ANALYSIS = re.compile(
     r"\b("
     r"look over|review|analy[sz]e|analysis|deep dive|inspect|explain|understand|"
     r"summari[sz]e|walk through|what does|how does|find risks|identify issues|audit|"
-    r"list(?:\s+any)?\s+(?:weaknesses|issues|risks|problems)|"
-    r"suggest(?:\s+any)?\s+(?:fixes|improvements|changes)"
+    r"list(?:\s+any)?\s+(?:weaknesses|issues|risks|problems|weak\s+spots?)|"
+    r"suggest(?:\s+any)?\s+(?:fixes|improvements|changes|weak\s+spots?|weaknesses|issues)"
     r")\b",
     re.IGNORECASE,
 )
 _REVIEW = re.compile(
-    r"\b(review|audit|find risks|identify issues|list(?:\s+any)?\s+(?:weaknesses|issues|risks|problems))\b",
+    r"\b(review|audit|find risks|identify issues|"
+    r"list(?:\s+any)?\s+(?:weaknesses|issues|risks|problems|weak\s+spots?)|"
+    r"suggest(?:\s+any)?\s+(?:weak\s+spots?|weaknesses|issues)|"
+    r"(?:require|need)ing?\s+patching)\b",
     re.IGNORECASE,
 )
 _THIS_FILE = re.compile(r"\bthis file\b", re.IGNORECASE)
@@ -44,12 +60,24 @@ _HIDDEN_PARTS = {".", ".."}
 
 
 def is_analysis_prompt(prompt: str) -> bool:
-    """True when the prompt asks for inspection or review and not a patch."""
+    """True when the prompt asks for inspection or review and not a patch.
+
+    Asking to suggest, find, list, or identify weak spots or fixes — including
+    ones "that require patching" — is analysis. Only an explicit apply / edit /
+    "make the change" instruction keeps the mutating agent path.
+    """
     text = str(prompt or "")
     if not text.strip():
         return False
     affirmative = _NEGATION.sub("", text.lower())
-    return bool(_ANALYSIS.search(text)) and not bool(_PATCH.search(affirmative))
+    if _EXPLICIT_APPLY.search(affirmative):
+        return False
+    looks_like_analysis = bool(_ANALYSIS.search(text) or _SUGGEST_ISSUES.search(text) or _REQUIRE_PATCHING.search(text))
+    if not looks_like_analysis:
+        return False
+    # "that require patching" is not a mutation verb.
+    cleaned = _REQUIRE_PATCHING.sub("", affirmative)
+    return not bool(_PATCH.search(cleaned))
 
 
 def is_review_prompt(prompt: str) -> bool:

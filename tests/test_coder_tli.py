@@ -1343,6 +1343,34 @@ async def test_agent_analysis_prompts_are_routed_read_only(tmp_path: Path):
     assert "Decompose this request" not in recorded[2]["prompt"]
     assert recorded[3]["mode"] == "agent"
     assert recorded[3]["prompt"] == "Add a helper to beast"
+    assert any(
+        row["role"] == "system" and "Routed as analysis; say \"apply\" to patch." in row["content"]
+        for row in app.transcript_entries
+    )
+
+
+@pytest.mark.asyncio
+async def test_agent_weak_spots_that_require_patching_are_routed_read_only(tmp_path: Path):
+    (tmp_path / "beast").write_text("def run():\n    return 1\n")
+    client = FakeRuntimeClient(tmp_path)
+    recorded = []
+
+    async def start_run(session_id, prompt, provider, model, *, mode="agent", context_files=(), autonomy=None, **kwargs):
+        recorded.append({"mode": mode, "prompt": prompt, "context_files": tuple(context_files)})
+        return {"run_id": "weak-spots", "state": "planning"}
+
+    client.start_run = start_run
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=client)
+    prompt = "read through the beast file and suggest any weak spots that require patching."
+    async with app.run_test(size=(100, 30)):
+        await app.submit_text("/agent " + prompt)
+    assert recorded[0]["mode"] == "review"
+    assert recorded[0]["context_files"] == ("beast",)
+    assert recorded[0]["prompt"] == prompt
+    assert any(
+        row["role"] == "system" and 'Routed as analysis; say "apply" to patch.' in row["content"]
+        for row in app.transcript_entries
+    )
 
 
 @pytest.mark.asyncio

@@ -2193,6 +2193,7 @@ class BeastCoderApp(App[None]):
             return
         if append_user:
             await self._auto_compact_if_needed()
+        requested_mode = mode
         mode = self._route_turn_mode(mode, prompt)
         # Swarm's mutate-and-verify prefix is only for implementation runs.
         if prefix and mode in {"agent", "edit"}:
@@ -2206,6 +2207,12 @@ class BeastCoderApp(App[None]):
             self.pending_approvals.clear()
             self._run_tool_start = len(self.tool_entries)
             self._append("user", prompt)
+            if requested_mode == "agent" and mode in {"ask", "review"}:
+                self._append(
+                    "system",
+                    'Routed as analysis; say "apply" to patch.',
+                    persist=False,
+                )
             prompt = effective_prompt
             # A new objective starts a fresh live diff; the previous run's
             # verified diff returns via agent.worktree.diff_ready.

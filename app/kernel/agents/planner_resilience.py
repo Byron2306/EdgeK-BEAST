@@ -63,21 +63,51 @@ def build_resilient_ollama_provider(
     )
 
 
+def _local_ollama_planner_fallback(run: dict[str, Any] | None = None) -> OllamaPlannerProvider | None:
+    """Use a capable local Ollama model before the heuristic planner dead-ends."""
+    import os
+    model = str(os.environ.get("BEAST_OLLAMA_PLANNER_MODEL") or "qwen2.5-coder:7b").strip()
+    if not model:
+        return None
+    run_request = run.get("request") if isinstance(run, dict) and isinstance(run.get("request"), dict) else {}
+    base_url = str(
+        (run_request or {}).get("ollama_base_url")
+        or os.environ.get("BEAST_OLLAMA_BASE_URL")
+        or os.environ.get("OLLAMA_HOST")
+        or "http://127.0.0.1:11434"
+    )
+    try:
+        return OllamaPlannerProvider(model=model, base_url=base_url, timeout_seconds=60.0, max_retries=0)
+    except Exception:
+        return None
+
+
 def build_resilient_nim_provider(
     *,
     primary: NIMPlannerProvider,
     sticky_after: int,
     slow_ms: float,
     on_sticky_fallback: Callable[[str, str, str, float], None] | None = None,
+    ollama_fallback: OllamaPlannerProvider | None | bool = True,
+    run: dict[str, Any] | None = None,
 ) -> StickyFallbackPlannerProvider:
+    heuristic = HeuristicPlannerProvider()
+    fallback: Any = heuristic
+    sticky_target = "heuristic"
+    provider = None if ollama_fallback is False else (
+        ollama_fallback if isinstance(ollama_fallback, OllamaPlannerProvider) else _local_ollama_planner_fallback(run)
+    )
+    if provider is not None:
+        fallback = FallbackPlannerProvider(provider, heuristic)
+        sticky_target = "ollama"
     return StickyFallbackPlannerProvider(
         primary,
-        HeuristicPlannerProvider(),
+        fallback,
         sticky_after=sticky_after,
         slow_latency_ms=slow_ms,
         classify_reason=lambda reason: _classify_timeout("nim", reason),
         on_sticky=(
-            lambda reason: on_sticky_fallback("nvidia_nim", "heuristic", reason, slow_ms)
+            lambda reason: on_sticky_fallback("nvidia_nim", sticky_target, reason, slow_ms)
             if on_sticky_fallback is not None else None
         ),
     )
