@@ -74,6 +74,20 @@ def _literal(text: str) -> Any:
     return value if isinstance(value, _SCALARS) else None
 
 
+def same_assignment_line(left: str, right: str) -> bool:
+    """True when two assignment lines are text-equal or name+literal equivalent."""
+    if str(left or "") == str(right or ""):
+        return True
+    parsed = []
+    for line in (left, right):
+        found = _CONSTANT.match(str(line or "").rstrip())
+        if not found:
+            return False
+        parsed.append((found.group(1), _literal(found.group(2))))
+    (name_a, value_a), (name_b, value_b) = parsed
+    return name_a == name_b and value_a is not None and type(value_a) is type(value_b) and value_a == value_b
+
+
 def resolve_constant(verify_output: str, target_content: str) -> dict[str, str] | None:
     """Resolve exactly one root literal edit from direct and downstream failures."""
     output = str(verify_output or "")
@@ -114,6 +128,32 @@ RECIPE_FIX_FAILING_ASSERTION: tuple[Mapping[str, str], ...] = (
 )
 EXPLORATION_TOOLS = frozenset({"workspace.list", "workspace.search_text", "workspace.read_range", "workspace.index"})
 RUNTIME_CLOSURE_TOOLS = frozenset({"worktree.sourceplan_draft"})
+VERIFICATION_TOOLS = frozenset({"worktree.verify", "worktree.run"})
+
+
+def _command_tokens(value: Any) -> list[str]:
+    if isinstance(value, (list, tuple)):
+        return [str(item).lower() for item in value]
+    if isinstance(value, str):
+        return value.lower().split()
+    return []
+
+
+def is_verification_step(step: Mapping[str, Any], observation: Mapping[str, Any] | None = None) -> bool:
+    """worktree.verify always counts; worktree.run counts when it is a test runner."""
+    tool = str(step.get("tool_id") or "")
+    if tool == "worktree.verify":
+        return True
+    if tool != "worktree.run":
+        return False
+    sources = [step.get("safe_arguments") or {}, (observation or {}).get("arguments") or {},
+               ((observation or {}).get("result") or {}) if isinstance((observation or {}).get("result"), Mapping) else {}]
+    tokens: list[str] = []
+    for source in sources:
+        if isinstance(source, Mapping):
+            tokens.extend(_command_tokens(source.get("command") or source.get("resolved_command")))
+    blob = " ".join(tokens)
+    return any(token in blob for token in ("unittest", "pytest", "py.test"))
 STEP_KEYS = frozenset({"opcode", "tool_id", "expect"})
 CRYSTAL_PARAMETERS = ("implementation_target", "verify_command")
 
@@ -242,8 +282,6 @@ class CodingCrystalExtractor:
             return self._refuse(registry, envelope, "tampered_envelope")
         if not envelope.verification.get("passed"):
             return self._refuse(registry, envelope, "unverified_episode")
-        if int(envelope.verification.get("failures_before_pass") or 0) < 1:
-            return self._refuse(registry, envelope, "no_failing_verification_to_parameterize")
         target = envelope.implementation_target
         if not target or envelope.task_family in {"", "unclassified"}:
             return self._refuse(registry, envelope, "unbound_task_family_or_target")
@@ -251,11 +289,12 @@ class CodingCrystalExtractor:
         target_read = failing_verify = replace_step = passing_verify = None
         for step in envelope.steps:
             tool = step["tool_id"]
+            observation = by_digest.get(str(step.get("result_digest") or ""))
             if tool == "worktree.replace_exact":
                 if replace_step is not None or step["safe_arguments"].get("path") != target or failing_verify is None:
                     return self._refuse(registry, envelope, "unsupported_mutation_shape")
                 replace_step = step
-            elif tool == "worktree.verify":
+            elif is_verification_step(step, observation):
                 if step.get("returncode") not in (0, None):
                     if replace_step is None:
                         failing_verify = step
@@ -268,6 +307,8 @@ class CodingCrystalExtractor:
                 continue
             else:
                 return self._refuse(registry, envelope, "unreviewed_tool_in_episode")
+        if failing_verify is None and int(envelope.verification.get("failures_before_pass") or 0) < 1:
+            return self._refuse(registry, envelope, "no_failing_verification_to_parameterize")
         if target_read is None:
             return self._refuse(registry, envelope, "target_not_inspected")
         if replace_step is None or passing_verify is None:
@@ -280,7 +321,8 @@ class CodingCrystalExtractor:
         content = str((read_obs.get("result") or {}).get("content") or "")
         proposal = resolve_constant(verify_output(verify_obs), content)
         arguments = replace_obs.get("arguments") or {}
-        if not proposal or proposal["old_text"] != arguments.get("old_text") or proposal["new_text"] != arguments.get("new_text"):
+        if (not proposal or not same_assignment_line(proposal["old_text"], arguments.get("old_text"))
+                or not same_assignment_line(proposal["new_text"], arguments.get("new_text"))):
             return self._refuse(registry, envelope, "edit_not_reproducible")
         candidate = CodingCrystalCandidate(
             crystal_id="", task_family=envelope.task_family, steps=RECIPE_FIX_FAILING_ASSERTION,
