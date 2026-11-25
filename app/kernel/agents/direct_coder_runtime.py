@@ -36,11 +36,34 @@ AUTOPILOT_TOOLS = frozenset({
 # the model already has is never progress; the runtime answers from memory.
 READ_ONLY_TOOLS = frozenset({
     "workspace.index", "workspace.list", "workspace.search_text", "workspace.read_range",
-    "worktree.list", "worktree.read_file",
+    "worktree.list", "worktree.read_file", "worktree.search_text",
 })
 # Line-range reads. A bound worktree starts as a copy of the workspace, so both
 # share coverage per path; an edit changes the file hash and resets it.
 READ_RANGE_TOOLS = frozenset({"workspace.read_range", "worktree.read_file"})
+# Names models invent by mixing the workspace.* and worktree.* families (run
+# agent-a615d0b5-e4e194547191 asked for worktree.read_range twice). Only applied when the
+# target is registered and the requested id is not.
+TOOL_ALIASES = {
+    "worktree.read_range": "worktree.read_file",
+    "worktree.read": "worktree.read_file",
+    "worktree.search": "worktree.search_text",
+    "worktree.grep": "worktree.search_text",
+    "worktree.replace": "worktree.replace_exact",
+    "worktree.edit": "worktree.replace_exact",
+    "worktree.write": "worktree.write_file",
+    "workspace.read_file": "workspace.read_range",
+    "workspace.read": "workspace.read_range",
+    "workspace.search": "workspace.search_text",
+    "workspace.grep": "workspace.search_text",
+    "workspace.list_files": "workspace.list",
+}
+# Decision fields models put inside tool arguments ("unknown tool arguments: summary"
+# rejected two worktree.replace_exact edits in the same run).
+META_ARGUMENT_KEYS = frozenset({
+    "summary", "rationale", "reason", "reasoning", "explanation", "description", "notes",
+    "note", "thought", "thoughts", "execution_target", "decision_type", "tool_id",
+})
 MUTATION_TOOLS = frozenset({"worktree.replace_exact", "worktree.write_file"})
 # Turns kept back so the model always gets to write its answer.
 FINISH_RESERVE_TURNS = 2
@@ -81,6 +104,45 @@ def _memory_slice(state: dict[str, Any], path: str, start: int, end: int) -> str
             lines = str(item.get("content") or "").splitlines(keepends=True)
             return "".join(lines[start - a:end - a + 1])
     return ""
+
+
+def _normalize_tool_call(tool_id: str, arguments: dict[str, Any],
+                         schemas: dict[str, dict[str, Any]]) -> tuple[str, dict[str, Any], list[str]]:
+    """Map invented tool names to registered ones and drop decision fields from arguments.
+
+    ``schemas`` maps registered tool ids to their input schema. Returns the tool id,
+    arguments and a list of human-readable changes (empty when nothing changed).
+    """
+    changes: list[str] = []
+    tool_id = str(tool_id or "").strip()
+    args = dict(arguments or {})
+    if tool_id not in schemas:
+        target = TOOL_ALIASES.get(tool_id)
+        if target in schemas:
+            changes.append(f"tool {tool_id} -> {target}")
+            tool_id = target
+    schema = schemas.get(tool_id)
+    if isinstance(schema, dict):
+        props = schema.get("properties") if isinstance(schema.get("properties"), dict) else {}
+        closed = schema.get("additionalProperties") is False
+        aliased = bool(changes)
+        for key in list(args):
+            if key in props:
+                continue
+            if key in META_ARGUMENT_KEYS or (closed and aliased):
+                args.pop(key)
+                changes.append(f"dropped argument {key}")
+    return tool_id, args, changes
+
+
+def _unknown_tool_message(tool_id: str, schemas: dict[str, dict[str, Any]]) -> str:
+    import difflib
+
+    valid = sorted(schemas)
+    close = difflib.get_close_matches(str(tool_id), valid, n=2, cutoff=0.5)
+    hint = f" Did you mean {' or '.join(close)}?" if close else ""
+    return (f"Unknown tool {tool_id!r}.{hint} Use exactly one of these tool ids: "
+            + ", ".join(valid))
 
 
 def _canonical_path(state: dict[str, Any], path: str) -> str:
@@ -540,6 +602,14 @@ class DirectCoderRuntime:
                         f"summarised in NOTES). Do not re-read them.")
         return ""
 
+    def _tool_schemas(self) -> dict[str, dict[str, Any]]:
+        try:
+            tools = self.engine.tool_registry.list()
+        except Exception:
+            return {}
+        return {str(t.get("tool_id")): (t.get("input_schema") or {}) for t in tools or []
+                if isinstance(t, dict) and t.get("tool_id")}
+
     @staticmethod
     def _large_files(state: dict[str, Any]) -> dict[str, int]:
         return {path: int(info.get("total_lines") or 0) for path, info in (state.get("reads") or {}).items()
@@ -909,6 +979,28 @@ class DirectCoderRuntime:
                 # The bound worktree is local; models echo the tool's description here
                 # and the registry then rejects the call (run agent-a6dd269f-26b8a9060109).
                 decision = replace(decision, execution_target="local")
+            if source == "model":
+                schemas = self._tool_schemas()
+                if schemas:
+                    new_id, new_args, changes = _normalize_tool_call(
+                        decision.tool_id, dict(decision.arguments or {}), schemas)
+                    if changes:
+                        self._emit(run_id, "agent.coder.tool_call_normalized", requested_tool=decision.tool_id,
+                                   tool_id=new_id, changes=changes)
+                        decision = replace(decision, tool_id=new_id, arguments=new_args)
+                    if decision.tool_id not in schemas:
+                        message = _unknown_tool_message(decision.tool_id, schemas)
+                        self._emit(run_id, "agent.coder.tool_rejected", tool_id=decision.tool_id,
+                                   message=message[:600], reason="unknown_tool")
+                        state.setdefault("observations", []).append({
+                            "tool_id": decision.tool_id, "status": "failed", "error": message[:1500],
+                            "arguments": dict(decision.arguments or {}),
+                        })
+                        state["turn"] = turn + 1
+                        state["observations"] = list(state.get("observations") or [])[-16:]
+                        self._save(run_id, state)
+                        self._transition(run_id, AgentRunState.OBSERVING)
+                        return self._snapshot(run_id)
             skip_reason = ""
             bound_root = str((self._snapshot(run_id).get("checkpoint") or {}).get("worktree_root") or "")
             if (source == "model" and decision.tool_id == "worktree.bind" and bound_root
@@ -1045,10 +1137,17 @@ class DirectCoderRuntime:
                 canonical = exc.observation.as_dict()
                 entry = self._compact_observation(decision.tool_id, canonical)
             except Exception as exc:
+                message = str(exc)
+                if "unknown tool arguments" in message or "missing required tool arguments" in message:
+                    schema = self._tool_schemas().get(decision.tool_id) or {}
+                    allowed_args = sorted((schema.get("properties") or {}).keys())
+                    message += (f". {decision.tool_id} accepts only: {', '.join(allowed_args)}"
+                                f" (required: {', '.join(schema.get('required') or [])}). "
+                                "Put your notes in the decision summary, not in arguments.")
                 self._emit(run_id, "agent.coder.tool_rejected",
-                           tool_id=decision.tool_id, message=str(exc)[:600])
+                           tool_id=decision.tool_id, message=message[:600])
                 entry = {"tool_id": decision.tool_id,
-                         "status": "failed", "error": str(exc)[:1200]}
+                         "status": "failed", "error": message[:1200]}
             state.setdefault("observations", []).append(entry)
             if (decision.tool_id == "worktree.bind" and entry.get("status") == "completed"
                     and isinstance(canonical, dict) and isinstance(canonical.get("result"), dict)):
