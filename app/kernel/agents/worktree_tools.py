@@ -917,6 +917,10 @@ def _worktree_result(context: ToolExecutionContext) -> dict[str, Any]:
     }
 
 
+READ_DEFAULT_LINES = 2000
+READ_MAX_BYTES = 50_000
+
+
 async def _worktree_read_file(arguments: dict[str, Any], context: ToolExecutionContext) -> dict[str, Any]:
     """Read a bounded range from the isolated worktree (never the live workspace)."""
     if _is_remote_target(context):
@@ -930,10 +934,18 @@ async def _worktree_read_file(arguments: dict[str, Any], context: ToolExecutionC
     text = target.read_text(encoding="utf-8", errors="replace")
     lines = text.splitlines()
     start = max(1, int(arguments.get("start_line") or 1))
-    count = max(1, min(int(arguments.get("line_count") or 200), 1000))
-    selected = lines[start - 1 : start - 1 + count]
+    # OpenCode-style big reads: one call returns up to 2000 lines / ~50KB with a next offset.
+    count = max(1, min(int(arguments.get("line_count") or READ_DEFAULT_LINES), READ_DEFAULT_LINES))
+    selected: list[str] = []
+    size = 0
+    for line in lines[start - 1 : start - 1 + count]:
+        size += len(line) + 1
+        if selected and size > READ_MAX_BYTES:
+            break
+        selected.append(line)
     end = start + len(selected) - 1 if selected else start
     return {
+        **({"next_start_line": end + 1} if end < len(lines) else {}),
         "path": relative,
         "start_line": start,
         "end_line": end,
@@ -1097,7 +1109,9 @@ def register_worktree_tools(registry: AgentToolRegistry) -> AgentToolRegistry:
     ))
     registry.register(ToolSpec(
         tool_id="worktree.read_file", version="1", title="Read isolated file",
-        description="Read a bounded line range from the bound worktree so the model sees its own edits.", category="inspection",
+        description=("Read up to 2000 lines (~50KB) of a worktree file in ONE call (default: from start_line, "
+                     "all of it). Prefer one big read or worktree.search_text over many small reads; when "
+                     "next_start_line is returned, continue from there."), category="inspection",
         risk=ToolRisk.LOW, effect=ToolEffect.READ,
         input_schema={"type":"object","required":["path"],"properties":{"path":{"type":"string"},"start_line":{"type":"integer"},"line_count":{"type":"integer"}},"additionalProperties":False},
         timeout_seconds=15, requires_worktree=True, targets=("local",), handler=_worktree_read_file,

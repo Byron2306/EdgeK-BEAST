@@ -17,6 +17,7 @@ from app.cli.coder_client import RuntimeEvent
 REQUIRED_COMMANDS = (
     "help",
     "copy",
+    "mouse",
     "ask",
     "review",
     "edit",
@@ -93,7 +94,8 @@ COMMAND_GROUPS: tuple[tuple[str, tuple[tuple[str, str], ...]], ...] = (
         ("expand", "Expand runtime event details"),
         ("less", "Collapse runtime event details"),
         ("beastie", "Expand the original BEAST mascot"),
-        ("copy", "Copy the last run to the clipboard"),
+        ("copy", "Copy to clipboard (OSC52, works over SSH): /copy run|answer|diff|selection|file"),
+        ("mouse", "Mouse capture off|on: off lets your terminal select/copy text natively"),
         ("exit", "Exit the TLI"),
     )),
 )
@@ -318,6 +320,37 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
             "advisory", "Wrapping up: " + str(payload.get("reason") or "turn budget nearly spent"),
             sequence, details=payload,
         )
+    if event.event == "agent.coder.checklist":
+        items = payload.get("items") or []
+        marks = " ".join(f"{'✓' if i.get('done') else ('–' if i.get('skipped') else '☐')}{i.get('n')}"
+                         for i in items if isinstance(i, dict))
+        nxt = next((i for i in items if isinstance(i, dict) and not i.get("done") and not i.get("skipped")), None)
+        text = f"Checklist {payload.get('done', 0)}/{payload.get('total', len(items))}: {marks}"
+        if nxt:
+            text += f" · next: {nxt.get('n')}. {str(nxt.get('title') or '')[:80]}"
+        return ProjectedEvent("advisory", text, sequence, details=payload)
+    if event.event == "agent.coder.act_phase":
+        reason = str(payload.get("reason") or "")
+        text = (f"Act phase: {reason}, asking for the edit now" if reason.endswith("located")
+                else "Act phase: text already in memory, asking for the edit now")
+        return ProjectedEvent("advisory", text, sequence, details=payload)
+    if event.event == "agent.coder.prelocate":
+        return ProjectedEvent("advisory", f"Located item {payload.get('item')}: {payload.get('path')}:"
+                              f"{payload.get('line')} (loaded lines {payload.get('start')}-{payload.get('end')})",
+                              sequence, details=payload)
+    if event.event == "agent.coder.batch_edit":
+        return ProjectedEvent("advisory", f"Batched edit for item {payload.get('item') or '?'} on "
+                              f"{payload.get('path')} ({payload.get('remaining', 0)} more queued)",
+                              sequence, details=payload)
+    if event.event == "agent.coder.runtime_finish":
+        return ProjectedEvent("advisory", f"All checklist items handled ({payload.get('edits', 0)} edits); "
+                              "verifying and finishing without another model turn", sequence, details=payload)
+    if event.event == "agent.coder.auto_bind":
+        return ProjectedEvent("advisory", f"{payload.get('requested_tool')} needs the isolated worktree: "
+                              "binding it once now", sequence, details=payload)
+    if event.event == "agent.coder.auto_verify":
+        return ProjectedEvent("advisory", "Verifying edits: py_compile + --help on "
+                              + ", ".join(str(p) for p in payload.get("paths") or []), sequence, details=payload)
     if event.event == "agent.coder.duplicate_read_skipped":
         return ProjectedEvent(
             "advisory", "Skipped repeat read: " + str(payload.get("reason") or "")[:300],

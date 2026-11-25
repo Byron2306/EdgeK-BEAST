@@ -250,6 +250,36 @@ def sanitize_terminal_text(value: str) -> str:
     return _UNSAFE_TEXT_CONTROLS.sub("", text)
 
 
+_PASTE_TOKEN = re.compile(r"\[Pasted #(\d+): \d+ lines\]")
+
+
+class PasteInput(Input):
+    """Single-line composer that keeps multi-line pastes intact.
+
+    Textual's Input keeps only the first line of a bracketed paste. A multi-line paste is
+    stored whole and shown as a compact '[Pasted #n: N lines]' token that expands on submit,
+    so a big paste is one message, never submitted line by line."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.pastes: dict[int, str] = {}
+
+    def _on_paste(self, event: events.Paste) -> None:
+        text = str(event.text or "").replace("\r\n", "\n").replace("\r", "\n")
+        if "\n" not in text.strip("\n"):
+            return  # Textual also runs Input._on_paste, which inserts a single line
+        number = len(self.pastes) + 1
+        self.pastes[number] = text.strip("\n")
+        self.insert_text_at_cursor(f"[Pasted #{number}: {text.strip(chr(10)).count(chr(10)) + 1} lines]")
+        event.prevent_default()  # skip Input._on_paste (it would add the first line again)
+        event.stop()
+
+    def expand(self, value: str) -> str:
+        expanded = _PASTE_TOKEN.sub(lambda m: self.pastes.get(int(m.group(1)), m.group(0)), value)
+        self.pastes = {}
+        return expanded
+
+
 class BeastCoderApp(App[None]):
     """A single-purpose coding conversation over BEAST's durable AgentRuns."""
 
@@ -287,7 +317,9 @@ class BeastCoderApp(App[None]):
 
     AUTO_FOCUS = "#coder-input"
     BINDINGS = [
-        Binding("ctrl+shift+c", "copy_run", "Copy last run", show=False, priority=True),
+        Binding("ctrl+shift+c", "copy_smart", "Copy selection or last run", show=False, priority=True),
+        Binding("f2", "copy_smart", "Copy selection or last run", show=False),
+        Binding("f3", "toggle_mouse", "Toggle mouse capture", show=False),
         Binding("ctrl+end", "jump_latest", "Jump to latest", show=False, priority=True),
         Binding("f6", "jump_latest", "Jump to latest", show=False),
         Binding("f7", "toggle_diff", "Toggle live diff", show=False),
@@ -568,8 +600,8 @@ class BeastCoderApp(App[None]):
         yield ThinkingPanel(self._thinking_text(), id="coder-thinking")
         yield JumpLatestPanel("▼  JUMP TO LATEST  ·  F6 / Ctrl+End", id="coder-jump")
         yield Static("", id="coder-menu")
-        yield Input(
-            placeholder="Ask BEAST · ↓ agent menu · /help for commands · /auto on|off",
+        yield PasteInput(
+            placeholder="Ask BEAST · ↓ agent menu · /help · F2 copy · F3 mouse select",
             id="coder-input",
         )
 
@@ -1683,6 +1715,53 @@ class BeastCoderApp(App[None]):
                 return str(entry.get("content") or "") or None
         return None
 
+    def _last_answer_text(self) -> str:
+        for entry in reversed(self.transcript_entries):
+            if entry.get("role") == "assistant" and str(entry.get("content") or "").strip():
+                return str(entry.get("content") or "")
+        return ""
+
+    def _selected_text(self) -> str:
+        try:
+            return str(self.screen.get_selected_text() or "")
+        except Exception:
+            return ""
+
+    def _copy_text(self, text: str, label: str) -> None:
+        clean = sanitize_terminal_text(text)
+        if not clean.strip():
+            self.notify(f"Nothing to copy ({label}).", title="Copy")
+            return
+        # Textual sends OSC 52, so this reaches the local clipboard over SSH (e.g. Termux).
+        self.copy_to_clipboard(clean)
+        self.notify(f"Copied {label}: {len(clean.splitlines()) or 1} lines.", title="Copy")
+
+    def action_copy_smart(self) -> None:
+        """Copy the mouse selection if there is one, otherwise the last run."""
+        selected = self._selected_text()
+        if selected.strip():
+            self._copy_text(selected, "selection")
+        else:
+            self.action_copy_run()
+
+    def action_toggle_mouse(self, enable: bool | None = None) -> None:
+        """Release the mouse so the terminal's own select/copy works (Termux long-press etc.)."""
+        current = bool(getattr(self, "_mouse_captured", True))
+        enable = (not current) if enable is None else enable
+        driver = getattr(self, "_driver", None)
+        try:
+            if driver is not None:
+                if enable and hasattr(driver, "_enable_mouse_support"):
+                    driver._enable_mouse_support()
+                elif not enable and hasattr(driver, "_disable_mouse_support"):
+                    driver._disable_mouse_support()
+        except Exception:
+            pass
+        self._mouse_captured = enable
+        self._append("system", "Mouse capture on: drag to select, F2 / Ctrl+Shift+C to copy." if enable
+                     else "Mouse capture off: select and copy with your terminal (long-press on Termux). "
+                          "Scroll with PgUp/PgDn. /mouse on or F3 to restore.", persist=False)
+
     def action_copy_run(self, *, to_file: bool = False) -> None:
         """Copy the last request's visible transcript and receipt summaries."""
         start = next(
@@ -1758,7 +1837,8 @@ class BeastCoderApp(App[None]):
         self._sync()
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
-        value = sanitize_terminal_text(event.value).strip()
+        raw = event.input.expand(event.value) if isinstance(event.input, PasteInput) else event.value
+        value = sanitize_terminal_text(raw).strip()
         event.input.value = ""
         event.input.focus()
         self.run_worker(self._submit_input(value), group="coder-input", exit_on_error=False)
@@ -1856,9 +1936,25 @@ class BeastCoderApp(App[None]):
 
     async def _run_command(self, name: str, argument: str) -> None:
         if name == "copy":
-            if argument.strip().lower() not in {"", "file"}:
-                raise ValueError("Usage: /copy [file]")
-            self.action_copy_run(to_file=argument.strip().lower() == "file")
+            what = argument.strip().lower()
+            if what in {"", "run", "file"}:
+                self.action_copy_run(to_file=what == "file")
+                return
+            if what in {"answer", "last"}:
+                self._copy_text(self._last_answer_text(), "last answer")
+                return
+            if what == "diff":
+                self._copy_text(str(self.diff_bundle.get("diff") or ""), "diff")
+                return
+            if what in {"selection", "sel"}:
+                self._copy_text(self._selected_text(), "selection")
+                return
+            raise ValueError("Usage: /copy [run|answer|diff|selection|file]")
+        if name == "mouse":
+            what = argument.strip().lower()
+            if what not in {"", "on", "off"}:
+                raise ValueError("Usage: /mouse on|off")
+            self.action_toggle_mouse(None if not what else what == "on")
             return
         if name in {"ask", "review", "edit", "agent"}:
             if not argument:
@@ -1880,6 +1976,10 @@ class BeastCoderApp(App[None]):
                 text.append("\n")
             text.append("Keys: F6 jump to latest · F7 toggle live diff · ↓ agent menu\n",
                         style=BEAST_MUTED)
+            text.append("Copy/paste: drag to select, F2 or Ctrl+Shift+C copies the selection (else the last run) "
+                        "via OSC 52, which works over SSH. /copy answer|diff|run|selection. F3 or /mouse off "
+                        "hands the mouse to your terminal for native select. Multi-line pastes stay one "
+                        "message ([Pasted #n: N lines]).\n", style=BEAST_MUTED)
             self._append("system", text.plain, persist=False)
             return
         if name == "beastie":

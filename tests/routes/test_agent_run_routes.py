@@ -416,12 +416,16 @@ def test_direct_nim_turns_execute_real_effect_worktree_and_verify(tmp_path, monk
         {"decision_type": "complete", "tool_id": "", "arguments": {}, "summary": "Verified"},
     ])
     model_id = "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    request_count = {"n": 0}
 
     def stream_response(_operation, request, **_kwargs):
         spec = json.loads(request.data)
         assert request.full_url == "https://integrate.api.nvidia.com/v1/chat/completions"
         assert spec["model"] == model_id and spec["stream"] is True
-        assert spec["chat_template_kwargs"]["enable_thinking"] is True
+        request_count["n"] += 1
+        # Thinking plans the run (the bind turn); once a worktree is bound, edit turns run
+        # with thinking off (run agent-a615d0b5-5f90e8e56782 overthought every turn).
+        assert spec["chat_template_kwargs"]["enable_thinking"] is (request_count["n"] == 1)
         action = json.dumps(next(actions))
 
         def sse(delta):
