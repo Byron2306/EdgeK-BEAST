@@ -36,9 +36,9 @@ def test_summary_inside_arguments_is_dropped_not_rejected():
 def test_registered_tool_and_real_typos_are_left_alone():
     tool, args, changes = _normalize_tool_call("worktree.read_file", {"path": "x"}, SCHEMAS)
     assert (tool, args, changes) == ("worktree.read_file", {"path": "x"}, [])
-    # A non-meta unknown argument on a non-aliased tool still reaches the registry's rejection.
+    # OpenCode-style schema repair (t211u): unknown keys on closed schemas are dropped with a note.
     _, args, changes = _normalize_tool_call("worktree.replace_exact", {"path": "x", "old": "a"}, SCHEMAS)
-    assert "old" in args and changes == []
+    assert "old" not in args and changes == ["dropped unknown argument old"]
 
 
 def test_unknown_tool_message_lists_valid_ids_and_suggestion():

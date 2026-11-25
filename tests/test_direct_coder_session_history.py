@@ -35,7 +35,8 @@ def _engine_with_prior():
     return engine
 
 
-def test_follow_up_prompt_contains_previous_answer_from_the_store():
+def test_follow_up_prompt_contains_previous_answer_from_the_store(monkeypatch):
+    monkeypatch.setenv("BEAST_DIRECT_CODER_IMPLICIT_BIND", "0")  # turn 1 must be a model turn
     engine = _engine_with_prior()
     model = PromptRecordingModel([PlannerDecision(decision_type=PlannerDecisionType.COMPLETE, summary="ok")])
     asyncio.run(DirectCoderRuntime(engine, model, max_turns=8).run_one_turn("agent-test"))
@@ -47,7 +48,8 @@ def test_follow_up_prompt_contains_previous_answer_from_the_store():
     assert any(e == "agent.coder.history_attached" for e, _ in engine.events)
 
 
-def test_client_supplied_conversation_wins_and_is_bounded():
+def test_client_supplied_conversation_wins_and_is_bounded(monkeypatch):
+    monkeypatch.setenv("BEAST_DIRECT_CODER_IMPLICIT_BIND", "0")
     engine = _engine_with_prior()
     engine.store.run["request"]["conversation"] = [
         {"role": "user", "content": "explain beast"}, {"role": "assistant", "content": "It is a CLI."},
@@ -56,7 +58,10 @@ def test_client_supplied_conversation_wins_and_is_bounded():
     model = PromptRecordingModel([PlannerDecision(decision_type=PlannerDecisionType.COMPLETE, summary="ok")])
     asyncio.run(DirectCoderRuntime(engine, model, max_turns=8).run_one_turn("agent-test"))
     assert "[YOU (BEAST)] It is a CLI." in model.prompts[0]
-    assert EARLIER not in model.prompts[0] and "ignored" not in model.prompts[0]
+    # The client's messages are used; because none of them lists suggestions, the session's
+    # suggestions answer is pinned from the store (run agent-a615d0b5-c09297ce06db).
+    assert "ignored" not in model.prompts[0]
+    assert model.prompts[0].index(EARLIER) < model.prompts[0].index("It is a CLI.")
     big = [{"role": "assistant", "content": "x" * 9000}] * 5
     bounded = _bounded_conversation(big)
     assert sum(len(m["content"]) for m in bounded) <= 16000 and all(len(m["content"]) <= 6000 for m in bounded)

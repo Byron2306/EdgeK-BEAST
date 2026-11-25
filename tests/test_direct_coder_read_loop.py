@@ -120,11 +120,13 @@ def test_changed_file_resets_coverage():
     DirectCoderRuntime._remember(state, "workspace.read_range", {"path": "beast", "start_line": 1},
                                  {"status": "completed", "result": {"path": "beast", "start_line": 1,
                                   "end_line": 200, "total_lines": 600, "sha256": "a", "content": "x"}})
-    assert DirectCoderRuntime._duplicate_reason(state, "workspace.read_range", {"path": "beast", "start_line": 1})
+    # Reads default to 2000 lines since 887334c6: ask for the same 200-line window explicitly.
+    first = {"path": "beast", "start_line": 1, "line_count": 200}
+    assert DirectCoderRuntime._duplicate_reason(state, "workspace.read_range", first)
     DirectCoderRuntime._remember(state, "workspace.read_range", {"path": "beast", "start_line": 300},
                                  {"status": "completed", "result": {"path": "beast", "start_line": 300,
                                   "end_line": 400, "total_lines": 600, "sha256": "b", "content": "y"}})
-    assert not DirectCoderRuntime._duplicate_reason(state, "workspace.read_range", {"path": "beast", "start_line": 1})
+    assert not DirectCoderRuntime._duplicate_reason(state, "workspace.read_range", first)
 
 
 def test_tli_shows_final_report_and_skips():
@@ -240,7 +242,7 @@ def test_thinking_stays_off_after_first_overflow():
 
 def test_evicted_range_may_be_reread_once_then_is_a_loop():
     state = {"reads": {"beast": {"ranges": [[1, 200]], "total_lines": 600, "sha256": "a"}}, "file_memory": []}
-    args = {"path": "beast", "start_line": 1}
+    args = {"path": "beast", "start_line": 1, "line_count": 200}
     assert DirectCoderRuntime._duplicate_reason(state, "worktree.read_file", args) == ""
     assert DirectCoderRuntime._duplicate_reason(state, "worktree.read_file", args)
 
@@ -272,6 +274,7 @@ def test_rebind_is_refused_and_worktree_target_is_normalised():
 
     asyncio.run(go())
     assert ("worktree.bind", "local") not in targets
-    assert targets == [("worktree.read_file", "local")]
+    # The refused re-bind is folded (no turn spent), so the second turn is a fresh decision.
+    assert targets[0] == ("worktree.read_file", "local")
     skips = [p for e, p in engine.events if e == "agent.coder.duplicate_read_skipped"]
     assert "already bound" in skips[0]["reason"]

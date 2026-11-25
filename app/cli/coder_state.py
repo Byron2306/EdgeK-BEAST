@@ -296,6 +296,27 @@ class ProjectedEvent:
     details: dict[str, Any] = field(default_factory=dict)
 
 
+# Progress lines projected as "advisory" that are not answers (kept out of run history).
+PROGRESS_LINE = re.compile(r"^(Skipped repeat read|Verifying edits:|Wrapping up:|Located item|Batched edit|"
+                           r"All checklist items handled|Same \S+ call|Unknown tool|Diagnostics in|"
+                           r"Step limit reached|Act phase:|Checklist \d+/\d+|Edit reverted|\S+ needs the isolated worktree)")
+
+
+def is_history_row(entry: dict[str, Any]) -> bool:
+    """Transcript rows worth sending as run history.
+
+    A non-terminal turn stores its last progress line ("Skipped repeat read: ...") as an
+    assistant row; run agent-a615d0b5-c09297ce06db got eight of those as its history and
+    never saw the suggestions it was asked to implement."""
+    metadata = entry.get("metadata") or {}
+    if metadata.get("streaming"):
+        return False
+    if entry.get("role") == "assistant" and (metadata.get("turn_complete") is False
+                                             or PROGRESS_LINE.match(str(entry.get("content") or "").strip())):
+        return False
+    return True
+
+
 def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
     data = event.data if isinstance(event.data, dict) else {}
     payload = data.get("payload") if isinstance(data.get("payload"), dict) else {}
@@ -334,6 +355,22 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
         text = (f"Act phase: {reason}, asking for the edit now" if reason.endswith("located")
                 else "Act phase: text already in memory, asking for the edit now")
         return ProjectedEvent("advisory", text, sequence, details=payload)
+    if event.event == "agent.coder.invalid_tool":
+        return ProjectedEvent("advisory", f"Unknown tool {payload.get('tool_id')}: sent the model the valid list",
+                              sequence, details=payload)
+    if event.event == "agent.coder.edit_reverted":
+        return ProjectedEvent("advisory", f"Edit reverted: {payload.get('path')} would not parse "
+                              f"({payload.get('message')} at line {payload.get('line')}); file restored",
+                              sequence, details=payload)
+    if event.event == "agent.coder.doom_loop":
+        return ProjectedEvent("advisory", f"Same {payload.get('tool_id')} call {payload.get('repeats')}x: told the model to act",
+                              sequence, details=payload)
+    if event.event == "agent.coder.diagnostics":
+        return ProjectedEvent("advisory", f"Diagnostics in {payload.get('path')}: "
+                              + "; ".join(str(m) for m in (payload.get("messages") or [])[:2]), sequence, details=payload)
+    if event.event == "agent.coder.step_limit_summary":
+        return ProjectedEvent("advisory", "Step limit reached: tools off, summarising done and left",
+                              sequence, details=payload)
     if event.event == "agent.coder.prelocate":
         return ProjectedEvent("advisory", f"Located item {payload.get('item')}: {payload.get('path')}:"
                               f"{payload.get('line')} (loaded lines {payload.get('start')}-{payload.get('end')})",

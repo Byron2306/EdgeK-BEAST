@@ -57,7 +57,7 @@ from app.cli.coder_state import (
     CoderSettings,
     ConversationStore,
     parse_slash_command,
-    project_runtime_event,
+    project_runtime_event, is_history_row,
 )
 from app.cli.ui import (
     BEAST_ACID,
@@ -790,7 +790,7 @@ class BeastCoderApp(App[None]):
             for e in self.transcript_entries
             if isinstance(e, dict) and e.get("role") in {"user", "assistant"}
             and str(e.get("content") or "").strip()
-            and not (e.get("metadata") or {}).get("streaming")
+            and is_history_row(e)  # no streaming rows or per-turn progress lines
         ]
         if rows and rows[-1]["role"] == "user" and rows[-1]["content"].strip() == str(prompt).strip():
             rows.pop()

@@ -38,7 +38,10 @@ def test_edit_read_budget_forces_search_then_closes_reading():
     state["reads_since_edit"] = dcr.EDIT_READ_BUDGET - 1
     assert rt._edit_read_budget_reason(state, "worktree.read_file", wide) == ""
     state["reads_since_edit"] = dcr.EDIT_READ_BUDGET
-    assert "search_text" in rt._edit_read_budget_reason(state, "worktree.read_file", wide)
+    # 887334c6: lines not read yet may still be read in one wide call; re-reading covered text may not.
+    assert rt._edit_read_budget_reason(state, "worktree.read_file", wide) == ""
+    covered = {"path": "tester/beast", "start_line": 100, "line_count": 200}
+    assert "search_text" in rt._edit_read_budget_reason(state, "worktree.read_file", covered)
     assert rt._edit_read_budget_reason(state, "worktree.read_file", narrow) == ""
     assert rt._edit_read_budget_reason(state, "workspace.search_text", {"query": "x"}) == ""
     state["reads_since_edit"] = dcr.EDIT_READ_HARD_CAP

@@ -7,9 +7,12 @@ transport adapters until native tool-call transport replaces the JSON codec.
 """
 from __future__ import annotations
 
+import ast
 import asyncio
+import inspect
 import json
 import re
+import shutil
 import os
 import uuid
 from dataclasses import replace
@@ -110,6 +113,32 @@ def _memory_slice(state: dict[str, Any], path: str, start: int, end: int) -> str
     return ""
 
 
+def _memory_span(state: dict[str, Any], path: str, text: str) -> tuple[int, int] | None:
+    """Line span of ``text`` in the newest FILE MEMORY chunk of ``path`` that holds it once."""
+    text = str(text or "").strip("\n")
+    if not path or not text:
+        return None
+    for item in reversed(list(state.get("file_memory") or [])):
+        content = str(item.get("content") or "")
+        if item.get("path") == path and content.count(text) == 1:
+            start = int(item.get("start") or 1) + content[:content.index(text)].count("\n")
+            return start, start + text.count("\n")
+    return None
+
+
+def _progress_epoch(state: dict[str, Any]) -> int:
+    """Checklist items finished so far; a region's rewrite count restarts when this moves."""
+    return sum(1 for i in state.get("checklist") or [] if i.get("done") or i.get("skipped"))
+
+
+def _edited_region(state: dict[str, Any], path: str, start: int, end: int) -> dict[str, Any] | None:
+    """The region of ``path`` this run already edited that overlaps start..end, if any."""
+    for region in reversed(list(state.get("edited_regions") or [])):
+        if region.get("path") == path and int(region["start"]) <= end and start <= int(region["end"]):
+            return region
+    return None
+
+
 def _apply_edit_to_memory(state: dict[str, Any], path: str, old_text: str, new_text: str) -> bool:
     """Patch FILE MEMORY for ``path`` after a successful replace instead of discarding it.
 
@@ -193,6 +222,12 @@ def _normalize_tool_call(tool_id: str, arguments: dict[str, Any],
             tool_id = target
     schema = schemas.get(tool_id)
     if isinstance(schema, dict):
+        for key in [k for k in args if k in META_ARGUMENT_KEYS
+                    and k not in ((schema.get("properties") or {}) if isinstance(schema.get("properties"), dict) else {})]:
+            args.pop(key)
+            changes.append(f"dropped argument {key}")
+        args, notes = _repair_arguments(tool_id, args, schema)
+        changes.extend(notes)
         props = schema.get("properties") if isinstance(schema.get("properties"), dict) else {}
         closed = schema.get("additionalProperties") is False
         aliased = bool(changes)
@@ -211,6 +246,159 @@ def _normalize_tool_call(tool_id: str, arguments: dict[str, Any],
                 args.pop(key)
                 changes.append(f"dropped argument {key}")
     return tool_id, args, changes
+
+
+# ---- OpenCode-style tool surface (t211u) ---------------------------------------------
+# Flat names are what the prompt advertises; registered ids stay valid as aliases.
+FLAT_TOOLS = {
+    "read": ("worktree.read_file", "workspace.read_range"),
+    "grep": ("worktree.search_text", "workspace.search_text"),
+    "glob": ("worktree.list", "workspace.list"),
+    "ls": ("worktree.list", "workspace.list"),
+    "edit": ("worktree.replace_exact", "worktree.replace_exact"),
+    "write": ("worktree.write_file", "worktree.write_file"),
+    "shell": ("worktree.verify", "worktree.verify"),
+    "bash": ("worktree.verify", "worktree.verify"),
+}
+TODO_TOOL_IDS = frozenset({"todowrite", "todo.write", "todo_write", "checklist.write"})
+# Argument names other agents use -> ours (only applied when the schema has the target key).
+ARG_ALIASES = {"offset": "start_line", "limit_lines": "line_count", "filePath": "path", "file_path": "path",
+               "file": "path", "oldString": "old_text", "newString": "new_text", "old_string": "old_text",
+               "new_string": "new_text", "pattern": "query", "content_text": "content", "cmd": "command"}
+DOOM_LOOP_REPEATS = 3
+DOOM_LOOP_WINDOW = 8            # identical calls are counted over the last N calls, not only in a row
+DOOM_LOOP_FINISH = 3            # this many doom loops in one run: tools off, summarise and stop
+REGION_EDIT_LIMIT = 2           # successful edits of one region before a further rewrite is refused
+# Runtime progress lines a client may have stored as 'assistant' turns (run agent-a615d0b5-c09297ce06db
+# got eight of these as its conversation and lost the suggestions answer it was asked to implement).
+_PROGRESS_LINE = re.compile(r"^(Skipped repeat read|Verifying edits:|Wrapping up:|Located item|Batched edit|"
+                            r"All checklist items handled|Same \S+ call|Unknown tool|Diagnostics in|"
+                            r"Step limit reached|Act phase:|Checklist \d+/\d+|Edit reverted|\S+ needs the isolated worktree)")
+_COMPLETION_REPORT = re.compile(r"Checklist: \d+/\d+ done|^Implemented the requested|^Direct Coder stopped", re.M)
+# Older tool output beyond roughly the newest 40k tokens is trimmed from the prompt.
+PROMPT_TOOL_OUTPUT_CHARS = 160_000
+_PLAN_INTENT = re.compile(r"\b(suggest\w*|recommend\w*|review|analy[sz]\w*|explain|assess|audit|describe|"
+                          r"summari[sz]e|what|why|how|list|ideas?)\b", re.IGNORECASE)
+_CONTINUE_INTENT = re.compile(r"^\s*(continue|resume|keep going|go on|carry on|next|proceed)\b", re.IGNORECASE)
+_SCOPE_EXTRA = {"__file__", "__name__", "__doc__", "__spec__", "__loader__", "__package__",
+                "__builtins__", "__path__", "__annotations__", "__dict__", "__class__", "__debug__"}
+
+
+def _flat_tool_id(tool_id: str, bound: bool) -> str:
+    key = str(tool_id or "").strip()
+    pair = FLAT_TOOLS.get(key.lower())
+    return (pair[0] if bound else pair[1]) if pair else key
+
+
+def _scope_diagnostics(source: str, line_range: tuple[int, int] | None = None,
+                       functions: set[str] | None = None) -> tuple[list[str], set[str]]:
+    """Per-function undefined names (pyflakes-style, stdlib symtable).
+
+    A name a function reads that is not local, not from an enclosing function, not defined at
+    module level and not a builtin raises NameError when the function runs (run
+    agent-ae64e89c-20be546057f7: _is_safe_path used `workspace`, a local of
+    command_reinstall_surfaces). Only functions overlapping ``line_range`` or named in
+    ``functions`` are reported. Returns (messages, names of the functions checked)."""
+    import ast
+    import builtins
+    import symtable
+
+    try:
+        tree = ast.parse(source)
+        top = symtable.symtable(source, "<edit>", "exec")
+    except (SyntaxError, ValueError) as exc:
+        return [f"syntax error: {exc}"], set()
+    if any(isinstance(n, ast.ImportFrom) and any(a.name == "*" for a in n.names) for n in tree.body):
+        return [], set()
+    module_names = {sym.get_name() for sym in top.get_symbols()
+                    if sym.is_assigned() or sym.is_imported() or sym.is_namespace()}
+    spans: dict[tuple[str, int], int] = {}
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            first = min([node.lineno] + [d.lineno for d in getattr(node, "decorator_list", [])])
+            spans[(node.name, first)] = int(getattr(node, "end_lineno", node.lineno) or node.lineno)
+            spans[(node.name, node.lineno)] = int(getattr(node, "end_lineno", node.lineno) or node.lineno)
+
+    def declared_globals(table: Any) -> None:
+        for sym in table.get_symbols():
+            if sym.is_declared_global() and sym.is_assigned():
+                module_names.add(sym.get_name())
+        for child in table.get_children():
+            declared_globals(child)
+
+    declared_globals(top)
+    known = module_names | set(dir(builtins)) | _SCOPE_EXTRA
+    messages: list[str] = []
+    checked: set[str] = set()
+
+    def visit(table: Any, outer: str = "") -> None:
+        for child in table.get_children():
+            name = child.get_name()
+            start = int(child.get_lineno() or 0)
+            end = spans.get((name, start), start)
+            qual = f"{outer}.{name}" if outer else name
+            wanted = ((line_range is not None and start <= line_range[1] and end >= line_range[0])
+                      or (functions is not None and (qual in functions or name in functions)))
+            if child.get_type() in ("function", "class") and wanted:
+                checked.add(qual)
+                for sym in child.get_symbols():
+                    if (sym.is_referenced() and sym.is_global() and not sym.is_declared_global()
+                            and sym.get_name() not in known):
+                        line = next((n.lineno for n in ast.walk(tree) if isinstance(n, ast.Name)
+                                     and n.id == sym.get_name() and start <= n.lineno <= end), start)
+                        messages.append(f"line {line}: undefined name '{sym.get_name()}' in {qual}() "
+                                        "(not local, not a parameter, not defined at module level)")
+            visit(child, qual if child.get_type() in ("function", "class") else outer)
+
+    visit(top)
+    return messages, checked
+
+
+def _repair_arguments(tool_id: str, args: dict[str, Any], schema: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
+    """Fix arguments against a tool's JSON schema: rename common aliases, drop unknown keys
+    (closed schemas), coerce integer/number/boolean/string/array values. Returns notes."""
+    import shlex
+
+    props = schema.get("properties") if isinstance(schema.get("properties"), dict) else {}
+    if not props:
+        return args, []
+    notes: list[str] = []
+    out = dict(args)
+    for src, dst in ARG_ALIASES.items():
+        if src in out and src not in props and dst in props and dst not in out:
+            out[dst] = out.pop(src)
+            notes.append(f"renamed argument {src} -> {dst}")
+    if "limit" in out and "limit" not in props and "line_count" in props and "line_count" not in out:
+        out["line_count"] = out.pop("limit")
+        notes.append("renamed argument limit -> line_count")
+    if schema.get("additionalProperties") is False:
+        for key in [k for k in out if k not in props]:
+            out.pop(key)
+            notes.append(f"dropped unknown argument {key}")
+    for key, value in list(out.items()):
+        spec = props.get(key) if isinstance(props.get(key), dict) else {}
+        kind = spec.get("type")
+        try:
+            if kind == "integer" and isinstance(value, str) and value.strip().lstrip("-").isdigit():
+                out[key] = int(value.strip())
+            elif kind == "integer" and isinstance(value, float) and value.is_integer():
+                out[key] = int(value)
+            elif kind == "number" and isinstance(value, str):
+                out[key] = float(value.strip())
+            elif kind == "boolean" and isinstance(value, str) and value.strip().lower() in {"true", "false", "1", "0", "yes", "no"}:
+                out[key] = value.strip().lower() in {"true", "1", "yes"}
+            elif kind == "string" and isinstance(value, (int, float)) and not isinstance(value, bool):
+                out[key] = str(value)
+            elif kind == "array" and isinstance(value, str):
+                text = value.strip()
+                parsed = json.loads(text) if text.startswith("[") else (shlex.split(text) if key in {"command", "argv", "args"} else [text])
+                out[key] = parsed
+            else:
+                continue
+            notes.append(f"{key}: {type(value).__name__} -> {kind}")
+        except (ValueError, json.JSONDecodeError):
+            continue
+    return out, notes
 
 
 def _unknown_tool_message(tool_id: str, schemas: dict[str, dict[str, Any]]) -> str:
@@ -286,8 +474,13 @@ _IDENT = re.compile(r"`([A-Za-z_][A-Za-z0-9_.]*)\(?\)?`|\b([a-z][a-z0-9]*_[a-z0-
 # Map unbound worktree reads to their workspace equivalents (run agent-a615d0b5-c230388cc73c
 # was refused 'tool worktree.list requires an isolated worktree' four times before binding).
 PARALLEL_TOOL_IDS = frozenset({"parallel", "multi_tool_use.parallel", "batch", "tools.parallel"})
-_EDIT_INTENT = re.compile(r"\b(implement|fix|patch|add|change|edit|refactor|apply|write|create|update|rename|"
-                          r"remove|delete|replace|improve|harden|make)\b", re.IGNORECASE)
+# Inflected forms count too: 'proceed implementing your first 5 suggestions for patching.' (run
+# agent-a615d0b5-c09297ce06db) matched none of the bare verbs and looked like a suggest-only run.
+_EDIT_INTENT = re.compile(r"\b(implement\w*|fix(?:es|ed|ing)?|patch\w*|add(?:s|ed|ing)?|chang(?:e|es|ed|ing)|"
+                          r"edit(?:s|ed|ing)?|refactor\w*|appl(?:y|ies|ied|ying)|writ(?:e|es|ing)|"
+                          r"creat(?:e|es|ed|ing)|updat(?:e|es|ed|ing)|renam(?:e|es|ed|ing)|remov(?:e|es|ed|ing)|"
+                          r"delet(?:e|es|ed|ing)|replac(?:e|es|ed|ing)|improv(?:e|es|ed|ing)|harden\w*|"
+                          r"mak(?:e|es|ing))\b", re.IGNORECASE)
 WORKTREE_CHECKPOINT_KEYS = ("worktree_task_id", "worktree_root", "worktree_branch",
                             "worktree_base_commit", "worktree_prefix")
 UNBOUND_READ_MAP = {"worktree.list": "workspace.list", "worktree.read_file": "workspace.read_range",
@@ -398,11 +591,22 @@ def _resolve_old_lines(state: dict[str, Any], arguments: dict[str, Any]) -> tupl
                       "you read them); read them first, then edit")
     following = [ln.strip() for ln in _memory_slice(state, path, b + 1, b + 4).splitlines() if ln.strip()]
     new_lines = [ln.strip() for ln in str(args.get("new_text") or "").splitlines()]
-    if len(following) >= 3 and any(new_lines[i:i + len(following)] == following
-                                   for i in range(len(new_lines))):
-        return args, (f"new_text already contains lines {b + 1}-{b + 4} of {path}, which come right after "
-                      f"old_lines {a}-{b}; the edit would duplicate them. Extend old_lines to cover every "
-                      "line your new_text rewrites.")
+    hit = next((i for i in range(len(new_lines))
+                if len(following) >= 3 and new_lines[i:i + len(following)] == following), None)
+    if hit is not None:
+        # new_text runs past line b: tell the model the exact span that makes the edit a
+        # replacement instead of a duplication (run agent-a615d0b5-c09297ce06db only got
+        # "extend old_lines" and re-sent the same edit).
+        tail = len(new_lines) - hit
+        suggest = b + tail
+        while suggest > b and not _memory_slice(state, path, a, suggest):
+            suggest -= 1
+        return args, (f"new_text already contains lines {b + 1}-{b + 4} of {path} (from new_text line {hit + 1} "
+                      f"on), which come right after old_lines {a}-{b}; applied as is, the edit would duplicate "
+                      f"them. Fix: send the SAME edit again with old_lines '{a}-{suggest}' so the lines your "
+                      "new_text rewrites are replaced, not repeated"
+                      + ("" if suggest >= b + tail else f" (read lines {suggest + 1}-{b + tail} first)")
+                      + f"; or end new_text before the line '{following[0][:80]}'.")
     if not args.get("old_text"):
         args["old_text"] = text.rstrip("\n")
     return args, ""
@@ -462,7 +666,8 @@ def _gutter_excerpt(content: str, start: int) -> str:
     return "\n".join(f"{start + i:>5}| {line}" for i, line in enumerate(str(content).split("\n")))
 
 
-def _auto_verify_command(paths: list[str], watch_names: list[str] | None = None) -> list[str]:
+def _auto_verify_command(paths: list[str], watch_names: list[str] | None = None,
+                         functions: dict[str, list[str]] | None = None) -> list[str]:
     """python -c script: py_compile every edited Python file, flag names the edits use but no
     one defines (run agent-ae64e89c-761611896972 called a helper it never wrote), then --help
     smoke for scripts."""
@@ -482,6 +687,10 @@ def _auto_verify_command(paths: list[str], watch_names: list[str] | None = None)
         "        elif isinstance(n, (ast.Global, ast.Nonlocal)): defined.update(n.names)\n"
         "        elif isinstance(n, ast.MatchAs) and n.name: defined.add(n.name)\n"
         "    return sorted((used - defined) & watch)\n"
+        "from typing import Any\n"
+        f"_SCOPE_EXTRA = set({sorted(_SCOPE_EXTRA)!r})\n"
+        f"funcs = {dict((k, sorted(v)[:40]) for k, v in (functions or {}).items())!r}\n"
+        + inspect.getsource(_scope_diagnostics) +
         "rc = 0\n"
         "for p in paths:\n"
         "    try:\n"
@@ -498,6 +707,11 @@ def _auto_verify_command(paths: list[str], watch_names: list[str] | None = None)
         "    missing = undefined(open(p, encoding='utf-8', errors='replace').read()) if watch else []\n"
         "    if missing:\n"
         "        print('UNDEFINED names used by the edit (define or import them):', p, ', '.join(missing)); rc = 1\n"
+        "    wanted = set(funcs.get(p) or [])\n"
+        "    if wanted:\n"
+        "        scope, _ = _scope_diagnostics(open(p, encoding='utf-8', errors='replace').read(), None, wanted)\n"
+        "        for m in scope: print('SCOPE', p, m)\n"
+        "        rc = rc or (1 if scope else 0)\n"
         "    if not p.endswith('.py'):\n"
         "        try:\n"
         "            r = subprocess.run([sys.executable, p, '--help'], capture_output=True, text=True, timeout=60)\n"
@@ -661,6 +875,10 @@ class DirectCoderRuntime:
             "{calls: [{tool_id, arguments}, ...]} (reads/searches run concurrently; edits run in order, one "
             "file at a time). Prefer one big read (up to 2000 lines) or a search over many small reads. "
             "Keep summary text under 4 lines. "
+            "Short tool names (preferred): read {path, start_line, line_count}, grep {query, path}, "
+            "glob {path}, edit {path, old_lines|old_text, new_text}, write {path, content}, "
+            "shell {command: [argv]}, todowrite {todos: [{content, status}]} (rewrite the whole list; "
+            "status pending|in_progress|completed|cancelled). The long ids in TOOLS also work. "
             "Never invent file contents, evidence, test results, or authorization. "
             "All writes must go through a bound isolated worktree. "
             "After the requested edit, use worktree.verify with the operator's actual test argv, "
@@ -688,9 +906,11 @@ class DirectCoderRuntime:
             f"{json.dumps(state.get('advisory') or [], ensure_ascii=False, default=str)[:3800]}\n"
             f"READ COVERAGE: {json.dumps(self._coverage(state), ensure_ascii=False)[:2500]}\n"
             f"NOTES (your earlier findings): {self._render_notes(state)}\n"
-            f"FILE MEMORY (verbatim text you already read):\n{self._render_file_memory(state)}\n"
+            f"FILE MEMORY (verbatim text you already read):\n"
+            f"{self._render_file_memory(state, budget=max(20000, min(FILE_MEMORY_PROMPT_CHARS, PROMPT_TOOL_OUTPUT_CHARS - len(observations) - len(self._render_notes(state)))))}\n"
             f"PRIOR OBSERVATIONS: {observations}\n"
             f"{_render_checklist(state.get('checklist') or [])}"
+            f"{self._suggest_rules(state)}"
             f"{finish_block}"
             f"TURN: {turn_no} of {self.max_turns} ({remaining} left after this one)\n"
         )
@@ -713,6 +933,30 @@ class DirectCoderRuntime:
                     return text
         return str(prior.get("error") or "").strip()
 
+    def _pin_from_store(self, run: dict[str, Any], items: list[dict[str, str]]) -> list[dict[str, str]]:
+        """The newest earlier answer in this session that lists numbered suggestions.
+
+        Clients send only their last few messages; run agent-a615d0b5-c09297ce06db got eight
+        progress lines and no suggestions, so 'implement your first 5' had no checklist."""
+        store = getattr(self.engine, "store", None)
+        session_id = str(run.get("session_id") or "")
+        if not session_id or not hasattr(store, "list_runs"):
+            return []
+        try:
+            priors = [r for r in store.list_runs(session_id=session_id, limit=40)
+                      if r.get("run_id") != run.get("run_id")
+                      and float(r.get("created_at") or 0) <= float(run.get("created_at") or 1e18)]
+        except Exception:
+            return []
+        present = {m["content"][:200] for m in items}
+        for prior in sorted(priors, key=lambda r: float(r.get("created_at") or 0), reverse=True):
+            answer = self._final_answer(prior)
+            if (answer and answer[:200] not in present and len(_extract_suggestions(answer)) >= 2
+                    and not _COMPLETION_REPORT.search(answer)):
+                return [{"role": "user", "content": str(prior.get("objective") or "")[:600], "pinned": "1"},
+                        {"role": "assistant", "content": answer[:CONVERSATION_MESSAGE_CHARS], "pinned": "1"}]
+        return []
+
     def _session_history(self, run: dict[str, Any]) -> list[dict[str, str]]:
         """Earlier user requests and this agent's answers in the same session.
 
@@ -731,27 +975,45 @@ class DirectCoderRuntime:
                     continue
                 role = str(message.get("role") or "")
                 content = str(message.get("content") or "").strip()
+                if role == "assistant" and _PROGRESS_LINE.match(content):
+                    continue
                 if role in {"user", "assistant"} and content:
                     items.append({"role": role, "content": content[:CONVERSATION_MESSAGE_CHARS]})
         else:
             session_id = str(run.get("session_id") or "")
             store = self.engine.store
             if session_id and hasattr(store, "list_runs"):
-                priors = [r for r in store.list_runs(session_id=session_id, limit=8)
+                priors = [r for r in store.list_runs(session_id=session_id, limit=40)
                           if r.get("run_id") != run.get("run_id")
                           and float(r.get("created_at") or 0) <= float(run.get("created_at") or 1e18)]
                 priors.sort(key=lambda r: float(r.get("created_at") or 0))
-                for prior in priors[-(CONVERSATION_MESSAGES // 2):]:
+                window = priors[-(CONVERSATION_MESSAGES // 2):]
+                # Pin the newest earlier answer that lists numbered suggestions, so "implement the
+                # first 3" still sees step 1's detail after later runs (run agent-ae64e89c-20be546057f7
+                # lost it from the 8-message window and took 14 turns instead of 5).
+                pinned: list[dict[str, str]] = []
+                for prior in reversed(priors[:-(CONVERSATION_MESSAGES // 2)] if len(priors) > CONVERSATION_MESSAGES // 2 else []):
+                    answer = self._final_answer(prior)
+                    if answer and len(_extract_suggestions(answer)) >= 2 and not _COMPLETION_REPORT.search(answer):
+                        pinned = [{"role": "user", "content": str(prior.get("objective") or "")[:600], "pinned": "1"},
+                                  {"role": "assistant", "content": answer[:CONVERSATION_MESSAGE_CHARS], "pinned": "1"}]
+                        break
+                items.extend(pinned)
+                for prior in window:
                     objective = str(prior.get("objective") or "").strip()
                     if objective:
                         items.append({"role": "user", "content": objective[:CONVERSATION_MESSAGE_CHARS]})
                     answer = self._final_answer(prior)
                     if answer:
                         items.append({"role": "assistant", "content": answer[:CONVERSATION_MESSAGE_CHARS]})
-        items = items[-CONVERSATION_MESSAGES:]
-        while items and sum(len(m["content"]) for m in items) > CONVERSATION_TOTAL_CHARS:
-            items.pop(0)
-        return items
+        if not any(m["role"] == "assistant" and len(_extract_suggestions(m["content"])) >= 2 for m in items):
+            items = self._pin_from_store(run, items) + items
+        pinned_items = [m for m in items if m.get("pinned")]
+        rest = [m for m in items if not m.get("pinned")][-(CONVERSATION_MESSAGES):]
+        while rest and sum(len(m["content"]) for m in pinned_items + rest) > CONVERSATION_TOTAL_CHARS + (
+                sum(len(m["content"]) for m in pinned_items)):
+            rest.pop(0)
+        return [{"role": m["role"], "content": m["content"]} for m in pinned_items + rest]
 
     @staticmethod
     def _render_conversation(state: dict[str, Any]) -> str:
@@ -889,15 +1151,16 @@ class DirectCoderRuntime:
         return text
 
     @staticmethod
-    def _render_file_memory(state: dict[str, Any]) -> str:
+    def _render_file_memory(state: dict[str, Any], budget: int = 0) -> str:
+        budget = int(budget or FILE_MEMORY_PROMPT_CHARS)
         blocks: list[str] = []
         used = 0
         evicted: list[str] = []
         for item in reversed(list(state.get("file_memory") or [])):
             header = f"--- {item.get('path')} lines {item.get('start')}-{item.get('end')} (NNNNN| is the line number, not file text) ---\n"
             body = _gutter_excerpt(str(item.get("content") or ""), int(item.get("start") or 1))
-            if used + len(header) + len(body) > FILE_MEMORY_PROMPT_CHARS:
-                room = FILE_MEMORY_PROMPT_CHARS - used - len(header) - 200
+            if used + len(header) + len(body) > budget:
+                room = budget - used - len(header) - 200
                 if room > 4000 and not evicted:
                     # Show the part that fits rather than nothing (big reads exceed the budget).
                     kept = body[:room].rsplit("\n", 1)[0]
@@ -997,12 +1260,11 @@ class DirectCoderRuntime:
         return (
             "ACT NOW. You already have the text you need; reading and re-binding are closed for this "
             "step. Your next decision MUST be worktree.replace_exact (or worktree.write_file) for the "
-            "NEXT checklist item. Easiest form: arguments {path, old_lines: 'START-END', new_text} where "
+            "NEXT change you have not made yet (never rewrite lines you already edited). Easiest form: arguments {path, old_lines: 'START-END', new_text} where "
             "START-END are line numbers from the EXACT TEXT below; the runtime fills old_text with those "
             "exact lines, so you do not copy them (the 'NNNN| ' gutter is not part of the file). "
-            "new_text replaces those whole lines: keep their indentation. In new_text prefer single "
-            "quotes for Python strings; every double quote inside a JSON string must be written as \\\" "
-            "or the edit is cut off. Several independent edits: one 'parallel' decision or edits:[...]. "
+            "new_text replaces those whole lines: keep their indentation. JSON tip, not a task: write every double quote inside new_text as \\\" "
+            "or the edit is cut off; keep the file's own quote style. Several independent edits: one 'parallel' decision or edits:[...]. "
             "No explanations: summary under 4 lines. If all edits are done, return complete (the runtime verifies).\n" + ("\n".join(excerpts) + "\n" if excerpts else "")
         )
 
@@ -1103,6 +1365,230 @@ class DirectCoderRuntime:
         if refused:
             state.setdefault("observations", []).append(
                 {"tool_id": "parallel", "status": "partial", "error": "; ".join(refused)[:1500]})
+
+    async def _fold_or_end_turn(self, run_id: str, state: dict[str, Any], turn: int, kind: str) -> dict[str, Any]:
+        """Runtime-answered decisions cost no extra model turn once per turn (folded)."""
+        state["observations"] = list(state.get("observations") or [])[-16:]
+        if state.get("fold_turn") != turn and turn + 1 < self.max_turns:
+            state["fold_turn"] = turn
+            self._emit(run_id, "agent.coder.skip_folded", tool_id=kind, kind=kind)
+            self._save(run_id, state)
+            return await self._run_turn(run_id)
+        state["turn"] = turn + 1
+        self._save(run_id, state)
+        self._transition(run_id, AgentRunState.OBSERVING)
+        return self._snapshot(run_id)
+
+    def _todowrite(self, run_id: str, state: dict[str, Any], args: dict[str, Any]) -> None:
+        """Replace the checklist with the model's full list (OpenCode todowrite)."""
+        todos = args.get("todos") or args.get("items") or []
+        if isinstance(todos, str):
+            try:
+                todos = json.loads(todos)
+            except json.JSONDecodeError:
+                todos = [{"content": line, "status": "pending"} for line in todos.splitlines() if line.strip()]
+        old = {str(i.get("title") or "")[:60].lower(): i for i in state.get("checklist") or []}
+        checklist = []
+        for k, todo in enumerate(list(todos)[:20]):
+            if isinstance(todo, str):
+                todo = {"content": todo}
+            if not isinstance(todo, dict):
+                continue
+            title = str(todo.get("content") or todo.get("title") or "").strip()[:160]
+            if not title:
+                continue
+            status = str(todo.get("status") or "pending").lower()
+            prev = old.get(title[:60].lower(), {})
+            item = {"n": k + 1, "title": title, "done": status in {"completed", "done"},
+                    "symbols": prev.get("symbols") or _symbols(title)}
+            if status in {"cancelled", "canceled", "skipped"}:
+                item["skipped"], item["skip_reason"] = True, str(todo.get("reason") or "cancelled")[:200]
+            for key in ("site", "site_range"):
+                if prev.get(key):
+                    item[key] = prev[key]
+            checklist.append(item)
+        state["checklist"] = checklist
+        state.setdefault("observations", []).append({
+            "tool_id": "todowrite", "status": "completed",
+            "result": {"todos": [{"n": i["n"], "title": i["title"],
+                                  "status": "completed" if i.get("done") else ("cancelled" if i.get("skipped") else "pending")}
+                                 for i in checklist]}})
+        self._emit(run_id, "agent.coder.checklist", items=checklist,
+                   done=sum(1 for i in checklist if i.get("done")),
+                   skipped=sum(1 for i in checklist if i.get("skipped")), total=len(checklist))
+
+    def _previous_checklist(self, run: dict[str, Any]) -> list[dict[str, Any]]:
+        """'continue' resumes the session's last checklist at its first incomplete item."""
+        store = getattr(self.engine, "store", None)
+        session_id = str(run.get("session_id") or "")
+        if not session_id or not hasattr(store, "list_runs"):
+            return []
+        try:
+            priors = [r for r in store.list_runs(session_id=session_id, limit=12) if r.get("run_id") != run.get("run_id")]
+        except Exception:
+            return []
+        for prior in sorted(priors, key=lambda r: float(r.get("created_at") or 0), reverse=True):
+            items = ((prior.get("checkpoint") or {}).get("direct_coder") or {}).get("checklist") or []
+            if items and any(not i.get("done") and not i.get("skipped") for i in items):
+                return [{k: v for k, v in dict(i).items() if k not in {"site", "site_range"}} for i in items]
+        return []
+
+    @staticmethod
+    def _suggest_rules(state: dict[str, Any]) -> str:
+        if not state.get("plan_run"):
+            return ""
+        return ("SUGGESTION RULES (plan run, no edits): number each suggestion '1.', '2.', ... on its own line. "
+                "Each must name the exact function(s) in backticks and their line range(s) from FILE MEMORY, "
+                "and describe one small concrete change (under ~40 changed lines) that can be implemented "
+                "and verified on its own. No vague refactors such as 'split into modules' or 'add docstrings "
+                "everywhere'.\n")
+
+    def _step_limit_summary(self, state: dict[str, Any], reason: str = "") -> str:
+        checklist = state.get("checklist") or []
+        done = [f"{i['n']}. {i['title']}" for i in checklist if i.get("done")]
+        left = [f"{i['n']}. {i['title']}" + (f" (skipped: {i.get('skip_reason')})" if i.get("skipped") else "")
+                for i in checklist if not i.get("done")]
+        edits = int(state.get("edit_count") or 0)
+        lines = [(reason or f"Stopped at the step limit ({self.max_turns} turns)")
+                 + f" with {edits} edit(s) in the worktree"
+                 + (" (verified)." if state.get("verified_after_edit") else " (not verified).")]
+        if edits and not state.get("verified_after_edit") and state.get("rollback_hint"):
+            lines.append("To discard these edits: " + str(state["rollback_hint"]))
+        if checklist:
+            lines.append("Done: " + ("; ".join(done) if done else "nothing yet"))
+            lines.append("Left: " + ("; ".join(left) if left else "nothing"))
+        notes = list(state.get("notes") or [])[-3:]
+        if notes:
+            lines.append("Last notes: " + " | ".join(n[:200] for n in notes))
+        lines.append("Say 'continue' to resume at the first item that is left.")
+        return "\n".join(lines)
+
+    async def _doom(self, run_id: str, state: dict[str, Any], turn: int, tool_id: str,
+                    arguments: dict[str, Any], message: str) -> dict[str, Any]:
+        """Refuse a repeated action; after DOOM_LOOP_FINISH of them the next decision ends the run."""
+        state["doom_count"] = int(state.get("doom_count") or 0) + 1
+        if state["doom_count"] >= DOOM_LOOP_FINISH:
+            state["force_finish"] = True
+            message += " This run has looped too often: your next decision ends it with a summary."
+        self._emit(run_id, "agent.coder.doom_loop", tool_id=tool_id, repeats=DOOM_LOOP_REPEATS,
+                   count=state["doom_count"], finishing=bool(state.get("force_finish")))
+        state.setdefault("observations", []).append({"tool_id": tool_id, "status": "refused", "error": message})
+        state["recent_calls"] = []
+        self._note_stall(run_id, state, tool_id, arguments)
+        return await self._fold_or_end_turn(run_id, state, turn, "doom_loop")
+
+    @staticmethod
+    def _record_edited_region(state: dict[str, Any], path: str, new_text: str, turn: int) -> None:
+        span = _memory_span(state, path, new_text)
+        if not span:
+            return
+        regions = [dict(r) for r in state.get("edited_regions") or []]
+        hit = next((r for r in reversed(regions) if r.get("path") == path
+                    and int(r["start"]) <= span[1] and span[0] <= int(r["end"])), None)
+        epoch = _progress_epoch(state)
+        if hit:
+            same_item = int(hit.get("epoch") or 0) == epoch
+            hit.update(start=min(int(hit["start"]), span[0]), end=max(int(hit["end"]), span[1]),
+                       count=int(hit.get("count") or 1) + 1 if same_item else 1, turn=turn + 1, epoch=epoch)
+        else:
+            regions.append({"path": path, "start": span[0], "end": span[1], "count": 1, "turn": turn + 1,
+                            "epoch": epoch})
+        state["edited_regions"] = regions[-24:]
+
+    def _bound_target(self, run_id: str, state: dict[str, Any], path: str) -> str:
+        root = str((self._snapshot(run_id).get("checkpoint") or {}).get("worktree_root") or "")
+        if not root or not path:
+            return ""
+        prefix = str(state.get("path_prefix") or "")
+        candidates = [os.path.join(root, path)] + ([os.path.join(root, prefix, path)] if prefix else [])
+        return next((c for c in candidates if os.path.isfile(c)), "")
+
+    def _parseable_source(self, run_id: str, state: dict[str, Any], path: str) -> tuple[str, str] | None:
+        """(target, source) of a Python file in the bound worktree that parses now, else None."""
+        target = self._bound_target(run_id, state, path)
+        if not target:
+            return None
+        try:
+            with open(target, encoding="utf-8") as handle:
+                source = handle.read()
+        except (OSError, UnicodeDecodeError):
+            return None
+        if not (target.endswith(".py") or source.startswith("#!") and "python" in source.split("\n", 1)[0]):
+            return None
+        try:
+            ast.parse(source)
+        except (SyntaxError, ValueError):
+            return None
+        return target, source
+
+    def _revert_if_syntax_broken(self, run_id: str, state: dict[str, Any], pre_edit: tuple[str, str],
+                                 decision: PlannerDecision) -> str:
+        """An edit that turns a parseable file into a SyntaxError is undone at once.
+
+        Run agent-a615d0b5-c09297ce06db ended budget_exhausted with py_compile failing at line
+        347 of its worktree copy; the worktree must never be left unparseable by one edit.
+        Returns the error for the model ('' when the edit parses)."""
+        target, before = pre_edit
+        try:
+            with open(target, encoding="utf-8") as handle:
+                after = handle.read()
+        except (OSError, UnicodeDecodeError):
+            return ""
+        try:
+            ast.parse(after)
+            return ""
+        except (SyntaxError, ValueError) as exc:
+            line = int(getattr(exc, "lineno", 0) or 0)
+            msg = str(getattr(exc, "msg", "") or exc)
+        tmp = target + ".beast-revert"
+        try:
+            with open(tmp, "w", encoding="utf-8") as handle:
+                handle.write(before)
+            shutil.copymode(target, tmp)   # keep the executable bit (tester/beast is 0755)
+            os.replace(tmp, target)
+        except OSError as exc:
+            return ""
+        context = ""
+        if line:
+            lines = after.splitlines()
+            lo, hi = max(1, line - 4), min(len(lines), line + 3)
+            context = "\n".join(f"{n:6d}| {lines[n - 1]}" for n in range(lo, hi + 1))
+        path = str((decision.arguments or {}).get("path") or "")
+        self._emit(run_id, "agent.coder.edit_reverted", path=path, line=line, message=msg[:200])
+        return (f"Edit reverted: it made {path} fail to parse ({msg} at line {line}), so the runtime restored "
+                "the file to its text before this edit (FILE MEMORY still shows that text). Lines around the "
+                f"error after your edit were:\n{context}\nSend the edit again with balanced brackets and "
+                "quotes, the same indentation, and old_lines covering every line new_text replaces.")
+
+    def _edit_diagnostics(self, run_id: str, state: dict[str, Any], path: str, new_text: str) -> list[str]:
+        """Diagnostics in the edit result (OpenCode LSP-style): scope errors in the edited code."""
+        root = str((self._snapshot(run_id).get("checkpoint") or {}).get("worktree_root") or "")
+        if not root or not path:
+            return []
+        prefix = str(state.get("path_prefix") or "")
+        candidates = [os.path.join(root, path)] + ([os.path.join(root, prefix, path)] if prefix else [])
+        target = next((c for c in candidates if os.path.isfile(c)), "")
+        if not target:
+            return []
+        try:
+            with open(target, encoding="utf-8", errors="replace") as handle:
+                source = handle.read()
+        except OSError:
+            return []
+        if not (target.endswith(".py") or source.startswith("#!") and "python" in source.split("\n", 1)[0]):
+            return []
+        idx = source.find(new_text) if new_text else -1
+        if idx < 0:
+            return []
+        start = source[:idx].count("\n") + 1
+        span = (start, start + new_text.count("\n"))
+        messages, checked = _scope_diagnostics(source, span)
+        funcs = dict(state.get("edited_funcs") or {})
+        funcs[path] = sorted(set(funcs.get(path) or []) | checked)[:40]
+        state["edited_funcs"] = funcs
+        if messages:
+            self._emit(run_id, "agent.coder.diagnostics", path=path, messages=messages[:8])
+        return messages[:8]
 
     @staticmethod
     def _checklist_resolved(state: dict[str, Any]) -> bool:
@@ -1230,6 +1716,12 @@ class DirectCoderRuntime:
 
     def _note_stall(self, run_id: str, state: dict[str, Any], tool_id: str, arguments: dict[str, Any]) -> None:
         """A refused or served repeat request in a bound worktree; enough of them start the act phase."""
+        if tool_id in READ_RANGE_TOOLS:
+            r_path, r_start, r_end = _requested_range(arguments or {})
+            if _edited_region(state, _canonical_path(state, r_path), r_start, r_end):
+                # A confirm-read of lines this run just edited: pushing those lines back as
+                # "ACT NOW" excerpts made run agent-a615d0b5-c09297ce06db rewrite them 8 times.
+                return
         state["stalls"] = int(state.get("stalls") or 0) + 1
         if tool_id in READ_RANGE_TOOLS:
             path, start, end = _requested_range(arguments or {})
@@ -1349,6 +1841,8 @@ class DirectCoderRuntime:
         if notes:
             lines.append("Findings noted while reading:")
             lines.extend(f"- {n}" for n in notes[-12:])
+        if state.get("edit_count") and not state.get("verified_after_edit") and state.get("rollback_hint"):
+            lines.append("Edits in the worktree are not verified. To discard them: " + str(state["rollback_hint"]))
         lines.append("Re-run with a narrower request (one function or line range) or a larger turn budget.")
         return "\n".join(lines)
 
@@ -1478,7 +1972,12 @@ class DirectCoderRuntime:
                 state["conversation"] = []
                 self._emit(run_id, "agent.integration.failed", capability="session_history",
                            stage="preflight", reason=type(exc).__name__)
-            checklist = _build_checklist(str(run.get("objective") or ""), state["conversation"])
+            objective_text = str(run.get("objective") or "")
+            checklist = _build_checklist(objective_text, state["conversation"])
+            if not checklist and _CONTINUE_INTENT.search(objective_text):
+                checklist = self._previous_checklist(run)
+            state["plan_run"] = bool(_PLAN_INTENT.search(objective_text) and not _EDIT_INTENT.search(objective_text)
+                                     and not checklist and str(run.get("mode") or "agent") != "edit")
             if checklist:
                 state["checklist"] = checklist
                 self._emit(run_id, "agent.coder.checklist", items=checklist, done=0, total=len(checklist))
@@ -1628,6 +2127,14 @@ class DirectCoderRuntime:
                         prompt = self._prompt(run, state, finishing="final turn, answer now")
                         decision = await self._ask(run_id, prompt, run, turn + 1, quiet_thinking=True,
                                                    state=state)
+                    if (((turn + 1 >= self.max_turns and state.get("bound")) or state.get("force_finish"))
+                            and decision.decision_type is PlannerDecisionType.TOOL):
+                        # Step limit (or repeated doom loops): tools off, answer with what is done and left.
+                        forced = bool(state.get("force_finish"))
+                        self._emit(run_id, "agent.coder.step_limit_summary", tool_id=decision.tool_id,
+                                   reason="doom_loops" if forced else "step_limit")
+                        decision = PlannerDecision(decision_type=PlannerDecisionType.COMPLETE, summary=self._step_limit_summary(
+                            state, f"Stopped early after {state.get('doom_count')} repeated-action loops" if forced else ""))
                     if self.crystals is not None:
                         self.crystals.budget.record_model_turn(run_id, prompt=prompt, decision=decision,
                                                                usage=(getattr(self.provider, "last_usage", None) or {}).get("usage"))
@@ -1673,7 +2180,8 @@ class DirectCoderRuntime:
             decision = PlannerDecision(
                 decision_type=PlannerDecisionType.TOOL, tool_id="worktree.verify",
                 arguments={"command": _auto_verify_command(list(state.get("edited_paths") or []),
-                                                           list(state.get("edit_names") or [])),
+                                                           list(state.get("edit_names") or []),
+                                                           dict(state.get("edited_funcs") or {})),
                            "timeout_seconds": AUTO_VERIFY_TIMEOUT},
                 rationale="Runtime verification of the edited files before completion.")
             source = "runtime"
@@ -1738,6 +2246,28 @@ class DirectCoderRuntime:
                 # The bound worktree is local; models echo the tool's description here
                 # and the registry then rejects the call (run agent-a6dd269f-26b8a9060109).
                 decision = replace(decision, execution_target="local")
+            if source == "model" and decision.decision_type is PlannerDecisionType.TOOL:
+                flat = _flat_tool_id(decision.tool_id, bool(state.get("bound")))
+                if flat != decision.tool_id:
+                    self._emit(run_id, "agent.coder.tool_call_normalized", requested_tool=decision.tool_id,
+                               tool_id=flat, changes=[f"tool {decision.tool_id} -> {flat}"])
+                    decision = replace(decision, tool_id=flat)
+            if (source == "model" and decision.decision_type is PlannerDecisionType.TOOL
+                    and decision.tool_id.strip().lower() in TODO_TOOL_IDS):
+                self._todowrite(run_id, state, dict(decision.arguments or {}))
+                return await self._fold_or_end_turn(run_id, state, turn, "todowrite")
+            if (source == "model" and decision.decision_type is PlannerDecisionType.TOOL
+                    and state.get("plan_run") and (decision.tool_id in MUTATION_TOOLS
+                                                   or decision.tool_id in {"worktree.bind", "worktree.replace",
+                                                                           "worktree.edit", "edit", "write"})):
+                # Plan vs build: analysis/suggest runs answer; they never edit.
+                self._emit(run_id, "agent.coder.tool_rejected", tool_id=decision.tool_id, reason="plan_run",
+                           message="plan run: no edits")
+                state.setdefault("observations", []).append({
+                    "tool_id": decision.tool_id, "status": "refused",
+                    "error": ("This is a plan (analysis/suggest) run: do not bind or edit. Return decision_type "
+                              "complete with the written answer. The operator can ask you to implement it next.")})
+                return await self._fold_or_end_turn(run_id, state, turn, "plan_run")
             if (source == "model" and decision.decision_type is PlannerDecisionType.TOOL
                     and decision.tool_id.strip().lower() in PARALLEL_TOOL_IDS):
                 await self._run_parallel(run_id, state, decision)
@@ -1846,19 +2376,67 @@ class DirectCoderRuntime:
                         self._emit(run_id, "agent.coder.tool_call_normalized", requested_tool=decision.tool_id,
                                    tool_id=new_id, changes=changes)
                         decision = replace(decision, tool_id=new_id, arguments=new_args)
+                    if changes:
+                        state["pending_arg_repair"] = changes
                     if decision.tool_id not in schemas:
+                        # OpenCode 'invalid' tool: an unknown name is a normal result listing the
+                        # valid tools, folded into the same turn, never a hard rejection.
                         message = _unknown_tool_message(decision.tool_id, schemas)
-                        self._emit(run_id, "agent.coder.tool_rejected", tool_id=decision.tool_id,
-                                   message=message[:600], reason="unknown_tool")
+                        self._emit(run_id, "agent.coder.invalid_tool", tool_id=decision.tool_id,
+                                   message=message[:600])
                         state.setdefault("observations", []).append({
-                            "tool_id": decision.tool_id, "status": "failed", "error": message[:1500],
-                            "arguments": dict(decision.arguments or {}),
+                            "tool_id": "invalid", "status": "completed",
+                            "arguments": {"requested_tool": decision.tool_id},
+                            "result": {"error": message[:1500],
+                                       "flat_tools": sorted(FLAT_TOOLS) + ["todowrite", "parallel"]},
                         })
-                        state["turn"] = turn + 1
-                        state["observations"] = list(state.get("observations") or [])[-16:]
-                        self._save(run_id, state)
-                        self._transition(run_id, AgentRunState.OBSERVING)
-                        return self._snapshot(run_id)
+                        return await self._fold_or_end_turn(run_id, state, turn, "invalid_tool")
+            if source == "model" and decision.decision_type is PlannerDecisionType.TOOL \
+                    and not state.get("resuming_approval_id"):
+                args_now = dict(decision.arguments or {})
+                if decision.tool_id in READ_RANGE_TOOLS:
+                    r_path, r_start, r_end = _requested_range(args_now)
+                    sig = f"read:{_canonical_path(state, r_path)}:{r_start}-{r_end}"
+                else:
+                    sig = decision.tool_id + json.dumps(args_now, sort_keys=True, default=str)[:4000]
+                window = list(state.get("recent_calls") or [])[-(DOOM_LOOP_WINDOW - 1):]
+                state["recent_calls"] = window + [sig]
+                doom = ""
+                if window.count(sig) >= DOOM_LOOP_REPEATS - 1:
+                    doom = (f"Doom loop: {decision.tool_id} with these arguments {DOOM_LOOP_REPEATS} times in the "
+                            f"last {DOOM_LOOP_WINDOW} calls. You already have its result.")
+                    if decision.tool_id in READ_RANGE_TOOLS:
+                        region = _edited_region(state, _canonical_path(state, r_path), r_start, r_end)
+                        if region:
+                            doom += (f" Lines {region['start']}-{region['end']} already hold your edit "
+                                     f"(applied {region['count']}x, last at turn {region['turn']}); there is "
+                                     "nothing to confirm.")
+                    doom += " Act on it now: the next change, mark the checklist item (todowrite or SKIP n), or complete."
+                elif decision.tool_id == "worktree.replace_exact":
+                    e_path = _canonical_path(state, str(args_now.get("path") or ""))
+                    span = _memory_span(state, e_path, str(args_now.get("old_text") or ""))
+                    region = _edited_region(state, e_path, *span) if span else None
+                    if (region and int(region.get("count") or 0) >= REGION_EDIT_LIMIT
+                            and int(region.get("epoch") or 0) == _progress_epoch(state)
+                            and not (state.get("needs_fix") or {}).get(e_path)):
+                        doom = (f"Refused: you already rewrote {e_path} lines {region['start']}-{region['end']} "
+                                f"{region['count']} times and the result passed the syntax check, so that change "
+                                "is applied. Do not rewrite this region again. Mark the item done (DONE n), move "
+                                "to the next item somewhere else, or complete.")
+                if doom:
+                    await_doom = await self._doom(run_id, state, turn, decision.tool_id, args_now, doom)
+                    return await_doom
+                old_t, new_t = str(args_now.get("old_text") or ""), str(args_now.get("new_text") or "")
+                if (decision.tool_id == "worktree.replace_exact" and old_t
+                        and re.sub(r"\s+", "", old_t) == re.sub(r"\s+", "", new_t)):
+                    # A whitespace-only replace counted as 'done' in run agent-f86eb92e-f35599dd63f1.
+                    message = ("Refused: this edit changes only whitespace, so it implements nothing. Make the "
+                               "real change for the item, or SKIP n: reason if it cannot be done.")
+                    self._emit(run_id, "agent.coder.tool_rejected", tool_id=decision.tool_id,
+                               reason="no_op_edit", message=message)
+                    state.setdefault("observations", []).append(
+                        {"tool_id": decision.tool_id, "status": "refused", "error": message})
+                    return await self._fold_or_end_turn(run_id, state, turn, "no_op_edit")
             skip_reason = ""
             bound_root = str((self._snapshot(run_id).get("checkpoint") or {}).get("worktree_root") or "")
             if (source == "model" and decision.tool_id == "worktree.bind" and bound_root
@@ -1907,13 +2485,18 @@ class DirectCoderRuntime:
                     state["served_from_memory"] = list(state.get("served_from_memory") or [])[-31:] + [key]
                     self._emit(run_id, "agent.coder.read_served_from_memory", tool_id=decision.tool_id,
                                path=path, start_line=start, end_line=end)
+                    region = _edited_region(state, path, start, end)
+                    note = ("Exact current text from FILE MEMORY. Copy old_text from here "
+                            "into worktree.replace_exact now; do not read these lines again.")
+                    if region:
+                        note = (f"This is the CURRENT text AFTER your edit of lines {region['start']}-{region['end']} "
+                                f"(turn {region['turn']}): the edit is applied. Do not rewrite these lines unless a "
+                                "diagnostic or verify failure points here. Continue with the next item, or complete.")
                     state.setdefault("observations", []).append({
                         "tool_id": EXCERPT_TOOL, "status": "completed",
                         "requested_tool": decision.tool_id, "arguments": dict(decision.arguments or {}),
                         "result": {"path": path, "start_line": start, "end_line": end,
-                                   "content": excerpt[:EXCERPT_CHARS],
-                                   "note": "Exact current text from FILE MEMORY. Copy old_text from here "
-                                           "into worktree.replace_exact now; do not read these lines again."},
+                                   "content": excerpt[:EXCERPT_CHARS], "note": note},
                     })
                     self._note_stall(run_id, state, decision.tool_id, dict(decision.arguments or {}))
                     if state.get("fold_turn") != turn:
@@ -1956,6 +2539,7 @@ class DirectCoderRuntime:
                 return self._snapshot(run_id)
             if decision.tool_id in READ_ONLY_TOOLS:
                 state["duplicate_streak"] = 0
+            pre_edit: tuple[str, str] | None = None
             try:
                 if command and decision.tool_id in {"worktree.replace_exact", "worktree.write_file"}:
                     path = str(decision.arguments.get("path") or "")
@@ -2005,6 +2589,8 @@ class DirectCoderRuntime:
                         return self._snapshot(run_id)
                 else:
                     approval_id = state.pop("resuming_approval_id")
+                if decision.tool_id in MUTATION_TOOLS:
+                    pre_edit = self._parseable_source(run_id, state, str(args.get("path") or ""))
                 self._transition(run_id, AgentRunState.EXECUTING_TOOL)
                 observation = await self.engine.execute_tool(
                     run_id, decision.tool_id, args,
@@ -2029,6 +2615,15 @@ class DirectCoderRuntime:
                            tool_id=decision.tool_id, message=message[:600])
                 entry = {"tool_id": decision.tool_id,
                          "status": "failed", "error": message[:1200]}
+            repairs = state.pop("pending_arg_repair", None)
+            if repairs and isinstance(entry, dict):
+                entry["arg_repair"] = list(repairs)[:12]
+            if pre_edit is not None and isinstance(entry, dict) and entry.get("status") == "completed":
+                reverted = self._revert_if_syntax_broken(run_id, state, pre_edit, decision)
+                if reverted:
+                    entry = {"tool_id": decision.tool_id, "status": "failed", "error": reverted,
+                             "arguments": {k: v for k, v in dict(decision.arguments or {}).items() if k != "new_text"}}
+                    canonical = None
             state.setdefault("observations", []).append(entry)
             if (decision.tool_id == "worktree.bind" and entry.get("status") == "completed"
                     and isinstance(canonical, dict) and isinstance(canonical.get("result"), dict)):
@@ -2097,6 +2692,22 @@ class DirectCoderRuntime:
                     state["rereads"] = []
                     state["served_from_memory"] = []
                     state["scan"] = {}
+                    diagnostics = self._edit_diagnostics(run_id, state, edited,
+                                                         str(decision.arguments.get("new_text") or ""))
+                    if diagnostics and isinstance(entry, dict):
+                        entry["diagnostics"] = diagnostics
+                        state["verified_after_edit"] = False
+                    needs_fix = dict(state.get("needs_fix") or {})
+                    needs_fix[edited] = bool(diagnostics)
+                    state["needs_fix"] = needs_fix
+                    self._record_edited_region(state, edited, str(decision.arguments.get("new_text") or ""), turn)
+                    if bound_root and not state.get("rollback_hint"):
+                        prefix = str(state.get("path_prefix") or "")
+                        rel = edited if not prefix or edited.startswith(prefix + "/") else f"{prefix}/{edited}"
+                        state["rollback_hint"] = f"git -C {bound_root} checkout -- {rel}"
+                    # verify results are about the old text: an identical verify after an edit is no loop
+                    state["recent_calls"] = [c for c in (state.get("recent_calls") or [])
+                                             if not c.startswith("worktree.verify")]
                 self._focus_next_site(run_id, state)
                 state["duplicate_streak"] = 0
             if self.crystals is not None and canonical is not None:
@@ -2131,6 +2742,8 @@ class DirectCoderRuntime:
                 ok = (entry.get("status") == "completed" and isinstance(result, dict)
                       and result.get("ok") is True and int(result.get("returncode") or 0) == 0)
                 state["verified_after_edit"] = bool(ok and state.get("edit_count"))
+                if not ok:
+                    state["needs_fix"] = {p: True for p in state.get("edited_paths") or []}
                 pending_summary = state.pop("pending_complete_summary", None)
                 if ok and pending_summary is not None and source == "runtime":
                     done = [i for i in (state.get("checklist") or []) if i.get("done")]
