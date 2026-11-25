@@ -163,8 +163,100 @@ def _worktree_root(context: ToolExecutionContext) -> Path:
     return root
 
 
+SEED_MAX_FILES = 500
+SEED_MAX_FILE_BYTES = 8 * 1024 * 1024
+SEED_MAX_TOTAL_BYTES = 64 * 1024 * 1024
+
+
+def _worktree_prefix(context: ToolExecutionContext) -> str:
+    """Workspace subdirectory inside the bound worktree ("" when the workspace is the repo root).
+
+    The TLI workspace can be a folder inside the repository (e.g. ``tester``)
+    while the isolated worktree is a checkout of the whole repository, so the
+    model's workspace-relative ``beast`` lives at ``tester/beast`` there.
+    """
+    engine = context.engine
+    if engine is None or not context.run_id:
+        return ""
+    try:
+        run = engine.store.get_run(context.run_id) or {}
+    except Exception:
+        return ""
+    prefix = str((run.get("checkpoint") or {}).get("worktree_prefix") or "").strip("/")
+    if not prefix or ".." in prefix.split("/"):
+        return ""
+    return prefix
+
+
+def _with_prefix(context: ToolExecutionContext, relative: str) -> str:
+    raw = str(relative or "").replace("\\", "/").strip()
+    prefix = _worktree_prefix(context)
+    if not prefix:
+        return raw
+    if raw in {"", "."}:
+        return prefix
+    if raw == prefix or raw.startswith(prefix + "/"):
+        return raw
+    return f"{prefix}/{raw}"
+
+
+def _seed_workspace_into_worktree(workspace_root: str | Path, primary_root: Path,
+                                  worktree_root: Path) -> dict[str, Any]:
+    """Copy untracked (not ignored) workspace files into a fresh worktree.
+
+    ``git worktree add`` only checks out tracked files, so an untracked file the
+    operator asked to edit (``tester/beast`` in run agent-a615d0b5-f6328f73c9be)
+    was "not found" in the worktree. Seeded files are staged in the throwaway
+    worktree's index so ``git diff`` shows only the agent's own edits.
+    """
+    requested = Path(workspace_root).expanduser().resolve()
+    try:
+        prefix = requested.relative_to(primary_root.resolve()).as_posix()
+    except ValueError:
+        return {"prefix": "", "seeded": []}
+    if prefix in {"", "."}:
+        return {"prefix": "", "seeded": []}
+    listing = subprocess.run(
+        ["git", "-C", str(requested), "ls-files", "--others", "--exclude-standard", "-z", "--", "."],
+        capture_output=True, timeout=15,
+    )
+    seeded: list[str] = []
+    total = 0
+    if listing.returncode == 0:
+        for item in listing.stdout.decode("utf-8", errors="replace").split("\0"):
+            if not item or len(seeded) >= SEED_MAX_FILES:
+                continue
+            parts = Path(item).parts
+            if any(part in {".git", ".beast"} or part.startswith(".beast-") for part in parts):
+                continue
+            source = (requested / item)
+            if source.is_symlink() or not source.is_file():
+                continue
+            size = source.stat().st_size
+            if size > SEED_MAX_FILE_BYTES or total + size > SEED_MAX_TOTAL_BYTES:
+                continue
+            target = (worktree_root / prefix / item).resolve()
+            try:
+                target.relative_to(worktree_root.resolve())
+            except ValueError:
+                continue
+            if target.exists():
+                continue
+            target.parent.mkdir(parents=True, exist_ok=True)
+            import shutil as _shutil
+            _shutil.copy2(source, target)
+            total += size
+            seeded.append(f"{prefix}/{item}")
+    (worktree_root / prefix).mkdir(parents=True, exist_ok=True)
+    if seeded:
+        subprocess.run(["git", "-C", str(worktree_root), "add", "--", *seeded],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=30)
+    return {"prefix": prefix, "seeded": seeded}
+
+
 def _safe_worktree_path(context: ToolExecutionContext, relative: str) -> Path:
     root = _worktree_root(context)
+    relative = _with_prefix(context, relative)
     candidate = (root / str(relative or "")).resolve()
     try:
         candidate.relative_to(root)
@@ -264,12 +356,17 @@ async def _worktree_bind(arguments: dict[str, Any], context: ToolExecutionContex
         raise RuntimeError(str((result.get("task") or {}).get("error") or "worktree creation failed"))
     task = result.get("task") if isinstance(result.get("task"), dict) else {}
     root = str(task.get("worktree_path") or "")
+    try:
+        seed = _seed_workspace_into_worktree(context.workspace_root, forge.workspace_root, Path(root))
+    except (OSError, subprocess.SubprocessError, ValueError):
+        seed = {"prefix": "", "seeded": []}
     if context.engine is not None:
         context.engine.merge_checkpoint(context.run_id, {
             "worktree_task_id": str(task.get("task_id") or ""),
             "worktree_root": root,
             "worktree_branch": str(task.get("branch") or ""),
             "worktree_base_commit": str(task.get("base_commit") or ""),
+            "worktree_prefix": seed["prefix"],
         })
     return {
         "task_id": task.get("task_id"),
@@ -277,6 +374,10 @@ async def _worktree_bind(arguments: dict[str, Any], context: ToolExecutionContex
         "branch": task.get("branch"),
         "base_commit": task.get("base_commit"),
         "status": task.get("status"),
+        **({"workspace_prefix": seed["prefix"],
+            "note": f"Workspace paths map to {seed['prefix']}/ in this worktree; keep using workspace-relative paths."}
+           if seed["prefix"] else {}),
+        **({"seeded_untracked_files": seed["seeded"][:50]} if seed["seeded"] else {}),
     }
 
 
@@ -589,7 +690,7 @@ async def _worktree_run_verification(arguments: dict[str, Any], context: ToolExe
     timeout = max(1.0, min(float(arguments.get("timeout_seconds") or 120), 600.0))
     process = await asyncio.create_subprocess_exec(
         *command,
-        cwd=str(root),
+        cwd=str(_safe_worktree_path(context, ".")),  # workspace folder inside the worktree
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
         env=_local_worktree_env(),
@@ -788,7 +889,7 @@ def _worktree_relative(context: ToolExecutionContext, value: Any) -> str:
     raw = str(value or "").replace("\\", "/").strip()
     if raw.startswith("/"):
         raise ValueError("worktree tools require a path relative to the worktree root")
-    return raw or "."
+    return _with_prefix(context, raw) or "."
 
 
 def _worktree_iter_files(root: Path, start: Path):
@@ -942,7 +1043,7 @@ async def _worktree_run(arguments: dict[str, Any], context: ToolExecutionContext
     timeout = max(1.0, min(float(arguments.get("timeout_seconds") or 120), 600.0))
     process = await asyncio.create_subprocess_exec(
         *resolved,
-        cwd=str(root),
+        cwd=str(_safe_worktree_path(context, ".")),  # workspace folder inside the worktree
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
         env=_local_worktree_env(),

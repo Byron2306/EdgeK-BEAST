@@ -92,6 +92,22 @@ async def iter_sse_events(
         raise RuntimeClientError("stream ended with an incomplete SSE frame")
 
 
+def _bounded_conversation(messages: list[dict[str, str]] | None, *, keep: int = 8,
+                          per_message: int = 6000, total: int = 16000) -> list[dict[str, str]]:
+    """Recent user/assistant turns of this TLI session, newest kept first."""
+    items = []
+    for message in list(messages or [])[-keep:]:
+        if not isinstance(message, dict):
+            continue
+        role = str(message.get("role") or "")
+        content = str(message.get("content") or "").strip()
+        if role in {"user", "assistant"} and content:
+            items.append({"role": role, "content": content[:per_message]})
+    while items and sum(len(m["content"]) for m in items) > total:
+        items.pop(0)
+    return items
+
+
 class CoderRuntimeClient:
     """Use existing BEAST discovery and durable AgentRun HTTP contracts."""
 
@@ -137,7 +153,14 @@ class CoderRuntimeClient:
             detail = (await response.aread()).decode("utf-8", errors="replace")[:500]
         raise RuntimeClientError(f"BEAST gateway HTTP {response.status_code}: {detail or response.reason_phrase}")
 
+    def _ensure_open(self, path: str) -> None:
+        if self._client.is_closed:
+            raise RuntimeClientError(
+                f"BEAST client is closed (the TUI is shutting down); not sending {path}"
+            )
+
     async def _get_json(self, path: str, **params: Any) -> dict[str, Any]:
+        self._ensure_open(path)
         try:
             response = await self._client.get(path, params=params or None)
         except httpx.HTTPError as exc:
@@ -155,6 +178,7 @@ class CoderRuntimeClient:
         return payload
 
     async def _post_json(self, path: str, payload: dict[str, Any]) -> dict[str, Any]:
+        self._ensure_open(path)
         try:
             response = await self._client.post(path, json=payload)
         except httpx.HTTPError as exc:
@@ -311,6 +335,7 @@ class CoderRuntimeClient:
         self, session_id: str, prompt: str, provider: str, model: str,
         *, mode: str = "ask", context_files: tuple[str, ...] = (),
         autonomy: str | None = None, permission_mode: str = "normal", swarm: bool = False,
+        conversation: list[dict[str, str]] | None = None,
     ) -> dict[str, Any]:
         if mode not in {"ask", "review", "edit", "agent"}:
             raise ValueError("invalid BEAST composer mode")
@@ -421,6 +446,7 @@ class CoderRuntimeClient:
                         and launch_strategy == "typed_planner"
                     ),
                     "permission_mode": permission_mode,
+                    **({"conversation": _bounded_conversation(conversation)} if conversation else {}),
                 },
                 "launch": True,
             },
@@ -593,11 +619,17 @@ class CoderRuntimeClient:
         except RuntimeClientError as exc:
             cause = exc.__cause__
             if isinstance(cause, httpx.TransportError) and not isinstance(cause, httpx.ReadTimeout):
-                # Connection dropped (stale keep-alive, gateway restart). Check
-                # whether the turn ran; never resubmit it blindly.
+                # Connection dropped (stale keep-alive, gateway restart, or the
+                # TUI closing its client mid-turn). Check whether the turn ran;
+                # never resubmit it blindly, and never touch a closed client.
+                if self._client.is_closed:
+                    raise RuntimeTurnUnconfirmed(
+                        f"The TUI closed while turn {run_id} was running; the gateway keeps going. "
+                        "Reopen `bin/beast ui` and use /status, then /next."
+                    ) from exc
                 try:
                     status = await self.runtime_status(run_id)
-                except (RuntimeClientError, TimeoutError):
+                except (RuntimeClientError, TimeoutError, RuntimeError):
                     status = {}
                 run = status.get("run") or {}
                 receipt = (run.get("checkpoint") or {}).get("coder_turn_reply") or {}

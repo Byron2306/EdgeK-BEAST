@@ -22,7 +22,12 @@ def test_byron_summarize_prompt_is_analysis_not_a_patch():
 def test_byron_suggest_fixes_prompt_is_analysis():
     prompt = "read the beast file and suggest any fixes to improve it"
     assert is_analysis_prompt(prompt)
-    assert route_composer_mode("agent", prompt) == "ask"
+    # Still read-only analysis, but it needs a whole-file written proposal, so it stays on
+    # Direct Coder (agent) instead of the explain fast path (run agent-ff6b2e53-9e5ef24547f4).
+    assert route_composer_mode("agent", prompt) == "agent"
+    assert route_composer_mode("agent", "read the beast file and suggest 3 concrete improvements, numbered") == "agent"
+    assert route_composer_mode("agent", "explain the beast file") == "ask"
+    assert route_composer_mode("agent", "what does beast do") == "ask"
     assert route_composer_mode("agent", "Fix the typo in beast") == "agent"
     assert route_composer_mode("agent", "Add tests for the planner") == "agent"
 

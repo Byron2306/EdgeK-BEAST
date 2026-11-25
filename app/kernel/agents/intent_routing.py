@@ -85,6 +85,23 @@ def is_review_prompt(prompt: str) -> bool:
     return is_analysis_prompt(prompt) and bool(_REVIEW.search(str(prompt or "")))
 
 
+# "suggest 3 improvements" needs the whole file and a written proposal. The read-only
+# ask/explain fast path only describes the first screen of the file and ignores the
+# request (run agent-ff6b2e53-9e5ef24547f4), which also leaves a follow-up
+# "implement the first 2" with nothing to implement. Direct Coder reads with a
+# coverage ledger and finishes with a written answer, so keep these on the agent path.
+_SUGGEST_CHANGES = re.compile(
+    r"\b(?:suggest|propose|recommend)\b.{0,80}?\b(?:fix(?:es)?|improvements?|changes?|patch(?:es)?|"
+    r"refactors?|enhancements?|edits?)\b",
+    re.IGNORECASE,
+)
+
+
+def is_suggest_changes_prompt(prompt: str) -> bool:
+    text = _NEGATION.sub("", str(prompt or ""))
+    return bool(_SUGGEST_CHANGES.search(text))
+
+
 def route_composer_mode(mode: str, prompt: str) -> str:
     """Map a TLI composer mode to the mode the gateway should receive.
 
@@ -96,6 +113,8 @@ def route_composer_mode(mode: str, prompt: str) -> str:
     if selected in {"ask", "review", "edit"}:
         return selected
     if selected == "agent" and is_analysis_prompt(prompt):
+        if is_suggest_changes_prompt(prompt):
+            return "agent"
         return "review" if is_review_prompt(prompt) else "ask"
     return selected
 

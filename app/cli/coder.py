@@ -709,7 +709,60 @@ class BeastCoderApp(App[None]):
             pet.update(pet_sprite(self.mascot_state, self._mascot_frame))
 
     async def on_unmount(self) -> None:
+        # Stop waiting on in-flight turn POSTs before the HTTP client closes, so
+        # their recovery path never runs against a closed client. The gateway
+        # finishes the turn on its own; /status shows it after reopening.
+        for task in list(getattr(self, "_turn_tasks", ())):
+            if not task.done():
+                task.cancel()
+                with suppress(asyncio.CancelledError, Exception):
+                    await task
         await self.runtime.aclose()
+
+    @property
+    def _turn_tasks(self) -> set:
+        tasks = self.__dict__.get("_beast_turn_tasks")
+        if tasks is None:
+            tasks = self.__dict__["_beast_turn_tasks"] = set()
+        return tasks
+
+    def _observe_turn_task(self, task: "asyncio.Task[Any]") -> None:
+        """Always retrieve a turn task's outcome (no 'Task exception was never retrieved')."""
+        self._turn_tasks.discard(task)
+        if task.cancelled():
+            return
+        error = task.exception()  # marks it retrieved
+        if error is None:
+            return
+
+        def report_if_unhandled() -> None:
+            handled = self.__dict__.setdefault("_beast_handled_turns", set())
+            if id(task) in handled:
+                handled.discard(id(task))
+                return
+            try:
+                if self.is_running:
+                    self._append("system", f"BEAST turn request ended: {error}", persist=False)
+            except Exception:
+                pass
+
+        try:
+            asyncio.get_running_loop().call_later(1.0, report_if_unhandled)
+        except RuntimeError:
+            pass
+
+    def _conversation_for_run(self, prompt: str) -> list[dict[str, str]]:
+        """User/assistant history of this session, without the prompt being sent now."""
+        rows = [
+            {"role": str(e.get("role") or ""), "content": str(e.get("content") or "")}
+            for e in self.transcript_entries
+            if isinstance(e, dict) and e.get("role") in {"user", "assistant"}
+            and str(e.get("content") or "").strip()
+            and not (e.get("metadata") or {}).get("streaming")
+        ]
+        if rows and rows[-1]["role"] == "user" and rows[-1]["content"].strip() == str(prompt).strip():
+            rows.pop()
+        return rows[-8:]
 
     def _working_clock(self) -> str:
         if not self._work_started_at:
@@ -2574,6 +2627,7 @@ class BeastCoderApp(App[None]):
                 run = await self.runtime.start_run(
                     session_id, prompt, self.settings.provider, self.settings.model, mode=mode,
                     context_files=context_files,
+                    conversation=self._conversation_for_run(prompt),
                     autonomy="autopilot" if self.settings.auto_mode else "manual",
                     permission_mode="nuked" if self._permission_nuked else "normal",
                     **({"swarm": True} if swarm and mode == "agent" else {}),
@@ -2593,6 +2647,8 @@ class BeastCoderApp(App[None]):
             # The old ordering awaited the entire model/tool turn first, which
             # made the TUI appear frozen and only replayed output afterwards.
             turn_task = asyncio.create_task(self.runtime.start_turn(run_id))
+            turn_task.add_done_callback(self._observe_turn_task)
+            self._turn_tasks.add(turn_task)
             after = int(self._run_event_after.get(run_id, 0))
             try:
                 async for runtime_event in self.runtime.turn_events(
@@ -2753,13 +2809,17 @@ class BeastCoderApp(App[None]):
                         if projected.receipt.get("observation_id"):
                             receipts.append(projected.receipt["observation_id"])
                         self._sync()
-                result = await turn_task
+                try:
+                    result = await turn_task
+                finally:
+                    self.__dict__.setdefault("_beast_handled_turns", set()).add(id(turn_task))
                 if self._current_action is not None and self._current_action["status"] == "thinking":
                     if self.thinking_bundle:
                         self._current_action["thinking"] = self.thinking_bundle
                     self._current_action["status"] = str(result.get("state") or "finished")
                     self.thinking_bundle = ""
             except Exception:
+                self.__dict__.setdefault("_beast_handled_turns", set()).add(id(turn_task))
                 if not turn_task.done():
                     turn_task.cancel()
                     with suppress(asyncio.CancelledError):

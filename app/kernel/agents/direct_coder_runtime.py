@@ -52,9 +52,47 @@ FILE_MEMORY_STORE_CHARS = 64000
 NOTES_PROMPT_CHARS = 6000
 OBSERVATION_ITEM_CHARS = 3000
 DEFAULT_READ_LINES = 200
+# Earlier turns of the same operator session shown to the model.
+CONVERSATION_MESSAGES = 8
+CONVERSATION_MESSAGE_CHARS = 6000
+CONVERSATION_TOTAL_CHARS = 16000
+ANSWER_EVENTS = ("agent.coder.completed", "agent.coder.final_report", "agent.planner.completed")
 # Output tokens for a finishing turn's written answer (NIM honours max_tokens_override).
 ANSWER_MAX_TOKENS = 6144
 ANSWER_TIMEOUT_SECONDS = 240.0
+# Edit runs (a worktree is bound): files this long are not read top to bottom.
+LARGE_FILE_LINES = 600
+# Range reads allowed after binding before only narrow, targeted reads are accepted.
+EDIT_READ_BUDGET = 6
+EDIT_NARROW_READ_LINES = 120
+# After this many reads without an edit, reading is closed until the model edits.
+EDIT_READ_HARD_CAP = 14
+
+
+EXCERPT_TOOL = "file_memory.excerpt"
+EXCERPT_CHARS = 9000
+
+
+def _memory_slice(state: dict[str, Any], path: str, start: int, end: int) -> str:
+    """Exact lines start..end from one stored FILE MEMORY entry, or ''."""
+    for item in reversed(list(state.get("file_memory") or [])):
+        a, b = int(item.get("start") or 0), int(item.get("end") or 0)
+        if item.get("path") == path and a <= start and end <= b:
+            lines = str(item.get("content") or "").splitlines(keepends=True)
+            return "".join(lines[start - a:end - a + 1])
+    return ""
+
+
+def _canonical_path(state: dict[str, Any], path: str) -> str:
+    """One key per file: 'tester/beast' and 'beast' are the same file once a
+    worktree with workspace prefix 'tester' is bound (run agent-72239d6a-7bf86a3f0516)."""
+    path = str(path or "").strip()
+    while path.startswith("./"):
+        path = path[2:]
+    prefix = str(state.get("path_prefix") or "").strip("/")
+    if prefix and path.startswith(prefix + "/"):
+        path = path[len(prefix) + 1:]
+    return path
 
 
 def _merge_ranges(ranges: list[list[int]]) -> list[list[int]]:
@@ -156,7 +194,21 @@ class DirectCoderRuntime:
             finish_block = ("ALL EXPLICIT FILES ARE FULLY READ. Do not read or list again. Next: either make "
                             "the requested edits in a bound worktree, or return COMPLETE with the written "
                             "analysis and suggested patches as unified diffs.\n")
-        if finishing:
+        large = self._large_files(state)
+        if large and (run.get("checkpoint") or {}).get("worktree_root") and not finishing:
+            finish_block += ("LARGE FILES " + json.dumps(large) + ": do not read these top to bottom. To change "
+                             "them, workspace.search_text for the exact function/symbol, read a narrow range "
+                             f"(<= {EDIT_NARROW_READ_LINES} lines) around the hit, then worktree.replace_exact. "
+                             "Edit one suggestion at a time.\n")
+        if finishing and (run.get("checkpoint") or {}).get("worktree_root"):
+            finish_block = (
+                "FINISH NOW (" + finishing + "). This is an edit run in a bound worktree: no more reads, "
+                "no new bind. Your next decision must be worktree.replace_exact (old_text copied exactly "
+                "from FILE MEMORY or a file_memory.excerpt observation), worktree.verify after an edit, or "
+                "decision_type complete/blocked stating which requested changes were made and which were "
+                "not, with the reason. Inside the summary string never type a double-quote character.\n"
+            )
+        elif finishing:
             finish_block = (
                 "FINISH NOW (" + finishing + "). Do NOT call workspace.list, workspace.index, "
                 "workspace.search_text or workspace.read_range again. Return decision_type complete "
@@ -190,6 +242,7 @@ class DirectCoderRuntime:
             "complete or blocked; tool_id, arguments, and summary/blocker. "
             "Tool decision: {\"decision_type\":\"tool\",\"tool_id\":\"workspace.read_range\",\"arguments\":{...}}. "
             "Completion: {\"decision_type\":\"complete\",\"tool_id\":\"\",\"arguments\":{},\"summary\":\"...\"}.\n"
+            f"{self._render_conversation(state)}"
             f"OBJECTIVE: {str(run.get('objective') or '')[:4500]}\n"
             f"EXPLICIT FILES: {json.dumps(targets, ensure_ascii=False)[:2500]}\n"
             f"{contract_hint}"
@@ -203,6 +256,77 @@ class DirectCoderRuntime:
             f"{finish_block}"
             f"TURN: {turn_no} of {self.max_turns} ({remaining} left after this one)\n"
         )
+
+    # ---- session history ----------------------------------------------
+    def _final_answer(self, prior: dict[str, Any]) -> str:
+        store = self.engine.store
+        if not hasattr(store, "events"):
+            return ""
+        last = int(prior.get("last_sequence") or 0)
+        try:
+            events = store.events(str(prior.get("run_id") or ""), after=max(0, last - 400), limit=400)
+        except Exception:
+            return ""
+        for event in reversed(events or []):
+            if str(event.get("event_type") or "") in ANSWER_EVENTS:
+                payload = event.get("payload") if isinstance(event.get("payload"), dict) else {}
+                text = str(payload.get("summary") or payload.get("answer") or "").strip()
+                if text:
+                    return text
+        return str(prior.get("error") or "").strip()
+
+    def _session_history(self, run: dict[str, Any]) -> list[dict[str, str]]:
+        """Earlier user requests and this agent's answers in the same session.
+
+        A follow-up such as "implement the first 5 of your suggestions" is a new
+        AgentRun; without this the model never saw its own earlier answer
+        (run agent-a615d0b5-3670c89b962a re-read the file from scratch).
+        The client may send ``request.conversation``; otherwise the durable run
+        store is used.
+        """
+        request = run.get("request") or {}
+        items: list[dict[str, str]] = []
+        provided = request.get("conversation")
+        if isinstance(provided, list) and provided:
+            for message in provided:
+                if not isinstance(message, dict):
+                    continue
+                role = str(message.get("role") or "")
+                content = str(message.get("content") or "").strip()
+                if role in {"user", "assistant"} and content:
+                    items.append({"role": role, "content": content[:CONVERSATION_MESSAGE_CHARS]})
+        else:
+            session_id = str(run.get("session_id") or "")
+            store = self.engine.store
+            if session_id and hasattr(store, "list_runs"):
+                priors = [r for r in store.list_runs(session_id=session_id, limit=8)
+                          if r.get("run_id") != run.get("run_id")
+                          and float(r.get("created_at") or 0) <= float(run.get("created_at") or 1e18)]
+                priors.sort(key=lambda r: float(r.get("created_at") or 0))
+                for prior in priors[-(CONVERSATION_MESSAGES // 2):]:
+                    objective = str(prior.get("objective") or "").strip()
+                    if objective:
+                        items.append({"role": "user", "content": objective[:CONVERSATION_MESSAGE_CHARS]})
+                    answer = self._final_answer(prior)
+                    if answer:
+                        items.append({"role": "assistant", "content": answer[:CONVERSATION_MESSAGE_CHARS]})
+        items = items[-CONVERSATION_MESSAGES:]
+        while items and sum(len(m["content"]) for m in items) > CONVERSATION_TOTAL_CHARS:
+            items.pop(0)
+        return items
+
+    @staticmethod
+    def _render_conversation(state: dict[str, Any]) -> str:
+        items = state.get("conversation") or []
+        if not items:
+            return ""
+        lines = ["CONVERSATION SO FAR (earlier requests in this session and YOUR OWN earlier answers. "
+                 "When the operator says 'your suggestions', 'the first N changes' or similar, they mean the "
+                 "items in your last answer below; implement those, reading only the code they touch):"]
+        for message in items:
+            who = "OPERATOR" if message.get("role") == "user" else "YOU (BEAST)"
+            lines.append(f"[{who}] {message.get('content')}")
+        return "\n".join(lines) + "\n"
 
     async def _ask(self, run_id: str, prompt: str, run: dict[str, Any], turn: int, *,
                    quiet_thinking: bool = False, state: dict[str, Any] | None = None) -> PlannerDecision:
@@ -278,6 +402,9 @@ class DirectCoderRuntime:
                 result["content"] = "[kept in FILE MEMORY]"
                 item["result"] = result
             rendered = json.dumps(item, default=str, ensure_ascii=False)
+            if item.get("tool_id") == EXCERPT_TOOL:
+                items.append(rendered[:EXCERPT_CHARS + 600])
+                continue
             if len(rendered) > OBSERVATION_ITEM_CHARS:
                 rendered = json.dumps({
                     "tool_id": item.get("tool_id"), "status": item.get("status"),
@@ -356,7 +483,7 @@ class DirectCoderRuntime:
                 seen.append(key)
             state["seen_calls"] = seen[-32:]
             return
-        path = str(result.get("path") or arguments.get("path") or "")
+        path = _canonical_path(state, str(result.get("path") or arguments.get("path") or ""))
         if not path:
             return
         _, req_start, req_end = _requested_range(arguments)
@@ -391,6 +518,7 @@ class DirectCoderRuntime:
                 return f"{tool_id} was already called with these arguments; its result is in PRIOR OBSERVATIONS/NOTES."
             return ""
         path, start, end = _requested_range(arguments)
+        path = _canonical_path(state, path)
         info = (state.get("reads") or {}).get(path) or {}
         total = int(info.get("total_lines") or 0)
         if total:
@@ -410,6 +538,31 @@ class DirectCoderRuntime:
                     return ""
                 return (f"Lines {start}-{end} of {path} were already read (they are in FILE MEMORY or "
                         f"summarised in NOTES). Do not re-read them.")
+        return ""
+
+    @staticmethod
+    def _large_files(state: dict[str, Any]) -> dict[str, int]:
+        return {path: int(info.get("total_lines") or 0) for path, info in (state.get("reads") or {}).items()
+                if int(info.get("total_lines") or 0) > LARGE_FILE_LINES}
+
+    def _edit_read_budget_reason(self, state: dict[str, Any], tool_id: str, arguments: dict[str, Any]) -> str:
+        """Edit runs must not read a large file top to bottom (run agent-72239d6a-7bf86a3f0516
+        read the 2780-line tester/beast twice over 30 turns and never edited)."""
+        if tool_id not in READ_RANGE_TOOLS:
+            return ""
+        reads = int(state.get("reads_since_edit") or 0)
+        path, start, end = _requested_range(arguments)
+        path = _canonical_path(state, path)
+        total = int(((state.get("reads") or {}).get(path) or {}).get("total_lines") or 0)
+        if reads >= EDIT_READ_HARD_CAP:
+            return ("Reading is closed for this edit: you have read enough. Make the change now with "
+                    "worktree.replace_exact (copy the old text exactly from FILE MEMORY), or return "
+                    "decision_type blocked saying what is missing.")
+        if reads >= EDIT_READ_BUDGET and (total > LARGE_FILE_LINES or not total) and end - start + 1 > EDIT_NARROW_READ_LINES:
+            return (f"{path} is too large to read top to bottom in an edit run ({total or 'many'} lines). "
+                    "Use workspace.search_text for the function or symbol you must change (names are in "
+                    "CONVERSATION SO FAR / NOTES), then read at most "
+                    f"{EDIT_NARROW_READ_LINES} lines around the hit and edit with worktree.replace_exact.")
         return ""
 
     def _finishing_reason(self, state: dict[str, Any], turn: int) -> str:
@@ -556,6 +709,16 @@ class DirectCoderRuntime:
         source = "model"
         if not state.get("started"):
             state["started"] = True
+            try:
+                state["conversation"] = self._session_history(run)
+            except Exception as exc:  # history is advisory; never block the run on it
+                state["conversation"] = []
+                self._emit(run_id, "agent.integration.failed", capability="session_history",
+                           stage="preflight", reason=type(exc).__name__)
+            if state["conversation"]:
+                self._emit(run_id, "agent.coder.history_attached",
+                           messages=len(state["conversation"]),
+                           chars=sum(len(m["content"]) for m in state["conversation"]))
             self._save(run_id, state)
             self._emit(run_id, "agent.coder.started",
                        engine="direct_coder_v1", model=run.get("model"))
@@ -755,9 +918,51 @@ class DirectCoderRuntime:
                                "worktree.replace_exact on it, or finish.")
             elif source == "model" and not state.get("resuming_approval_id"):
                 skip_reason = self._duplicate_reason(state, decision.tool_id, decision.arguments)
+                budget_reason = "" if skip_reason or not bound_root else self._edit_read_budget_reason(
+                    state, decision.tool_id, decision.arguments)
+                if budget_reason:
+                    # Not a duplicate: do not push the run into the read-only finishing path.
+                    self._emit(run_id, "agent.coder.read_refused", tool_id=decision.tool_id,
+                               reason="edit_read_budget", detail=budget_reason[:400])
+                    state.setdefault("observations", []).append({
+                        "tool_id": decision.tool_id, "status": "refused",
+                        "arguments": dict(decision.arguments or {}), "error": budget_reason,
+                    })
+                    state["turn"] = turn + 1
+                    state["observations"] = list(state.get("observations") or [])[-16:]
+                    self._save(run_id, state)
+                    self._transition(run_id, AgentRunState.OBSERVING)
+                    return self._snapshot(run_id)
                 if not skip_reason and decision.tool_id in READ_ONLY_TOOLS and self._finishing_reason(state, turn):
                     if int(state.get("duplicate_streak") or 0) >= MAX_DUPLICATE_STREAK or turn + 1 >= self.max_turns:
                         skip_reason = "Reading is closed: write the final answer now."
+            if skip_reason and bound_root and decision.tool_id in READ_RANGE_TOOLS:
+                # Edit runs re-read to copy exact text for worktree.replace_exact. Serve the
+                # range from FILE MEMORY once instead of refusing (run agent-3f382253-02e8174e0d86
+                # was refused 20 times in a row and never edited).
+                path, start, end = _requested_range(decision.arguments or {})
+                path = _canonical_path(state, path)
+                total = int(((state.get("reads") or {}).get(path) or {}).get("total_lines") or 0)
+                end = min(end, total) if total else end
+                key = f"{path}:{start}-{end}"
+                excerpt = _memory_slice(state, path, start, end)
+                if excerpt and key not in (state.get("served_from_memory") or []):
+                    state["served_from_memory"] = list(state.get("served_from_memory") or [])[-31:] + [key]
+                    self._emit(run_id, "agent.coder.read_served_from_memory", tool_id=decision.tool_id,
+                               path=path, start_line=start, end_line=end)
+                    state.setdefault("observations", []).append({
+                        "tool_id": EXCERPT_TOOL, "status": "completed",
+                        "requested_tool": decision.tool_id, "arguments": dict(decision.arguments or {}),
+                        "result": {"path": path, "start_line": start, "end_line": end,
+                                   "content": excerpt[:EXCERPT_CHARS],
+                                   "note": "Exact current text from FILE MEMORY. Copy old_text from here "
+                                           "into worktree.replace_exact now; do not read these lines again."},
+                    })
+                    state["turn"] = turn + 1
+                    state["observations"] = list(state.get("observations") or [])[-16:]
+                    self._save(run_id, state)
+                    self._transition(run_id, AgentRunState.OBSERVING)
+                    return self._snapshot(run_id)
             if skip_reason:
                 state["duplicate_streak"] = int(state.get("duplicate_streak") or 0) + 1
                 self._emit(run_id, "agent.coder.duplicate_read_skipped", tool_id=decision.tool_id,
@@ -845,10 +1050,17 @@ class DirectCoderRuntime:
                 entry = {"tool_id": decision.tool_id,
                          "status": "failed", "error": str(exc)[:1200]}
             state.setdefault("observations", []).append(entry)
+            if (decision.tool_id == "worktree.bind" and entry.get("status") == "completed"
+                    and isinstance(canonical, dict) and isinstance(canonical.get("result"), dict)):
+                state["path_prefix"] = str(canonical["result"].get("workspace_prefix") or "")
+                state["reads_since_edit"] = 0
             if decision.tool_id in READ_ONLY_TOOLS and isinstance(canonical, dict):
                 self._remember(state, decision.tool_id, dict(decision.arguments or {}), canonical)
+                if decision.tool_id in READ_RANGE_TOOLS and bound_root:
+                    state["reads_since_edit"] = int(state.get("reads_since_edit") or 0) + 1
             if decision.tool_id in MUTATION_TOOLS and entry.get("status") == "completed":
-                edited = str(decision.arguments.get("path") or "")
+                state["reads_since_edit"] = 0
+                edited = _canonical_path(state, str(decision.arguments.get("path") or ""))
                 state["seen_calls"] = [k for k in (state.get("seen_calls") or []) if not k.startswith("worktree.")]
                 if edited:
                     reads = dict(state.get("reads") or {})

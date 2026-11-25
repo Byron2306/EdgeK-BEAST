@@ -1337,7 +1337,8 @@ async def test_agent_analysis_prompts_are_routed_read_only(tmp_path: Path):
     assert recorded[0]["context_files"] == ("beast",)
     assert recorded[0]["prompt"].startswith("proceed reading this file")
     assert "Decompose this request" not in recorded[0]["prompt"]
-    assert recorded[1]["mode"] == "ask"
+    # Suggest-fixes needs a written whole-file proposal: Direct Coder, not the explain path.
+    assert recorded[1]["mode"] == "agent"
     assert recorded[1]["context_files"] == ("beast",)
     assert recorded[2]["mode"] == "review"
     assert "Decompose this request" not in recorded[2]["prompt"]
