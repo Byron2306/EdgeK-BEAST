@@ -924,6 +924,17 @@ class AgentPlannerRuntime:
             post_bind_read_retry_failed=bool(raw.get("post_bind_read_retry_failed")),
         )
 
+    def _advance_consumed_turn(self, state: PlannerState) -> None:
+        """Count one consumed planner decision against the turn budget.
+
+        The loop condition is `while state.turn < state.max_turns`. Events
+        emit `state.turn + 1` for the in-progress decision, then this method
+        commits that decision so later iterations and terminal events see the
+        right count. Guidance, correction, and read-loop paths already call
+        `state.turn += 1` themselves and must not call this helper.
+        """
+        state.turn += 1
+
     def _save_state(self, state: PlannerState) -> None:
         checkpoint = self._checkpoint(state.run_id)
         checkpoint["planner"] = state.as_dict()
@@ -3691,9 +3702,13 @@ class AgentPlannerRuntime:
                 "turn": state.turn,
                 "decision": decision.as_dict(),
             })
+            # Persist the accepted decision so timeout-salvage, placeholder
+            # retry, and per-call slices can resume or assert against it.
+            state.last_decision = decision.as_dict()
             self._save_state(state)
 
             if decision.decision_type is PlannerDecisionType.COMPLETE:
+                self._advance_consumed_turn(state)
                 if "no_change" in decision.arguments:
                     evidence = await asyncio.to_thread(self._no_change_evidence, run, state, decision)
                     if evidence is not None:
@@ -3854,6 +3869,7 @@ class AgentPlannerRuntime:
                 return self.engine.store.get_run(run_id) or {}
 
             if decision.decision_type is PlannerDecisionType.BLOCKED:
+                self._advance_consumed_turn(state)
                 if is_read_only_run(run):
                     # Read-only mode: never policy_block on a blocked decision.
                     # Complete gracefully with what was observed.
@@ -4113,6 +4129,7 @@ class AgentPlannerRuntime:
                     "event_type": "agent.plan.telemetry.observation",
                     "tool_id": observation.get("tool_id"),
                 })
+            self._advance_consumed_turn(state)
             self._save_state(state)
 
             # Operator opt-in only: after a verified SourcePlan handoff, close
