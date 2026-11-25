@@ -1060,10 +1060,19 @@ class BeastCoderApp(App[None]):
                 action = str(item.get("action") or item.get("kind") or "item")
                 conf = item.get("confidence")
                 conf_str = f" ({int(conf * 100)}%)" if isinstance(conf, (int, float)) else ""
-                text.append(f"    • {action}{conf_str}", style=BEAST_GREEN)
+                item_style = BEAST_GREEN if item.get("success", True) else "#D35E68"
+                text.append(f"    • {action}{conf_str}", style=item_style)
                 reason = str(item.get("reason") or "")
                 if reason:
                     text.append(f"      {reason[:70]}\n", style=BEAST_MUTED)
+                crystal_id = str(item.get("crystal_id") or "")
+                if crystal_id:
+                    text.append(f"      {crystal_id}\n", style=BEAST_ACID)
+                successes = int(item.get("heldout_successes") or 0)
+                attempts = int(item.get("heldout_attempts") or 0)
+                if attempts:
+                    admitted = "admitted" if item.get("lattice_admitted") else "not admitted"
+                    text.append(f"      held-out {successes}/{attempts} · lattice {admitted}\n", style=BEAST_MUTED)
                 text.append("\n")
             if len(items) > 5:
                 text.append(f"    … {len(items) - 5} more\n", style=BEAST_MUTED)
@@ -2294,12 +2303,22 @@ class BeastCoderApp(App[None]):
                         status = projected.status or ""
                         kind_map = {
                             "refused": ("decisions", {"action": "refused", "reason": str(details.get("reason") or "")}),
-                            "promoted": ("promotions", {"action": "promoted", "reason": str(details.get("reason") or "")}),
+                            "formed": ("promotions", {"action": "formed", "reason": "durable registry + lattice admission"}),
+                            "activated": ("decisions", {"action": "activated", "reason": "provider bypass armed"}),
+                            "reused": ("reductions", {"action": "reused", "reason": "completed without provider decision"}),
+                            "credited": ("reductions", {"action": "credited", "reason": str(details.get("reason") or "")}),
+                            "scan": ("autopromotion", details),
                             "failed": ("reductions", {"action": "failed", "reason": str(details.get("reason") or "")}),
                             "aborted": ("reductions", {"action": "aborted", "reason": str(details.get("reason") or "")}),
                         }
                         section, item = kind_map.get(status, ("decisions", {"action": status, "reason": str(details.get("reason") or "")}))
+                        if section == "autopromotion":
+                            self.crystal_lattice["autopromotion"] = dict(details)
+                            self.screen.set_class(True, "has-crystal-lattice")
+                            self._sync()
+                            continue
                         item = {**item, **{k: v for k, v in details.items() if k not in item}}
+                        item["success"] = bool(projected.success)
                         self.crystal_lattice.setdefault(section, [])
                         self.crystal_lattice[section].append(item)
                         # Keep only the most recent 10 per section.

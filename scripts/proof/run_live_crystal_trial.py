@@ -24,7 +24,7 @@ sys.path.insert(0, str(ROOT))
 from app.kernel.agents.coder_integrations import CoderIntegrationCoordinator
 from app.kernel.agents.nim_planner_provider import NIMPlannerProvider
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType
-from app.kernel.agents.planner_runtime import AgentPlannerRuntime
+from app.kernel.agents.planner_runtime import AgentPlannerRuntime, ToolCorrectionRequired
 from app.kernel.agents.run_engine import AgentRunEngine
 from app.kernel.compute.coding_crystal_runtime import ENABLE_ENV, KEY_ENV, learn_from_run, planner_runtime_extras
 from app.kernel.compute.nim_picker import HOSTED_NEMOTRON_BASE_URL, HOSTED_NEMOTRON_MODEL
@@ -33,6 +33,7 @@ from app.kernel.sensorium.episode_envelope import EpisodeEnvelopeStore
 from tests.crystal_fabric_support import MISFIT_ALREADY_GREEN, make_assertion_repo, verify_command
 
 FAMILY = "fix-failing-assertion"
+TRIAL_MODEL = os.environ.get("BEAST_LIVE_CRYSTAL_MODEL", HOSTED_NEMOTRON_MODEL).strip() or HOSTED_NEMOTRON_MODEL
 TRAIN = {"module": "calc", "constant": "RATE", "actual": 3, "expected": 4, "function": "rate"}
 HOLDOUTS = (
     {"module": "shipping", "constant": "BASE", "actual": 17, "expected": 19, "function": "charge"},
@@ -107,7 +108,10 @@ class TrialRuntime(AgentPlannerRuntime):
         if tool == "worktree.verify" and args != {"command": verify_command(self.module)}:
             raise ValueError("Only the predeclared verifier is admitted")
         if tool == "worktree.replace_exact":
-            canonical = self._canonical_edit(args)
+            try:
+                canonical = self._canonical_edit(args)
+            except ValueError as exc:
+                raise ToolCorrectionRequired(str(exc)) from exc
             if canonical != args:
                 self.engine.emit(run_id, "agent.trial.edit_span_normalized", {
                     "tool_id": tool, "path": canonical["path"], "model_literal_preserved": True,
@@ -130,7 +134,7 @@ class TrialRuntime(AgentPlannerRuntime):
 
 class MeteredNIM(NIMPlannerProvider):
     def __init__(self, governor: RuntimeGovernor):
-        super().__init__(model=HOSTED_NEMOTRON_MODEL, base_url=HOSTED_NEMOTRON_BASE_URL,
+        super().__init__(model=TRIAL_MODEL, base_url=HOSTED_NEMOTRON_BASE_URL,
                          runtime_governor=governor, max_retries=1)
         self.calls = 0
 
@@ -172,7 +176,7 @@ def run_arm(root: Path, variant: dict, provider, *, envelopes: EpisodeEnvelopeSt
     engine = AgentRunEngine(root)
     command = verify_command(module)
     run = engine.create_run(
-        session_id="live-crystal-fixture", mode="agent", provider="nvidia_nim", model=HOSTED_NEMOTRON_MODEL,
+        session_id="live-crystal-fixture", mode="agent", provider="nvidia_nim", model=TRIAL_MODEL,
         objective=(f"Fix the failing assertion by changing only the single incorrect constant in {target}. "
                    f"Read {target} and {test}. Never edit tests. Bind the worktree and run the existing "
                    f"unittest before and after your exact replacement. Verification command: {' '.join(command)}. "
@@ -263,7 +267,7 @@ def capture(root: Path, provider_factory=MeteredNIM) -> int:
     train = root / "train"
     extras = planner_runtime_extras(train, env=env)
     source = run_arm(train, TRAIN, provider_factory(model_governor(root)), envelopes=extras["envelope_store"])
-    report = {"model": HOSTED_NEMOTRON_MODEL, "source": source, "status": "capture_not_proven"}
+    report = {"model": TRIAL_MODEL, "source": source, "status": "capture_not_proven"}
     if good(source) and source["observed_provider_attempts"] > 0 and not source["crystal_completed"]:
         report["candidate"] = learn_from_run(train, source["run_id"], env=env)
         report["status"] = report["candidate"]["status"]

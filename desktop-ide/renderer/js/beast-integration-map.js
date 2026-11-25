@@ -100,9 +100,109 @@
     return ()=>{disposed=true;unsubscribe();rail.removeEventListener('click',onClick);};
   }
 
-  function clear() {
-    BeastStore.set('integrations',{loading:false,error:'',status:'unloaded',updatedAt:0,selectedId:'',summary:emptySummary(),baseline:{},capabilities:[]});
+  function normalizeLifecycleEvent(raw={}) {
+    const source=raw && typeof raw==='object'?raw:{};
+    const status=text(source.status,24);
+    const stage=text(source.stage,40);
+    const effect=source.effect_committed===true;
+    return {
+      capability:text(source.capability,120),
+      status:['fired','skipped','failed'].includes(status)?status:'failed',
+      stage:['eligibility','execution','postflight'].includes(stage)?stage:'unclassified',
+      operation:text(source.operation,120),
+      mode:text(source.mode,120),
+      reason:text(source.reason,160),
+      effectCommitted:effect,
+      metrics:source.metrics && typeof source.metrics==='object'?{...source.metrics}:{},
+      artifacts:source.artifacts && typeof source.artifacts==='object'?{...source.artifacts}:{},
+      // Interception receipts carry their own producer-sourced savings claim.
+      savings:source.savings && typeof source.savings==='object'?{...source.savings}:undefined,
+      savedTokens:Number.isSafeInteger(Number(source.saved_tokens))
+        ? Number(source.saved_tokens) : undefined,
+      tokensEmitted:Number.isSafeInteger(Number(source.tokens_emitted))
+        ? Number(source.tokens_emitted) : undefined,
+      // A producer assertion is not independent durability verification.
+      durabilityVerified:false,
+      runId:text(source.run_id,160),
+      sessionId:text(source.session_id,160),
+      sequence:Number.isSafeInteger(Number(source.sequence))
+        && Number(source.sequence)>0
+        ? Number(source.sequence) : 0
+    };
   }
 
-  window.BeastIntegrationMap={refresh,normalize,bySurface,byId,mountSurface,clear};
+  // BEAST_INTEGRATION_003_REPLAY
+  // Separate replay custody from the bounded Atlas display buffer.
+  const REPLAY_WINDOW = 4096;
+  const replayByRun = new Map();
+
+  function acceptReplayIdentity(receipt) {
+    const run = receipt.runId;
+    const sequence = receipt.sequence;
+
+    if (!run || !Number.isSafeInteger(sequence) || sequence <= 0) {
+      return true;
+    }
+
+    let ledger = replayByRun.get(run);
+
+    if (!ledger) {
+      ledger = {
+        maximum: 0,
+        seen: new Set()
+      };
+      replayByRun.set(run, ledger);
+    }
+
+    // Reject events outside the retained replay horizon.
+    if (
+      ledger.maximum > REPLAY_WINDOW &&
+      sequence <= ledger.maximum - REPLAY_WINDOW
+    ) {
+      return false;
+    }
+
+    if (ledger.seen.has(sequence)) {
+      return false;
+    }
+
+    ledger.maximum = Math.max(ledger.maximum, sequence);
+    ledger.seen.add(sequence);
+
+    const floor = ledger.maximum - REPLAY_WINDOW;
+
+    for (const value of ledger.seen) {
+      if (value <= floor) ledger.seen.delete(value);
+    }
+
+    return true;
+  }
+
+  function recordLifecycleEvent(raw={}) {
+    const receipt=normalizeLifecycleEvent(raw);
+    if (!receipt.capability) return null;
+    if (!acceptReplayIdentity(receipt)) return null;
+    let inserted=false;
+    BeastStore.transaction(next=>{
+      const prior=next.integrations.lifecycleEvents||[];
+      const identity=receipt.runId && receipt.sequence>0
+        ? `${receipt.runId}:${receipt.sequence}` : '';
+      if (identity && prior.some(item=>
+        item.runId===receipt.runId && item.sequence===receipt.sequence
+      )) return;
+      next.integrations.lifecycleEvents=[...prior,receipt].slice(-100);
+      inserted=true;
+    });
+    return inserted ? receipt : null;
+  }
+
+  function clear() {
+    replayByRun.clear();
+    BeastStore.set('integrations',{loading:false,error:'',status:'unloaded',updatedAt:0,selectedId:'',summary:emptySummary(),baseline:{},capabilities:[],lifecycleEvents:[]});
+  }
+
+  window.BeastIntegrationMap={
+    refresh,normalize,bySurface,byId,mountSurface,
+    normalizeLifecycleEvent,recordLifecycleEvent,clear
+  };
 })();

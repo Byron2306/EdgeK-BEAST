@@ -160,6 +160,25 @@ def legacy_event_projection(event_type: str, payload: dict[str, Any]) -> tuple[s
     elif event_type == "agent.stream.interception":
         name = "agent_run_interception"
         projected.setdefault("status", "cancelled_upstream" if projected.get("upstream_cancel_requested") else "observed")
+    elif event_type in {
+        "agent.crystal.formed",
+        "agent.crystal.activated",
+        "agent.crystal.completed",
+        "agent.crystal.reduction_receipt",
+        "agent.crystal.formation_refused",
+        "agent.crystal.formation_failed",
+    }:
+        name = "agent_run_crystal"
+        lifecycle = {
+            "agent.crystal.formed": "formed",
+            "agent.crystal.activated": "activated",
+            "agent.crystal.completed": "reused",
+            "agent.crystal.reduction_receipt": "credited",
+            "agent.crystal.formation_refused": "refused",
+            "agent.crystal.formation_failed": "failed",
+        }
+        projected.setdefault("lifecycle", lifecycle[event_type])
+        projected.setdefault("canonical_event_type", event_type)
     elif not name and event_type.startswith("agent.planner."):
         name = "agent_run_stage"
         projected.setdefault("text", event_type.replace("agent.", "").replace(".", " "))

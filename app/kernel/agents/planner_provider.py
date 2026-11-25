@@ -5,7 +5,8 @@ from __future__ import annotations
 import json
 import re
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from pathlib import Path
 from typing import Any, Awaitable, Callable, Protocol
 
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType
@@ -111,6 +112,91 @@ def parse_planner_decision(value: Any) -> PlannerDecision:
         summary=summary,
         blocker=blocker,
     )
+
+
+def normalize_editor_tool_dialect(
+    decision: PlannerDecision,
+    *,
+    roots: list[str | Path] | tuple[str | Path, ...] = (),
+) -> PlannerDecision:
+    """Translate common coder editor calls into BEAST's bounded tool contract.
+
+    Several otherwise capable coding models have been trained on Claude's
+    ``str_replace_editor`` protocol.  Treating that wire-format difference as
+    a policy violation needlessly terminates an agent run.  This adapter maps
+    only operations with an exact BEAST equivalent; unknown commands remain
+    unchanged and are still handled by the normal authorization boundary.
+    """
+    if decision.decision_type is not PlannerDecisionType.TOOL:
+        return decision
+    editor_tools = {
+        "str_replace_editor",
+        "str_replace_based_edit_tool",
+        "text_editor",
+    }
+    canonical_path_tools = {
+        "workspace.read_range", "workspace.search_text",
+        "worktree.read_file", "worktree.replace_exact", "worktree.write_file",
+    }
+    direct_aliases = {"read", "edit", "write"}
+    if decision.tool_id not in editor_tools | canonical_path_tools | direct_aliases:
+        return decision
+
+    arguments = dict(decision.arguments)
+    if decision.tool_id in canonical_path_tools:
+        tool_id = decision.tool_id
+        normalized = arguments
+    else:
+        command = str(arguments.pop("command", "")).strip().lower().replace("-", "_")
+        if decision.tool_id in direct_aliases:
+            command = decision.tool_id
+        tool_id = ""
+        normalized = {}
+        if command in {"view", "read"}:
+            tool_id = "workspace.read_range"
+            normalized = {"path": arguments.get("path", arguments.get("file", ""))}
+            start = arguments.get("line_start", arguments.get("start_line"))
+            end = arguments.get("line_end", arguments.get("end_line"))
+            ranges = str(arguments.get("ranges") or "").strip()
+            if start is None and ranges:
+                match = re.fullmatch(r"\s*(\d+)\s*[-:]\s*(\d+)\s*", ranges)
+                if match:
+                    start, end = int(match.group(1)), int(match.group(2))
+            if start is not None:
+                normalized["start_line"] = start
+            if arguments.get("line_count") is not None:
+                normalized["line_count"] = arguments["line_count"]
+            elif start is not None and end is not None:
+                try:
+                    normalized["line_count"] = max(1, int(end) - int(start) + 1)
+                except (TypeError, ValueError):
+                    pass
+        elif command in {"str_replace", "replace", "replace_exact", "edit"}:
+            tool_id = "worktree.replace_exact"
+            normalized = {
+                "path": arguments.get("path", arguments.get("file", "")),
+                "old_text": arguments.get("old_text", arguments.get("old_str", arguments.get("oldString"))),
+                "new_text": arguments.get("new_text", arguments.get("new_str", arguments.get("newString"))),
+            }
+        elif command in {"create", "write", "write_file"}:
+            tool_id = "worktree.write_file"
+            normalized = {
+                "path": arguments.get("path", arguments.get("file", "")),
+                "content": arguments.get("content", arguments.get("file_text")),
+            }
+        else:
+            return decision
+
+    path = normalized.get("path")
+    if isinstance(path, str) and Path(path).is_absolute():
+        resolved = Path(path).resolve()
+        for root in roots:
+            try:
+                normalized["path"] = str(resolved.relative_to(Path(root).resolve()))
+                break
+            except (OSError, ValueError):
+                continue
+    return replace(decision, tool_id=tool_id, arguments=normalized)
 
 
 class ScriptedPlannerProvider:

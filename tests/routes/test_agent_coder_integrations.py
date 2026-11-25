@@ -118,6 +118,27 @@ def test_canonical_integration_events_round_trip_to_legacy_agent_run_integration
     assert contradictory["status"] == "fired"
 
 
+def test_crystal_lifecycle_events_project_to_desktop_coder_stream() -> None:
+    cases = {
+        "agent.crystal.formed": "formed",
+        "agent.crystal.activated": "activated",
+        "agent.crystal.completed": "reused",
+        "agent.crystal.reduction_receipt": "credited",
+        "agent.crystal.formation_refused": "refused",
+        "agent.crystal.formation_failed": "failed",
+    }
+    for canonical, lifecycle in cases.items():
+        name, payload = legacy_event_projection(canonical, {
+            "crystal_id": "coding-crystal:test",
+            "heldout_successes": 3,
+            "heldout_attempts": 3,
+            "lattice_admitted": True,
+        })
+        assert name == "agent_run_crystal"
+        assert payload["lifecycle"] == lifecycle
+        assert payload["crystal_id"] == "coding-crystal:test"
+
+
 def test_durable_canonical_integrations_replay_through_legacy_sse_route(tmp_path: Path) -> None:
     """WP003D: persisted postflight-style events must reach the real replay route."""
     engine = AgentRunEngine(tmp_path)

@@ -2367,9 +2367,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--workspace", help="Workspace folder path")
     subparsers = parser.add_subparsers(dest="command")
 
-    ui_parser = subparsers.add_parser("ui", help="Launch the BEAST Mission Console TUI")
+    ui_parser = subparsers.add_parser("ui", help="Launch the BEAST conversation-first coding TLI")
     ui_parser.add_argument("--workspace", help="Workspace folder path")
     ui_parser.add_argument("--gateway-url", default=DEFAULT_GATEWAY, help="BEAST gateway URL")
+    ui_parser.add_argument("--classic", action="store_true", help="Launch the legacy Mission Console dashboard")
 
     ide_parser = subparsers.add_parser("ide", help="Launch the BEAST Electron IDE with the active workspace")
     ide_parser.add_argument("--workspace", help="Workspace folder path")
@@ -2734,10 +2735,11 @@ def main() -> None:
         os.environ["BEAST_CONTEXT_WORKSPACE"] = workspace
 
     if args.command == "ui":
-        os.environ["BEAST_GATEWAY_URL"] = discover_desktop_gateway(args.gateway_url)
+        gateway_url = discover_desktop_gateway(args.gateway_url)
+        os.environ["BEAST_GATEWAY_URL"] = gateway_url
         from app.cli.ui import run
 
-        run()
+        run(workspace=args.workspace, base_url=gateway_url, classic=args.classic)
         return
     if args.command == "ide":
         emit(command_ide(args), args.agent)

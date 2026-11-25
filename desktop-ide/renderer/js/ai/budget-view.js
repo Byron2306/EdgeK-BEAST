@@ -20,20 +20,35 @@
   function applyCrystal(payload = {}) {
     const decision = payload.decision && typeof payload.decision === 'object' ? payload.decision : {};
     const record = payload.record && typeof payload.record === 'object' ? payload.record : {};
+    const lifecycle = String(payload.lifecycle || '');
+    const reused = lifecycle === 'reused' || lifecycle === 'credited' || Boolean(payload.reused);
+    const formed = lifecycle === 'formed';
+    const failed = lifecycle === 'failed' || lifecycle === 'refused';
     const crystal = {
       action:String(decision.action || ''),
       source:String(decision.source || ''),
       confidence:Number(decision.confidence || 0),
-      reused:Boolean(payload.reused),
+      reused,
       avoidedTokens:Number(decision.avoided_tokens_estimate || 0),
       decisionId:String(decision.decision_id || ''),
       recorded:Boolean(record.verified === true || record.promotion_status === 'verified'),
-      candidate:Boolean(Object.keys(record).length)
+      candidate:Boolean(Object.keys(record).length || formed),
+      lifecycle,
+      crystalId:String(payload.crystal_id || record.crystal_id || decision.crystal_id || ''),
+      heldoutSuccesses:Number(payload.heldout_successes || 0),
+      heldoutAttempts:Number(payload.heldout_attempts || 0),
+      latticeAdmitted:Boolean(payload.lattice_admitted),
+      status:failed ? 'failed' : lifecycle || (reused ? 'reused' : 'observed')
     };
     patch({ crystal });
-    appendTrace('crystal', crystal.reused
-      ? `Reused ${crystal.source || 'crystal'} · ${crystal.avoidedTokens} tokens avoided`
-      : `${crystal.action || 'reuse preflight'} · ${crystal.source || 'local execution'}`);
+    let detail = crystal.reused
+      ? `Reused ${crystal.crystalId || crystal.source || 'crystal'}${lifecycle === 'credited' ? ' · reduction credited' : ''}`
+      : formed
+        ? `Formed ${crystal.crystalId || 'crystal'} · ${crystal.heldoutSuccesses}/${crystal.heldoutAttempts} held-outs · lattice ${crystal.latticeAdmitted ? 'admitted' : 'pending'}`
+        : failed
+          ? `Crystal ${lifecycle} · ${String(payload.reason || 'not admitted')}`
+          : `${crystal.action || lifecycle || 'reuse preflight'} · ${crystal.source || crystal.crystalId || 'local execution'}`;
+    appendTrace('crystal', detail);
     persist();
   }
 

@@ -231,15 +231,10 @@ async def test_agent_gauntlet_multi_file_with_crystal_lattice(tmp_path: Path):
     applied_events = [e for e in events if e.get("event_type") == "agent.worktree.applied"]
     assert len(applied_events) > 0, "No worktree.apply event emitted — workspace was not modified"
 
-    # Check for crystal reduction receipt (promotion into lattice)
+    # A multi-file docstring edit is outside the reviewed crystal recipe.  It
+    # must not receive synthetic reduction credit merely because apply passed.
     reduction_events = [e for e in events if e.get("event_type") == "agent.crystal.reduction_receipt"]
-    assert len(reduction_events) > 0, "No crystal.reduction_receipt event — autopromotion did not fire"
-
-    # Verify the reduction receipt has promotion info
-    for ev in reduction_events:
-        payload = ev.get("payload", {})
-        assert payload.get("credited") is True, f"Crystal not credited: {payload}"
-        assert payload.get("units", 0) > 0, f"No units credited: {payload}"
+    assert reduction_events == [], f"Unsupported episode received false crystal credit: {reduction_events}"
 
     # Verify the diff_ready event was emitted (live diff panel)
     diff_events = [e for e in events if e.get("event_type") == "agent.worktree.diff_ready"]
@@ -369,20 +364,13 @@ async def test_agent_gauntlet_crystal_lattice_full_flow(tmp_path: Path):
     # worktree.applied is a separate event type
     assert any("agent.worktree.applied" == et for et in event_types), f"No worktree.applied event: {event_types}"
 
-    # Crystal/lattice events
-    assert any("agent.crystal.reduction_receipt" == et for et in event_types), \
-        f"No crystal.reduction_receipt. Types: {event_types}"
+    # The scan is observable, but unsupported work is not credited.
     assert any("agent.crystal.autopromotion" == et for et in event_types), \
         f"No crystal.autopromotion. Types: {event_types}"
 
-    # Verify the reduction receipt has complete info
+    # A credited receipt is reserved for an actual durable formation/reuse.
     reduction_events = [e for e in events if e.get("event_type") == "agent.crystal.reduction_receipt"]
-    assert len(reduction_events) >= 1
-    for ev in reduction_events:
-        payload = ev.get("payload", {})
-        assert payload.get("credited") is True
-        assert payload.get("units", 0) > 0
-        assert "files" in payload
+    assert reduction_events == []
 
     # Verify diff panel would have data
     diff_events = [e for e in events if e.get("event_type") == "agent.worktree.diff_ready"]

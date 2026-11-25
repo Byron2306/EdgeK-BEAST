@@ -16,6 +16,7 @@ from app.kernel.compute.coding_crystal_runtime import (  # noqa: E402
     DEFAULT_KEY_PATH,
     ENABLE_ENV,
     KEY_ENV,
+    LATTICE_ENV,
     crystal_runtime_status,
     learn_from_run,
     planner_runtime_extras,
@@ -93,6 +94,72 @@ def test_learn_from_run_extracts_replays_three_variants_and_promotes(tmp_path):
     assert planner.registry.active_for_family("fix-failing-assertion").crystal_id == report["crystal_id"]
     kinds = [e["kind"] for e in planner.economy.ledger.entries()]
     assert kinds.count("reproduction") == 6 and all(e["units"] == 0 for e in planner.economy.ledger.entries())
+
+
+def test_verified_agent_episode_forms_lattice_crystal_then_reuses_without_provider(tmp_path):
+    """Catches a fake event-only promotion with no durable artifact or no-model reuse."""
+    import asyncio
+
+    from crystal_fabric_support import CountingProvider, create_assertion_run, learn_script, make_assertion_repo
+    from app.kernel.agents.planner_runtime import AgentPlannerRuntime
+
+    key = _key(tmp_path / "keys" / "runtime.pem")
+    workspace = make_assertion_repo(tmp_path / "workspace")
+    env = {
+        ENABLE_ENV: "1",
+        KEY_ENV: str(key),
+        "BEAST_CODING_CRYSTAL_AUTO_PROMOTE": "1",
+        LATTICE_ENV: "1",
+        "BEAST_CRYSTAL_LATTICE_LEDGER_ROOT": str(tmp_path / "lattice-ledger"),
+        "BEAST_COMMONS_ROOT": str(tmp_path / "commons"),
+    }
+
+    engine, source_run_id = create_assertion_run(workspace)
+    source_provider = CountingProvider(learn_script())
+    source_extras = planner_runtime_extras(workspace, env=env)
+    source = asyncio.run(AgentPlannerRuntime(
+        engine, source_provider, max_turns=14, **source_extras,
+    ).run(source_run_id))
+    assert source["state"] == "completed"
+
+    source_events = engine.store.events(source_run_id, limit=2000)
+    formed = [e for e in source_events if e["event_type"] == "agent.crystal.formed"]
+    assert len(formed) == 1
+    formation = formed[0]["payload"]
+    assert formation["status"] == "promoted"
+    assert formation["source_run_id"] == source_run_id
+    assert formation["heldout_successes"] == 3
+    assert formation["lattice_admitted"] is True
+    assert formation["registry_record_digest"].startswith("sha256:")
+    assert formation["lattice_checkpoint_hash"].startswith("sha256:")
+    assert formation["crystal_chain_block_hash"].startswith("sha256:")
+
+    planner = source_extras["crystal_planner"]
+    record = planner.registry.get(formation["crystal_id"])
+    assert record["status"] == "promoted"
+    assert record["candidate"]["source_run_id"] == source_run_id
+    assert record["reuse_count"] == 0
+    node = planner.lattice.node(formation["crystal_id"])
+    assert node["status"] == "admitted"
+    assert planner.lattice.verify()["valid"] is True
+
+    reuse_engine, reuse_run_id = create_assertion_run(workspace)
+    fail_if_called = CountingProvider()
+    reuse_extras = planner_runtime_extras(workspace, env=env)
+    reuse = asyncio.run(AgentPlannerRuntime(
+        reuse_engine, fail_if_called, max_turns=14, **reuse_extras,
+    ).run(reuse_run_id))
+    assert reuse["state"] == "completed"
+    assert fail_if_called.calls == 0
+    reuse_events = reuse_engine.store.events(reuse_run_id, limit=2000)
+    assert any(e["event_type"] == "agent.crystal.activated" for e in reuse_events)
+    assert any(e["event_type"] == "agent.crystal.completed" for e in reuse_events)
+    assert any(e["event_type"] == "agent.crystal.reduction_receipt" for e in reuse_events)
+    assert not any(e["event_type"] == "agent.crystal.formed" for e in reuse_events)
+
+    reused_record = reuse_extras["crystal_planner"].registry.get(formation["crystal_id"])
+    assert reused_record["reuse_count"] == 1
+    assert len(reuse_extras["crystal_planner"].lattice.nodes()) == 1
 
 
 def test_learn_from_run_refuses_when_disabled(tmp_path):

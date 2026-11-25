@@ -189,6 +189,53 @@ def test_project_failed_tool_preserves_actual_error_and_receipt():
     assert projected.text == "pytest failed"
 
 
+def test_project_real_crystal_formation_exposes_durable_evidence_to_coder_ui():
+    projected = project_runtime_event(
+        RuntimeEvent(
+            "agent.crystal.formed",
+            {
+                "sequence": 11,
+                "payload": {
+                    "status": "promoted",
+                    "crystal_id": "coding-crystal:abc123",
+                    "heldout_successes": 3,
+                    "heldout_attempts": 3,
+                    "lattice_admitted": True,
+                    "lattice_checkpoint_hash": "sha256:checkpoint",
+                    "crystal_chain_block_hash": "sha256:block",
+                },
+            },
+            "11",
+        )
+    )
+
+    assert projected.kind == "crystal"
+    assert projected.status == "formed"
+    assert projected.success is True
+    assert "3/3" in projected.text
+    assert "lattice admitted" in projected.text.lower()
+    assert projected.details["crystal_id"] == "coding-crystal:abc123"
+
+
+@pytest.mark.parametrize(
+    ("event_name", "want_status", "want_success"),
+    [
+        ("agent.crystal.activated", "activated", True),
+        ("agent.crystal.completed", "reused", True),
+        ("agent.crystal.formation_refused", "refused", False),
+        ("agent.crystal.formation_failed", "failed", False),
+    ],
+)
+def test_project_crystal_lifecycle_statuses_truthfully(event_name, want_status, want_success):
+    projected = project_runtime_event(
+        RuntimeEvent(event_name, {"sequence": 12, "payload": {"reason": "evidence"}}, "12")
+    )
+
+    assert projected.kind == "crystal"
+    assert projected.status == want_status
+    assert projected.success is want_success
+
+
 def test_session_archive_list_and_resume_round_trip(tmp_path: Path):
     store = ConversationStore(tmp_path)
     store.append("user", "first task")

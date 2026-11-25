@@ -413,7 +413,7 @@ class CrystalLattice:
                 "nodes": self.nodes(), "edges": self.edges(), "verification": self.verify()}
 
 
-def default_lattice(workspace: str | Path, registry: Any) -> CrystalLattice:
+def default_lattice(workspace: str | Path, registry: Any, *, env: Mapping[str, str] | None = None) -> CrystalLattice:
     """Production wiring: .beast lattice, witnessed on the gateway's existing lattice ledger and Commons crystal chain."""
     import os
 
@@ -421,11 +421,16 @@ def default_lattice(workspace: str | Path, registry: Any) -> CrystalLattice:
     from app.kernel.security.crystal_lattice_ledger import CrystalLatticeLedger
 
     project = Path(__file__).resolve().parents[3]
-    commons_root = Path(os.environ.get("BEAST_COMMONS_ROOT") or project / "data" / "commons_spaces")
+    environ = os.environ if env is None else env
+    commons_root = Path(environ.get("BEAST_COMMONS_ROOT") or project / "data" / "commons_spaces")
+    lattice_ledger_root = Path(
+        environ.get("BEAST_CRYSTAL_LATTICE_LEDGER_ROOT")
+        or project / "benchmarks" / "results" / "crystal_lattice_ledger"
+    )
     return CrystalLattice(Path(workspace) / ".beast" / "crystals" / "crystal_lattice.sqlite3", registry=registry,
-                          lattice_ledger=CrystalLatticeLedger(project / "benchmarks" / "results" / "crystal_lattice_ledger"),
+                          lattice_ledger=CrystalLatticeLedger(lattice_ledger_root),
                           chain=CrystalChainLedger(commons_root / ".crystal_chain" / "blocks.jsonl",
-                                                   node_id=os.environ.get("BEAST_COMMONS_NODE_ID", "local-commons")))
+                                                   node_id=environ.get("BEAST_COMMONS_NODE_ID", "local-commons")))
 
 
 __all__ = ["ADMIT", "CLAIM_BOUNDARY", "ESCALATE", "REFUSE", "REVALIDATE", "CrystalLattice", "authority_of", "demote_with_clawback",

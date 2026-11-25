@@ -54,11 +54,25 @@ def test_resolver_handles_unittest_and_pytest_failures():
         "old_text": "MODE = 'a'", "new_text": "MODE = 'b'", "name": "MODE"}
 
 
+def test_resolver_accepts_repeated_identical_failures_from_one_root_constant():
+    repeated = UNITTEST_FAIL + UNITTEST_FAIL.replace("test_rate", "test_service_rate")
+    assert resolve_constant(repeated, TARGET) == {
+        "old_text": "RATE = 3", "new_text": "RATE = 4", "name": "RATE",
+    }
+
+
+def test_resolver_accepts_one_direct_root_failure_with_downstream_mismatch():
+    output = UNITTEST_FAIL + "AssertionError: 6 != 8\n"
+    assert resolve_constant(output, TARGET) == {
+        "old_text": "RATE = 3", "new_text": "RATE = 4", "name": "RATE",
+    }
+
+
 @pytest.mark.parametrize("output,target", [
     (UNITTEST_FAIL, "RATE = 3\nOTHER = 3\n"),                       # ambiguous assignment
     (UNITTEST_FAIL, "RATE = 5\n"),                                   # absent assignment
     ("OK\n", TARGET),                                                 # no failure
-    (UNITTEST_FAIL + "AssertionError: 1 != 2\n", TARGET),            # several failures
+    (UNITTEST_FAIL + "AssertionError: 1 != 2\n", "RATE = 3\nOTHER = 1\n"),  # two plausible roots
     ("AssertionError: 3 != __import__('os')\n", TARGET),             # non-literal expectation
 ])
 def test_resolver_refuses_ambiguous_absent_or_unsafe(output, target):

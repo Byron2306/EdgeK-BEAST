@@ -431,12 +431,73 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
             success=False,
             details=payload,
         )
+    if event.event == "agent.crystal.formed":
+        successes = int(payload.get("heldout_successes") or 0)
+        attempts = int(payload.get("heldout_attempts") or 0)
+        lattice = "lattice admitted" if payload.get("lattice_admitted") is True else "lattice not admitted"
+        return ProjectedEvent(
+            "crystal",
+            f"Crystal formed: {str(payload.get('crystal_id') or 'crystal')} · {successes}/{attempts} held-out · {lattice}",
+            sequence,
+            status="formed",
+            tool_id="crystal.formation",
+            executed=True,
+            success=bool(payload.get("status") == "promoted" and payload.get("lattice_admitted") is True),
+            details=payload,
+        )
+    if event.event == "agent.crystal.activated":
+        return ProjectedEvent(
+            "crystal",
+            f"Crystal activated: {str(payload.get('crystal_id') or 'crystal')} · provider bypass armed",
+            sequence,
+            status="activated",
+            tool_id="crystal.reuse",
+            executed=True,
+            success=True,
+            details=payload,
+        )
+    if event.event == "agent.crystal.completed":
+        return ProjectedEvent(
+            "crystal",
+            f"Crystal reuse completed: {str(payload.get('crystal_id') or 'crystal')} · no provider decision required",
+            sequence,
+            status="reused",
+            tool_id="crystal.reuse",
+            executed=True,
+            success=True,
+            details=payload,
+        )
+    if event.event in {"agent.crystal.formation_refused", "agent.crystal.formation_failed"}:
+        failed = event.event.endswith("failed")
+        return ProjectedEvent(
+            "crystal",
+            f"Crystal formation {'failed' if failed else 'refused'}: {str(payload.get('reason') or payload.get('status') or 'not eligible')}",
+            sequence,
+            status="failed" if failed else "refused",
+            tool_id="crystal.formation",
+            executed=True,
+            success=False,
+            details=payload,
+        )
+    if event.event == "agent.crystal.autopromotion":
+        promoted = int(payload.get("promoted_count") or 0)
+        scanned = int(payload.get("scanned") or 0)
+        return ProjectedEvent(
+            "crystal",
+            f"Crystal scan: {scanned} inspected · {promoted} promoted",
+            sequence,
+            status="scan",
+            tool_id="crystal.autopromotion",
+            executed=True,
+            success=promoted > 0,
+            details=payload,
+        )
     if event.event == "agent.crystal.reduction_receipt":
         return ProjectedEvent(
             "crystal",
-            f"Crystal promoted: {str(payload.get('receipt_id') or payload.get('crystal_id') or 'crystal')} · {str(payload.get('units') or '')} units",
+            f"Crystal reuse credited: {str(payload.get('receipt_id') or payload.get('crystal_id') or 'crystal')} · {str(payload.get('units') or '')} units",
             sequence,
-            status="promoted",
+            status="credited",
             tool_id="crystal.lattice",
             success=True,
             details=payload,

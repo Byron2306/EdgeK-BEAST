@@ -75,29 +75,30 @@ def _literal(text: str) -> Any:
 
 
 def resolve_constant(verify_output: str, target_content: str) -> dict[str, str] | None:
-    """Turn one literal equality failure into an exact module-constant replacement, or refuse."""
+    """Resolve exactly one root literal edit from direct and downstream failures."""
     output = str(verify_output or "")
     matches = _UNITTEST_FAILURE.findall(output) + _PYTEST_FAILURE.findall(output)
-    if len(matches) != 1:
+    if not matches:
         return None
-    actual_text, expected_text = matches[0]
-    actual, expected = _literal(actual_text), _literal(expected_text)
-    if actual is None or expected is None or type(actual) is not type(expected) or actual == expected:
-        return None
-    candidates = []
-    for line in str(target_content or "").splitlines():
-        found = _CONSTANT.match(line)
-        if not found:
+    parsed = [(_literal(actual_text), _literal(expected_text)) for actual_text, expected_text in matches]
+    proposals: dict[tuple[str, str], dict[str, str]] = {}
+    for actual, expected in parsed:
+        if actual is None or expected is None or type(actual) is not type(expected) or actual == expected:
             continue
-        value = _literal(found.group(2))
-        if value is not None and type(value) is type(actual) and value == actual:
-            candidates.append((found.group(1), line.rstrip()))
-    if len(candidates) != 1:
+        for line in str(target_content or "").splitlines():
+            found = _CONSTANT.match(line)
+            if not found:
+                continue
+            value = _literal(found.group(2))
+            old_text = line.rstrip()
+            if (value is not None and type(value) is type(actual) and value == actual
+                    and str(target_content).count(old_text) == 1):
+                name = found.group(1)
+                proposal = {"old_text": old_text, "new_text": f"{name} = {expected!r}", "name": name}
+                proposals[(proposal["old_text"], proposal["new_text"])] = proposal
+    if len(proposals) != 1:
         return None
-    name, old_text = candidates[0]
-    if str(target_content).count(old_text) != 1:
-        return None
-    return {"old_text": old_text, "new_text": f"{name} = {expected!r}", "name": name}
+    return next(iter(proposals.values()))
 
 
 # --- Recipes, extraction and the registry ---------------------------------------------------------

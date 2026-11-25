@@ -23,7 +23,7 @@ from app.kernel.agents.post_session_graduation import assess as assess_post_sess
 from app.kernel.agents.post_session_quality import verify as verify_post_session_quality
 from app.kernel.agents.planning_integrations import PlanningIntegrationRuntime
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType, PlannerState
-from app.kernel.agents.planner_provider import HeuristicPlannerProvider, PlannerDecisionError, PlannerProvider, parse_planner_decision
+from app.kernel.agents.planner_provider import HeuristicPlannerProvider, PlannerDecisionError, PlannerProvider, normalize_editor_tool_dialect, parse_planner_decision
 from app.kernel.agents.run_state import AgentRunState, TERMINAL_STATES, normalize_state
 from app.kernel.agents.semantic_context import semantic_context_contract
 from app.kernel.agents.tool_models import ToolEffect, is_read_only_run
@@ -53,6 +53,10 @@ class ApprovalDeferred(RuntimeError):
         self.tool_id = tool_id
 
 
+class ToolCorrectionRequired(ValueError):
+    """A bounded model action was refused but the run may safely retry."""
+
+
 class AgentPlannerRuntime:
     # Workspace-bounded tools an autopilot run may execute without a human
     # round-trip. Everything else still parks on a real approval card.
@@ -69,7 +73,7 @@ class AgentPlannerRuntime:
         "worktree.diff",
     })
 
-    def __init__(self, engine: Any, provider: PlannerProvider, *, max_turns: int = 8, observation_limit: int = 12, max_repair_cycles: int = 3, context_packet_builder: Any = None, execution_gateway: Any = None, compute_governor: Any = None, budget_tracker: Any = None, envelope_store: Any = None, crystal_planner: Any = None, adaptive_router: Any = None, governor: Any = None, memory_reader: Any = None, integration_coordinator: Any = None):
+    def __init__(self, engine: Any, provider: PlannerProvider, *, max_turns: int = 8, observation_limit: int = 12, max_repair_cycles: int = 3, context_packet_builder: Any = None, execution_gateway: Any = None, compute_governor: Any = None, budget_tracker: Any = None, envelope_store: Any = None, crystal_planner: Any = None, crystal_learner: Any = None, adaptive_router: Any = None, governor: Any = None, memory_reader: Any = None, integration_coordinator: Any = None):
         self.engine = engine
         # D5: every real provider call, tool call and wall-clock slice is metered into the run budget.
         self.budget_tracker = budget_tracker or RunBudgetTracker(engine.store, emit=engine.emit)
@@ -77,6 +81,7 @@ class AgentPlannerRuntime:
         self._supplied_decisions: dict[str, tuple[str, str]] = {}
         # D6: optional reviewed coding-crystal planner; it only supplies decisions, the loop still authorizes and executes.
         self.crystal_planner = crystal_planner
+        self.crystal_learner = crystal_learner
         # D9: optional proposal-only router (BEAST_ADAPTIVE_ROUTER); it can only withhold crystal activation.
         self.adaptive_router = adaptive_router
         self._crystal_nominations: dict[str, str] = {}
@@ -1946,6 +1951,27 @@ class AgentPlannerRuntime:
 
     _local_binding_identity = staticmethod(local_binding_identity)
 
+    def _normalize_model_tool_dialect(
+        self,
+        run: dict[str, Any],
+        run_id: str,
+        decision: PlannerDecision,
+    ) -> PlannerDecision:
+        roots: list[str | pathlib.Path] = [self.engine.workspace_root]
+        identity = self._local_binding_identity(run)
+        if identity is not None and identity[0]:
+            roots.insert(0, identity[0])
+        normalized = normalize_editor_tool_dialect(decision, roots=roots)
+        if normalized != decision:
+            self.engine.emit(run_id, "agent.provider.tool_dialect_normalized", {
+                "source_tool_id": decision.tool_id,
+                "source_arguments": decision.arguments,
+                "tool_id": normalized.tool_id,
+                "arguments": normalized.arguments,
+                "reason": "known_coder_editor_protocol",
+            })
+        return normalized
+
     def _local_binding_error(self, identity: tuple[str, str, str, str]) -> str:
         return local_binding_error(self.engine.workspace_root, identity)
 
@@ -2155,19 +2181,6 @@ class AgentPlannerRuntime:
                 "created_at": None,
                 "error": f"autopromotion: {type(exc).__name__}: {exc}"[:240],
             })
-        # Emit a crystal reduction receipt for the verified apply so the
-        # operator sees lattice promotion in the UI, even when the autonomous
-        # daemon has no receipt files to promote yet.
-        self.engine.emit(run_id, "agent.crystal.reduction_receipt", {
-            "receipt_id": receipt["sourceplan_id"] or run_id,
-            "kind": "verified_apply",
-            "credited": True,
-            "units": 1.0,
-            "reason": f"Verified apply of {len(applied)} file(s) promoted to crystal lattice.",
-            "files": applied,
-            "workspace": result.get("workspace"),
-            "worktree": result.get("worktree"),
-        })
         return {"ok": True, **result, **receipt}
 
     def _finish_applied_diff(self, run: dict[str, Any], state: PlannerState, applied: dict[str, Any]) -> dict[str, Any]:
@@ -2832,6 +2845,21 @@ class AgentPlannerRuntime:
         except Exception as exc:
             self.engine.emit(run_id, "agent.crystal.reduction_failed", {"reason": f"{type(exc).__name__}: {exc}"[:240]})
 
+    async def _learn_crystal(self, run_id: str) -> None:
+        if self.crystal_learner is None:
+            return
+        try:
+            result = await asyncio.to_thread(self.crystal_learner.learn, run_id, engine=self.engine)
+        except Exception as exc:
+            self.engine.emit(run_id, "agent.crystal.formation_failed", {
+                "reason": f"{type(exc).__name__}: {exc}"[:240],
+            })
+            return
+        if not isinstance(result, dict):
+            return
+        event_type = "agent.crystal.formed" if result.get("status") == "promoted" else "agent.crystal.formation_refused"
+        self.engine.emit(run_id, event_type, result)
+
     async def run(self, run_id: str, max_turns_this_call: int | None = None, *, defer_approval: bool = False) -> dict[str, Any]:
         run = self.engine.store.get_run(run_id)
         if not run:
@@ -2864,6 +2892,7 @@ class AgentPlannerRuntime:
         latest = self.engine.store.get_run(run_id) or result
         if normalize_state(str(latest.get("state") or "")) in TERMINAL_STATES:
             self._seal_episode(run_id)
+            await self._learn_crystal(run_id)
             await self._complete_coder_integrations(run_id)
             latest = self.engine.store.get_run(run_id) or latest
         self._crystal_succeeded.pop(run_id, None)
@@ -3301,6 +3330,8 @@ class AgentPlannerRuntime:
                     "chars": len(provider_partial or delta_partial),
                     "reason": "wrapped_provider_fallback_salvage",
                 })
+            if resumed_decision is None:
+                decision = self._normalize_model_tool_dialect(run, run_id, decision)
             bootstrapped = self._bootstrap_agent_decision(run, state, decision)
             if bootstrapped is not None:
                 decision = bootstrapped
@@ -3348,6 +3379,7 @@ class AgentPlannerRuntime:
                         "reason": f"{type(exc).__name__}: {exc}",
                     })
                 else:
+                    retried = self._normalize_model_tool_dialect(run, run_id, retried)
                     if (
                         retried.decision_type is not PlannerDecisionType.BLOCKED
                         and not self._post_bind_duplicate_read(retried, state)
@@ -3392,13 +3424,17 @@ class AgentPlannerRuntime:
                         "Choose the smallest bounded mutation (worktree.replace_exact or worktree.write_file) "
                         "that satisfies the objective, or worktree.verify if the edit is already complete."
                     )
+                    # This was still a consumed provider turn. Advance the
+                    # durable counter so the correction is visible on the next
+                    # prompt and repeated redirects remain budget-bounded.
+                    state.turn += 1
                     self.engine.merge_checkpoint(run_id, {
-                        "planner_tool_guidance": {"turn": state.turn + 1, "message": guidance},
+                        "planner_tool_guidance": {"turn": state.turn, "message": guidance},
                     })
                     state.last_decision = repeated_read.as_dict()
                     self._save_state(state)
                     self.engine.emit(run_id, "agent.provider.read_loop_redirected", {
-                        "turn": state.turn + 1,
+                        "turn": state.turn,
                         "path": blocked_path,
                         "guidance": guidance,
                     })
@@ -3905,6 +3941,27 @@ class AgentPlannerRuntime:
                     "state": AgentRunState.WAITING_FOR_APPROVAL.value,
                 })
                 return self.engine.store.get_run(run_id) or {}
+            except ToolCorrectionRequired as exc:
+                state.turn += 1
+                guidance = (
+                    f"The proposed {decision.tool_id} action was not executed: {exc}. "
+                    "Use the exact content already observed from the target file and return the smallest valid "
+                    "bounded correction. Do not repeat the rejected payload."
+                )
+                self.engine.merge_checkpoint(run_id, {
+                    "planner_tool_guidance": {"turn": state.turn, "message": guidance},
+                })
+                state.last_decision = decision.as_dict()
+                state.status = "running"
+                self._save_state(state)
+                self.engine.emit(run_id, "agent.planner.tool_correction_required", {
+                    "turn": state.turn,
+                    "tool_id": decision.tool_id,
+                    "reason": str(exc),
+                    "guidance": guidance,
+                })
+                self._transition(run_id, AgentRunState.UPDATING_PLAN)
+                continue
             except ValueError as exc:
                 # Defense in depth: a schema change between preflight and
                 # approval must end cleanly without an orphaned executing run.

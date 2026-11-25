@@ -137,7 +137,7 @@ def test_runtime_extras_bind_lattice_only_when_lattice_flag_on(tmp_path, monkeyp
     monkeypatch.setattr(runtime, "_load_key", lambda env: (__import__(
         "cryptography.hazmat.primitives.asymmetric.ed25519", fromlist=["x"]).Ed25519PrivateKey.generate(), "ready"))
     built = []
-    monkeypatch.setattr(spine, "default_lattice", lambda workspace, registry: built.append(workspace) or "LATTICE")
+    monkeypatch.setattr(spine, "default_lattice", lambda workspace, registry, **_kwargs: built.append(workspace) or "LATTICE")
     env = {"BEAST_CODING_CRYSTALS": "1", "BEAST_ADAPTIVE_ROUTER": "1"}
     assert runtime.planner_runtime_extras(tmp_path, env=env)["crystal_planner"].lattice is None
     on = runtime.planner_runtime_extras(tmp_path, env={**env, "BEAST_CRYSTAL_LATTICE": "1"})

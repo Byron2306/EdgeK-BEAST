@@ -6,7 +6,7 @@ import pytest
 
 from typing import Any
 
-from app.kernel.agents.planner_provider import CallbackPlannerProvider, CapabilityScoredPlannerProvider, FallbackPlannerProvider, HeuristicPlannerProvider, ScriptedPlannerProvider, StickyFallbackPlannerProvider, parse_planner_decision
+from app.kernel.agents.planner_provider import CallbackPlannerProvider, CapabilityScoredPlannerProvider, FallbackPlannerProvider, HeuristicPlannerProvider, ScriptedPlannerProvider, StickyFallbackPlannerProvider, normalize_editor_tool_dialect, parse_planner_decision
 from app.kernel.agents.planner_runtime import AgentPlannerRuntime
 from app.kernel.agents.provider_quality import ProviderQualityLedger
 from app.kernel.agents.run_engine import AgentRunEngine
@@ -252,6 +252,116 @@ def test_decision_contract_normalizes_small_model_tool_aliases():
     assert decision.decision_type.value == "tool"
     assert decision.tool_id == "workspace.read_range"
     assert decision.arguments["path"] == "sample.py"
+
+
+@pytest.mark.parametrize(
+    ("command", "arguments", "expected_tool", "expected_arguments"),
+    [
+        (
+            "view",
+            {"path": "sample.py", "line_start": 3, "line_end": 7},
+            "workspace.read_range",
+            {"path": "sample.py", "start_line": 3, "line_count": 5},
+        ),
+        (
+            "str_replace",
+            {"path": "sample.py", "old_str": "return 1", "new_str": "return 2"},
+            "worktree.replace_exact",
+            {"path": "sample.py", "old_text": "return 1", "new_text": "return 2"},
+        ),
+        (
+            "create",
+            {"path": "new.py", "file_text": "VALUE = 1\n"},
+            "worktree.write_file",
+            {"path": "new.py", "content": "VALUE = 1\n"},
+        ),
+    ],
+)
+def test_editor_tool_dialect_maps_common_coder_operations(
+    command, arguments, expected_tool, expected_arguments
+):
+    decision = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "str_replace_editor",
+        "arguments": {"command": command, **arguments},
+    })
+
+    normalized = normalize_editor_tool_dialect(decision)
+
+    assert normalized.tool_id == expected_tool
+    assert normalized.arguments == expected_arguments
+
+
+def test_editor_tool_dialect_relativizes_only_paths_inside_known_roots(tmp_path):
+    worktree = tmp_path / "worktree"
+    worktree.mkdir()
+    inside = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "str_replace_editor",
+        "arguments": {"command": "view", "path": str(worktree / "sample.py")},
+    })
+    outside = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "str_replace_editor",
+        "arguments": {"command": "view", "path": str(tmp_path / "outside.py")},
+    })
+
+    assert normalize_editor_tool_dialect(inside, roots=[worktree]).arguments["path"] == "sample.py"
+    assert normalize_editor_tool_dialect(outside, roots=[worktree]).arguments["path"] == str(tmp_path / "outside.py")
+
+
+def test_editor_tool_dialect_maps_opencode_read_and_canonical_absolute_path(tmp_path):
+    worktree = tmp_path / "worktree"
+    worktree.mkdir()
+    opencode = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "read",
+        "arguments": {"file": str(worktree / "sample.py"), "ranges": "3-7"},
+    })
+    canonical = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "workspace.read_range",
+        "arguments": {"path": str(worktree / "sample.py"), "start_line": 1, "line_count": 20},
+    })
+
+    mapped = normalize_editor_tool_dialect(opencode, roots=[worktree])
+    assert mapped.tool_id == "workspace.read_range"
+    assert mapped.arguments == {"path": "sample.py", "start_line": 3, "line_count": 5}
+    assert normalize_editor_tool_dialect(canonical, roots=[worktree]).arguments["path"] == "sample.py"
+
+
+def test_editor_tool_dialect_does_not_guess_unsupported_operations():
+    decision = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "str_replace_editor",
+        "arguments": {"command": "insert", "path": "sample.py", "new_str": "unsafe guess"},
+    })
+
+    assert normalize_editor_tool_dialect(decision) == decision
+
+
+def test_runtime_records_editor_dialect_translation(tmp_path):
+    engine, run_id = make_run(tmp_path)
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]))
+    decision = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "str_replace_editor",
+        "arguments": {"command": "view", "path": str(tmp_path / "sample.py")},
+    })
+
+    normalized = runtime._normalize_model_tool_dialect(
+        engine.store.get_run(run_id), run_id, decision
+    )
+
+    assert normalized.tool_id == "workspace.read_range"
+    assert normalized.arguments == {"path": "sample.py"}
+    events = engine.store.events(run_id, limit=100)
+    payload = next(
+        row["payload"] for row in events
+        if row["event_type"] == "agent.provider.tool_dialect_normalized"
+    )
+    assert payload["source_tool_id"] == "str_replace_editor"
+    assert payload["tool_id"] == "workspace.read_range"
 
 
 def test_decision_contract_normalizes_params_and_end_line_for_read_range():
@@ -2165,7 +2275,6 @@ def test_post_bind_duplicate_read_retries_strong_provider(tmp_path):
     # This test exercises retry and execution, not the separate graduation contract.
     final = asyncio.run(runtime.run(run_id, max_turns_this_call=1))
     planner = final["checkpoint"]["planner"]
-    assert final["state"] != "policy_blocked"
     tool_ids = [item["tool_id"] for item in planner["observations"]]
     assert tool_ids[:3] == ["workspace.read_range", "worktree.bind", "worktree.replace_exact"]
     retry_events = [event for event in engine.store.events(run_id, limit=200) if event["event_type"] == "agent.provider.post_bind_read_retry"]

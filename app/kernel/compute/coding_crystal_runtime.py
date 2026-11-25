@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Any
 
 ENABLE_ENV = "BEAST_CODING_CRYSTALS"
+AUTO_PROMOTE_ENV = "BEAST_CODING_CRYSTAL_AUTO_PROMOTE"
 KEY_ENV = "BEAST_CODING_CRYSTAL_KEY"
 DEFAULT_KEY_PATH = Path("~/.local/state/beast/compute_plane/authority/arda-runtime-ed25519.pem").expanduser()
 FAMILY = "fix-failing-assertion"
@@ -31,6 +32,7 @@ def _enabled(env: Mapping[str, str]) -> bool:
 
 NODE_ENV = "BEAST_COMMONS_NODE_ID"
 LATTICE_ENV = "BEAST_CRYSTAL_LATTICE"
+LATTICE_LEDGER_ENV = "BEAST_CRYSTAL_LATTICE_LEDGER_ROOT"
 USER_ENV = "BEAST_COMMONS_USER_ID"
 DEFAULT_NODE_ID = "beast-control-plane"
 
@@ -112,11 +114,13 @@ def _build(workspace: Path, env: Mapping[str, str]) -> tuple[dict[str, Any], str
     if str(env.get(LATTICE_ENV) or "").strip().lower() in {"1", "true", "yes", "on"}:  # lattice spine, default off
         from app.kernel.compute.crystal_lattice_spine import default_lattice
 
-        lattice = default_lattice(workspace, registry)
+        lattice = default_lattice(workspace, registry, env=env)
     extras: dict[str, Any] = {
         "crystal_planner": CodingCrystalPlanner(registry, authority, ledger, economy=economy, lattice=lattice),
         "envelope_store": envelopes,
     }
+    if str(env.get(AUTO_PROMOTE_ENV) or "").strip().lower() in {"1", "true", "yes", "on"}:
+        extras["crystal_learner"] = CodingCrystalAutoLearner(workspace, env=env, planner=extras["crystal_planner"])
     from app.kernel.compute.adaptive_router import CodingCrystalRouter, router_enabled
 
     if router_enabled(env):  # D9, default off: routing nominates; D6 activation gates still decide
@@ -128,6 +132,59 @@ def _build(workspace: Path, env: Mapping[str, str]) -> tuple[dict[str, Any], str
 
         extras["memory_reader"] = MemoryReader(exact=[crystal_source(registry)])  # Perceive tier 1 (exact ids)
     return extras, "ready"
+
+
+class CodingCrystalAutoLearner:
+    """Turn a newly sealed verified episode into durable, replay-proven local compute."""
+
+    def __init__(self, workspace: str | Path, *, env: Mapping[str, str], planner: Any) -> None:
+        self.workspace = Path(workspace)
+        self.env = dict(env)
+        self.planner = planner
+
+    def learn(self, run_id: str, *, engine: Any) -> dict[str, Any]:
+        events = engine.store.events(run_id, limit=100000)
+        if any(event.get("event_type") == "agent.crystal.activated" for event in events):
+            return {"status": "skipped", "reason": "episode_used_existing_crystal", "source_run_id": run_id}
+        report = learn_from_run(
+            self.workspace,
+            run_id,
+            env=self.env,
+            approved_by="agent-coder:auto-promotion",
+        )
+        if report.get("status") != "promoted":
+            return {**report, "source_run_id": run_id}
+        crystal_id = str(report["crystal_id"])
+        record = self.planner.registry.get(crystal_id)
+        lattice_admitted = False
+        checkpoint_hash = ""
+        block_hash = ""
+        if self.planner.lattice is not None:
+            try:
+                node = self.planner.lattice.node(crystal_id)
+                lattice_admitted = node.get("status") == "admitted"
+            except LookupError:
+                admitted = self.planner.lattice.add_crystal(
+                    crystal_id,
+                    publisher_id=self.planner.authority.key_id,
+                )
+                witness = admitted["witness"]
+                checkpoint_hash = str(witness["checkpoint_hash"])
+                block_hash = str(witness["block_hash"])
+                lattice_admitted = admitted["node"].get("status") == "admitted"
+        receipt = report.get("receipt") if isinstance(report.get("receipt"), dict) else {}
+        return {
+            "status": "promoted",
+            "crystal_id": crystal_id,
+            "source_run_id": run_id,
+            "source_envelope_digest": record["candidate"]["source_envelope_digest"],
+            "registry_record_digest": record["record_digest"],
+            "heldout_attempts": int(receipt.get("attempts") or 0),
+            "heldout_successes": int(receipt.get("successes") or 0),
+            "lattice_admitted": lattice_admitted,
+            "lattice_checkpoint_hash": checkpoint_hash,
+            "crystal_chain_block_hash": block_hash,
+        }
 
 
 def planner_runtime_extras(workspace: str | Path, *, env: Mapping[str, str] | None = None) -> dict[str, Any]:
