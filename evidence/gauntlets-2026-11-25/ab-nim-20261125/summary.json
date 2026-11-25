@@ -1,0 +1,545 @@
+{
+  "aggregate": {
+    "A": {
+      "attempts": 15,
+      "calls": 0,
+      "completion_tokens": 0,
+      "crystal_activations": 15,
+      "crystal_hits": 15,
+      "mean_wall_seconds": 1.157,
+      "pass_rate": 1.0,
+      "passes": 15,
+      "prompt_tokens": 0,
+      "wall_seconds": 17.348
+    },
+    "B": {
+      "attempts": 15,
+      "calls": 166,
+      "completion_tokens": 8253,
+      "crystal_activations": 0,
+      "crystal_hits": 0,
+      "mean_wall_seconds": 30.198,
+      "pass_rate": 1.0,
+      "passes": 15,
+      "prompt_tokens": 238622,
+      "wall_seconds": 452.964
+    },
+    "savings": {
+      "calls": 1.0,
+      "completion_tokens": 1.0,
+      "pass_rate_delta": 0.0,
+      "prompt_tokens": 1.0,
+      "wall_seconds": 0.961701
+    }
+  },
+  "caveats": [
+    "Sample is small: 5 same-author reuse tasks, 3 repeat(s) per arm.",
+    "Tasks were designed by the same authors to match already-admitted crystals from the 2026-11-25 lattice gauntlets; this is not independent-user reuse.",
+    "Formation cost of those crystals is excluded. This baseline measures reuse economics given an already-admitted lattice, not the payback period including first-time formation.",
+    "Arm B is the governed AgentRun loop with crystal lookup disabled, not a raw chat-completions 'write me a fix' prompt, so the cold cost includes tool-loop overhead.",
+    "Temperature is 0 and the provider seed is 731947+turn; the hosted endpoint may or may not honour seed.",
+    "Spend was billed at $0.00 on the NVIDIA hosted trial; commercial_equivalent_usd is a list-price footnote only ($0.06 / $0.35 per 1M for this model, checked Nov 2026).",
+    "Composite held-out tasks are not in this A/B: the original composite path is model-free replay, which is not an identical controller prompt to a cold multi-defect repair.",
+    "Cold-arm call counts varied across repeats even with temperature 0 and a fixed seed formula, so the hosted endpoint did not produce identical traces."
+  ],
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "per_task": {
+    "default-open": {
+      "A": {
+        "attempts": 3,
+        "calls": 0,
+        "completion_tokens": 0,
+        "crystal_hits": 3,
+        "mean_wall_seconds": 1.275,
+        "pass_rate": 1.0,
+        "passes": 3,
+        "prompt_tokens": 0,
+        "repeats": [
+          {
+            "calls": 0,
+            "completion_tokens": 0,
+            "crystal_completed": true,
+            "passed": true,
+            "prompt_tokens": 0,
+            "repeat": 1,
+            "run_id": "ab-nim-default-open-a-r1-c49a73d0e16c",
+            "wall_seconds": 1.208
+          },
+          {
+            "calls": 0,
+            "completion_tokens": 0,
+            "crystal_completed": true,
+            "passed": true,
+            "prompt_tokens": 0,
+            "repeat": 2,
+            "run_id": "ab-nim-default-open-a-r2-0098c3d5aa7e",
+            "wall_seconds": 1.221
+          },
+          {
+            "calls": 0,
+            "completion_tokens": 0,
+            "crystal_completed": true,
+            "passed": true,
+            "prompt_tokens": 0,
+            "repeat": 3,
+            "run_id": "ab-nim-default-open-a-r3-123ac96d984b",
+            "wall_seconds": 1.396
+          }
+        ],
+        "wall_seconds": 3.825
+      },
+      "B": {
+        "attempts": 3,
+        "calls": 39,
+        "completion_tokens": 2000,
+        "crystal_hits": 0,
+        "mean_wall_seconds": 34.536,
+        "pass_rate": 1.0,
+        "passes": 3,
+        "prompt_tokens": 55399,
+        "repeats": [
+          {
+            "calls": 18,
+            "completion_tokens": 976,
+            "crystal_completed": false,
+            "passed": true,
+            "prompt_tokens": 23596,
+            "repeat": 1,
+            "run_id": "ab-nim-default-open-b-r1-80bd5ed85e68",
+            "wall_seconds": 50.078
+          },
+          {
+            "calls": 11,
+            "completion_tokens": 529,
+            "crystal_completed": false,
+            "passed": true,
+            "prompt_tokens": 16859,
+            "repeat": 2,
+            "run_id": "ab-nim-default-open-b-r2-c29e11b28e40",
+            "wall_seconds": 25.873
+          },
+          {
+            "calls": 10,
+            "completion_tokens": 495,
+            "crystal_completed": false,
+            "passed": true,
+            "prompt_tokens": 14944,
+            "repeat": 3,
+            "run_id": "ab-nim-default-open-b-r3-67a78b292b4d",
+            "wall_seconds": 27.657
+          }
+        ],
+        "wall_seconds": 103.608
+      },
+      "id": "default-open",
+      "origin": "three-leaf-gauntlet-20261125-a reuse_bool",
+      "savings": {
+        "calls": 1.0,
+        "completion_tokens": 1.0,
+        "prompt_tokens": 1.0,
+        "wall_seconds": 0.963082
+      }
+    },
+    "quota-limit": {
+      "A": {
+        "attempts": 3,
+        "calls": 0,
+        "completion_tokens": 0,
+        "crystal_hits": 3,
+        "mean_wall_seconds": 1.148,
+        "pass_rate": 1.0,
+        "passes": 3,
+        "prompt_tokens": 0,
+        "repeats": [
+          {
+            "calls": 0,
+            "completion_tokens": 0,
+            "crystal_completed": true,
+            "passed": true,
+            "prompt_tokens": 0,
+            "repeat": 1,
+            "run_id": "ab-nim-quota-limit-a-r1-b00badb92ce9",
+            "wall_seconds": 0.989
+          },
+          {
+            "calls": 0,
+            "completion_tokens": 0,
+            "crystal_completed": true,
+            "passed": true,
+            "prompt_tokens": 0,
+            "repeat": 2,
+            "run_id": "ab-nim-quota-limit-a-r2-1b0e084ef6a2",
+            "wall_seconds": 1.211
+          },
+          {
+            "calls": 0,
+            "completion_tokens": 0,
+            "crystal_completed": true,
+            "passed": true,
+            "prompt_tokens": 0,
+            "repeat": 3,
+            "run_id": "ab-nim-quota-limit-a-r3-a6d44c6ccb28",
+            "wall_seconds": 1.244
+          }
+        ],
+        "wall_seconds": 3.444
+      },
+      "B": {
+        "attempts": 3,
+        "calls": 54,
+        "completion_tokens": 2739,
+        "crystal_hits": 0,
+        "mean_wall_seconds": 50.524,
+        "pass_rate": 1.0,
+        "passes": 3,
+        "prompt_tokens": 82874,
+        "repeats": [
+          {
+            "calls": 20,
+            "completion_tokens": 978,
+            "crystal_completed": false,
+            "passed": true,
+            "prompt_tokens": 32672,
+            "repeat": 1,
+            "run_id": "ab-nim-quota-limit-b-r1-9795e229c825",
+            "wall_seconds": 53.192
+          },
+          {
+            "calls": 11,
+            "completion_tokens": 542,
+            "crystal_completed": false,
+            "passed": true,
+            "prompt_tokens": 15112,
+            "repeat": 2,
+            "run_id": "ab-nim-quota-limit-b-r2-798a7b06d1f5",
+            "wall_seconds": 24.708
+          },
+          {
+            "calls": 23,
+            "completion_tokens": 1219,
+            "crystal_completed": false,
+            "passed": true,
+            "prompt_tokens": 35090,
+            "repeat": 3,
+            "run_id": "ab-nim-quota-limit-b-r3-7e5cbb27b44c",
+            "wall_seconds": 73.672
+          }
+        ],
+        "wall_seconds": 151.572
+      },
+      "id": "quota-limit",
+      "origin": "hard-lattice-gauntlet-20261125-b reuse_a",
+      "savings": {
+        "calls": 1.0,
+        "completion_tokens": 1.0,
+        "prompt_tokens": 1.0,
+        "wall_seconds": 0.977278
+      }
+    },
+    "status-label": {
+      "A": {
+        "attempts": 3,
+        "calls": 0,
+        "completion_tokens": 0,
+        "crystal_hits": 3,
+        "mean_wall_seconds": 1.131,
+        "pass_rate": 1.0,
+        "passes": 3,
+        "prompt_tokens": 0,
+        "repeats": [
+          {
+            "calls": 0,
+            "completion_tokens": 0,
+            "crystal_completed": true,
+            "passed": true,
+            "prompt_tokens": 0,
+            "repeat": 1,
+            "run_id": "ab-nim-status-label-a-r1-92d94113d85a",
+            "wall_seconds": 0.955
+          },
+          {
+            "calls": 0,
+            "completion_tokens": 0,
+            "crystal_completed": true,
+            "passed": true,
+            "prompt_tokens": 0,
+            "repeat": 2,
+            "run_id": "ab-nim-status-label-a-r2-7ac14356da17",
+            "wall_seconds": 1.174
+          },
+          {
+            "calls": 0,
+            "completion_tokens": 0,
+            "crystal_completed": true,
+            "passed": true,
+            "prompt_tokens": 0,
+            "repeat": 3,
+            "run_id": "ab-nim-status-label-a-r3-19a46ec5e952",
+            "wall_seconds": 1.263
+          }
+        ],
+        "wall_seconds": 3.392
+      },
+      "B": {
+        "attempts": 3,
+        "calls": 27,
+        "completion_tokens": 1205,
+        "crystal_hits": 0,
+        "mean_wall_seconds": 26.895,
+        "pass_rate": 1.0,
+        "passes": 3,
+        "prompt_tokens": 37111,
+        "repeats": [
+          {
+            "calls": 7,
+            "completion_tokens": 322,
+            "crystal_completed": false,
+            "passed": true,
+            "prompt_tokens": 8789,
+            "repeat": 1,
+            "run_id": "ab-nim-status-label-b-r1-6989f210ed3c",
+            "wall_seconds": 15.591
+          },
+          {
+            "calls": 10,
+            "completion_tokens": 415,
+            "crystal_completed": false,
+            "passed": true,
+            "prompt_tokens": 14686,
+            "repeat": 2,
+            "run_id": "ab-nim-status-label-b-r2-89644bd8d309",
+            "wall_seconds": 28.406
+          },
+          {
+            "calls": 10,
+            "completion_tokens": 468,
+            "crystal_completed": false,
+            "passed": true,
+            "prompt_tokens": 13636,
+            "repeat": 3,
+            "run_id": "ab-nim-status-label-b-r3-6afa45a01474",
+            "wall_seconds": 36.687
+          }
+        ],
+        "wall_seconds": 80.684
+      },
+      "id": "status-label",
+      "origin": "three-leaf-gauntlet-20261125-a reuse_str",
+      "savings": {
+        "calls": 1.0,
+        "completion_tokens": 1.0,
+        "prompt_tokens": 1.0,
+        "wall_seconds": 0.957959
+      }
+    },
+    "voice-salute": {
+      "A": {
+        "attempts": 3,
+        "calls": 0,
+        "completion_tokens": 0,
+        "crystal_hits": 3,
+        "mean_wall_seconds": 1.039,
+        "pass_rate": 1.0,
+        "passes": 3,
+        "prompt_tokens": 0,
+        "repeats": [
+          {
+            "calls": 0,
+            "completion_tokens": 0,
+            "crystal_completed": true,
+            "passed": true,
+            "prompt_tokens": 0,
+            "repeat": 1,
+            "run_id": "ab-nim-voice-salute-a-r1-11cd311e4ba6",
+            "wall_seconds": 0.879
+          },
+          {
+            "calls": 0,
+            "completion_tokens": 0,
+            "crystal_completed": true,
+            "passed": true,
+            "prompt_tokens": 0,
+            "repeat": 2,
+            "run_id": "ab-nim-voice-salute-a-r2-86c1c0e6cb82",
+            "wall_seconds": 1.027
+          },
+          {
+            "calls": 0,
+            "completion_tokens": 0,
+            "crystal_completed": true,
+            "passed": true,
+            "prompt_tokens": 0,
+            "repeat": 3,
+            "run_id": "ab-nim-voice-salute-a-r3-9d5daa08e2df",
+            "wall_seconds": 1.21
+          }
+        ],
+        "wall_seconds": 3.116
+      },
+      "B": {
+        "attempts": 3,
+        "calls": 26,
+        "completion_tokens": 1313,
+        "crystal_hits": 0,
+        "mean_wall_seconds": 26.461,
+        "pass_rate": 1.0,
+        "passes": 3,
+        "prompt_tokens": 35430,
+        "repeats": [
+          {
+            "calls": 12,
+            "completion_tokens": 683,
+            "crystal_completed": false,
+            "passed": true,
+            "prompt_tokens": 16824,
+            "repeat": 1,
+            "run_id": "ab-nim-voice-salute-b-r1-ea98845df2c5",
+            "wall_seconds": 39.899
+          },
+          {
+            "calls": 6,
+            "completion_tokens": 262,
+            "crystal_completed": false,
+            "passed": true,
+            "prompt_tokens": 7676,
+            "repeat": 2,
+            "run_id": "ab-nim-voice-salute-b-r2-1d2ee0363f2c",
+            "wall_seconds": 19.103
+          },
+          {
+            "calls": 8,
+            "completion_tokens": 368,
+            "crystal_completed": false,
+            "passed": true,
+            "prompt_tokens": 10930,
+            "repeat": 3,
+            "run_id": "ab-nim-voice-salute-b-r3-56fdd5f90c53",
+            "wall_seconds": 20.38
+          }
+        ],
+        "wall_seconds": 79.382
+      },
+      "id": "voice-salute",
+      "origin": "hard-lattice-gauntlet-20261125-b reuse_b",
+      "savings": {
+        "calls": 1.0,
+        "completion_tokens": 1.0,
+        "prompt_tokens": 1.0,
+        "wall_seconds": 0.960747
+      }
+    },
+    "window-budget": {
+      "A": {
+        "attempts": 3,
+        "calls": 0,
+        "completion_tokens": 0,
+        "crystal_hits": 3,
+        "mean_wall_seconds": 1.19,
+        "pass_rate": 1.0,
+        "passes": 3,
+        "prompt_tokens": 0,
+        "repeats": [
+          {
+            "calls": 0,
+            "completion_tokens": 0,
+            "crystal_completed": true,
+            "passed": true,
+            "prompt_tokens": 0,
+            "repeat": 1,
+            "run_id": "ab-nim-window-budget-a-r1-8e305b471a5b",
+            "wall_seconds": 0.94
+          },
+          {
+            "calls": 0,
+            "completion_tokens": 0,
+            "crystal_completed": true,
+            "passed": true,
+            "prompt_tokens": 0,
+            "repeat": 2,
+            "run_id": "ab-nim-window-budget-a-r2-435a13847372",
+            "wall_seconds": 1.126
+          },
+          {
+            "calls": 0,
+            "completion_tokens": 0,
+            "crystal_completed": true,
+            "passed": true,
+            "prompt_tokens": 0,
+            "repeat": 3,
+            "run_id": "ab-nim-window-budget-a-r3-2d9a1842d54e",
+            "wall_seconds": 1.505
+          }
+        ],
+        "wall_seconds": 3.571
+      },
+      "B": {
+        "attempts": 3,
+        "calls": 20,
+        "completion_tokens": 996,
+        "crystal_hits": 0,
+        "mean_wall_seconds": 12.573,
+        "pass_rate": 1.0,
+        "passes": 3,
+        "prompt_tokens": 27808,
+        "repeats": [
+          {
+            "calls": 7,
+            "completion_tokens": 343,
+            "crystal_completed": false,
+            "passed": true,
+            "prompt_tokens": 9578,
+            "repeat": 1,
+            "run_id": "ab-nim-window-budget-b-r1-9daf17ed5d1f",
+            "wall_seconds": 13.111
+          },
+          {
+            "calls": 6,
+            "completion_tokens": 326,
+            "crystal_completed": false,
+            "passed": true,
+            "prompt_tokens": 7923,
+            "repeat": 2,
+            "run_id": "ab-nim-window-budget-b-r2-f5874704ea86",
+            "wall_seconds": 10.8
+          },
+          {
+            "calls": 7,
+            "completion_tokens": 327,
+            "crystal_completed": false,
+            "passed": true,
+            "prompt_tokens": 10307,
+            "repeat": 3,
+            "run_id": "ab-nim-window-budget-b-r3-7977ded00f17",
+            "wall_seconds": 13.807
+          }
+        ],
+        "wall_seconds": 37.718
+      },
+      "id": "window-budget",
+      "origin": "three-leaf-gauntlet-20261125-a reuse_int",
+      "savings": {
+        "calls": 1.0,
+        "completion_tokens": 1.0,
+        "prompt_tokens": 1.0,
+        "wall_seconds": 0.905324
+      }
+    }
+  },
+  "repeats": 3,
+  "spend_total": {
+    "billed_usd": 0.0,
+    "calls": 166,
+    "commercial_equivalent_usd": 0.017206,
+    "completion_tokens": 8253,
+    "estimated_usd": 0.0,
+    "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+    "prompt_tokens": 238622
+  },
+  "task_ids": [
+    "quota-limit",
+    "voice-salute",
+    "window-budget",
+    "status-label",
+    "default-open"
+  ]
+}
