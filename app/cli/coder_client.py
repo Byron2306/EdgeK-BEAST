@@ -11,6 +11,7 @@ import json
 from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path
+from app.kernel.agents.intent_routing import route_composer_mode, resolve_context_files
 from typing import Any, AsyncIterable, AsyncIterator
 from urllib.parse import quote
 
@@ -274,6 +275,11 @@ class CoderRuntimeClient:
     ) -> dict[str, Any]:
         if mode not in {"ask", "review", "edit", "agent"}:
             raise ValueError("invalid BEAST composer mode")
+        if not context_files:
+            context_files = resolve_context_files(self.workspace, prompt)
+        mode = route_composer_mode(mode, prompt)
+        if mode == "review" and not context_files:
+            mode = "ask"
         autonomy_mode = str(
             autonomy or os.environ.get("BEAST_TLI_AUTONOMY") or "autopilot"
         ).strip().lower()
@@ -286,11 +292,12 @@ class CoderRuntimeClient:
             editing_scope["implementation_target"] = target
             if test_files:
                 editing_scope["required_test_files"] = test_files
+        read_only = mode in {"ask", "review"}
         body = await self._post_json(
             "/edgek/agent-runs",
             {
                 "session_id": session_id,
-                "mode": "analysis" if mode in {"ask", "review"} else mode,
+                "mode": "analysis" if read_only else mode,
                 "provider": provider,
                 "model": model,
                 "workspace_root": str(self.workspace),
@@ -301,11 +308,11 @@ class CoderRuntimeClient:
                     "context_files": list(context_files),
                     **editing_scope,
                     **({"read_only_file_review": True, "file_answer_style": "explain" if mode == "ask" else "review"}
-                       if mode in {"ask", "review"} and context_files else {}),
+                       if read_only and context_files else {}),
                     "workspace_root": str(self.workspace),
                     "execution_target": "local",
                     "autonomy": autonomy_mode,
-                    "apply_on_completion": autonomy_mode == "autopilot",
+                    "apply_on_completion": autonomy_mode == "autopilot" and not read_only,
                     "permission_mode": permission_mode,
                 },
                 "launch": True,

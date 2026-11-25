@@ -42,6 +42,7 @@ except ImportError:  # Python < 3.12 and minimal/offline installations
     TerminalImage = None  # type: ignore[assignment,misc]
 
 from app.cli.coder_client import CoderRuntimeClient, RuntimeClientError, RuntimeTurnUnconfirmed
+from app.kernel.agents.intent_routing import route_composer_mode, resolve_context_files
 from app.cli.coder_state import (
     COMMAND_GROUPS,
     REQUIRED_COMMANDS,
@@ -2159,18 +2160,14 @@ class BeastCoderApp(App[None]):
         return "\n".join(lines)
 
     def _composer_context_files(self, prompt: str) -> tuple[str, ...]:
-        root = self.settings.workspace
-        files: list[str] = []
-        for name in re.findall(r"(?<![\w./-])/?(?:[\w.-]+/)*[\w.-]+\.(?:py|js|ts|md|json|toml|ya?ml)(?![\w/-]|\.[\w.])", prompt):
-            candidate = Path(name)
-            resolved = (root / candidate).resolve()
-            if not candidate.is_absolute() and candidate.parent == Path(".") and not resolved.is_file():
-                continue
-            if resolved.is_relative_to(root) and resolved.is_file():
-                relative = resolved.relative_to(root)
-                if not any(part.startswith(".") for part in relative.parts):
-                    files.append(relative.as_posix())
-        return tuple(dict.fromkeys(files))[:4]
+        return resolve_context_files(self.settings.workspace, prompt)
+
+    def _route_turn_mode(self, mode: str, prompt: str) -> str:
+        """Keep explicit ask/review/edit; route agent analysis prompts like the IDE."""
+        routed = route_composer_mode(mode, prompt)
+        if routed == "review" and not self._composer_context_files(prompt):
+            return "ask"
+        return routed
 
     async def _run_turn(
         self,
@@ -2196,6 +2193,12 @@ class BeastCoderApp(App[None]):
             return
         if append_user:
             await self._auto_compact_if_needed()
+        mode = self._route_turn_mode(mode, prompt)
+        # Swarm's mutate-and-verify prefix is only for implementation runs.
+        if prefix and mode in {"agent", "edit"}:
+            effective_prompt = f"{prefix}{prompt}"
+        else:
+            effective_prompt = prompt
         self._streaming = True
         self._set_mascot("working")
         if append_user:
@@ -2203,8 +2206,7 @@ class BeastCoderApp(App[None]):
             self.pending_approvals.clear()
             self._run_tool_start = len(self.tool_entries)
             self._append("user", prompt)
-            if prefix:
-                prompt = f"{prefix}{prompt}"
+            prompt = effective_prompt
             # A new objective starts a fresh live diff; the previous run's
             # verified diff returns via agent.worktree.diff_ready.
             self._live_diffs.clear()
@@ -2376,19 +2378,34 @@ class BeastCoderApp(App[None]):
                 final_text = advisory or ("" if grounded else visible)
                 if grounded and not final_text:
                     answer_error = answer_error or str(result.get("error") or "No grounded answer was returned.")
+                elif run_state != "completed":
+                    answer_error = answer_error or str(result.get("error") or "").strip()
                 final_metadata = {"run_id": run_id, "receipt_ids": receipts, "turn_complete": True}
-                self.transcript_entries[assistant_index] = {
-                    "role": "assistant",
-                    "content": final_text,
-                    "metadata": final_metadata,
-                }
-                self.store.append("assistant", final_text, metadata=final_metadata)
+                if final_text:
+                    self.transcript_entries[assistant_index] = {
+                        "role": "assistant",
+                        "content": final_text,
+                        "metadata": final_metadata,
+                    }
+                    self.store.append("assistant", final_text, metadata=final_metadata)
+                else:
+                    # Don't leave a blank BEAST> bubble when the run was blocked
+                    # or failed without an answer. The error line carries the reason.
+                    self.transcript_entries.pop(assistant_index)
+                    assistant_index = None
                 self._sync()
                 self._set_mascot("finished" if run_state == "completed" and not answer_error else "alert")
                 if run_state == "completed" and not answer_error:
                     self._append_completion_summary(run_id, run_state, advisory, receipts)
                 if answer_error or run_state != "completed":
-                    self._append("error", answer_error or f"AgentRun ended as {run_state}.")
+                    reason = answer_error or f"AgentRun ended as {run_state}."
+                    if (
+                        run_state != "completed"
+                        and answer_error
+                        and run_state not in answer_error
+                    ):
+                        reason = f"AgentRun ended as {run_state}: {answer_error}"
+                    self._append("error", reason)
                 self._turn_ready = False
                 return
             # Turn complete but not terminal - wait for operator to advance

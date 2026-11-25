@@ -876,10 +876,10 @@ async def test_composer_edit_and_agent_are_one_shot(tmp_path: Path):
         for text in ("Explain the project", "/edit Fix the typo", "/agent Add tests", "Explain the tests"):
             await app.submit_text(text)
     assert recorded == [
-        ("agent", "Explain the project"),
+        ("ask", "Explain the project"),
         ("edit", "Fix the typo"),
         ("agent", "Add tests"),
-        ("agent", "Explain the tests"),
+        ("ask", "Explain the tests"),
     ]
 
 
@@ -1310,3 +1310,64 @@ async def test_thinking_panel_toggle_expanded(tmp_path: Path):
         app.toggle_thinking_expanded()
         app._sync()
         assert app.thinking_expanded is False
+
+@pytest.mark.asyncio
+async def test_agent_analysis_prompts_are_routed_read_only(tmp_path: Path):
+    (tmp_path / "beast").write_text("def run():\n    return 1\n")
+    client = FakeRuntimeClient(tmp_path)
+    recorded = []
+
+    async def start_run(session_id, prompt, provider, model, *, mode="agent", context_files=(), autonomy=None, **kwargs):
+        recorded.append({"mode": mode, "prompt": prompt, "context_files": tuple(context_files)})
+        return {"run_id": f"analysis-{len(recorded)}", "state": "planning"}
+
+    client.start_run = start_run
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=client)
+    async with app.run_test(size=(100, 30)):
+        await app.submit_text("proceed reading this file, summarize all functions and list any weaknesses")
+        await app.submit_text("/agent read the beast file and suggest any fixes to improve it")
+        app._pending_mode = "agent"
+        app._pending_prefix = (
+            "Decompose this request into independent subtasks, then complete every "
+            "subtask in this workspace and verify the combined result: "
+        )
+        await app.submit_text("proceed reading this file, summarize all functions and list any weaknesses")
+        await app.submit_text("/agent Add a helper to beast")
+    assert recorded[0]["mode"] == "review"
+    assert recorded[0]["context_files"] == ("beast",)
+    assert recorded[0]["prompt"].startswith("proceed reading this file")
+    assert "Decompose this request" not in recorded[0]["prompt"]
+    assert recorded[1]["mode"] == "ask"
+    assert recorded[1]["context_files"] == ("beast",)
+    assert recorded[2]["mode"] == "review"
+    assert "Decompose this request" not in recorded[2]["prompt"]
+    assert recorded[3]["mode"] == "agent"
+    assert recorded[3]["prompt"] == "Add a helper to beast"
+
+
+@pytest.mark.asyncio
+async def test_policy_blocked_shows_the_planner_blocker(tmp_path: Path):
+    client = FakeRuntimeClient(tmp_path)
+    blocker = "Heuristic fallback found no further deterministic step; stronger planner route required."
+
+    async def start_turn(run_id):
+        return {"run_id": run_id, "state": "policy_blocked", "error": blocker}
+
+    async def follow_run(run_id):
+        yield RuntimeEvent(
+            "agent.planner.blocked",
+            {"payload": {"blocker": blocker}},
+            "1",
+        )
+
+    client.start_turn = start_turn
+    client.follow_run = follow_run
+    app = BeastCoderApp(workspace=tmp_path, runtime_client=client)
+    async with app.run_test(size=(100, 30)):
+        await app.submit_text("Add a helper function")
+    errors = [row["content"] for row in app.transcript_entries if row["role"] == "error"]
+    assistants = [row["content"] for row in app.transcript_entries if row["role"] == "assistant"]
+    assert errors
+    assert "policy_blocked" in errors[-1]
+    assert blocker in errors[-1]
+    assert not any(not str(text).strip() for text in assistants)
