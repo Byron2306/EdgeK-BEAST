@@ -15,6 +15,7 @@ import json
 import os
 import sqlite3
 import signal
+import shutil
 import subprocess
 import sys
 import time
@@ -659,6 +660,12 @@ server {{
             return {**result, "status": "already_running", "executed": False}
         if dry_run or not approved:
             return {**result, "status": "dry_run" if dry_run else "approval_required", "reason": "LiteLLM sidecar start requires approved=true and dry_run=false"}
+        executable = command[0]
+        if not (Path(executable).is_file() or shutil.which(executable)):
+            return {**result, "status": "unavailable", "executed": False,
+                    "reason": ("LiteLLM is not installed in this checkout's venv and is not on PATH. "
+                               "Set BEAST_LITELLM_BIN to a litellm executable (for example "
+                               "/path/to/venv/bin/litellm) or install it: .venv/bin/pip install 'litellm[proxy]'")}
         log_path = pid_path.with_suffix(".log")
         log = log_path.open("ab")
         process = subprocess.Popen(
@@ -716,6 +723,9 @@ server {{
             roots.append(parent)
             if (parent / "bin" / "beast").exists():
                 break
+        override = str(os.environ.get("BEAST_LITELLM_BIN") or "").strip()
+        if override:
+            return override
         candidates = [
             Path(sys.executable).resolve().parent / "litellm",
         ]
@@ -727,7 +737,8 @@ server {{
         for local_bin in candidates:
             if local_bin.exists():
                 return str(local_bin)
-        return "litellm"
+        found = shutil.which("litellm")
+        return found or "litellm"
 
     def _litellm_environment(self) -> Dict[str, str]:
         """Build the environment inherited by the LiteLLM sidecar.
