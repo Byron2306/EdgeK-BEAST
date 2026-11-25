@@ -62,6 +62,9 @@ def coding_opcode_registry() -> OpcodeRegistry:
 
 _UNITTEST_FAILURE = re.compile(r"^AssertionError: (.+?) != (.+?)\s*$", re.MULTILINE)
 _PYTEST_FAILURE = re.compile(r"^E\s+assert (.+?) == (.+?)\s*$", re.MULTILINE)
+# unittest.assertTrue/assertFalse: "AssertionError: False is not true"
+_UNITTEST_BOOL_FAILURE = re.compile(r"^AssertionError: (True|False) is not (true|false)\s*$",
+                                    re.MULTILINE | re.IGNORECASE)
 _CONSTANT = re.compile(r"^([A-Z_][A-Z0-9_]*)\s*=\s*(.+?)\s*$")
 _SCALARS = (bool, int, float, str)
 
@@ -92,6 +95,7 @@ def resolve_constant(verify_output: str, target_content: str) -> dict[str, str] 
     """Resolve exactly one root literal edit from direct and downstream failures."""
     output = str(verify_output or "")
     matches = _UNITTEST_FAILURE.findall(output) + _PYTEST_FAILURE.findall(output)
+    matches.extend((actual, expected.title()) for actual, expected in _UNITTEST_BOOL_FAILURE.findall(output))
     if not matches:
         return None
     parsed = [(_literal(actual_text), _literal(expected_text)) for actual_text, expected_text in matches]
@@ -126,7 +130,11 @@ RECIPE_FIX_FAILING_ASSERTION: tuple[Mapping[str, str], ...] = (
     {"opcode": "worktree.verify", "tool_id": "worktree.verify", "expect": "pass"},
     {"opcode": "crystal.complete", "tool_id": "", "expect": ""},
 )
-EXPLORATION_TOOLS = frozenset({"workspace.list", "workspace.search_text", "workspace.read_range", "workspace.index"})
+EXPLORATION_TOOLS = frozenset({
+    "workspace.list", "workspace.search_text", "workspace.read_range", "workspace.index",
+    # Worktree-scoped read aliases used by some provider dialects.
+    "worktree.read", "worktree.read_file", "worktree.read_range",
+})
 RUNTIME_CLOSURE_TOOLS = frozenset({"worktree.sourceplan_draft"})
 VERIFICATION_TOOLS = frozenset({"worktree.verify", "worktree.run"})
 

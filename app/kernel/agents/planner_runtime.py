@@ -3078,9 +3078,12 @@ class AgentPlannerRuntime:
                 isinstance(phase_decision, PlannerDecision)
                 and (
                     phase_decision.decision_type is PlannerDecisionType.COMPLETE
-                    # Autopilot bookkeeping never costs a model call: bind is
-                    # deterministic and the runtime owns it.
-                    or (self._autopilot(run) and phase_decision.tool_id == "worktree.bind")
+                    # Autopilot bookkeeping never costs a model call: bind,
+                    # the verified SourcePlan handoff, and a ready complete
+                    # are deterministic and the runtime owns them.
+                    or (self._autopilot(run) and phase_decision.tool_id in {
+                        "worktree.bind", "worktree.sourceplan_draft",
+                    })
                 )
             ) else None
             self.engine.emit(run_id, "agent.planner.turn.started", {
