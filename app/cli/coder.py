@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import logging
 import os
 import re
 import time
@@ -22,6 +23,11 @@ from textual.binding import Binding
 from textual.containers import Horizontal, VerticalScroll
 from textual.css.query import NoMatches
 from textual.widgets import Button, Input, Static
+
+# Over SSH (e.g. Termux) the terminal often never answers textual-image's cell-size
+# query; it then falls back to VT340 sizes and logs a TimeoutError traceback at
+# WARNING. The fallback is fine, so keep that noise out of the operator console.
+logging.getLogger("textual_image._terminal").setLevel(logging.ERROR)
 
 try:
     # Imported before Textual starts so textual-image can safely detect Kitty
@@ -2758,6 +2764,12 @@ class BeastCoderApp(App[None]):
                     turn_task.cancel()
                     with suppress(asyncio.CancelledError):
                         await turn_task
+                elif not turn_task.cancelled() and turn_task.exception() is not None:
+                    # Retrieve it so asyncio does not print "Task exception was never
+                    # retrieved"; prefer the turn's own error (e.g. a dropped POST).
+                    turn_error = turn_task.exception()
+                    if isinstance(turn_error, RuntimeClientError):
+                        raise turn_error
                 raise
             run_state = str(result.get("state") or "running")
             self._run_event_after[run_id] = after

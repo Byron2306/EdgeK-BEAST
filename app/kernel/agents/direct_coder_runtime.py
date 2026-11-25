@@ -11,12 +11,14 @@ import asyncio
 import json
 import os
 import uuid
+from dataclasses import replace
 from typing import Any
 
 from app.kernel.agents import direct_coder_hooks
 from app.kernel.agents.effect_ts_bridge import EffectUnavailable
 from app.kernel.agents.tool_runtime import ToolExecutionFailed
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType
+from app.kernel.agents.planner_provider import PlannerDecisionError
 from app.kernel.agents.verification_planner import verified_handoff_command
 from app.kernel.compute.coder_crystal_feedback import PROFILE, verifier_outcome
 from app.kernel.agents.run_state import AgentRunState, TERMINAL_STATES, normalize_state
@@ -29,6 +31,69 @@ AUTOPILOT_TOOLS = frozenset({
     "worktree.write_file", "worktree.verify", "worktree.sourceplan_draft",
     "worktree.diff", "worktree.status",
 })
+
+# Read-only workspace tools. Repeating one of these with arguments whose result
+# the model already has is never progress; the runtime answers from memory.
+READ_ONLY_TOOLS = frozenset({
+    "workspace.index", "workspace.list", "workspace.search_text", "workspace.read_range",
+    "worktree.list", "worktree.read_file",
+})
+# Line-range reads. A bound worktree starts as a copy of the workspace, so both
+# share coverage per path; an edit changes the file hash and resets it.
+READ_RANGE_TOOLS = frozenset({"workspace.read_range", "worktree.read_file"})
+MUTATION_TOOLS = frozenset({"worktree.replace_exact", "worktree.write_file"})
+# Turns kept back so the model always gets to write its answer.
+FINISH_RESERVE_TURNS = 2
+# Consecutive duplicate reads before the runtime forces a written finish.
+MAX_DUPLICATE_STREAK = 2
+# File text carried verbatim between turns (newest reads first).
+FILE_MEMORY_PROMPT_CHARS = 48000
+FILE_MEMORY_STORE_CHARS = 64000
+NOTES_PROMPT_CHARS = 6000
+OBSERVATION_ITEM_CHARS = 3000
+DEFAULT_READ_LINES = 200
+# Output tokens for a finishing turn's written answer (NIM honours max_tokens_override).
+ANSWER_MAX_TOKENS = 6144
+ANSWER_TIMEOUT_SECONDS = 240.0
+
+
+def _merge_ranges(ranges: list[list[int]]) -> list[list[int]]:
+    merged: list[list[int]] = []
+    for start, end in sorted([int(a), int(b)] for a, b in ranges):
+        if merged and start <= merged[-1][1] + 1:
+            merged[-1][1] = max(merged[-1][1], end)
+        else:
+            merged.append([start, end])
+    return merged
+
+
+def _requested_range(arguments: dict[str, Any]) -> tuple[str, int, int]:
+    path = str(arguments.get("path") or "")
+    try:
+        start = max(1, int(arguments.get("start_line") or 1))
+    except (TypeError, ValueError):
+        start = 1
+    try:
+        count = max(1, min(int(arguments.get("line_count") or DEFAULT_READ_LINES), 1000))
+    except (TypeError, ValueError):
+        count = DEFAULT_READ_LINES
+    return path, start, start + count - 1
+
+
+def _visible_memory(state: dict[str, Any]) -> list[dict[str, Any]]:
+    """FILE MEMORY entries that fit the prompt budget (newest first)."""
+    shown, used = [], 0
+    for item in reversed(list(state.get("file_memory") or [])):
+        size = len(str(item.get("content") or "")) + 64
+        if used + size > FILE_MEMORY_PROMPT_CHARS:
+            continue
+        used += size
+        shown.append(item)
+    return shown
+
+
+def _call_key(tool_id: str, arguments: dict[str, Any]) -> str:
+    return tool_id + ":" + json.dumps(arguments or {}, sort_keys=True, default=str)
 
 
 class DirectCoderRuntime:
@@ -60,7 +125,7 @@ class DirectCoderRuntime:
     def _snapshot(self, run_id: str) -> dict[str, Any]:
         return self.engine.store.get_run(run_id) or {}
 
-    def _prompt(self, run: dict[str, Any], state: dict[str, Any]) -> str:
+    def _prompt(self, run: dict[str, Any], state: dict[str, Any], *, finishing: str = "") -> str:
         tools = self.engine.list_tools()
         allowed = []
         for tool in tools:
@@ -81,10 +146,28 @@ class DirectCoderRuntime:
         contract_hint = ("The runtime captures the pre-edit test once the worktree is bound. "
                          "Use this exact worktree.verify command after editing: " + json.dumps(contract) + "\n"
                          if contract else "")
-        recent = list(state.get("observations") or [])[-5:]
-        # Do not stuff an entire repository index or tool output into the model.
-        observations = json.dumps(recent, default=str, ensure_ascii=False)[-18000:]
+        observations = self._render_observations(state)
         targets = request.get("context_files") or []
+        turn_no = int(state.get("turn") or 0) + 1
+        remaining = max(0, self.max_turns - turn_no)
+        finish_block = ""
+        coverage = self._coverage(state)
+        if targets and all((coverage.get(str(t)) or {}).get("complete") for t in targets):
+            finish_block = ("ALL EXPLICIT FILES ARE FULLY READ. Do not read or list again. Next: either make "
+                            "the requested edits in a bound worktree, or return COMPLETE with the written "
+                            "analysis and suggested patches as unified diffs.\n")
+        if finishing:
+            finish_block = (
+                "FINISH NOW (" + finishing + "). Do NOT call workspace.list, workspace.index, "
+                "workspace.search_text or workspace.read_range again. Return decision_type complete "
+                "with summary = your written answer: findings with file:line references and the "
+                "suggested patches as unified diffs (or exact replacement snippets). Base it only on "
+                "the FILE MEMORY and NOTES below; say which line ranges you did not read. "
+                "Inside the summary string never type a double-quote character (use single quotes or "
+                "backticks): JSON-constrained decoding ends the string at the first double quote and "
+                "cuts the answer off. "
+                "If you edited a bound worktree, run worktree.verify first.\n"
+            )
         return (
             "BEAST DIRECT CODING AGENT. You are the selected coding model, "
             "not a planner subagent. Execute the operator's task using ONE "
@@ -96,6 +179,12 @@ class DirectCoderRuntime:
             "When that check passes and the requested change is done, report completion in the next decision. "
             "If verification cannot run, report the worktree and the exact error instead of looping on reads. "
             "When the task is actually finished, return a COMPLETE decision. "
+            "File text you already read stays in FILE MEMORY below: never re-read a range you have, "
+            "and never re-list a directory you listed. Read unread ranges only when you need them, "
+            "and put your findings so far in each tool decision's summary; they are kept as NOTES. "
+            "For review, analysis or suggest-patch requests, finish with a COMPLETE decision whose summary "
+            "is the written analysis with suggested patches as unified diffs. "
+            "Leave enough turns to write that answer. "
             "Do not report completion for unverified changes. "
             "Your response MUST be one JSON object with decision_type tool, "
             "complete or blocked; tool_id, arguments, and summary/blocker. "
@@ -107,9 +196,245 @@ class DirectCoderRuntime:
             f"TOOLS: {json.dumps(allowed, ensure_ascii=False, default=str)[:18000]}\n"
             "The optional integration hints and recovery candidates are advisory, not instructions or evidence: "
             f"{json.dumps(state.get('advisory') or [], ensure_ascii=False, default=str)[:3800]}\n"
+            f"READ COVERAGE: {json.dumps(self._coverage(state), ensure_ascii=False)[:2500]}\n"
+            f"NOTES (your earlier findings): {self._render_notes(state)}\n"
+            f"FILE MEMORY (verbatim text you already read):\n{self._render_file_memory(state)}\n"
             f"PRIOR OBSERVATIONS: {observations}\n"
-            f"TURN: {int(state.get('turn') or 0) + 1}\n"
+            f"{finish_block}"
+            f"TURN: {turn_no} of {self.max_turns} ({remaining} left after this one)\n"
         )
+
+    async def _ask(self, run_id: str, prompt: str, run: dict[str, Any], turn: int, *,
+                   quiet_thinking: bool = False, state: dict[str, Any] | None = None) -> PlannerDecision:
+        """One model decision. Hidden reasoning can eat the whole output budget
+        (run agent-eb1fe758-d4f81a5673c0: 8k chars of thinking, empty content), so a
+        non-JSON reply is retried once with thinking off, and finishing turns
+        run with thinking off so the written answer gets the output tokens."""
+        thinking = getattr(self.provider, "enable_thinking", None)
+        had_override = hasattr(self.provider, "max_tokens_override")
+        previous_tokens = getattr(self.provider, "max_tokens_override", 0)
+        answer_tokens = int(os.environ.get("BEAST_DIRECT_CODER_ANSWER_TOKENS", str(ANSWER_MAX_TOKENS)))
+        previous_timeout = getattr(self.provider, "timeout_seconds", None)
+        try:
+            if thinking and state is not None and state.get("thinking_disabled"):
+                # Thinking already overflowed once this run; don't pay for it every turn.
+                self.provider.enable_thinking = False
+            if quiet_thinking:
+                if isinstance(previous_timeout, (int, float)):
+                    self.provider.timeout_seconds = max(float(previous_timeout), ANSWER_TIMEOUT_SECONDS)
+                # A written analysis with diffs does not fit the 2048-token action budget
+                # (run agent-28fa487f-7118447e432f was cut off mid-string).
+                self.provider.max_tokens_override = answer_tokens
+                if thinking:
+                    self.provider.enable_thinking = False
+            try:
+                return await self.provider.next_decision(prompt, run=run, turn=turn)
+            except PlannerDecisionError as exc:
+                if "dampened" in str(exc):
+                    raise
+                if getattr(self.provider, "enable_thinking", False):
+                    reason = "thinking_overflow"
+                    self.provider.enable_thinking = False
+                    if state is not None:
+                        state["thinking_disabled"] = True
+                elif quiet_thinking and int(getattr(self.provider, "max_tokens_override", 0) or 0) < answer_tokens * 2:
+                    reason = "answer_truncated"
+                    self.provider.max_tokens_override = answer_tokens * 2
+                else:
+                    raise
+                self._emit(run_id, "agent.coder.thinking_overflow_retry", reason=reason, message=str(exc)[:300])
+                return await self.provider.next_decision(prompt, run=run, turn=turn)
+        finally:
+            if thinking is not None:
+                self.provider.enable_thinking = thinking
+            if isinstance(previous_timeout, (int, float)):
+                self.provider.timeout_seconds = previous_timeout
+            if had_override:
+                self.provider.max_tokens_override = previous_tokens
+            elif hasattr(self.provider, "max_tokens_override"):
+                try:
+                    delattr(self.provider, "max_tokens_override")
+                except AttributeError:
+                    pass
+
+    # ---- read memory -------------------------------------------------
+    @staticmethod
+    def _render_observations(state: dict[str, Any]) -> str:
+        """Render recent observations as valid JSON, each item bounded.
+
+        File text is carried in FILE MEMORY, so read_range content is elided
+        here. The old renderer tail-sliced the whole JSON list to 18000 chars,
+        which dropped every read but the last one or two and made the model
+        re-read the same ranges forever.
+        """
+        items = []
+        for item in list(state.get("observations") or [])[-6:]:
+            if not isinstance(item, dict):
+                continue
+            item = dict(item)
+            result = item.get("result")
+            if item.get("tool_id") in READ_RANGE_TOOLS and isinstance(result, dict) and "content" in result:
+                result = {k: v for k, v in result.items() if k not in {"content", "outline"}}
+                result["content"] = "[kept in FILE MEMORY]"
+                item["result"] = result
+            rendered = json.dumps(item, default=str, ensure_ascii=False)
+            if len(rendered) > OBSERVATION_ITEM_CHARS:
+                rendered = json.dumps({
+                    "tool_id": item.get("tool_id"), "status": item.get("status"),
+                    "arguments": item.get("arguments"), "error": str(item.get("error") or "")[:600],
+                    "truncated_result_preview": rendered[:OBSERVATION_ITEM_CHARS - 800],
+                }, default=str, ensure_ascii=False)
+            items.append(rendered)
+        return "[" + ", ".join(items) + "]"
+
+    @staticmethod
+    def _coverage(state: dict[str, Any]) -> dict[str, Any]:
+        out = {}
+        for path, info in (state.get("reads") or {}).items():
+            ranges = info.get("ranges") or []
+            total = int(info.get("total_lines") or 0)
+            read = sum(b - a + 1 for a, b in ranges)
+            entry = {"read_lines": ["%d-%d" % (a, b) for a, b in ranges], "total_lines": total or None}
+            if total:
+                entry["complete"] = read >= total
+                gaps, cursor = [], 1
+                for a, b in ranges:
+                    if a > cursor:
+                        gaps.append("%d-%d" % (cursor, a - 1))
+                    cursor = max(cursor, b + 1)
+                if cursor <= total:
+                    gaps.append("%d-%d" % (cursor, total))
+                entry["unread_lines"] = gaps[:12]
+            out[path] = entry
+        for key in (state.get("seen_calls") or [])[-8:]:
+            out.setdefault("_already_called", []).append(key[:200])
+        return out
+
+    @staticmethod
+    def _render_notes(state: dict[str, Any]) -> str:
+        notes = [str(n) for n in (state.get("notes") or []) if str(n).strip()]
+        text = json.dumps(notes, ensure_ascii=False)
+        if len(text) > NOTES_PROMPT_CHARS:
+            kept: list[str] = []
+            for note in reversed(notes):
+                if len(json.dumps(kept + [note], ensure_ascii=False)) > NOTES_PROMPT_CHARS:
+                    break
+                kept.insert(0, note)
+            text = json.dumps(kept, ensure_ascii=False)
+        return text
+
+    @staticmethod
+    def _render_file_memory(state: dict[str, Any]) -> str:
+        blocks: list[str] = []
+        used = 0
+        evicted: list[str] = []
+        for item in reversed(list(state.get("file_memory") or [])):
+            header = f"--- {item.get('path')} lines {item.get('start')}-{item.get('end')} ---\n"
+            body = str(item.get("content") or "")
+            if used + len(header) + len(body) > FILE_MEMORY_PROMPT_CHARS:
+                evicted.append(f"{item.get('path')}:{item.get('start')}-{item.get('end')}")
+                continue
+            used += len(header) + len(body)
+            blocks.insert(0, header + body)
+        if evicted:
+            blocks.append("(older ranges not shown to save space, rely on NOTES for them: "
+                          + ", ".join(evicted[:12]) + ")")
+        return "\n".join(blocks) if blocks else "(nothing read yet)"
+
+    @staticmethod
+    def _remember(state: dict[str, Any], tool_id: str, arguments: dict[str, Any],
+                  observation: dict[str, Any] | None) -> None:
+        if tool_id not in READ_ONLY_TOOLS:
+            return
+        result = (observation or {}).get("result") if isinstance(observation, dict) else None
+        if str((observation or {}).get("status") or "completed") != "completed" or not isinstance(result, dict):
+            return
+        if tool_id not in READ_RANGE_TOOLS:
+            seen = list(state.get("seen_calls") or [])
+            key = _call_key(tool_id, arguments)
+            if key not in seen:
+                seen.append(key)
+            state["seen_calls"] = seen[-32:]
+            return
+        path = str(result.get("path") or arguments.get("path") or "")
+        if not path:
+            return
+        _, req_start, req_end = _requested_range(arguments)
+        start = int(result.get("start_line") or req_start)
+        end = int(result.get("end_line") or req_end)
+        reads = dict(state.get("reads") or {})
+        info = dict(reads.get(path) or {})
+        sha = str(result.get("sha256") or "")
+        if sha and info.get("sha256") and info.get("sha256") != sha:
+            info = {}  # file changed: old coverage is stale
+            state["file_memory"] = [m for m in (state.get("file_memory") or []) if m.get("path") != path]
+        info["sha256"] = sha or info.get("sha256", "")
+        if result.get("total_lines"):
+            info["total_lines"] = int(result["total_lines"])
+        info["ranges"] = _merge_ranges(list(info.get("ranges") or []) + [[start, max(start, end)]])
+        reads[path] = info
+        state["reads"] = reads
+        memory = [m for m in (state.get("file_memory") or [])
+                  if not (m.get("path") == path and m.get("start") >= start and m.get("end") <= end)]
+        memory.append({"path": path, "start": start, "end": end,
+                       "content": str(result.get("content") or "")[:16000]})
+        while sum(len(str(m.get("content") or "")) for m in memory) > FILE_MEMORY_STORE_CHARS and len(memory) > 1:
+            memory.pop(0)
+        state["file_memory"] = memory
+
+    @staticmethod
+    def _duplicate_reason(state: dict[str, Any], tool_id: str, arguments: dict[str, Any]) -> str:
+        if tool_id not in READ_ONLY_TOOLS:
+            return ""
+        if tool_id not in READ_RANGE_TOOLS:
+            if _call_key(tool_id, arguments) in (state.get("seen_calls") or []):
+                return f"{tool_id} was already called with these arguments; its result is in PRIOR OBSERVATIONS/NOTES."
+            return ""
+        path, start, end = _requested_range(arguments)
+        info = (state.get("reads") or {}).get(path) or {}
+        total = int(info.get("total_lines") or 0)
+        if total:
+            end = min(end, total)
+            if start > total:
+                return f"{path} has only {total} lines."
+        for a, b in info.get("ranges") or []:
+            if a <= start and end <= b:
+                in_memory = any(m.get("path") == path and int(m.get("start") or 0) <= start
+                                and end <= int(m.get("end") or 0)
+                                for m in _visible_memory(state))
+                key = f"{path}:{start}-{end}"
+                if not in_memory and key not in (state.get("rereads") or []):
+                    # Text was evicted from FILE MEMORY; one re-read is allowed (e.g. to
+                    # copy exact text for worktree.replace_exact), a second one is a loop.
+                    state["rereads"] = list(state.get("rereads") or [])[-31:] + [key]
+                    return ""
+                return (f"Lines {start}-{end} of {path} were already read (they are in FILE MEMORY or "
+                        f"summarised in NOTES). Do not re-read them.")
+        return ""
+
+    def _finishing_reason(self, state: dict[str, Any], turn: int) -> str:
+        remaining_including_this = self.max_turns - turn
+        if remaining_including_this <= FINISH_RESERVE_TURNS:
+            return f"turn budget nearly spent: {remaining_including_this} turn(s) left"
+        if int(state.get("duplicate_streak") or 0) >= MAX_DUPLICATE_STREAK:
+            return "you keep requesting content you already have"
+        return ""
+
+    def _fallback_report(self, state: dict[str, Any], reason: str) -> str:
+        coverage = self._coverage(state)
+        notes = [str(n) for n in (state.get("notes") or []) if str(n).strip()]
+        lines = [f"Direct Coder stopped without a model-written answer ({reason})."]
+        for path, entry in coverage.items():
+            if path.startswith("_"):
+                continue
+            lines.append(f"Read {path}: lines {', '.join(entry.get('read_lines') or [])}"
+                         + (f" of {entry['total_lines']}" if entry.get("total_lines") else "")
+                         + (f"; unread {', '.join(entry.get('unread_lines') or [])}" if entry.get("unread_lines") else ""))
+        if notes:
+            lines.append("Findings noted while reading:")
+            lines.extend(f"- {n}" for n in notes[-12:])
+        lines.append("Re-run with a narrower request (one function or line range) or a larger turn budget.")
+        return "\n".join(lines)
 
     @staticmethod
     def _compact_observation(tool_id: str, observation: dict[str, Any]) -> dict[str, Any]:
@@ -212,6 +537,11 @@ class DirectCoderRuntime:
         state = self._state(run_id)
         turn = int(state.get("turn") or 0)
         if turn >= self.max_turns:
+            if not state.get("final_report_emitted"):
+                state["final_report_emitted"] = True
+                self._save(run_id, state)
+                self._emit(run_id, "agent.coder.final_report", forced=True,
+                           summary=self._fallback_report(state, "turn budget exhausted"))
             self._emit(run_id, "agent.coder.budget_exhausted", turns=turn)
             self._transition(run_id, AgentRunState.BUDGET_EXHAUSTED)
             return self._snapshot(run_id)
@@ -303,8 +633,27 @@ class DirectCoderRuntime:
                     source = "runtime"
             if decision is None:
                 try:
-                    prompt = self._prompt(run, state)
-                    decision = await self.provider.next_decision(prompt, run=run, turn=turn + 1)
+                    finishing = self._finishing_reason(state, turn)
+                    if finishing and not state.get("finishing_announced"):
+                        state["finishing_announced"] = True
+                        self._emit(run_id, "agent.coder.finishing", reason=finishing,
+                                   turns_left=self.max_turns - turn)
+                    prompt = self._prompt(run, state, finishing=finishing)
+                    decision = await self._ask(run_id, prompt, run, turn + 1, quiet_thinking=bool(finishing),
+                                               state=state)
+                    if (finishing and decision.decision_type is PlannerDecisionType.TOOL
+                            and decision.tool_id in READ_ONLY_TOOLS and turn + 1 >= self.max_turns):
+                        # Last turn and the model still wants to read: ask once more for the answer.
+                        self._emit(run_id, "agent.coder.read_refused", tool_id=decision.tool_id,
+                                   reason="final_turn_requires_answer")
+                        state.setdefault("observations", []).append({
+                            "tool_id": decision.tool_id, "status": "refused",
+                            "arguments": dict(decision.arguments or {}),
+                            "error": "Final turn: no more reads. Return the COMPLETE written analysis now.",
+                        })
+                        prompt = self._prompt(run, state, finishing="final turn, answer now")
+                        decision = await self._ask(run_id, prompt, run, turn + 1, quiet_thinking=True,
+                                                   state=state)
                     if self.crystals is not None:
                         self.crystals.budget.record_model_turn(run_id, prompt=prompt, decision=decision,
                                                                usage=(getattr(self.provider, "last_usage", None) or {}).get("usage"))
@@ -386,6 +735,49 @@ class DirectCoderRuntime:
                 return self._snapshot(run_id)
         elif decision.decision_type is PlannerDecisionType.TOOL:
             canonical = None
+            if source == "model":
+                note = str(decision.summary or decision.rationale or "").strip()
+                if note:
+                    notes = list(state.get("notes") or [])
+                    notes.append(f"T{turn + 1}: {note[:1200]}")
+                    state["notes"] = notes[-24:]
+            if source == "model" and str(decision.execution_target or "").lower() in {
+                    "isolated_worktree", "worktree", "bound_worktree"}:
+                # The bound worktree is local; models echo the tool's description here
+                # and the registry then rejects the call (run agent-a6dd269f-26b8a9060109).
+                decision = replace(decision, execution_target="local")
+            skip_reason = ""
+            bound_root = str((self._snapshot(run_id).get("checkpoint") or {}).get("worktree_root") or "")
+            if (source == "model" and decision.tool_id == "worktree.bind" and bound_root
+                    and not state.get("resuming_approval_id")):
+                # Re-binding discards the model's place and repeats the same reads.
+                skip_reason = (f"A worktree is already bound at {bound_root}. Reuse it: use worktree.read_file / "
+                               "worktree.replace_exact on it, or finish.")
+            elif source == "model" and not state.get("resuming_approval_id"):
+                skip_reason = self._duplicate_reason(state, decision.tool_id, decision.arguments)
+                if not skip_reason and decision.tool_id in READ_ONLY_TOOLS and self._finishing_reason(state, turn):
+                    if int(state.get("duplicate_streak") or 0) >= MAX_DUPLICATE_STREAK or turn + 1 >= self.max_turns:
+                        skip_reason = "Reading is closed: write the final answer now."
+            if skip_reason:
+                state["duplicate_streak"] = int(state.get("duplicate_streak") or 0) + 1
+                self._emit(run_id, "agent.coder.duplicate_read_skipped", tool_id=decision.tool_id,
+                           arguments=dict(decision.arguments or {}), reason=skip_reason,
+                           streak=state["duplicate_streak"])
+                state.setdefault("observations", []).append({
+                    "tool_id": decision.tool_id, "status": "skipped_duplicate",
+                    "arguments": dict(decision.arguments or {}), "error": skip_reason,
+                })
+                if turn + 1 >= self.max_turns and not state.get("final_report_emitted"):
+                    state["final_report_emitted"] = True
+                    self._emit(run_id, "agent.coder.final_report", forced=True,
+                               summary=self._fallback_report(state, "model kept reading on its last turn"))
+                state["turn"] = turn + 1
+                state["observations"] = list(state.get("observations") or [])[-16:]
+                self._save(run_id, state)
+                self._transition(run_id, AgentRunState.OBSERVING)
+                return self._snapshot(run_id)
+            if decision.tool_id in READ_ONLY_TOOLS:
+                state["duplicate_streak"] = 0
             try:
                 if command and decision.tool_id in {"worktree.replace_exact", "worktree.write_file"}:
                     path = str(decision.arguments.get("path") or "")
@@ -453,6 +845,16 @@ class DirectCoderRuntime:
                 entry = {"tool_id": decision.tool_id,
                          "status": "failed", "error": str(exc)[:1200]}
             state.setdefault("observations", []).append(entry)
+            if decision.tool_id in READ_ONLY_TOOLS and isinstance(canonical, dict):
+                self._remember(state, decision.tool_id, dict(decision.arguments or {}), canonical)
+            if decision.tool_id in MUTATION_TOOLS and entry.get("status") == "completed":
+                edited = str(decision.arguments.get("path") or "")
+                state["seen_calls"] = [k for k in (state.get("seen_calls") or []) if not k.startswith("worktree.")]
+                if edited:
+                    reads = dict(state.get("reads") or {})
+                    reads.pop(edited, None)
+                    state["reads"] = reads
+                state["duplicate_streak"] = 0
             if self.crystals is not None and canonical is not None:
                 self.crystals.budget.record_tool_call(
                     run_id, tool_id=decision.tool_id, status=entry["status"], source=source)

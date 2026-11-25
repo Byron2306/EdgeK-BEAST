@@ -114,6 +114,11 @@ class CoderRuntimeClient:
             base_url=self.base_url,
             transport=transport,
             timeout=httpx.Timeout(timeout, connect=min(timeout, 10.0)),
+            # uvicorn closes idle keep-alive sockets after 5 s, the same as httpx's
+            # default expiry. A turn POST sent on a socket the server is closing
+            # fails with ReadError (run agent-a6dd269f-26b8a9060109), so drop
+            # pooled sockets well before the server does.
+            limits=httpx.Limits(keepalive_expiry=2.0),
             trust_env=False,  # Local loopback must bypass inherited corporate/SSH proxies.
         )
 
@@ -586,7 +591,25 @@ class CoderRuntimeClient:
                 {"root_path": str(self.workspace), "turn_request_id": request_id},
             )
         except RuntimeClientError as exc:
-            if not isinstance(exc.__cause__, httpx.ReadTimeout):
+            cause = exc.__cause__
+            if isinstance(cause, httpx.TransportError) and not isinstance(cause, httpx.ReadTimeout):
+                # Connection dropped (stale keep-alive, gateway restart). Check
+                # whether the turn ran; never resubmit it blindly.
+                try:
+                    status = await self.runtime_status(run_id)
+                except (RuntimeClientError, TimeoutError):
+                    status = {}
+                run = status.get("run") or {}
+                receipt = (run.get("checkpoint") or {}).get("coder_turn_reply") or {}
+                if receipt.get("id") == request_id and run.get("run_id") == run_id:
+                    return run
+                state = str(run.get("state") or "unknown")
+                raise RuntimeTurnUnconfirmed(
+                    f"The BEAST gateway dropped the connection before confirming this turn "
+                    f"({type(cause).__name__}). Run state: {state}. Nothing was resubmitted; "
+                    f"use /next to continue or /status to check."
+                ) from exc
+            if not isinstance(cause, httpx.ReadTimeout):
                 raise
             # The POST might already be executing. Reconcile through read-only
             # status, never resubmit it or infer completion from a stale state.
@@ -694,4 +717,7 @@ class CoderRuntimeClient:
                 pending_event.cancel()
                 with suppress(asyncio.CancelledError):
                     await pending_event
-            await stream.aclose()
+            elif pending_event is not None and not pending_event.cancelled():
+                pending_event.exception()  # mark retrieved; the caller already has the outcome
+            with suppress(Exception):
+                await stream.aclose()

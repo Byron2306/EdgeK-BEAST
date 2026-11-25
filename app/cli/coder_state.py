@@ -308,6 +308,21 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
             "advisory", str(payload.get("summary") or "Direct coder completed."),
             sequence, details=payload,
         )
+    if event.event == "agent.coder.final_report":
+        return ProjectedEvent(
+            "advisory", str(payload.get("summary") or "Direct coder stopped without an answer."),
+            sequence, status="budget_exhausted", details=payload,
+        )
+    if event.event == "agent.coder.finishing":
+        return ProjectedEvent(
+            "advisory", "Wrapping up: " + str(payload.get("reason") or "turn budget nearly spent"),
+            sequence, details=payload,
+        )
+    if event.event == "agent.coder.duplicate_read_skipped":
+        return ProjectedEvent(
+            "advisory", "Skipped repeat read: " + str(payload.get("reason") or "")[:300],
+            sequence, tool_id=str(payload.get("tool_id") or ""), details=payload,
+        )
     if event.event == "agent.coder.tool_rejected":
         return ProjectedEvent(
             "action_rejected", str(payload.get("message") or ""), sequence,

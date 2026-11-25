@@ -183,7 +183,7 @@ class NIMPlannerProvider:
             ],
             "temperature": 0,
             "seed": 731947 + int(turn),
-            "max_tokens": int(os.environ.get("BEAST_NIM_MAX_TOKENS", "2048")),
+            "max_tokens": int(getattr(self, "max_tokens_override", 0) or os.environ.get("BEAST_NIM_MAX_TOKENS", "2048")),
             "stream": self.stream if self.stream is not None else (
                 os.environ.get("BEAST_NIM_PLANNER_STREAM", "0").strip().lower() in {"1", "true", "yes"}
             ),
