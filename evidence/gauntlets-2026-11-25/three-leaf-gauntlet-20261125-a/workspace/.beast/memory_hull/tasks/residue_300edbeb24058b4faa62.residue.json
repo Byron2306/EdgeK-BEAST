@@ -1,0 +1,47 @@
+{
+  "beast_object_type": "memory_hull_sidecar",
+  "markdown_sha256": "sha256:3b9265338d1cd6f4f79161d93b628f545162626ce833c8fcc813bdc9afa0c38b",
+  "payload": {
+    "beast_object_type": "memory_hull_residue",
+    "beast_systems": {
+      "chronicle_compatible": true,
+      "residue_sealed": true,
+      "vault_editable": true
+    },
+    "caller": "spiffe://beast.local/runtime-governor",
+    "correlation_id": "three-leaf-reuse_str-off-c881c87f1d6a",
+    "cost_saved": "",
+    "created_at": "2026-11-25T12:09:04.213737+00:00",
+    "decision": "Agent Coder run reached verified completion.",
+    "evidence": {
+      "run_id": "three-leaf-reuse_str-off-c881c87f1d6a",
+      "verified": true
+    },
+    "files_touched": [],
+    "markdown_sha256": "sha256:3b9265338d1cd6f4f79161d93b628f545162626ce833c8fcc813bdc9afa0c38b",
+    "policy_tags": [
+      "agent_coder",
+      "verified_completion"
+    ],
+    "provider": "",
+    "residue_id": "residue_300edbeb24058b4faa62",
+    "section": "tasks",
+    "task": "Fix the failing assertions in this package by changing only the single incorrect constant in status.py. Read status.py and the tests test_status.py. Never edit tests. Bind the worktree and run the existing unittest before and after your exact replacement. Verification command: python3 -m unittest discover -p test_status.py -q. Use the failing assertion output to select the literal. For old_text and new_text, supply the assignment line only.",
+    "version": "2.0"
+  },
+  "residue_seal": {
+    "algorithm": "Ed25519",
+    "beast_object_type": "beast_residue_seal",
+    "created_at": "2026-11-25T12:09:04.214245+00:00",
+    "key_boundary": "purpose_specific_residue_key_not_mtls_not_federation",
+    "message_sha256": "sha256:31454c130f9f20f33d43b01b78102fc1b33aa76bb9261a07d4b8540ae1b6b32c",
+    "payload_sha256": "sha256:f071332fedcb02b46b742ab08529079f3d86f946981767040cb886c076dce2ea",
+    "provider": "cryptography",
+    "public_key_hash": "sha256:b484b747c3f0c0f39eccb071b2c7713b42ce50f5db9a39975b91ffc671a08acb",
+    "public_key_pem_b64": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQVp1Q0FlMTBJNnFaUXVJak5EZUVsaDQrOEFWbnNXYWdJMWl5b3k4TDNWaFk9Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=",
+    "purpose": "memory_hull_tasks",
+    "signature_b64": "DcssFZPUOo/EglhRCc4Q9lcqnZDKnnvVbHJ/hPbO9Wx7EaTMVXanxSnJhi4+mxecE2uBKB4W8XeGu33lB5GSBg==",
+    "version": "2.0"
+  },
+  "version": "2.0"
+}

@@ -1,0 +1,1 @@
+TONES = {"formal", "casual"}

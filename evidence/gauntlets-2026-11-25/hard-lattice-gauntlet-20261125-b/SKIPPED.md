@@ -18,3 +18,6 @@ These source paths were not copied into the tracked evidence tree.
 | `workspace/.beast/worktrees/hard-lattice-leaf_b-a7beedf8b5c6-7f3ae8ea/.beast/keys/residue/residue_ed25519.pem` | credential_file | 119 |
 | `workspace/.beast/keys/residue/residue_ed25519.pem` | credential_file | 119 |
 
+## Nested Git metadata
+
+Each fixture/held-out `workspace` contained a private `.git` directory. Those were omitted from the tracked copy so Git records the files themselves instead of gitlinks/submodules. The run reports, lattice ledgers, and source trees remain.

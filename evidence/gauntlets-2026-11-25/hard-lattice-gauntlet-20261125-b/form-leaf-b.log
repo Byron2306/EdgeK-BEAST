@@ -1,0 +1,471 @@
+{"vault_loaded": true, "nvidia_present": true, "fireworks_present": true, "model": "nvidia/nemotron-3.5-super-vl-120b-a12b", "phase": "form-leaves"}
+leaf_a already promoted and admitted; skipping live formation
+{
+  "lattice": {
+    "composes_with": [],
+    "composite_count": 0,
+    "edges": [],
+    "leaf_count": 1,
+    "nodes": [
+      {
+        "admission": {
+          "replay_receipt": {
+            "attempts": 3,
+            "candidate_id": "coding-crystal:191dd9102ea2373933f777b1",
+            "episode_envelope_digest": "sha256:301e64a253a05b99562b4ce47df57ef26c58e12a6a46247580d29a252e0c9fe3",
+            "evidence_root": "sha256:9262dd2145f5e2cb0236140101d6843c26cd7700b54b4547b136032f542bf62a",
+            "promoted": true,
+            "reason": "held-out replay passed",
+            "reproduction_record_digest": "sha256:d75fd1c68bfc119b864b8bcd3c0d232deb9829579598cb56388d523a71525edb",
+            "structured": true,
+            "successes": 3,
+            "variant_ids": [
+              "{'module': 'pricing', 'constant': 'TAX', 'actual': 7, 'expected': 9, 'function': 'tax'}",
+              "{'module': 'limits', 'constant': 'MAX_ITEMS', 'actual': 10, 'expected': 12, 'function': 'max_items'}",
+              "{'module': 'greeting', 'constant': 'WORD', 'actual': 'hi', 'expected': 'hello', 'function': 'word'}"
+            ],
+            "variant_results": [
+              true,
+              true,
+              true
+            ],
+            "variant_results_digest": "sha256:90a0fae9d9c884f8c5c004d4298bd3ed4414f415454700e94dd428f3adf6ff4d"
+          }
+        },
+        "authority": [
+          "workspace.read_range",
+          "worktree.bind",
+          "worktree.replace_exact",
+          "worktree.verify"
+        ],
+        "component_ids": [],
+        "kind": "crystal",
+        "node_id": "coding-crystal:191dd9102ea2373933f777b1",
+        "publisher_id": "arda-runtime-ed25519:d7447cc2c984edab",
+        "record_digest": "sha256:e0b13545343813160634bec5da3e9cc1bcaf63b62d309a29920016ff247d43dc",
+        "registry_digest": "sha256:191dd9102ea2373933f777b16d9ff9195957d1072fe719c62ffb39967e5bdb68",
+        "status": "admitted",
+        "task_family": "fix-failing-assertion",
+        "updated_at": 1795605959.6457837
+      }
+    ],
+    "present": true,
+    "verify": {
+      "crystal_chain_head": "sha256:15a44c7157d9f1cca075615da466d55e76ca1e06d83ec507eee03569c9b325ec",
+      "hypergraph_valid": true,
+      "lattice_ledger_head": "sha256:6202a50377be69cfd4473710acb8751e9f6ff75aeaab1cf7268c2d30f4967590",
+      "tampered_nodes": [],
+      "valid": true
+    }
+  },
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "spend": [
+    {
+      "calls": 10,
+      "commercial_equivalent_usd": 0.001251,
+      "completion_tokens": 481,
+      "estimated_usd": 0.0,
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+      "prompt_tokens": 18043
+    },
+    {
+      "calls": 9,
+      "commercial_equivalent_usd": 0.001193,
+      "completion_tokens": 419,
+      "estimated_usd": 0.0,
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+      "prompt_tokens": 17434
+    }
+  ],
+  "spend_total": {
+    "completion_tokens": 900,
+    "estimated_usd": 0.0,
+    "prompt_tokens": 35477
+  },
+  "tasks": [
+    {
+      "formation": {
+        "crystal_id": "coding-crystal:191dd9102ea2373933f777b1",
+        "heldout_attempts": 3,
+        "heldout_successes": 3,
+        "lattice_admitted": true,
+        "note": "relearned after extractor accepted unittest worktree.run as a failing verification; no additional model calls",
+        "source_run_id": "hard-lattice-leaf_a-abf3b8889c09",
+        "status": "promoted"
+      },
+      "id": "leaf_a",
+      "kind": "formation",
+      "source": {
+        "before_rc": 1,
+        "changed_tracked_paths": [
+          "rate_limit.py"
+        ],
+        "crystal_activated": false,
+        "crystal_completed": false,
+        "crystal_formed": false,
+        "crystal_refusals": [],
+        "event_chain_valid": true,
+        "events": [],
+        "independent_pass": true,
+        "model_turns": 10.0,
+        "mutation_observed": true,
+        "observed_provider_attempts": 10,
+        "original_unchanged": true,
+        "package": "burst-limit",
+        "run_id": "hard-lattice-leaf_a-abf3b8889c09",
+        "sealed_pass": true,
+        "state": "completed",
+        "tool_calls": 9.0,
+        "usage": {
+          "calls": 10,
+          "commercial_equivalent_usd": 0.001251,
+          "completion_tokens": 481,
+          "estimated_usd": 0.0,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+          "prompt_tokens": 18043
+        },
+        "wall_seconds": 28.136
+      },
+      "status": "promoted"
+    },
+    {
+      "formation": {
+        "lattice": {
+          "composes_with": [],
+          "composite_count": 0,
+          "edges": [],
+          "leaf_count": 1,
+          "nodes": [
+            {
+              "admission": {
+                "replay_receipt": {
+                  "attempts": 3,
+                  "candidate_id": "coding-crystal:191dd9102ea2373933f777b1",
+                  "episode_envelope_digest": "sha256:301e64a253a05b99562b4ce47df57ef26c58e12a6a46247580d29a252e0c9fe3",
+                  "evidence_root": "sha256:9262dd2145f5e2cb0236140101d6843c26cd7700b54b4547b136032f542bf62a",
+                  "promoted": true,
+                  "reason": "held-out replay passed",
+                  "reproduction_record_digest": "sha256:d75fd1c68bfc119b864b8bcd3c0d232deb9829579598cb56388d523a71525edb",
+                  "structured": true,
+                  "successes": 3,
+                  "variant_ids": [
+                    "{'module': 'pricing', 'constant': 'TAX', 'actual': 7, 'expected': 9, 'function': 'tax'}",
+                    "{'module': 'limits', 'constant': 'MAX_ITEMS', 'actual': 10, 'expected': 12, 'function': 'max_items'}",
+                    "{'module': 'greeting', 'constant': 'WORD', 'actual': 'hi', 'expected': 'hello', 'function': 'word'}"
+                  ],
+                  "variant_results": [
+                    true,
+                    true,
+                    true
+                  ],
+                  "variant_results_digest": "sha256:90a0fae9d9c884f8c5c004d4298bd3ed4414f415454700e94dd428f3adf6ff4d"
+                }
+              },
+              "authority": [
+                "workspace.read_range",
+                "worktree.bind",
+                "worktree.replace_exact",
+                "worktree.verify"
+              ],
+              "component_ids": [],
+              "kind": "crystal",
+              "node_id": "coding-crystal:191dd9102ea2373933f777b1",
+              "publisher_id": "arda-runtime-ed25519:d7447cc2c984edab",
+              "record_digest": "sha256:e0b13545343813160634bec5da3e9cc1bcaf63b62d309a29920016ff247d43dc",
+              "registry_digest": "sha256:191dd9102ea2373933f777b16d9ff9195957d1072fe719c62ffb39967e5bdb68",
+              "status": "admitted",
+              "task_family": "fix-failing-assertion",
+              "updated_at": 1795605959.6457837
+            }
+          ],
+          "present": true,
+          "verify": {
+            "crystal_chain_head": "sha256:15a44c7157d9f1cca075615da466d55e76ca1e06d83ec507eee03569c9b325ec",
+            "hypergraph_valid": true,
+            "lattice_ledger_head": "sha256:6202a50377be69cfd4473710acb8751e9f6ff75aeaab1cf7268c2d30f4967590",
+            "tampered_nodes": [],
+            "valid": true
+          }
+        },
+        "lattice_admitted": false,
+        "lattice_witness": {},
+        "reason": "edit_not_reproducible",
+        "run_id": "hard-lattice-leaf_b-a7beedf8b5c6",
+        "status": "refused"
+      },
+      "id": "leaf_b",
+      "kind": "formation",
+      "source": {
+        "before_rc": 1,
+        "changed_tracked_paths": [
+          "voice.py"
+        ],
+        "crystal_activated": false,
+        "crystal_completed": false,
+        "crystal_formed": false,
+        "crystal_refusals": [],
+        "event_chain_valid": true,
+        "events": [],
+        "independent_pass": true,
+        "model_turns": 9.0,
+        "mutation_observed": true,
+        "observed_provider_attempts": 9,
+        "original_unchanged": true,
+        "package": "voice-greeting",
+        "run_id": "hard-lattice-leaf_b-a7beedf8b5c6",
+        "sealed_pass": true,
+        "state": "completed",
+        "tool_calls": 9.0,
+        "usage": {
+          "calls": 9,
+          "commercial_equivalent_usd": 0.001193,
+          "completion_tokens": 419,
+          "estimated_usd": 0.0,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+          "prompt_tokens": 17434
+        },
+        "wall_seconds": 19.675
+      },
+      "status": "refused"
+    }
+  ]
+}
+leaf_b did not promote and admit; stopping before later phases
+{
+  "lattice": {
+    "composes_with": [],
+    "composite_count": 0,
+    "edges": [],
+    "leaf_count": 1,
+    "nodes": [
+      {
+        "admission": {
+          "replay_receipt": {
+            "attempts": 3,
+            "candidate_id": "coding-crystal:191dd9102ea2373933f777b1",
+            "episode_envelope_digest": "sha256:301e64a253a05b99562b4ce47df57ef26c58e12a6a46247580d29a252e0c9fe3",
+            "evidence_root": "sha256:9262dd2145f5e2cb0236140101d6843c26cd7700b54b4547b136032f542bf62a",
+            "promoted": true,
+            "reason": "held-out replay passed",
+            "reproduction_record_digest": "sha256:d75fd1c68bfc119b864b8bcd3c0d232deb9829579598cb56388d523a71525edb",
+            "structured": true,
+            "successes": 3,
+            "variant_ids": [
+              "{'module': 'pricing', 'constant': 'TAX', 'actual': 7, 'expected': 9, 'function': 'tax'}",
+              "{'module': 'limits', 'constant': 'MAX_ITEMS', 'actual': 10, 'expected': 12, 'function': 'max_items'}",
+              "{'module': 'greeting', 'constant': 'WORD', 'actual': 'hi', 'expected': 'hello', 'function': 'word'}"
+            ],
+            "variant_results": [
+              true,
+              true,
+              true
+            ],
+            "variant_results_digest": "sha256:90a0fae9d9c884f8c5c004d4298bd3ed4414f415454700e94dd428f3adf6ff4d"
+          }
+        },
+        "authority": [
+          "workspace.read_range",
+          "worktree.bind",
+          "worktree.replace_exact",
+          "worktree.verify"
+        ],
+        "component_ids": [],
+        "kind": "crystal",
+        "node_id": "coding-crystal:191dd9102ea2373933f777b1",
+        "publisher_id": "arda-runtime-ed25519:d7447cc2c984edab",
+        "record_digest": "sha256:e0b13545343813160634bec5da3e9cc1bcaf63b62d309a29920016ff247d43dc",
+        "registry_digest": "sha256:191dd9102ea2373933f777b16d9ff9195957d1072fe719c62ffb39967e5bdb68",
+        "status": "admitted",
+        "task_family": "fix-failing-assertion",
+        "updated_at": 1795605959.6457837
+      }
+    ],
+    "present": true,
+    "verify": {
+      "crystal_chain_head": "sha256:15a44c7157d9f1cca075615da466d55e76ca1e06d83ec507eee03569c9b325ec",
+      "hypergraph_valid": true,
+      "lattice_ledger_head": "sha256:6202a50377be69cfd4473710acb8751e9f6ff75aeaab1cf7268c2d30f4967590",
+      "tampered_nodes": [],
+      "valid": true
+    }
+  },
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "spend": [
+    {
+      "calls": 10,
+      "commercial_equivalent_usd": 0.001251,
+      "completion_tokens": 481,
+      "estimated_usd": 0.0,
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+      "prompt_tokens": 18043
+    },
+    {
+      "calls": 9,
+      "commercial_equivalent_usd": 0.001193,
+      "completion_tokens": 419,
+      "estimated_usd": 0.0,
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+      "prompt_tokens": 17434
+    }
+  ],
+  "spend_total": {
+    "completion_tokens": 900,
+    "estimated_usd": 0.0,
+    "prompt_tokens": 35477
+  },
+  "tasks": [
+    {
+      "formation": {
+        "crystal_id": "coding-crystal:191dd9102ea2373933f777b1",
+        "heldout_attempts": 3,
+        "heldout_successes": 3,
+        "lattice_admitted": true,
+        "note": "relearned after extractor accepted unittest worktree.run as a failing verification; no additional model calls",
+        "source_run_id": "hard-lattice-leaf_a-abf3b8889c09",
+        "status": "promoted"
+      },
+      "id": "leaf_a",
+      "kind": "formation",
+      "source": {
+        "before_rc": 1,
+        "changed_tracked_paths": [
+          "rate_limit.py"
+        ],
+        "crystal_activated": false,
+        "crystal_completed": false,
+        "crystal_formed": false,
+        "crystal_refusals": [],
+        "event_chain_valid": true,
+        "events": [],
+        "independent_pass": true,
+        "model_turns": 10.0,
+        "mutation_observed": true,
+        "observed_provider_attempts": 10,
+        "original_unchanged": true,
+        "package": "burst-limit",
+        "run_id": "hard-lattice-leaf_a-abf3b8889c09",
+        "sealed_pass": true,
+        "state": "completed",
+        "tool_calls": 9.0,
+        "usage": {
+          "calls": 10,
+          "commercial_equivalent_usd": 0.001251,
+          "completion_tokens": 481,
+          "estimated_usd": 0.0,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+          "prompt_tokens": 18043
+        },
+        "wall_seconds": 28.136
+      },
+      "status": "promoted"
+    },
+    {
+      "formation": {
+        "lattice": {
+          "composes_with": [],
+          "composite_count": 0,
+          "edges": [],
+          "leaf_count": 1,
+          "nodes": [
+            {
+              "admission": {
+                "replay_receipt": {
+                  "attempts": 3,
+                  "candidate_id": "coding-crystal:191dd9102ea2373933f777b1",
+                  "episode_envelope_digest": "sha256:301e64a253a05b99562b4ce47df57ef26c58e12a6a46247580d29a252e0c9fe3",
+                  "evidence_root": "sha256:9262dd2145f5e2cb0236140101d6843c26cd7700b54b4547b136032f542bf62a",
+                  "promoted": true,
+                  "reason": "held-out replay passed",
+                  "reproduction_record_digest": "sha256:d75fd1c68bfc119b864b8bcd3c0d232deb9829579598cb56388d523a71525edb",
+                  "structured": true,
+                  "successes": 3,
+                  "variant_ids": [
+                    "{'module': 'pricing', 'constant': 'TAX', 'actual': 7, 'expected': 9, 'function': 'tax'}",
+                    "{'module': 'limits', 'constant': 'MAX_ITEMS', 'actual': 10, 'expected': 12, 'function': 'max_items'}",
+                    "{'module': 'greeting', 'constant': 'WORD', 'actual': 'hi', 'expected': 'hello', 'function': 'word'}"
+                  ],
+                  "variant_results": [
+                    true,
+                    true,
+                    true
+                  ],
+                  "variant_results_digest": "sha256:90a0fae9d9c884f8c5c004d4298bd3ed4414f415454700e94dd428f3adf6ff4d"
+                }
+              },
+              "authority": [
+                "workspace.read_range",
+                "worktree.bind",
+                "worktree.replace_exact",
+                "worktree.verify"
+              ],
+              "component_ids": [],
+              "kind": "crystal",
+              "node_id": "coding-crystal:191dd9102ea2373933f777b1",
+              "publisher_id": "arda-runtime-ed25519:d7447cc2c984edab",
+              "record_digest": "sha256:e0b13545343813160634bec5da3e9cc1bcaf63b62d309a29920016ff247d43dc",
+              "registry_digest": "sha256:191dd9102ea2373933f777b16d9ff9195957d1072fe719c62ffb39967e5bdb68",
+              "status": "admitted",
+              "task_family": "fix-failing-assertion",
+              "updated_at": 1795605959.6457837
+            }
+          ],
+          "present": true,
+          "verify": {
+            "crystal_chain_head": "sha256:15a44c7157d9f1cca075615da466d55e76ca1e06d83ec507eee03569c9b325ec",
+            "hypergraph_valid": true,
+            "lattice_ledger_head": "sha256:6202a50377be69cfd4473710acb8751e9f6ff75aeaab1cf7268c2d30f4967590",
+            "tampered_nodes": [],
+            "valid": true
+          }
+        },
+        "lattice_admitted": false,
+        "lattice_witness": {},
+        "reason": "edit_not_reproducible",
+        "run_id": "hard-lattice-leaf_b-a7beedf8b5c6",
+        "status": "refused"
+      },
+      "id": "leaf_b",
+      "kind": "formation",
+      "source": {
+        "before_rc": 1,
+        "changed_tracked_paths": [
+          "voice.py"
+        ],
+        "crystal_activated": false,
+        "crystal_completed": false,
+        "crystal_formed": false,
+        "crystal_refusals": [],
+        "event_chain_valid": true,
+        "events": [],
+        "independent_pass": true,
+        "model_turns": 9.0,
+        "mutation_observed": true,
+        "observed_provider_attempts": 9,
+        "original_unchanged": true,
+        "package": "voice-greeting",
+        "run_id": "hard-lattice-leaf_b-a7beedf8b5c6",
+        "sealed_pass": true,
+        "state": "completed",
+        "tool_calls": 9.0,
+        "usage": {
+          "calls": 9,
+          "commercial_equivalent_usd": 0.001193,
+          "completion_tokens": 419,
+          "estimated_usd": 0.0,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+          "prompt_tokens": 17434
+        },
+        "wall_seconds": 19.675
+      },
+      "status": "refused"
+    }
+  ]
+}

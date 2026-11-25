@@ -1,0 +1,763 @@
+{"vault_loaded": true, "nvidia_present": true, "fireworks_present": true, "model": "nvidia/nemotron-3.5-super-vl-120b-a12b", "phase": "composite"}
+{
+  "composite": {
+    "admission": {
+      "crystal_id": "coding-crystal:d6408abd53c27ec6a8a58507",
+      "node": {
+        "admission": {
+          "approved_by": "Byron",
+          "children_digests": {
+            "coding-crystal:191dd9102ea2373933f777b1": "sha256:e0b13545343813160634bec5da3e9cc1bcaf63b62d309a29920016ff247d43dc",
+            "coding-crystal:eb814eff3d78a76261e439e5": "sha256:c7913cf5b041eba6318d7a7d92ef4c5be6ab645aab924a65c57efb4c5e9e82fb"
+          },
+          "verifier": {
+            "attempts": 3,
+            "candidate_id": "coding-crystal:d6408abd53c27ec6a8a58507",
+            "episode_envelope_digest": "sha256:301e64a253a05b99562b4ce47df57ef26c58e12a6a46247580d29a252e0c9fe3",
+            "evidence_root": "sha256:5fa4ae37ee40467821df89c51261d7592348a1d7a43e6c1449082c6c95dcd4ba",
+            "promoted": true,
+            "reason": "held-out replay passed",
+            "reproduction_record_digest": "sha256:3b2ce36af133e1b1f678f0ac13d606984d2024b6654bf2b100cc1a695c68d70f",
+            "structured": true,
+            "successes": 3,
+            "variant_ids": [
+              "{'id': 'tax-and-word', 'left': {'target': 'pricing.py', 'constant': 'TAX', 'actual': 7, 'expected': 9, 'function': 'tax'}, 'right': {'target': 'greeting.py', 'constant': 'WORD', 'actual': 'hi', 'expected': 'hello', 'function': 'word'}}",
+              "{'id': 'items-and-title', 'left': {'target': 'limits.py', 'constant': 'MAX_ITEMS', 'actual': 10, 'expected': 12, 'function': 'max_items'}, 'right': {'target': 'title.py', 'constant': 'LABEL', 'actual': 'draft', 'expected': 'final', 'function': 'label'}}",
+              "{'id': 'base-and-salute', 'left': {'target': 'shipping.py', 'constant': 'BASE', 'actual': 17, 'expected': 19, 'function': 'charge'}, 'right': {'target': 'salute.py', 'constant': 'GREET', 'actual': 'hey', 'expected': 'welcome', 'function': 'greet'}}"
+            ],
+            "variant_results": [
+              true,
+              true,
+              true
+            ],
+            "variant_results_digest": "sha256:404173ce6c223850fea9ef77144e82a9bd3caf77adfda5480bf42851615bc4b2"
+          }
+        },
+        "authority": [
+          "workspace.read_range",
+          "worktree.bind",
+          "worktree.replace_exact",
+          "worktree.verify"
+        ],
+        "component_ids": [
+          "coding-crystal:191dd9102ea2373933f777b1",
+          "coding-crystal:eb814eff3d78a76261e439e5"
+        ],
+        "kind": "composite",
+        "node_id": "coding-crystal:d6408abd53c27ec6a8a58507",
+        "publisher_id": "arda-runtime-ed25519:d7447cc2c984edab",
+        "record_digest": "sha256:dd35977df36eb7c1feb0f3ddab061c3adfd60ffa694a68571877c626143041ab",
+        "registry_digest": "sha256:d6408abd53c27ec6a8a58507765fa28f07d7aad3a686c1eaae7670bf7d5fe950",
+        "status": "admitted",
+        "task_family": "fix-two-assertions",
+        "updated_at": 1795606271.1587749
+      },
+      "outcome": "ADMIT",
+      "reason": "children_verified_and_composite_verifier_passed",
+      "witness": {
+        "block_hash": "sha256:4da4f2b245b04ad8eeb3d6d0289e4481f967636a2ee6e1e00211ed268602bf74",
+        "checkpoint_hash": "sha256:0d58d59c32607eb3ee5e2a46f7f35a372907016c76b4259c045fac27c8c3fd24"
+      }
+    },
+    "crystal_id": "coding-crystal:d6408abd53c27ec6a8a58507",
+    "lattice": {
+      "composes_with": [
+        {
+          "edge_type": "COMPOSES_WITH",
+          "source_ids": [
+            "coding-crystal:191dd9102ea2373933f777b1",
+            "coding-crystal:eb814eff3d78a76261e439e5"
+          ],
+          "target_id": "coding-crystal:d6408abd53c27ec6a8a58507"
+        }
+      ],
+      "composite_count": 1,
+      "edges": [
+        {
+          "edge_type": "COMPOSES_WITH",
+          "source_ids": [
+            "coding-crystal:191dd9102ea2373933f777b1",
+            "coding-crystal:eb814eff3d78a76261e439e5"
+          ],
+          "target_id": "coding-crystal:d6408abd53c27ec6a8a58507"
+        },
+        {
+          "edge_type": "VERIFIED_BY",
+          "source_ids": [
+            "coding-crystal:d6408abd53c27ec6a8a58507"
+          ],
+          "target_id": "verifier:5e4592f604a1918cab21ad15"
+        }
+      ],
+      "leaf_count": 2,
+      "nodes": [
+        {
+          "admission": {
+            "replay_receipt": {
+              "attempts": 3,
+              "candidate_id": "coding-crystal:191dd9102ea2373933f777b1",
+              "episode_envelope_digest": "sha256:301e64a253a05b99562b4ce47df57ef26c58e12a6a46247580d29a252e0c9fe3",
+              "evidence_root": "sha256:9262dd2145f5e2cb0236140101d6843c26cd7700b54b4547b136032f542bf62a",
+              "promoted": true,
+              "reason": "held-out replay passed",
+              "reproduction_record_digest": "sha256:d75fd1c68bfc119b864b8bcd3c0d232deb9829579598cb56388d523a71525edb",
+              "structured": true,
+              "successes": 3,
+              "variant_ids": [
+                "{'module': 'pricing', 'constant': 'TAX', 'actual': 7, 'expected': 9, 'function': 'tax'}",
+                "{'module': 'limits', 'constant': 'MAX_ITEMS', 'actual': 10, 'expected': 12, 'function': 'max_items'}",
+                "{'module': 'greeting', 'constant': 'WORD', 'actual': 'hi', 'expected': 'hello', 'function': 'word'}"
+              ],
+              "variant_results": [
+                true,
+                true,
+                true
+              ],
+              "variant_results_digest": "sha256:90a0fae9d9c884f8c5c004d4298bd3ed4414f415454700e94dd428f3adf6ff4d"
+            }
+          },
+          "authority": [
+            "workspace.read_range",
+            "worktree.bind",
+            "worktree.replace_exact",
+            "worktree.verify"
+          ],
+          "component_ids": [],
+          "kind": "crystal",
+          "node_id": "coding-crystal:191dd9102ea2373933f777b1",
+          "publisher_id": "arda-runtime-ed25519:d7447cc2c984edab",
+          "record_digest": "sha256:e0b13545343813160634bec5da3e9cc1bcaf63b62d309a29920016ff247d43dc",
+          "registry_digest": "sha256:191dd9102ea2373933f777b16d9ff9195957d1072fe719c62ffb39967e5bdb68",
+          "status": "admitted",
+          "task_family": "fix-failing-assertion",
+          "updated_at": 1795605959.6457837
+        },
+        {
+          "admission": {
+            "replay_receipt": {
+              "attempts": 3,
+              "candidate_id": "coding-crystal:eb814eff3d78a76261e439e5",
+              "episode_envelope_digest": "sha256:4ffbbd19c0b174ce07945cac56987c8a21ed2aaf20a95170b2a6462f76fef9c8",
+              "evidence_root": "sha256:9530e16a29f3686784168ff6c7f0b3de99941f8fc962855976c8470d2220cd7c",
+              "promoted": true,
+              "reason": "held-out replay passed",
+              "reproduction_record_digest": "sha256:e9174cc3596711993e3b0f1c501895966fed39be4d9c663b094e255fe3550bc6",
+              "structured": true,
+              "successes": 3,
+              "variant_ids": [
+                "{'module': 'pricing', 'constant': 'TAX', 'actual': 7, 'expected': 9, 'function': 'tax'}",
+                "{'module': 'limits', 'constant': 'MAX_ITEMS', 'actual': 10, 'expected': 12, 'function': 'max_items'}",
+                "{'module': 'greeting', 'constant': 'WORD', 'actual': 'hi', 'expected': 'hello', 'function': 'word'}"
+              ],
+              "variant_results": [
+                true,
+                true,
+                true
+              ],
+              "variant_results_digest": "sha256:90a0fae9d9c884f8c5c004d4298bd3ed4414f415454700e94dd428f3adf6ff4d"
+            }
+          },
+          "authority": [
+            "workspace.read_range",
+            "worktree.bind",
+            "worktree.replace_exact",
+            "worktree.verify"
+          ],
+          "component_ids": [],
+          "kind": "crystal",
+          "node_id": "coding-crystal:eb814eff3d78a76261e439e5",
+          "publisher_id": "arda-runtime-ed25519:d7447cc2c984edab",
+          "record_digest": "sha256:c7913cf5b041eba6318d7a7d92ef4c5be6ab645aab924a65c57efb4c5e9e82fb",
+          "registry_digest": "sha256:eb814eff3d78a76261e439e515767423cc9bc2d06dc745e006ba29b05d568f6f",
+          "status": "admitted",
+          "task_family": "fix-failing-assertion",
+          "updated_at": 1795606025.6136765
+        },
+        {
+          "admission": {
+            "approved_by": "Byron",
+            "children_digests": {
+              "coding-crystal:191dd9102ea2373933f777b1": "sha256:e0b13545343813160634bec5da3e9cc1bcaf63b62d309a29920016ff247d43dc",
+              "coding-crystal:eb814eff3d78a76261e439e5": "sha256:c7913cf5b041eba6318d7a7d92ef4c5be6ab645aab924a65c57efb4c5e9e82fb"
+            },
+            "verifier": {
+              "attempts": 3,
+              "candidate_id": "coding-crystal:d6408abd53c27ec6a8a58507",
+              "episode_envelope_digest": "sha256:301e64a253a05b99562b4ce47df57ef26c58e12a6a46247580d29a252e0c9fe3",
+              "evidence_root": "sha256:5fa4ae37ee40467821df89c51261d7592348a1d7a43e6c1449082c6c95dcd4ba",
+              "promoted": true,
+              "reason": "held-out replay passed",
+              "reproduction_record_digest": "sha256:3b2ce36af133e1b1f678f0ac13d606984d2024b6654bf2b100cc1a695c68d70f",
+              "structured": true,
+              "successes": 3,
+              "variant_ids": [
+                "{'id': 'tax-and-word', 'left': {'target': 'pricing.py', 'constant': 'TAX', 'actual': 7, 'expected': 9, 'function': 'tax'}, 'right': {'target': 'greeting.py', 'constant': 'WORD', 'actual': 'hi', 'expected': 'hello', 'function': 'word'}}",
+                "{'id': 'items-and-title', 'left': {'target': 'limits.py', 'constant': 'MAX_ITEMS', 'actual': 10, 'expected': 12, 'function': 'max_items'}, 'right': {'target': 'title.py', 'constant': 'LABEL', 'actual': 'draft', 'expected': 'final', 'function': 'label'}}",
+                "{'id': 'base-and-salute', 'left': {'target': 'shipping.py', 'constant': 'BASE', 'actual': 17, 'expected': 19, 'function': 'charge'}, 'right': {'target': 'salute.py', 'constant': 'GREET', 'actual': 'hey', 'expected': 'welcome', 'function': 'greet'}}"
+              ],
+              "variant_results": [
+                true,
+                true,
+                true
+              ],
+              "variant_results_digest": "sha256:404173ce6c223850fea9ef77144e82a9bd3caf77adfda5480bf42851615bc4b2"
+            }
+          },
+          "authority": [
+            "workspace.read_range",
+            "worktree.bind",
+            "worktree.replace_exact",
+            "worktree.verify"
+          ],
+          "component_ids": [
+            "coding-crystal:191dd9102ea2373933f777b1",
+            "coding-crystal:eb814eff3d78a76261e439e5"
+          ],
+          "kind": "composite",
+          "node_id": "coding-crystal:d6408abd53c27ec6a8a58507",
+          "publisher_id": "arda-runtime-ed25519:d7447cc2c984edab",
+          "record_digest": "sha256:dd35977df36eb7c1feb0f3ddab061c3adfd60ffa694a68571877c626143041ab",
+          "registry_digest": "sha256:d6408abd53c27ec6a8a58507765fa28f07d7aad3a686c1eaae7670bf7d5fe950",
+          "status": "admitted",
+          "task_family": "fix-two-assertions",
+          "updated_at": 1795606271.1587749
+        },
+        {
+          "admission": {},
+          "authority": [],
+          "component_ids": [],
+          "kind": "verifier",
+          "node_id": "verifier:5e4592f604a1918cab21ad15",
+          "publisher_id": "arda-runtime-ed25519:d7447cc2c984edab",
+          "record_digest": "sha256:7d2f2eb10d5b14fdce8bf27e9de0e591fb11a354fc18fa7c81197c4221a41e6c",
+          "registry_digest": "sha256:5e4592f604a1918cab21ad1506701ffda2d70657337f46a08c5414cc528c8402",
+          "status": "admitted",
+          "task_family": "fix-two-assertions",
+          "updated_at": 1795606271.1589608
+        }
+      ],
+      "present": true,
+      "verify": {
+        "crystal_chain_head": "sha256:4da4f2b245b04ad8eeb3d6d0289e4481f967636a2ee6e1e00211ed268602bf74",
+        "hypergraph_valid": true,
+        "lattice_ledger_head": "sha256:0d58d59c32607eb3ee5e2a46f7f35a372907016c76b4259c045fac27c8c3fd24",
+        "tampered_nodes": [],
+        "valid": true
+      }
+    },
+    "left_id": "coding-crystal:191dd9102ea2373933f777b1",
+    "live_composite_edge": true,
+    "receipt": {
+      "attempts": 3,
+      "evidence_root": "sha256:5fa4ae37ee40467821df89c51261d7592348a1d7a43e6c1449082c6c95dcd4ba",
+      "promoted": true,
+      "reason": "held-out replay passed",
+      "structured": true,
+      "successes": 3,
+      "variant_ids": [
+        "{'id': 'tax-and-word', 'left': {'target': 'pricing.py', 'constant': 'TAX', 'actual': 7, 'expected': 9, 'function': 'tax'}, 'right': {'target': 'greeting.py', 'constant': 'WORD', 'actual': 'hi', 'expected': 'hello', 'function': 'word'}}",
+        "{'id': 'items-and-title', 'left': {'target': 'limits.py', 'constant': 'MAX_ITEMS', 'actual': 10, 'expected': 12, 'function': 'max_items'}, 'right': {'target': 'title.py', 'constant': 'LABEL', 'actual': 'draft', 'expected': 'final', 'function': 'label'}}",
+        "{'id': 'base-and-salute', 'left': {'target': 'shipping.py', 'constant': 'BASE', 'actual': 17, 'expected': 19, 'function': 'charge'}, 'right': {'target': 'salute.py', 'constant': 'GREET', 'actual': 'hey', 'expected': 'welcome', 'function': 'greet'}}"
+      ],
+      "variant_results": [
+        true,
+        true,
+        true
+      ]
+    },
+    "right_id": "coding-crystal:eb814eff3d78a76261e439e5",
+    "status": "live_composite_admitted"
+  },
+  "lattice": {
+    "composes_with": [
+      {
+        "edge_type": "COMPOSES_WITH",
+        "source_ids": [
+          "coding-crystal:191dd9102ea2373933f777b1",
+          "coding-crystal:eb814eff3d78a76261e439e5"
+        ],
+        "target_id": "coding-crystal:d6408abd53c27ec6a8a58507"
+      }
+    ],
+    "composite_count": 1,
+    "edges": [
+      {
+        "edge_type": "COMPOSES_WITH",
+        "source_ids": [
+          "coding-crystal:191dd9102ea2373933f777b1",
+          "coding-crystal:eb814eff3d78a76261e439e5"
+        ],
+        "target_id": "coding-crystal:d6408abd53c27ec6a8a58507"
+      },
+      {
+        "edge_type": "VERIFIED_BY",
+        "source_ids": [
+          "coding-crystal:d6408abd53c27ec6a8a58507"
+        ],
+        "target_id": "verifier:5e4592f604a1918cab21ad15"
+      }
+    ],
+    "leaf_count": 2,
+    "nodes": [
+      {
+        "admission": {
+          "replay_receipt": {
+            "attempts": 3,
+            "candidate_id": "coding-crystal:191dd9102ea2373933f777b1",
+            "episode_envelope_digest": "sha256:301e64a253a05b99562b4ce47df57ef26c58e12a6a46247580d29a252e0c9fe3",
+            "evidence_root": "sha256:9262dd2145f5e2cb0236140101d6843c26cd7700b54b4547b136032f542bf62a",
+            "promoted": true,
+            "reason": "held-out replay passed",
+            "reproduction_record_digest": "sha256:d75fd1c68bfc119b864b8bcd3c0d232deb9829579598cb56388d523a71525edb",
+            "structured": true,
+            "successes": 3,
+            "variant_ids": [
+              "{'module': 'pricing', 'constant': 'TAX', 'actual': 7, 'expected': 9, 'function': 'tax'}",
+              "{'module': 'limits', 'constant': 'MAX_ITEMS', 'actual': 10, 'expected': 12, 'function': 'max_items'}",
+              "{'module': 'greeting', 'constant': 'WORD', 'actual': 'hi', 'expected': 'hello', 'function': 'word'}"
+            ],
+            "variant_results": [
+              true,
+              true,
+              true
+            ],
+            "variant_results_digest": "sha256:90a0fae9d9c884f8c5c004d4298bd3ed4414f415454700e94dd428f3adf6ff4d"
+          }
+        },
+        "authority": [
+          "workspace.read_range",
+          "worktree.bind",
+          "worktree.replace_exact",
+          "worktree.verify"
+        ],
+        "component_ids": [],
+        "kind": "crystal",
+        "node_id": "coding-crystal:191dd9102ea2373933f777b1",
+        "publisher_id": "arda-runtime-ed25519:d7447cc2c984edab",
+        "record_digest": "sha256:e0b13545343813160634bec5da3e9cc1bcaf63b62d309a29920016ff247d43dc",
+        "registry_digest": "sha256:191dd9102ea2373933f777b16d9ff9195957d1072fe719c62ffb39967e5bdb68",
+        "status": "admitted",
+        "task_family": "fix-failing-assertion",
+        "updated_at": 1795605959.6457837
+      },
+      {
+        "admission": {
+          "replay_receipt": {
+            "attempts": 3,
+            "candidate_id": "coding-crystal:eb814eff3d78a76261e439e5",
+            "episode_envelope_digest": "sha256:4ffbbd19c0b174ce07945cac56987c8a21ed2aaf20a95170b2a6462f76fef9c8",
+            "evidence_root": "sha256:9530e16a29f3686784168ff6c7f0b3de99941f8fc962855976c8470d2220cd7c",
+            "promoted": true,
+            "reason": "held-out replay passed",
+            "reproduction_record_digest": "sha256:e9174cc3596711993e3b0f1c501895966fed39be4d9c663b094e255fe3550bc6",
+            "structured": true,
+            "successes": 3,
+            "variant_ids": [
+              "{'module': 'pricing', 'constant': 'TAX', 'actual': 7, 'expected': 9, 'function': 'tax'}",
+              "{'module': 'limits', 'constant': 'MAX_ITEMS', 'actual': 10, 'expected': 12, 'function': 'max_items'}",
+              "{'module': 'greeting', 'constant': 'WORD', 'actual': 'hi', 'expected': 'hello', 'function': 'word'}"
+            ],
+            "variant_results": [
+              true,
+              true,
+              true
+            ],
+            "variant_results_digest": "sha256:90a0fae9d9c884f8c5c004d4298bd3ed4414f415454700e94dd428f3adf6ff4d"
+          }
+        },
+        "authority": [
+          "workspace.read_range",
+          "worktree.bind",
+          "worktree.replace_exact",
+          "worktree.verify"
+        ],
+        "component_ids": [],
+        "kind": "crystal",
+        "node_id": "coding-crystal:eb814eff3d78a76261e439e5",
+        "publisher_id": "arda-runtime-ed25519:d7447cc2c984edab",
+        "record_digest": "sha256:c7913cf5b041eba6318d7a7d92ef4c5be6ab645aab924a65c57efb4c5e9e82fb",
+        "registry_digest": "sha256:eb814eff3d78a76261e439e515767423cc9bc2d06dc745e006ba29b05d568f6f",
+        "status": "admitted",
+        "task_family": "fix-failing-assertion",
+        "updated_at": 1795606025.6136765
+      },
+      {
+        "admission": {
+          "approved_by": "Byron",
+          "children_digests": {
+            "coding-crystal:191dd9102ea2373933f777b1": "sha256:e0b13545343813160634bec5da3e9cc1bcaf63b62d309a29920016ff247d43dc",
+            "coding-crystal:eb814eff3d78a76261e439e5": "sha256:c7913cf5b041eba6318d7a7d92ef4c5be6ab645aab924a65c57efb4c5e9e82fb"
+          },
+          "verifier": {
+            "attempts": 3,
+            "candidate_id": "coding-crystal:d6408abd53c27ec6a8a58507",
+            "episode_envelope_digest": "sha256:301e64a253a05b99562b4ce47df57ef26c58e12a6a46247580d29a252e0c9fe3",
+            "evidence_root": "sha256:5fa4ae37ee40467821df89c51261d7592348a1d7a43e6c1449082c6c95dcd4ba",
+            "promoted": true,
+            "reason": "held-out replay passed",
+            "reproduction_record_digest": "sha256:3b2ce36af133e1b1f678f0ac13d606984d2024b6654bf2b100cc1a695c68d70f",
+            "structured": true,
+            "successes": 3,
+            "variant_ids": [
+              "{'id': 'tax-and-word', 'left': {'target': 'pricing.py', 'constant': 'TAX', 'actual': 7, 'expected': 9, 'function': 'tax'}, 'right': {'target': 'greeting.py', 'constant': 'WORD', 'actual': 'hi', 'expected': 'hello', 'function': 'word'}}",
+              "{'id': 'items-and-title', 'left': {'target': 'limits.py', 'constant': 'MAX_ITEMS', 'actual': 10, 'expected': 12, 'function': 'max_items'}, 'right': {'target': 'title.py', 'constant': 'LABEL', 'actual': 'draft', 'expected': 'final', 'function': 'label'}}",
+              "{'id': 'base-and-salute', 'left': {'target': 'shipping.py', 'constant': 'BASE', 'actual': 17, 'expected': 19, 'function': 'charge'}, 'right': {'target': 'salute.py', 'constant': 'GREET', 'actual': 'hey', 'expected': 'welcome', 'function': 'greet'}}"
+            ],
+            "variant_results": [
+              true,
+              true,
+              true
+            ],
+            "variant_results_digest": "sha256:404173ce6c223850fea9ef77144e82a9bd3caf77adfda5480bf42851615bc4b2"
+          }
+        },
+        "authority": [
+          "workspace.read_range",
+          "worktree.bind",
+          "worktree.replace_exact",
+          "worktree.verify"
+        ],
+        "component_ids": [
+          "coding-crystal:191dd9102ea2373933f777b1",
+          "coding-crystal:eb814eff3d78a76261e439e5"
+        ],
+        "kind": "composite",
+        "node_id": "coding-crystal:d6408abd53c27ec6a8a58507",
+        "publisher_id": "arda-runtime-ed25519:d7447cc2c984edab",
+        "record_digest": "sha256:dd35977df36eb7c1feb0f3ddab061c3adfd60ffa694a68571877c626143041ab",
+        "registry_digest": "sha256:d6408abd53c27ec6a8a58507765fa28f07d7aad3a686c1eaae7670bf7d5fe950",
+        "status": "admitted",
+        "task_family": "fix-two-assertions",
+        "updated_at": 1795606271.1587749
+      },
+      {
+        "admission": {},
+        "authority": [],
+        "component_ids": [],
+        "kind": "verifier",
+        "node_id": "verifier:5e4592f604a1918cab21ad15",
+        "publisher_id": "arda-runtime-ed25519:d7447cc2c984edab",
+        "record_digest": "sha256:7d2f2eb10d5b14fdce8bf27e9de0e591fb11a354fc18fa7c81197c4221a41e6c",
+        "registry_digest": "sha256:5e4592f604a1918cab21ad1506701ffda2d70657337f46a08c5414cc528c8402",
+        "status": "admitted",
+        "task_family": "fix-two-assertions",
+        "updated_at": 1795606271.1589608
+      }
+    ],
+    "present": true,
+    "verify": {
+      "crystal_chain_head": "sha256:4da4f2b245b04ad8eeb3d6d0289e4481f967636a2ee6e1e00211ed268602bf74",
+      "hypergraph_valid": true,
+      "lattice_ledger_head": "sha256:0d58d59c32607eb3ee5e2a46f7f35a372907016c76b4259c045fac27c8c3fd24",
+      "tampered_nodes": [],
+      "valid": true
+    }
+  },
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "reuse_all_passed": true,
+  "spend": [
+    {
+      "calls": 10,
+      "commercial_equivalent_usd": 0.001251,
+      "completion_tokens": 481,
+      "estimated_usd": 0.0,
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+      "prompt_tokens": 18043
+    },
+    {
+      "calls": 9,
+      "commercial_equivalent_usd": 0.001193,
+      "completion_tokens": 419,
+      "estimated_usd": 0.0,
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+      "prompt_tokens": 17434
+    },
+    {
+      "calls": 10,
+      "commercial_equivalent_usd": 0.001246,
+      "completion_tokens": 475,
+      "estimated_usd": 0.0,
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+      "prompt_tokens": 17988
+    },
+    {
+      "calls": 0,
+      "commercial_equivalent_usd": 0.0,
+      "completion_tokens": 0,
+      "estimated_usd": 0.0,
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+      "prompt_tokens": 0
+    },
+    {
+      "calls": 9,
+      "commercial_equivalent_usd": 0.001125,
+      "completion_tokens": 402,
+      "estimated_usd": 0.0,
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+      "prompt_tokens": 16402
+    },
+    {
+      "calls": 0,
+      "commercial_equivalent_usd": 0.0,
+      "completion_tokens": 0,
+      "estimated_usd": 0.0,
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+      "prompt_tokens": 0
+    }
+  ],
+  "spend_total": {
+    "completion_tokens": 1777,
+    "estimated_usd": 0.0,
+    "prompt_tokens": 69867
+  },
+  "tasks": [
+    {
+      "formation": {
+        "crystal_id": "coding-crystal:191dd9102ea2373933f777b1",
+        "heldout_attempts": 3,
+        "heldout_successes": 3,
+        "lattice_admitted": true,
+        "note": "relearned after extractor accepted unittest worktree.run as a failing verification; no additional model calls",
+        "source_run_id": "hard-lattice-leaf_a-abf3b8889c09",
+        "status": "promoted"
+      },
+      "id": "leaf_a",
+      "kind": "formation",
+      "source": {
+        "before_rc": 1,
+        "changed_tracked_paths": [
+          "rate_limit.py"
+        ],
+        "crystal_activated": false,
+        "crystal_completed": false,
+        "crystal_formed": false,
+        "crystal_refusals": [],
+        "event_chain_valid": true,
+        "events": [],
+        "independent_pass": true,
+        "model_turns": 10.0,
+        "mutation_observed": true,
+        "observed_provider_attempts": 10,
+        "original_unchanged": true,
+        "package": "burst-limit",
+        "run_id": "hard-lattice-leaf_a-abf3b8889c09",
+        "sealed_pass": true,
+        "state": "completed",
+        "tool_calls": 9.0,
+        "usage": {
+          "calls": 10,
+          "commercial_equivalent_usd": 0.001251,
+          "completion_tokens": 481,
+          "estimated_usd": 0.0,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+          "prompt_tokens": 18043
+        },
+        "wall_seconds": 28.136
+      },
+      "status": "promoted"
+    },
+    {
+      "formation": {
+        "crystal_id": "coding-crystal:eb814eff3d78a76261e439e5",
+        "heldout_attempts": 3,
+        "heldout_successes": 3,
+        "lattice_admitted": true,
+        "note": "relearned after quote-equivalent assignment matching; no additional model calls",
+        "source_run_id": "hard-lattice-leaf_b-a7beedf8b5c6",
+        "status": "promoted"
+      },
+      "id": "leaf_b",
+      "kind": "formation",
+      "source": {
+        "before_rc": 1,
+        "changed_tracked_paths": [
+          "voice.py"
+        ],
+        "crystal_activated": false,
+        "crystal_completed": false,
+        "crystal_formed": false,
+        "crystal_refusals": [],
+        "event_chain_valid": true,
+        "events": [],
+        "independent_pass": true,
+        "model_turns": 9.0,
+        "mutation_observed": true,
+        "observed_provider_attempts": 9,
+        "original_unchanged": true,
+        "package": "voice-greeting",
+        "run_id": "hard-lattice-leaf_b-a7beedf8b5c6",
+        "sealed_pass": true,
+        "state": "completed",
+        "tool_calls": 9.0,
+        "usage": {
+          "calls": 9,
+          "commercial_equivalent_usd": 0.001193,
+          "completion_tokens": 419,
+          "estimated_usd": 0.0,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+          "prompt_tokens": 17434
+        },
+        "wall_seconds": 19.675
+      },
+      "status": "promoted"
+    },
+    {
+      "id": "reuse_a",
+      "kind": "reuse",
+      "off": {
+        "before_rc": 1,
+        "changed_tracked_paths": [
+          "quota.py"
+        ],
+        "crystal_activated": false,
+        "crystal_completed": false,
+        "crystal_formed": false,
+        "crystal_refusals": [],
+        "event_chain_valid": true,
+        "events": [],
+        "independent_pass": true,
+        "model_turns": 10.0,
+        "mutation_observed": true,
+        "observed_provider_attempts": 10,
+        "original_unchanged": true,
+        "package": "quota-limit",
+        "run_id": "hard-lattice-reuse_a-off-268ee956a68e",
+        "sealed_pass": true,
+        "state": "completed",
+        "tool_calls": 9.0,
+        "usage": {
+          "calls": 10,
+          "commercial_equivalent_usd": 0.001246,
+          "completion_tokens": 475,
+          "estimated_usd": 0.0,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+          "prompt_tokens": 17988
+        },
+        "wall_seconds": 21.265
+      },
+      "on": {
+        "before_rc": 1,
+        "changed_tracked_paths": [
+          "quota.py"
+        ],
+        "crystal_activated": true,
+        "crystal_completed": true,
+        "crystal_formed": false,
+        "crystal_refusals": [],
+        "event_chain_valid": true,
+        "events": [
+          "agent.crystal.activated",
+          "agent.crystal.completed",
+          "agent.crystal.reduction_receipt"
+        ],
+        "independent_pass": true,
+        "model_turns": 0,
+        "mutation_observed": true,
+        "observed_provider_attempts": 0,
+        "original_unchanged": true,
+        "package": "quota-limit",
+        "run_id": "hard-lattice-reuse_a-on-f3a9dc158198",
+        "sealed_pass": true,
+        "state": "completed",
+        "tool_calls": 6.0,
+        "usage": {
+          "calls": 0,
+          "commercial_equivalent_usd": 0.0,
+          "completion_tokens": 0,
+          "estimated_usd": 0.0,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+          "prompt_tokens": 0
+        },
+        "wall_seconds": 1.131
+      },
+      "package": "quota-limit",
+      "passed": true,
+      "status": "pass"
+    },
+    {
+      "id": "reuse_b",
+      "kind": "reuse",
+      "off": {
+        "before_rc": 1,
+        "changed_tracked_paths": [
+          "salute.py"
+        ],
+        "crystal_activated": false,
+        "crystal_completed": false,
+        "crystal_formed": false,
+        "crystal_refusals": [],
+        "event_chain_valid": true,
+        "events": [],
+        "independent_pass": true,
+        "model_turns": 9.0,
+        "mutation_observed": true,
+        "observed_provider_attempts": 9,
+        "original_unchanged": true,
+        "package": "voice-salute",
+        "run_id": "hard-lattice-reuse_b-off-d26f7aa99616",
+        "sealed_pass": true,
+        "state": "completed",
+        "tool_calls": 9.0,
+        "usage": {
+          "calls": 9,
+          "commercial_equivalent_usd": 0.001125,
+          "completion_tokens": 402,
+          "estimated_usd": 0.0,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+          "prompt_tokens": 16402
+        },
+        "wall_seconds": 34.635
+      },
+      "on": {
+        "before_rc": 1,
+        "changed_tracked_paths": [
+          "salute.py"
+        ],
+        "crystal_activated": true,
+        "crystal_completed": true,
+        "crystal_formed": false,
+        "crystal_refusals": [],
+        "event_chain_valid": true,
+        "events": [
+          "agent.crystal.activated",
+          "agent.crystal.completed",
+          "agent.crystal.reduction_receipt"
+        ],
+        "independent_pass": true,
+        "model_turns": 0,
+        "mutation_observed": true,
+        "observed_provider_attempts": 0,
+        "original_unchanged": true,
+        "package": "voice-salute",
+        "run_id": "hard-lattice-reuse_b-on-f0898ec0512a",
+        "sealed_pass": true,
+        "state": "completed",
+        "tool_calls": 6.0,
+        "usage": {
+          "calls": 0,
+          "commercial_equivalent_usd": 0.0,
+          "completion_tokens": 0,
+          "estimated_usd": 0.0,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "pricing_note": "NVIDIA hosted trial endpoint (integrate.api.nvidia.com) is free for prototyping; commercial_equivalent_usd uses public list prices from modelmenu.dev (checked Nov 2026) and is not a charge on this run.",
+          "prompt_tokens": 0
+        },
+        "wall_seconds": 1.844
+      },
+      "package": "voice-salute",
+      "passed": true,
+      "status": "pass"
+    }
+  ]
+}

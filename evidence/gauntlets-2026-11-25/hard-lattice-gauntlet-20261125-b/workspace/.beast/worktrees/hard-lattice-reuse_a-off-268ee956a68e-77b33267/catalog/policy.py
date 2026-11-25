@@ -1,0 +1,1 @@
+TIERS = {"free", "enterprise"}
