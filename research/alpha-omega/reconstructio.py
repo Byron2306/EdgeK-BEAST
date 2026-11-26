@@ -44,7 +44,7 @@ def reconstruct(s):
     metrics={}
     for p,rs in sorted(groups.items()):
         total=sum(r["total_ns"] for r in rs)
-        metrics[p]=dict(speedup=base/total,total_ns=total,verified_roots=sum(r["verified_roots"] for r in rs),probe_ns=sum(r["probe_ns"] for r in rs),migrated_entries=sum(r["migrated_entries"] for r in rs),material_losses_5pct=sum(r["total_ns"]>1.05*cells[(r["config"],r["encounter"],"TABULA_RASA")]["total_ns"] for r in rs))
+        metrics[p]=dict(speedup=base/total,total_ns=total,verified_roots=sum(r["verified_roots"] for r in rs),probe_ns=sum(r["probe_ns"] for r in rs),migrated_entries=sum(r["migrated_entries"] for r in rs if "migrated_entries" in r),migration_field_present=sum("migrated_entries" in r for r in rs),migration_field_missing=sum("migrated_entries" not in r for r in rs),migration_measurement_complete=all("migrated_entries" in r for r in rs),material_losses_5pct=sum(r["total_ns"]>1.05*cells[(r["config"],r["encounter"],"TABULA_RASA")]["total_ns"] for r in rs))
     comparisons=[paired(normalized,"TABULA_RASA",p) for p in sorted(policies-{"TABULA_RASA"})]
     ablations=[paired(normalized,"SAPIENTIA",p) for p in sorted(policies-{"SAPIENTIA"})]
     return dict(source=receipt,metrics=metrics,comparisons=comparisons,ablations=ablations,oracle_cells=len(oracle),material_loss_definition="greater than 5% above matched TABULA_RASA",exploratory=True,native=False,economic_claims=False)
