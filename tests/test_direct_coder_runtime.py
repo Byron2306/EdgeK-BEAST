@@ -103,7 +103,13 @@ class Engine:
     async def execute_tool(self, run_id, tool_id, arguments, *,
                            execution_target="local", approval_id=""):
         self.calls.append((tool_id, approval_id))
-        return {"tool_id": tool_id, "status": "completed", "result": {"ok": True}}
+        result = {"ok": True}
+        if tool_id == "worktree.verify":
+            result.update({
+                "returncode": 0,
+                "command": arguments.get("command"),
+            })
+        return {"tool_id": tool_id, "status": "completed", "result": result}
 
 
 def test_direct_coder_timeout_pauses_then_recovers_without_planner_subagent():
@@ -328,3 +334,131 @@ def test_nested_unittest_verified_handoff():
         "tests",
         "-v",
     ]
+
+
+def test_p0_missing_verifier_returncode_refuses_completion():
+    """A claimed success without execution status is not verification."""
+
+    class IncompleteReceiptEngine(Engine):
+        async def execute_tool(self, run_id, tool_id, arguments, **kwargs):
+            result = await super().execute_tool(
+                run_id, tool_id, arguments, **kwargs
+            )
+            if tool_id == "worktree.verify":
+                result["result"].pop("returncode", None)
+            return result
+
+    engine = IncompleteReceiptEngine()
+    model = ScriptedCodingModel([
+        tool("worktree.bind"),
+        tool("worktree.write_file", {
+            "path": "a.py", "content": "VALUE = 42"
+        }),
+        tool("worktree.verify", {"command": "pytest -q"}),
+        PlannerDecision(
+            decision_type=PlannerDecisionType.COMPLETE,
+            summary="verified",
+        ),
+    ])
+    coder = DirectCoderRuntime(engine, model)
+
+    async def check():
+        for _ in range(4):
+            result = await coder.run_one_turn("agent-test")
+
+        assert result["state"] != "completed"
+        assert any(
+            event == "agent.coder.completion_refused"
+            for event, _ in engine.events
+        )
+
+    asyncio.run(check())
+
+
+def test_p0_failed_edit_refreshes_authoritative_source():
+    """Recovery must replace stale memory with a fresh tool observation."""
+
+    class RecoveryEngine(Engine):
+        async def execute_tool(self, run_id, tool_id, arguments, **kwargs):
+            self.calls.append((tool_id, dict(arguments)))
+            assert tool_id == "worktree.read_file"
+            return {
+                "tool_id": tool_id,
+                "status": "completed",
+                "arguments": arguments,
+                "result": {
+                    "path": "ui.html",
+                    "content": "<html>current source</html>",
+                    "start_line": 1,
+                    "end_line": 1,
+                    "total_lines": 1,
+                    "sha256": "fresh-source-hash",
+                    "worktree_root": "/wt",
+                },
+            }
+
+    engine = RecoveryEngine()
+    coder = DirectCoderRuntime(engine, ScriptedCodingModel([]))
+
+    state = {
+        "edit_count": 3,
+        "reads_since_edit": 30,
+        "duplicate_streak": 5,
+        "stalls": 4,
+        "reads": {
+            "ui.html": {
+                "sha256": "old-source-hash",
+                "total_lines": 1,
+                "ranges": [[1, 1]],
+            }
+        },
+        "file_memory": [{
+            "path": "ui.html",
+            "start": 1,
+            "end": 1,
+            "content": "<html>stale source</html>",
+        }],
+        "observations": [],
+    }
+
+    decision = tool("worktree.replace_exact", {
+        "path": "ui.html",
+        "old_text": "<html>stale source</html>",
+        "new_text": "<html>updated source</html>",
+    })
+
+    entry = {
+        "status": "failed",
+        "error": "replace_exact expected 1 occurrence(s), found 0",
+    }
+
+    async def check():
+        assert await coder._refresh_failed_exact_edit(
+            "agent-test", state, decision, entry
+        )
+
+        assert state["reads_since_edit"] == 0
+        assert state["duplicate_streak"] == 0
+        assert state["needs_fix"]["ui.html"] is True
+        assert state["reads"]["ui.html"]["sha256"] == "fresh-source-hash"
+        assert state["file_memory"][0]["content"] == (
+            "<html>current source</html>"
+        )
+        assert any(
+            o["tool_id"] == "worktree.read_file"
+            and o["status"] == "completed"
+            for o in state["observations"]
+        )
+
+        # Recovery is bounded, not another infinite loop.
+        assert await coder._refresh_failed_exact_edit(
+            "agent-test", state, decision, entry
+        )
+
+        assert not await coder._refresh_failed_exact_edit(
+            "agent-test", state, decision, entry
+        )
+
+        assert len(engine.calls) == 2
+
+    asyncio.run(check())

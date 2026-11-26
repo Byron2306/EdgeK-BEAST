@@ -666,6 +666,56 @@ def _gutter_excerpt(content: str, start: int) -> str:
     return "\n".join(f"{start + i:>5}| {line}" for i, line in enumerate(str(content).split("\n")))
 
 
+def _operator_verifier(run):
+    """Read an explicit operator verification contract, never model notes."""
+    import hashlib
+    from pathlib import Path
+
+    objective = str(run.get("objective") or "")
+    rows = re.findall(
+        r"(?m)^BEAST_VERIFY_JSON:[ \\t]*(.+)$",
+        objective,
+    )
+    if not rows:
+        return None
+    if len(rows) != 1:
+        raise ValueError("Multiple operator verifier contracts")
+
+    contract = json.loads(rows[0])
+    if not isinstance(contract, dict):
+        raise ValueError("Verifier contract must be an object")
+
+    command = contract.get("command")
+    digest = contract.get("sha256")
+
+    if (
+        not isinstance(command, list)
+        or len(command) != 2
+        or command[0] != "python"
+        or not isinstance(command[1], str)
+    ):
+        raise ValueError("Expected python and absolute verifier path")
+
+    script = Path(command[1])
+    if (
+        not script.is_absolute()
+        or script.suffix != ".py"
+        or not script.is_file()
+    ):
+        raise ValueError("Invalid verifier script")
+
+    if not isinstance(digest, str) or not re.fullmatch(
+        r"[a-f0-9]{64}", digest
+    ):
+        raise ValueError("Missing verifier SHA256")
+
+    actual = hashlib.sha256(script.read_bytes()).hexdigest()
+    if actual != digest:
+        raise ValueError("Operator verifier integrity mismatch")
+
+    return contract
+
+
 def _auto_verify_command(paths: list[str], watch_names: list[str] | None = None,
                          functions: dict[str, list[str]] | None = None) -> list[str]:
     """python -c script: py_compile every edited Python file, flag names the edits use but no
@@ -699,7 +749,8 @@ def _auto_verify_command(paths: list[str], watch_names: list[str] | None = None,
         "        print('missing', p, exc); rc = 1; continue\n"
         "    is_py = p.endswith('.py') or (head.startswith('#!') and 'python' in head)\n"
         "    if not is_py:\n"
-        "        continue\n"
+        "        print('UNVERIFIED artifact requires an applicable verifier:', p)\n"
+        "        rc = 1; continue\n"
         "    try:\n"
         "        py_compile.compile(p, doraise=True); print('py_compile ok', p)\n"
         "    except py_compile.PyCompileError as exc:\n"
@@ -1217,6 +1268,138 @@ class DirectCoderRuntime:
         while sum(len(str(m.get("content") or "")) for m in memory) > FILE_MEMORY_STORE_CHARS and len(memory) > 1:
             memory.pop(0)
         state["file_memory"] = memory
+
+    async def _refresh_failed_exact_edit(
+        self, run_id, state, decision, entry
+    ):
+        """Bounded, receipted source refresh after an exact-edit failure."""
+        if decision.tool_id != "worktree.replace_exact":
+            return False
+        if entry.get("status") == "completed":
+            return False
+
+        error = str(entry.get("error") or "")
+        if "replace_exact expected" not in error:
+            return False
+
+        raw_path = str(decision.arguments.get("path") or "")
+        path = _canonical_path(state, raw_path)
+        if not path:
+            return False
+
+        # Limit automatic recovery attempts per mutation epoch.
+        key = f"{path}:{int(state.get('edit_count') or 0)}"
+        attempts = dict(state.get("p0_recovery_attempts") or {})
+        if int(attempts.get(key) or 0) >= 2:
+            return False
+        attempts[key] = int(attempts.get(key) or 0) + 1
+        state["p0_recovery_attempts"] = attempts
+
+        # Identify the previously inspected region before invalidation.
+        chunks = [
+            m for m in state.get("file_memory") or []
+            if m.get("path") == path
+        ]
+        old = str(decision.arguments.get("old_text") or "")
+        span = _memory_span(state, path, old) if old else None
+        start = (
+            max(1, int(span[0]) - 20) if span
+            else max(1, int(chunks[-1].get("start") or 1))
+            if chunks else 1
+        )
+
+        reads = dict(state.get("reads") or {})
+        reads.pop(path, None)
+        state["reads"] = reads
+        state["file_memory"] = [
+            m for m in state.get("file_memory") or []
+            if m.get("path") != path
+        ]
+        state["act_excerpts"] = []
+        state["act_phase"] = False
+        state["rereads"] = []
+        state["served_from_memory"] = []
+        state["scan"] = {}
+        state["seen_calls"] = [
+            k for k in state.get("seen_calls") or []
+            if not k.startswith("worktree.")
+        ]
+
+        args = {
+            "path": raw_path,
+            "start_line": start,
+            "line_count": 120,
+        }
+
+        try:
+            observation = await self.engine.execute_tool(
+                run_id,
+                "worktree.read_file",
+                args,
+                execution_target="local",
+                approval_id="",
+            )
+        except Exception as exc:
+            self._emit(
+                run_id,
+                "agent.coder.recovery_refresh_failed",
+                path=path,
+                reason=type(exc).__name__,
+            )
+            return False
+
+        if not isinstance(observation, dict):
+            return False
+
+        result = observation.get("result")
+        if (
+            observation.get("status") != "completed"
+            or not isinstance(result, dict)
+            or not isinstance(result.get("content"), str)
+        ):
+            return False
+
+        self._remember(
+            state, "worktree.read_file", args, observation
+        )
+
+        state.setdefault("observations", []).append(
+            self._compact_observation(
+                "worktree.read_file", observation
+            )
+        )
+
+        state["reads_since_edit"] = 0
+        state["duplicate_streak"] = 0
+        state["stalls"] = 0
+
+        needs_fix = dict(state.get("needs_fix") or {})
+        needs_fix[path] = True
+        state["needs_fix"] = needs_fix
+
+        state.setdefault("observations", []).append({
+            "tool_id": "runtime.recovery_refresh",
+            "status": "info",
+            "result": {
+                "path": path,
+                "hint": (
+                    "Fresh bound-worktree source was acquired. "
+                    "Use the latest exact text in FILE MEMORY. "
+                    "Do not reuse the failed anchor or overwrite "
+                    "the existing file with write_file."
+                ),
+            },
+        })
+
+        self._emit(
+            run_id,
+            "agent.coder.recovery_refresh",
+            path=path,
+            start_line=start,
+            sha256=str(result.get("sha256") or ""),
+            attempt=attempts[key],
+        )
+        return True
 
     @staticmethod
     def _duplicate_reason(state: dict[str, Any], tool_id: str, arguments: dict[str, Any]) -> str:
@@ -1963,6 +2146,24 @@ class DirectCoderRuntime:
         if self.crystals is not None:
             self.crystals.budget.start(run_id)
         command = verified_handoff_command(run) if self.crystals is not None else None
+
+        try:
+            operator_verify = _operator_verifier(run)
+            if operator_verify and command:
+                raise ValueError(
+                    "Conflicting operator and crystal verification contracts"
+                )
+        except (ValueError, OSError) as exc:
+            self._emit(
+                run_id, "agent.coder.verifier_contract_refused",
+                reason=str(exc),
+            )
+            self._transition(
+                run_id, AgentRunState.PAUSED,
+                error=str(exc),
+            )
+            return self._snapshot(run_id)
+
         source = "model"
         if not state.get("started"):
             state["started"] = True
@@ -2019,7 +2220,33 @@ class DirectCoderRuntime:
             self._transition(run_id, AgentRunState.PLANNING)
             self._emit(run_id, "agent.coder.turn.started", turn=turn + 1)
             decision = None
-            if self.crystals is not None:
+
+            if (
+                operator_verify
+                and not state.get("plan_run")
+                and (run.get("checkpoint") or {}).get("worktree_root")
+                and state.get("edit_count")
+                and state.get("operator_checked_edit_count")
+                    != state.get("edit_count")
+            ):
+                decision = PlannerDecision(
+                    decision_type=PlannerDecisionType.TOOL,
+                    tool_id="worktree.verify",
+                    arguments={
+                        "command": operator_verify["command"],
+                        "timeout_seconds": 120,
+                    },
+                    rationale="Execute operator-bound acceptance verifier.",
+                )
+                source = "runtime"
+                self._emit(
+                    run_id, "agent.coder.operator_verify",
+                    edit_count=state["edit_count"],
+                    command=operator_verify["command"],
+                    sha256=operator_verify["sha256"],
+                )
+
+            if decision is None and self.crystals is not None:
                 try:
                     decision = self.crystals.decision(run_id, run, state)
                 except Exception as exc:
@@ -2170,7 +2397,15 @@ class DirectCoderRuntime:
                                       and decision.tool_id in MUTATION_TOOLS):
             self._update_checklist(run_id, state, str(decision.summary or decision.rationale or ""))
         bound_now = str((self._snapshot(run_id).get("checkpoint") or {}).get("worktree_root") or "")
-        if (decision.decision_type is PlannerDecisionType.COMPLETE and not command and bound_now
+        if (decision.decision_type is PlannerDecisionType.COMPLETE
+                and operator_verify):
+            decision = PlannerDecision(
+                decision_type=PlannerDecisionType.BLOCKED,
+                blocker="Operator acceptance contract has not passed.",
+            )
+
+        if (decision.decision_type is PlannerDecisionType.COMPLETE
+                and not operator_verify and not command and bound_now
                 and state.get("edited_paths") and not state.get("verified_after_edit")
                 and state.get("auto_verify_epoch") != state.get("edit_count")):
             # Verify edits before completion instead of refusing and spending another model turn.
@@ -2208,6 +2443,9 @@ class DirectCoderRuntime:
                 and int(o["result"].get("returncode") or 0) == 0
                 for i, o in enumerate(observations)
             )
+            if not command:
+                mutated = bool(state.get("edit_count")) or mutated
+                verified = bool(state.get("verified_after_edit"))
             if command:
                 mutated = bool(state.get("mutation_epoch"))
                 checkpoint = (self._snapshot(run_id).get("checkpoint") or {})
@@ -2575,6 +2813,20 @@ class DirectCoderRuntime:
                 if command and decision.tool_id in {"worktree.replace_exact", "worktree.write_file"} and "baseline_rc" not in state:
                     raise ValueError("No measured pre-edit verification was recorded")
 
+                if operator_verify:
+                    if (
+                        decision.tool_id == "worktree.verify"
+                        and decision.arguments.get("command")
+                            != operator_verify["command"]
+                    ):
+                        raise ValueError(
+                            "Use the exact operator-bound verifier command"
+                        )
+                    if decision.tool_id == "worktree.run":
+                        raise ValueError(
+                            "Use worktree.verify for the operator contract"
+                        )
+
                 spec = self.engine.tool_registry.get(decision.tool_id)
                 if decision.tool_id.startswith(("sourceplan.promote", "promotion.")):
                     raise ValueError("promotion is not available to direct coder")
@@ -2737,17 +2989,99 @@ class DirectCoderRuntime:
                     self._transition(run_id, AgentRunState.PAUSED,
                                      error="The bound baseline verifier did not report executed tests.")
                     return self._snapshot(run_id)
-            if not command and decision.tool_id == "worktree.verify":
+            if operator_verify and decision.tool_id == "worktree.verify":
+                result = (
+                    (canonical or {}).get("result")
+                    if isinstance(canonical, dict) else None
+                )
+                exact_command = (
+                    decision.arguments.get("command")
+                    == operator_verify["command"]
+                )
+
+                if exact_command:
+                    state["operator_checked_edit_count"] = state.get(
+                        "edit_count"
+                    )
+
+                integrity = False
+                try:
+                    integrity = (
+                        _operator_verifier(run) == operator_verify
+                    )
+                except (ValueError, OSError):
+                    pass
+
+                ok = (
+                    exact_command
+                    and integrity
+                    and entry.get("status") == "completed"
+                    and isinstance(result, dict)
+                    and result.get("ok") is True
+                    and type(result.get("returncode")) is int
+                    and result["returncode"] == 0
+                    and result.get("command")
+                        == operator_verify["command"]
+                )
+
+                state["verified_after_edit"] = bool(
+                    ok and state.get("edit_count")
+                )
+
+                if state["verified_after_edit"]:
+                    state["turn"] = turn + 1
+                    state["operator_acceptance_passed"] = True
+                    state["queued_edits"] = []
+                    self._save(run_id, state)
+
+                    self._emit(
+                        run_id,
+                        "agent.coder.operator_acceptance_passed",
+                        command=operator_verify["command"],
+                        sha256=operator_verify["sha256"],
+                        edit_count=state["edit_count"],
+                    )
+                    self._emit(
+                        run_id, "agent.coder.completed",
+                        summary=(
+                            "Operator-bound functional acceptance passed. "
+                            "Verifier integrity confirmed. Exit code 0. "
+                            "Edited files: "
+                            + ", ".join(state.get("edited_paths") or [])
+                        ),
+                    )
+                    self._transition(run_id, AgentRunState.COMPLETED)
+                    return self._snapshot(run_id)
+
+                state["needs_fix"] = {
+                    path: True
+                    for path in state.get("edited_paths") or []
+                }
+
+                state.setdefault("observations", []).append({
+                    "tool_id": "runtime.operator_verification",
+                    "status": "info",
+                    "result": {
+                        "hint": (
+                            "Acceptance has not passed. "
+                            "Repair the actual verifier failure. "
+                            "The runtime will test the next mutation."
+                        ),
+                    },
+                })
+
+            elif not command and decision.tool_id == "worktree.verify":
                 result = (canonical or {}).get("result") if isinstance(canonical, dict) else None
                 ok = (entry.get("status") == "completed" and isinstance(result, dict)
-                      and result.get("ok") is True and int(result.get("returncode") or 0) == 0)
+                      and result.get("ok") is True
+                      and result.get("returncode") == 0)
                 state["verified_after_edit"] = bool(ok and state.get("edit_count"))
                 if not ok:
                     state["needs_fix"] = {p: True for p in state.get("edited_paths") or []}
                 pending_summary = state.pop("pending_complete_summary", None)
                 if ok and pending_summary is not None and source == "runtime":
                     done = [i for i in (state.get("checklist") or []) if i.get("done")]
-                    verified_line = ("Verified by the runtime: py_compile and --help smoke passed for "
+                    verified_line = ("Verified by the runtime: applicable Python checks passed (not a functional test) for "
                                      + ", ".join(state.get("edited_paths") or []) + ".")
                     summary = (pending_summary.strip() + "\n\n" + verified_line
                                + (f"\nChecklist: {len(done)}/{len(state.get('checklist') or [])} done." if state.get("checklist") else ""))
@@ -2756,6 +3090,9 @@ class DirectCoderRuntime:
                     self._emit(run_id, "agent.coder.completed", summary=summary)
                     self._transition(run_id, AgentRunState.COMPLETED)
                     return self._snapshot(run_id)
+            await self._refresh_failed_exact_edit(
+                run_id, state, decision, entry
+            )
             proposal = await direct_coder_hooks.recover_failed_edit(
                 self.engine, run_id, run, state, decision, entry,
             )

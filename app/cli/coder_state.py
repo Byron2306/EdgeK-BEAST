@@ -386,7 +386,7 @@ def project_runtime_event(event: RuntimeEvent) -> ProjectedEvent:
         return ProjectedEvent("advisory", f"{payload.get('requested_tool')} needs the isolated worktree: "
                               "binding it once now", sequence, details=payload)
     if event.event == "agent.coder.auto_verify":
-        return ProjectedEvent("advisory", "Verifying edits: py_compile + --help on "
+        return ProjectedEvent("advisory", "Verifying edits: applicable automatic checks on "
                               + ", ".join(str(p) for p in payload.get("paths") or []), sequence, details=payload)
     if event.event == "agent.coder.duplicate_read_skipped":
         return ProjectedEvent(
